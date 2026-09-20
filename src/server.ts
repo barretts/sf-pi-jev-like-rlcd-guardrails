@@ -1,18 +1,66 @@
 #!/usr/bin/env node
 import Fastify, { type FastifyRequest, type FastifyReply } from "fastify";
 import swagger from "@fastify/swagger";
-import swaggerUi from "@fastify/swagger-ui";
 import { parseArgs } from "node:util";
 import { pathToFileURL } from "node:url";
+import { realpathSync } from "node:fs";
 import {
   Classifier,
   NativeBackend,
   Overloaded,
+  DeadlineExceeded,
   configFromEnv,
   type Config,
 } from "./backend.js";
 import { InvalidRequest } from "./core.js";
 import { parseHttpRequest } from "./http-input.js";
+import { registerWeb } from "./web.js";
+
+export function assertLoopbackHost(host: string | undefined = "127.0.0.1") {
+  if (!["127.0.0.1", "::1", "localhost"].includes(host))
+    throw new Error(
+      "Jev serves loopback only: use 127.0.0.1, ::1, or localhost",
+    );
+}
+
+function localAuthority(authority: string) {
+  try {
+    if (/[\s/@\\]/.test(authority)) return null;
+    const url = new URL("http://" + authority);
+    if (
+      !["127.0.0.1", "localhost", "[::1]"].includes(url.hostname) ||
+      url.pathname !== "/" ||
+      url.search ||
+      url.hash
+    )
+      return null;
+    return url;
+  } catch {
+    return null;
+  }
+}
+
+export function trustedRequest(
+  host: string | undefined,
+  origin: string | undefined,
+  listeningPort?: number,
+) {
+  if (!host) return false;
+  const authority = localAuthority(host);
+  if (!authority) return false;
+  if (listeningPort != null && Number(authority.port || "80") !== listeningPort)
+    return false;
+  if (!origin) return true;
+  try {
+    const browser = new URL(origin);
+    return (
+      browser.origin === authority.origin &&
+      browser.href === browser.origin + "/"
+    );
+  } catch {
+    return false;
+  }
+}
 const entry = {
   anyOf: [
     { type: "string" },
@@ -102,7 +150,10 @@ export const HttpSchema = {
     },
     options: {
       type: "object",
-      properties: { raw_logits: { type: "boolean" } },
+      properties: {
+        raw_logits: { type: "boolean" },
+        template_version: { enum: ["v1", "v2"] },
+      },
       additionalProperties: false,
     },
     tools: { anyOf: [{ type: "null" }, { type: "array", maxItems: 0 }] },
@@ -119,15 +170,61 @@ export async function createServer(
   config: Config = configFromEnv(),
   classifier = new Classifier(config),
   initialize = true,
+  workspace = process.cwd(),
 ) {
-  const app = Fastify({ bodyLimit: 8 * 1024 * 1024, logger: false });
+  const app = Fastify({ bodyLimit: 256 * 1024, logger: false });
+  const listen = app.listen.bind(app);
+  app.listen = ((options: any, ...args: any[]) => {
+    try {
+      assertLoopbackHost(options?.host);
+    } catch (error) {
+      const callback = args[0];
+      if (typeof callback === "function") {
+        callback(error);
+        return;
+      }
+      return Promise.reject(error);
+    }
+    return (listen as any)(options, ...args);
+  }) as typeof app.listen;
+  app.addHook("onRequest", async (request, reply) => {
+    const address = app.server.address();
+    const port =
+      address && typeof address === "object" ? address.port : undefined;
+    if (!trustedRequest(request.headers.host, request.headers.origin, port))
+      return reply.code(403).send({
+        error: {
+          code: "untrusted_origin",
+          message: "Use the same loopback origin as this server",
+        },
+      });
+    if (
+      ["POST", "PUT", "PATCH", "DELETE"].includes(request.method) &&
+      !/^application\/json(?:\s*;|$)/i.test(
+        request.headers["content-type"] ?? "",
+      )
+    )
+      return reply.code(415).send({
+        error: {
+          code: "json_required",
+          message: "Writes require application/json",
+        },
+      });
+    reply.header("X-Content-Type-Options", "nosniff");
+    reply.header("X-Frame-Options", "DENY");
+    reply.header(
+      "Content-Security-Policy",
+      "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
+    );
+    reply.header("Referrer-Policy", "no-referrer");
+  });
   await app.register(swagger, {
     openapi: {
       openapi: "3.1.0",
       info: { title: "Jev classifier", version: "0.1.0" },
     },
   });
-  await app.register(swaggerUi, { routePrefix: "/docs" });
+  registerWeb(app, config, workspace);
   app.removeContentTypeParser("application/json");
   app.addContentTypeParser(
     "application/json",
@@ -162,6 +259,17 @@ export async function createServer(
       });
     if (error instanceof Error && error.name === "AbortError")
       return reply.code(499).send({ detail: "Client disconnected" });
+    if (error instanceof DeadlineExceeded)
+      return reply.code(504).send({
+        error: {
+          message: error.message,
+          type: "timeout_error",
+          code: "deadline_exceeded",
+          stage: error.stage,
+          param: null,
+          details: [],
+        },
+      });
     const status = (error as { statusCode?: number }).statusCode ?? 500;
     return reply.code(status).send({
       error: {
@@ -207,12 +315,10 @@ export async function createServer(
   app.get("/openapi.json", { schema: { hide: true } }, async () =>
     app.swagger(),
   );
-  app.get("/redoc", { schema: { hide: true } }, async (_req, reply) =>
-    reply
-      .type("text/html")
-      .send(
-        '<!doctype html><html><head><title>Jev API</title></head><body><redoc spec-url="/openapi.json"></redoc><script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script></body></html>',
-      ),
+  app.get(
+    "/api/status",
+    { schema: { hide: true } },
+    async () => classifier.status,
   );
   app.addHook("onClose", async () => classifier.dispose());
   try {
@@ -227,13 +333,15 @@ export async function createServer(
     throw e;
   }
 }
-async function main() {
+export async function serverMain(args = process.argv.slice(2)) {
   const { values } = parseArgs({
+    args,
     options: {
       model: { type: "string" },
       "model-file": { type: "string" },
       device: { type: "string" },
       host: { type: "string", default: "127.0.0.1" },
+      workspace: { type: "string" },
       port: { type: "string", default: "8000" },
       "max-model-len": { type: "string", default: "16384" },
       "max-batch-size": { type: "string", default: "32" },
@@ -267,13 +375,17 @@ async function main() {
   const port = Number(values.port);
   if (!Number.isInteger(port) || port < 1 || port > 65535)
     throw new Error("Invalid port");
-  const app = await createServer(config);
+  assertLoopbackHost(values.host);
+  const app = await createServer(config, undefined, true, values.workspace);
   for (const signal of ["SIGINT", "SIGTERM"] as const)
     process.once(signal, () => void app.close());
   console.log(await app.listen({ host: values.host, port }));
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href)
-  main().catch((e) => {
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href
+)
+  serverMain().catch((e) => {
     console.error(e.message);
     process.exitCode = 1;
   });

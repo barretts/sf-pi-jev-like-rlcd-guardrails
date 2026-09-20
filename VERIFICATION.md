@@ -1,56 +1,103 @@
 # Implementation evidence
 
-Observed locally on 2026-09-19. The standalone package is at `/Users/bsonntag/code/simple-jev-ts`. No tracked changes were made to the original Simple Jev or sf-pi checkouts. Global pi settings were not changed; installation and coexistence checks used an isolated agent directory.
+The TypeScript package is at `/Users/bsonntag/code/simple-jev-ts`, on `main` in the private repository `barretts/simple-jev-ts`. The initial delivered commit is `0fef15dab99ec01d8ec091359c773b3e2db942be`. The expanded implementation is being verified before its next commit. Native builds, weights, private run data, and raw proof files are excluded from Git.
 
-## Attributed inputs
+The original Simple Jev checkout remains unchanged. The original sf-pi checkout remains unchanged, including its existing untracked `.logs/`. Manager work is isolated in `/Users/bsonntag/code/sf-pi-jev-manager`, branch `barretts/jev-external-manager`, against baseline `4f901db9c3f5076ea0305dea33ad6e8856e467da`. Global pi preferences are preserved; integration exercises use isolated agent/workspace directories. No public sf-pi push is part of this delivery.
 
-| Input                             | Identity                                                                   |
-| --------------------------------- | -------------------------------------------------------------------------- |
-| Simple Jev behavior baseline      | `0dd5396ffce671ab7c4bfc031506d8e558cf8d23`                                 |
-| sf-pi coexistence source snapshot | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                                 |
-| pi SDK and loader                 | `@earendil-works/pi-coding-agent@0.85.1`                                   |
-| llama.cpp build                   | `f072b103714dfa1eee531f80b24512faf38e3dd2`                                 |
-| Source model                      | `google/gemma-3-1b-it`                                                     |
-| GGUF publisher/revision           | `ggml-org/gemma-3-1b-it-GGUF` / `f9c28bcd85737ffc5aef028638d3341d49869c27` |
-| Artifact                          | `gemma-3-1b-it-f16.gguf`, 2,006,573,568 bytes                              |
-| Verified SHA-256                  | `05bd381a5f45611ce53f4fdcc6641cf6cec68c3091d74e8a32ea591f062d3fc5`         |
+## Inputs and identities
 
-All executed classifier models were Gemma. The CPU backend exactly expands the verified F16 source weights to a temporary F32 artifact and uses F32 KV caches. Metal executes the verified F16 source artifact with F32 KV caches. Temporary runtime artifacts are removed on disposal. No Qwen or Chinese-lineage weights were used.
+| Input                            | Identity                                                                                            |
+| -------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Simple Jev behavior baseline     | `0dd5396ffce671ab7c4bfc031506d8e558cf8d23`                                                          |
+| sf-pi baseline                   | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                                                          |
+| pi SDK / TUI                     | `0.85.1`                                                                                            |
+| llama.cpp source                 | `f072b103714dfa1eee531f80b24512faf38e3dd2`                                                          |
+| Initial classifier               | `google/gemma-3-1b-it`                                                                              |
+| GGUF publisher / revision        | `ggml-org/gemma-3-1b-it-GGUF` / `f9c28bcd85737ffc5aef028638d3341d49869c27`                          |
+| Classifier file                  | `gemma-3-1b-it-f16.gguf`, 2,006,573,568 bytes                                                       |
+| Classifier SHA-256               | `05bd381a5f45611ce53f4fdcc6641cf6cec68c3091d74e8a32ea591f062d3fc5`                                  |
+| Reviewed 4B classifier candidate | `google/gemma-3-4b-it`, `ggml-org/gemma-3-4b-it-GGUF@d0976223747697cb51e056d85c532013931fe52e`      |
+| 4B file / size                   | `gemma-3-4b-it-f16.gguf`, 7,767,474,336 bytes                                                       |
+| 4B SHA-256                       | `29f4b518b636635613894282bda2a01bad964c8d474c4147343057b7ac442d50`                                  |
+| Agent/teacher                    | `google/gemma-4-31B-it-qat-q4_0`                                                                    |
+| Official GGUF revision           | `59dde24573e7e61570dba08b18a2e1fe246955ed`                                                          |
+| Agent/teacher file               | `gemma-4-31B_q4_0-it.gguf`, 17,651,001,568 bytes                                                    |
+| Agent/teacher SHA-256            | `179cfb99212709597eae5929112cfca677e1bbf566178b479ae1da0c4772874b`                                  |
+| Agent chat template revision     | `842da3794eaa0b77d5f08bae87a17459d91ff475`                                                          |
+| Agent chat template SHA-256      | `ae53464bf3be25802b3a5b37def7fd89667067d7577049b3b2d74c4d8de4c6d4`                                  |
+| RFDT HF base revision            | `google/gemma-3-1b-it@dcc83ea841ab6100d6b47a070329e1ba4cf78752`                                     |
+| RFDT Python / MLX / Transformers | `3.13` / `0.32.2` / `5.11.0`                                                                        |
+| RFDT MLX-LM source               | `9d1e356e7cc6549e7d1697adabe2ea01ff8e062c`                                                          |
+| RFDT converter dependency        | PyTorch `2.11.0`                                                                                    |
+| Frozen quality corpus            | 300 records, 150 groups, SHA-256 `cd3de2d07db024aeb0f8d22be394ffa9024307680efbe2967569c325bc7af3c9` |
 
-## Results
+All executed classifier/training fixtures use Gemma. No Qwen or Chinese-lineage model is used. CPU exactly expands verified F16 weights to a temporary F32 GGUF with F32 KV caches; Metal uses the source artifact and F32 KV caches. This remains an independent rewrite with source inspection permitted, not a source-separated clean-room process.
 
-| Evidence lane                  | Observed result                                                                                                                              |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| TypeScript                     | `npm run check` and `npm run build` passed                                                                                                   |
-| Unit/integration contracts     | 33 tests passed across 4 test files                                                                                                          |
-| Python baseline                | Exact prompt fragments matched; scoring fixtures agreed within `1e-6`                                                                        |
-| Formatting                     | `npm run format:check` passed                                                                                                                |
-| Dependencies                   | `npm audit` reported zero vulnerabilities                                                                                                    |
-| Native build                   | Pinned llama.cpp and `jev-native` built successfully                                                                                         |
-| Native CPU cache equivalence   | Maximum candidate-probability difference `2.9647678045918724e-7`                                                                             |
-| Native Metal cache equivalence | Maximum candidate-probability difference `3.021096278511812e-8`                                                                              |
-| Shared-prefix execution        | 294 shared tokens; 781 computed tokens versus 1,369 for independent full-prompt forwards                                                     |
-| Forward counts                 | 2 cached forwards versus 3 independent full-prompt forwards                                                                                  |
-| Native template                | 3/3 rendered prompts matched independent Jinja2 reference, including BOS and assistant prefill                                               |
-| Context forms                  | State and alternating text chat both exercised with real Gemma                                                                               |
-| pi installation                | Local package installed into isolated pi settings                                                                                            |
-| pi/sf-pi coexistence           | All 23 sf-pi extension factories and the Jev factory loaded; real pi tool wrapper executed `jev_classify` successfully on CPU and Metal      |
-| Fresh pi agent loop            | Prompt, argument validation, tool dispatch, Metal Gemma result, and next assistant turn completed; one successful execution in two turns     |
-| HTTP transport                 | Real localhost requests returned 200 for classification/alias and 422 for invalid model/unsupported history; raw logits present when enabled |
-| Disconnect                     | Aborted fetch followed by successful classification                                                                                          |
-| Native process failure         | After SIGKILL, health returned 503; next classification restarted the backend and returned 200                                               |
-| Packaging                      | Dry-run tarball excluded weights, native vendor checkout, and build artifacts                                                                |
+## Runtime evidence
 
-The coexistence run emitted an `sf-pi-manager:actions` MaxListeners warning while loading the sf-pi bundle. Loading and classification completed successfully; no sf-pi code was changed to suppress it.
+The fresh real Metal exercise at `.build/runtime-proof.json` completed in 5.57 seconds and proved:
 
-## Reproduction and limits
+- Concurrent warmup callers share one initialized generation.
+- Loaded status identifies actual `MTL0`, Gemma3 architecture, the approved artifact checksum/revision, and the full native source commit.
+- Choice, score, and Noul return real results with zero generated output tokens.
+- Natural single-user chat works under v1 and v2. The native renderer merges the appended question into the final user turn without altering logical v1 fixture messages.
+- An in-flight large-context abort returns `AbortError: Cancelled`; the next classification succeeds.
+- Actual native SIGKILL is followed by successful explicit generation-2 recovery. The failed request is not replayed.
+- Disposal awaits child exit and removes the owned temporary directory.
 
-See README.md for setup and commands. Native tests use a 2,048-token branch limit, 4 suffix sequences, and a 4,096-token suffix budget. They establish the tested pipeline and cache behavior, not exhaustive model/context/hardware compatibility.
+The sample duplicate-charge request produced a billing route, support score approximately 1.9995/2, and v2 refund score approximately 0.98995. The corresponding unchanged v1 refund score remained approximately 0.01. This is a regression diagnostic, not a claim that v2 meets the authored quality gates. Each v2 candidate is bound by its report's logical prompt hashes.
 
-The fresh main-path exercise used `session.prompt()` and pi's actual agent loop with all 24 extension factories loaded. Argument validation, tool hooks, `jev_classify` execution, tool-result delivery, and the next assistant turn completed in two orchestration turns with one successful tool execution. The existing `scripts/pi-smoke.mjs` now reproduces this path. Its orchestration model is a deterministic non-generating harness: no main-model provider request occurs. Classifier inference is real local Gemma on Metal. Autonomous tool selection and evaluation of answer quality remain deferred.
+Twenty-five focused runtime/backend tests passed, including shared initialization, caller cancellation, deadlines, malformed replies, explicit recovery, TERM/KILL escalation, and the disposal/directory-creation race. The native protocol checks exercised malformed envelopes, size/depth/numeric limits, and late cancellation bookkeeping without inference. The one-active-plus-16-pending capacity, pre-expansion admission, and bounded cleanup are implemented and tested.
 
-For the context “I was charged twice for my subscription. Please refund the duplicate charge,” Gemma returned choice `billing` with confidence `0.9999407017823707`, support score `1.9997425468829404` on a zero-to-two rubric, and refund Noul score `0.010000005244026045`. The refund score contradicts the explicit request. This exercise proves the execution path and exposes an answer-quality problem; it does not establish reliable truth judgments. Reported classifier usage was 793 input tokens and zero output tokens.
+## Quality evidence
 
-The token counts prove avoided repeated processing, not a latency ratio. No held-out classification benchmark, remote inference service, RFDT workflow, deployment, or CI run is claimed. This remains an independent rewrite with source inspection allowed, not a strict separated clean-room process.
+The fixed authored corpus was frozen before inference. State/chat pairs share their context group and split. Choice pairs reverse candidate order; Noul contains 40 true, 40 false, and 20 unknown records. Known refund and dog regressions are fixed validation records. The held-out test split remains untouched during candidate selection.
 
-Raw local proof artifacts are retained under `.build/` and excluded from Git. The repository has branch `main`, no commits or remote, and no stash entries; nothing was pushed or published.
+After fixing native chat rendering, paired validation completed all 60 records with zero execution errors:
+
+| Validation candidate | Choice accuracy | Clear Noul accuracy | Noul Brier | Normalized score MAE | Regressions |
+| -------------------- | --------------: | ------------------: | ---------: | -------------------: | ----------: |
+| v1, chat fix         |            0.50 |                0.50 |    0.49010 |              0.25437 |         2/6 |
+| v2 candidate 2       |            0.80 |                0.50 |    0.46013 |              0.20082 |         4/6 |
+| v2 candidate 3       |            0.50 |                0.50 |    0.20341 |              0.23031 |         4/6 |
+| v2 candidate 4       |            0.65 |              0.6875 |    0.23902 |              0.25325 |         4/6 |
+| v2 candidate 5       |            0.80 |                0.75 |    0.21736 |              0.41724 |         4/6 |
+| v2 candidate 6       |            0.65 |                0.75 |    0.21736 |              0.14929 |         4/6 |
+
+These candidates **fail the quality gates**. Gates require choice ≥0.90, clear Noul ≥0.95, Brier ≤0.10, normalized score MAE ≤0.10, all known regressions, and zero errors. Candidate 2's prompt manifest SHA-256 is `e5b1a1d005e0d5845c260d173c032e9e88f5861b1c52f29f635be3adfcdd49ad`; reports retain the exact artifact/template identity and per-record prompt hashes. Selected-record dataset hashes differ from the whole-file frozen corpus hash by design.
+
+The initial candidate-5 invocation omitted `JEV_MODEL_FILE` and failed configuration on all records. Its report was replaced by the correctly configured real run above. C7's prompt was frozen for stronger-artifact validation, with prompt-region SHA-256 `5fb3187d5a77359c8b52996d30c3d7c9911b6d6234b8351599aefc17a1fc40fa`. Labels and held-out records are not changed to improve metrics.
+
+The tracked compatibility checker passed 72 exact whole-Plan comparisons and 432 exact answer/usage comparisons between current v1 code and initial TypeScript commit `0fef15dab99ec01d8ec091359c773b3e2db942be`, with zero differences. It reports intentional metadata-envelope changes separately. This comparison complements the captured upstream Python fixtures; it does not claim arbitrary Python/JavaScript coercion equivalence.
+
+## pi, Manager, and browser evidence
+
+The initial deterministic pi exercise established `session.prompt()` → argument validation → tool dispatch → real Gemma inference → tool result → next assistant turn, with one execution in two assistant turns and all 23 sf-pi extensions loaded alongside Jev. Its stream function authored the tool call. It does not establish autonomous selection; the real-provider Gemma4 exercise is a separate required lane.
+
+The final Manager change is local commit `f927d52f57185bb5f2d62e8f0cb6997a6656752c`, with tested tree `a95fd8662f9d5d39e491601b662c1b181cb55dab` and exactly ten changed files. Its final typecheck, full lint/generated-catalog checks, 281 focused tests across 27 files, and bounded full suite passed: **4,301 tests passed, 39 skipped; 599 files passed, one skipped**, exit 0. The worktree is clean, with no stash or sf-pi remote push. The baseline-bound patch at `integrations/sf-pi-manager/0001-feat-manager-discover-independent-external-extensions.patch` has SHA-256 `3ef59cbcb4ffd7162d5d1e29203ea36da12bfda2986605eea7408362cfee9a97`; temporary-index application reproduced the tested committed tree exactly. Review fixes cover scope-specific factory caching, stale factory promises, action completion refresh, and reserved contribution IDs.
+
+The expanded pi proof at `.build/pi-proof-final.json` loaded all 24 real factories and 33 startup tools from the updated isolated sf-pi worktree and Jev. It exercised public Manager detail/settings/deep-link/actions/enablement and then actual v2 Metal classifier dispatch, all three answers, 401 input tokens, and zero outputs. Two user/final pairs produced two routing and two three-rubric evaluation reports. Repeated settled/end events created no duplicates; no extra assistant/tool turn or active-tool change occurred. The load-only proof stayed cold. Both Apex advice prompts selected `code-analyzer`, exposing a routing accuracy limitation; hook execution is proven, correct routing is not.
+
+The live browser proof at `.build/browser-proof-final/actual` passed in isolated headless Chrome. All ten screenshots were inspected. It exercised a real all-three classifier POST (403 input tokens, zero outputs), exact response rendering, literal script markup, malformed client JSON without another POST, structured HTTP 422, local docs, four actual saved advisory reports checked against their source records, read-only inspection, and scoped 404s. There were no page errors or external requests. Server closure and native exit were independently verified. This software browser proof used a separate temporary profile and changed no user tabs.
+
+The actual CLI benchmark at `.build/bench-proof-final.json` completed 43/43 requests across eight combinations of 256/1,024-character context, 1/3 branches, and 1/4 concurrent callers, with two iterations each. Cold first request was 1.5077 seconds; warm median was 0.08898 seconds (n=2). Overall p50/p95/p99 were 0.23173/0.59468/1.13045 seconds, including cold and queue time. Measured work was 13,527 computed prompt tokens and zero outputs, approximately 2,964 prompt tokens per backend second. Sixty-five resource samples observed native peak RSS 4,806,901,760 bytes, orchestrator peak RSS 156,696,576 bytes, and zero owned temporary disk on Metal. `.build/bench-validation-final.json` verified queue wait, exact identities/code hashes, native exit, and temporary-directory removal. These one-machine observations with two iterations do not establish stable tail latency; RSS is not device memory.
+
+## RFDT evidence
+
+The Python worker's CPU random tiny **Gemma** fixture proved selected-position gradients, adapter changes, loss reduction from `1.6776810884` to `0.6417329311`, adapter reload probability difference `0`, and float32 fused probability difference `7.4505805969e-8`. Pinned conversion dependencies are installed and the llama.cpp converter's help path works. This fixture does not establish training on the official Google checkpoint, native GGUF equivalence, quality gates, or student promotion.
+
+The initial unauthenticated checkpoint check returned HTTP 401 `GatedRepo`. After the user's session authorization, the exact pinned Google checkpoint downloaded successfully: 2,039,043,660 blob bytes, eight complete blobs, and no incomplete blobs. The authenticated doctor reports `training_ready: true` and verified all 180 prepared rows and 980 answer-label boundaries against the native tokenizer, with v2 and no extra special tokens. The credential is confined to a private ignored session directory, with no global Hugging Face login or Git credential change. Subsequent optimization uses that exact local snapshot offline. No alternate checkpoint is substituted. Real training, fusion/export, native/pi student execution, and final quality are recorded separately as they complete.
+
+The actual native preparation proof at `.build/rfdt-native-prepare/prepare-proof.json` compiled 180 frozen training records into 60 choice, 60 score, and 60 Noul branches using the approved Gemma1B tokenizer and current v2 template. Prompt lengths were 170–328 tokens with distinct valid answer-token IDs. The source SHA-256 is `7935316728623500ca906dde371355ab9d0550deffa7797e9c3fddc43f792abd`; prepared SHA-256 is `1da456847a5d6f95a841250bc1711f093cd05be2f37493bc1de55d7da2c60c83`. Validation/test branches were zero, and this stage performed preparation rather than optimization or held-out inference.
+
+The TypeScript workflow validates targets/provenance, grouped splits, native boundaries, local teacher labels/cache, manifests, and conversion/export identities. Public approval recomputes the fixed native acceptance suite from recorded probability distributions and checks derived answers, report hashes, template, run, prepared-data identity, and exact exported GGUF. User training splits cannot replace the fixed acceptance corpus. Per-run exclusive evaluation prevents validation/test races; a permanent artifact-specific reservation prevents repeated final tests. Local artifact entries are restricted to classifier-only Gemma derivatives with pinned base lineage. Abort and output-overflow cleanup awaits subprocess close with TERM/KILL escalation and bounded retained output. Eighty-eight focused tests covered these checks; the final expanded suite below includes them.
+
+## Verification and delivery boundaries
+
+The expanded weights-free suite passed **199 tests across 19 files**, including the final RFDT approval, distribution, concurrency, and subprocess-cleanup fixes. TypeScript check and formatting passed. The current v1 compatibility checker passed 72 whole-Plan and 432 answer/usage comparisons. A fresh Node26 CI-style install with dependency scripts and audit disabled passed compilation and CLI tests. The repeated fresh package consumer passed library/extension imports, public TypeScript declarations, both installed bin symlinks, and actionable missing-model doctor behavior. The tested package contained 61 files, 159,899 compressed bytes and 799,256 unpacked bytes, including the Manager patch and notices, with no weights, native vendor binaries, fetched templates, logs, or private run data. Documentation changes can alter those byte counts. Hosted CI must be attributed to the delivered commit; a configured workflow is not a completed CI run.
+
+Automatic approval review initially rejected `npm audit --json` because it considered sending dependency metadata to npm outside the existing authorization. After the user's explicit approval, the command completed with exit 0 and reported zero known vulnerabilities in the current dependency graph. The report is retained at `.build/npm-audit-final.json`. This is an advisory-database result, not a claim that the package has no security defects.
+
+Earlier CPU/Metal cache/full-forward differences were `2.9647678045918724e-7` and `3.021096278511812e-8`, respectively; three native rendered prompts matched an independent Jinja2 reference including BOS and assistant prefill. Earlier real HTTP transport verified classification/alias responses, invalid-input errors, diagnostics, disconnect recovery, and explicit native failure recovery. Those baseline checks are preserved and do not substitute for new live surfaces.
+
+No cloud API charge, billing savings, universal model accuracy, exhaustive hardware/context parity, public publication, real RFDT training, or held-out clearance is inferred from infrastructure success. Model terms remain separate from the first-party Apache license. Final branch/HEAD/private remote/CI/patch identities must be verified at delivery.

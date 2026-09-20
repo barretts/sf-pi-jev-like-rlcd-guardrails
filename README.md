@@ -1,14 +1,14 @@
 # Simple Jev for TypeScript and pi
 
-Independent implementation of Simple Jev's v1 classifier behavior, with a reusable TypeScript library, a standalone pi extension, and optional HTTP serving. Model execution uses a local llama.cpp subprocess; the model's next-token logits determine the answers. No generated JSON completion is parsed.
+A local TypeScript classifier library, the `jev_classify` pi extension, an HTTP API and browser playground, and an RFDT training/export workflow. Classification reads selected next-token logits from a local llama.cpp process. It does not generate or parse a JSON completion.
 
-The initial supported artifact is **Google Gemma 3 1B Instruct, F16 GGUF**. Qwen and Chinese-lineage models, including derivatives, merges, and distilled variants, are excluded from implementation, examples, testing, and fallback selection. A checksum allowlist enforces the initial artifact selection; configuration cannot bypass it.
+The default classifier uses **Google Gemma 3 1B Instruct**; a reviewed **Gemma 3 4B Instruct** candidate is also available for explicit evaluation. The local agent and teacher use the official **Google Gemma 4 31B Instruct QAT Q4_0** artifact. Qwen and Chinese-lineage models, including derivatives, merges, distills, teachers, tests, and fallback models, are excluded. Artifacts must match reviewed registry entries, roles, revisions, byte sizes, and SHA-256 checksums. Missing or incorrect weights produce an error.
 
-This is an independent rewrite with documentation and source inspection permitted, not a strict source-access-separated clean-room process. Prompt text intentionally matches the source project's published v1 contract. The reference baseline is Simple Jev commit `0dd5396ffce671ab7c4bfc031506d8e558cf8d23`. This package is private/local pending a separate publication and licensing decision.
+This is an independent rewrite with documentation and source inspection permitted. Published v1 prompt fragments retain compatibility with Simple Jev commit `0dd5396ffce671ab7c4bfc031506d8e558cf8d23`; it is not a source-separated clean-room process. First-party code is [Apache 2.0](./LICENSE). See [NOTICE](./NOTICE) and [third-party notices](./THIRD_PARTY_NOTICES.md) for provenance and separate model terms. The repository and npm package remain private.
 
 ## Setup
 
-Requirements: Node ≥22.19, npm, Git, CMake ≥3.20, a C++17 compiler, supported pi `>=0.84.0 <1.0.0`, and approximately 2 GB for the source weights plus build and runtime memory. CPU initialization expands those verified weights exactly to a temporary F32 GGUF (approximately 4 GB), uses F32 KV caches, and removes the temporary file on disposal. Budget additional disk and RAM for that expansion; first use includes conversion cost. Native compilation is explicit; installation and extension registration do not build or download anything.
+Requirements: Node ≥22.19, npm, Git, CMake ≥3.20, a C++17 compiler, and pi. The exercised SDK version is `0.85.1`. Apple Silicon Metal is the intended local workflow; CPU classification is supported. Native compilation and downloads are explicit. Installing the extension or opening Manager does not start inference, compile code, or fetch weights.
 
 ```sh
 npm ci
@@ -16,23 +16,54 @@ npm run build
 npm run native:build
 ```
 
-Review [Gemma's terms](https://ai.google.dev/gemma/terms), then fetch the pinned artifact if you accept them:
+Review [Gemma 3's terms](https://ai.google.dev/gemma/terms) before fetching that model:
 
 ```sh
 npm run model:fetch -- --accept-gemma-terms
 export JEV_MODEL_FILE="$PWD/models/gemma-3-1b-it-f16.gguf"
 export JEV_MODEL_ID='google/gemma-3-1b-it'
-export JEV_DEVICE='cpu' # auto, cpu, or metal
+export JEV_DEVICE='metal' # auto, cpu, or metal
+node dist/cli.js doctor
+node dist/cli.js warmup
 pi install "$PWD"
 ```
 
-In pi, run `/reload`, `/jev doctor`, and `/jev warmup`. `/jev` and `/jev status` show cached readiness/configuration. The first classifier tool call also initializes the model. A missing model, unavailable native executable, or incorrect checksum produces an error with no substitute model. Each backend verifies the full artifact checksum during initialization.
+In pi, run `/reload`, `/jev doctor`, and `/jev warmup`. The first tool call also initializes the classifier. `doctor` verifies prerequisites and the artifact without loading the model. `/jev status` and Manager use cached state.
 
-Use the same installation in a pi session with sf-pi enabled. The extension is generic and imports no sf-pi implementation modules. It does not change Salesforce routing, tool permissions, or Guardrail authority. Classification answers are advisory and their confidence values are uncalibrated.
+The default Gemma 3 weights occupy approximately 2 GB. CPU initialization expands verified F16 weights exactly into a temporary F32 GGUF of approximately 4 GB and uses F32 KV caches. Metal uses the verified source artifact and F32 KV caches. Allow disk and RAM for context and any CPU expansion. Temporary runtime files are removed on disposal. The 4B F16 candidate occupies approximately 7.77 GB and is selected explicitly:
 
-## Tool input
+```sh
+node dist/cli.js model fetch --model google/gemma-3-4b-it --accept-gemma-terms
+export JEV_MODEL_FILE="$PWD/models/gemma-3-4b-it-f16.gguf"
+export JEV_MODEL_ID='google/gemma-3-4b-it'
+```
 
-The `jev_classify` tool accepts exactly one non-null `state` or text `messages`. Model selection is process configuration, not a tool argument. Ordered question/candidate arrays preserve source order even for numeric-looking IDs:
+The optional Gemma 4 agent/teacher adds approximately 17.65 GB of weights and substantial memory; the target machine is an Apple M3 Max with 96 GiB unified memory. A reviewed artifact is eligible for execution; its review alone does not establish the quality gates.
+
+## pi and sf-pi
+
+The stable public tool is `jev_classify`. `/jev` opens Jev's own sf-pi Manager page when the external-contribution contract is installed. Standalone pi supports the tool and commands.
+
+| Command                                                            | Purpose                                                   |
+| ------------------------------------------------------------------ | --------------------------------------------------------- |
+| `/jev status`                                                      | Cached readiness, effective preferences, runtime identity |
+| `/jev doctor`                                                      | Check binary, model, checksum, and configuration          |
+| `/jev warmup`                                                      | Explicitly load the classifier                            |
+| `/jev enable [project\|global]` / `/jev disable [project\|global]` | Change scoped lifecycle setting                           |
+| `/jev routing on\|off [project\|global]`                           | Advisory family recommendation before a user turn         |
+| `/jev evaluation on\|off [project\|global]`                        | Evaluate a settled answer on three rubrics                |
+| `/jev template v1\|v2 [project\|global]`                           | Select pi/hooks prompt version                            |
+| `/jev routing-report` / `/jev evaluation-report`                   | Show latest session report                                |
+
+Defaults are enabled, **routing off**, **evaluation off**, and template **v2**. Settings live under `jev` in pi's global or project `settings.json`; project values override global values per field. Writes preserve unrelated keys using atomic private temporary files. Disabling awaits disposal. Reenabling creates a fresh lazy classifier.
+
+Routing discovers Salesforce capability families from active tools and includes `mixed` and `general`. It adds advisory context. It never changes active tools, permissions, Guardrail authority, or retry behavior. Evaluation runs once per persisted user/final-assistant pair after the run settles and scores coverage, evidence, and clarity from zero to two. It creates no new assistant turn. These estimates are uncalibrated.
+
+The Manager contract is a general external-extension contribution seam; Jev imports no sf-pi implementation modules. External rows own their settings and enable/disable callback and stay out of bundled disabled-file lists and bulk toggles. The sf-pi change is developed in a separate worktree against baseline `4f901db9c3f5076ea0305dea33ad6e8856e467da`. The baseline-bound patch and setup instructions are retained under `integrations/`. The original sf-pi checkout is preserved; no public sf-pi push is required.
+
+## Tool input and answers
+
+Supply exactly one non-null `state` or a text `messages` history. Model selection is process configuration, not a tool argument. Ordered questions and candidates preserve source order, including numeric-looking IDs:
 
 ```json
 {
@@ -58,9 +89,11 @@ The `jev_classify` tool accepts exactly one non-null `state` or text `messages`.
 }
 ```
 
-Results appear as JSON text and typed tool details, containing `model`, `answers`, and `usage`. Choice returns the highest-probability candidate; score returns the expected zero-based rubric index; Noul maps the expected nine-bin rating to `[0.01, 0.99]`. Output-token usage is zero. Exceptions use pi's normal tool failure handling.
+Results are JSON text and typed tool details with `model`, `answers`, `usage`, and `metadata`. Choice returns the highest-probability candidate. Score returns the expected zero-based rubric index. Noul maps the expected nine-bin rating to `[0.01, 0.99]`; v2 explicitly defines integer bins 1=false, 5=unknown, 9=true. The classifier generates zero output tokens. Confidence is normalized over permitted labels only and is not a calibrated probability of correctness.
 
-Set `ENABLE_OPEN_JEV_ADVANCED_METRICS=1` before launching pi to enable diagnostic answers and execution metrics. `options.raw_logits: true` additionally exposes original selected logits. Prompts and numerical answers are unaffected by diagnostic settings.
+`options.template_version` explicitly selects `v1` or `v2`. HTTP and library default to **v1**; pi, advisory hooks, evaluation CLI, and browser default to **v2**. v1 logical prompt fragments and scoring remain intact. Gemma's native template merges the system instruction into the first user turn. The selected question is merged into a final user turn for native rendering when necessary, while logical v1 fixtures remain unchanged. Unsupported roles and other invalid non-alternating histories are rejected.
+
+Set `ENABLE_OPEN_JEV_ADVANCED_METRICS=1` for diagnostic distributions and execution metrics. `options.raw_logits: true` exposes original selected logits. Always-present metadata records the actual template and available backend/artifact identity. Logical `usage.input_tokens` counts unique token prefixes across the branch prompts; advanced computed-token and forward counts describe actual execution. `branch_prompt_tokens` is the sum of full branch lengths. Do not infer a latency ratio or billed token work from logical usage.
 
 ## Library
 
@@ -68,78 +101,135 @@ Set `ENABLE_OPEN_JEV_ADVANCED_METRICS=1` before launching pi to enable diagnosti
 import { Classifier, configFromEnv } from "simple-jev-ts";
 const classifier = new Classifier(configFromEnv());
 try {
-  const result = await classifier.classify(
-    {
-      model: classifier.config.modelId,
-      state: "The bicycle is red.",
-      questions: [{ id: "red", type: "noul", instructions: "Is it red?" }],
-    },
-    new AbortController().signal,
-  );
-  console.log(result.answers);
+  const result = await classifier.classify({
+    model: classifier.config.modelId,
+    state: "The bicycle is red.",
+    questions: [{ id: "red", type: "noul", instructions: "Is it red?" }],
+    options: { template_version: "v2" },
+  });
+  console.log(result.answers, result.metadata);
 } finally {
   await classifier.dispose();
 }
 ```
 
-`validateRequest`, `preparePrompt`, `buildResponse`, and `parseHttpRequest` are also exported. `InferenceAdapter` separates model execution from scoring. Direct TypeScript requests use the ordered tool-style question representation; `parseHttpRequest` converts the original object-shaped HTTP representation. Callers must dispose native-backed instances. One adapter belongs to one classifier; do not invoke its compile/evaluate operations concurrently.
+Exports include request/prompt/scoring helpers, `InferenceAdapter`, artifact verification, agent lifecycle, quality evaluation, benchmarking, and RFDT. Direct requests use ordered questions; `parseHttpRequest` converts original object-shaped HTTP input. `Classifier.status` and `NativeBackend.status` are getters; `AgentServer.status()` is asynchronous. One adapter belongs to one classifier; do not invoke native compile/evaluate concurrently outside the classifier.
 
-## HTTP server
+Configuration supports `templateVersion`, `queueTimeoutMs`, `requestTimeoutMs`, `initTimeoutMs`, and `artifactRegistryPath`, in addition to model/device/batching limits. The registry override is for scoped, provenance-checked RFDT candidates; arbitrary models do not become trusted.
+
+## HTTP and browser
 
 ```sh
-node dist/server.js --model-file "$JEV_MODEL_FILE" --model google/gemma-3-1b-it --device cpu
+node dist/cli.js demo --host 127.0.0.1 --port 8000 --workspace "$PWD"
 ```
 
-Endpoints: `POST /v1/classifier`, alias `/v1/systemone`, `GET /health`, `/docs/`, `/redoc`, and `/openapi.json`. The HTTP request representation retains the original question/candidate objects. Unknown top-level fields are ignored; questions/options are strict. The ordered JSON reader preserves numeric-looking source keys. Duplicate JSON object keys are rejected.
+Open `http://127.0.0.1:8000/` for an editable playground displaying the submitted request, real response, answers, usage, metadata, and errors. `/inspect` lists saved advisory reports and RFDT manifests under the workspace's `.jev` directory. Reads are restricted to validated IDs and owned directories. Raw prompt/training data and arbitrary filesystem paths are not browser endpoints. Reports contain summaries; RFDT intentionally stores prompts in private local run files because training requires them.
+
+Endpoints include `POST /v1/classifier`, alias `/v1/systemone`, `GET /health`, local `/docs/`, `/redoc`, and `/openapi.json`. HTTP retains the original question/candidate object representation and lexical key order. Duplicate JSON keys are rejected. Unknown top-level fields are ignored; questions and options are strict.
 
 ```sh
 curl http://127.0.0.1:8000/v1/classifier \
   -H 'Content-Type: application/json' \
-  -d '{"model":"google/gemma-3-1b-it","state":"The bicycle is red.","questions":{"color":{"type":"choice","instructions":"What color?","criteria":{"red":null,"blue":null}}}}'
+  -d '{"model":"google/gemma-3-1b-it","state":"The bicycle is red.","questions":{"color":{"type":"choice","instructions":"What color?","criteria":{"red":null,"blue":null}}},"options":{"template_version":"v2"}}'
 ```
 
-Defaults: localhost port 8000, 16,384 tokens per branch, 100 branches per request, 32 suffix sequences per batch, and a conservative 32,768-token suffix budget. The schema permits up to 256 questions and 2–50 choice/score entries. One request runs at a time; 16 additional requests may wait. Further requests receive 429 and `Retry-After: 1`. Input is not truncated. Runtime failures return 500; invalid requests return 422. Cancellation is observed between model forwards, with safe cleanup before another request executes.
+The server binds loopback only and checks Host and same-origin browser requests. Classification requires JSON. UI assets are local, with no CDN fetch. Input is limited to 256 KiB and depth 32 before prompt expansion. Invalid requests return 422, overload returns 429 with `Retry-After: 1`, and deadlines return 504. No request is silently truncated or replayed.
 
-## Compatibility and verification
+One request runs at a time; 16 may wait. Defaults are 30 seconds in queue, 120 seconds active classification, and 300 seconds shared initialization. Active timing starts after warmup. Aborting one warmup waiter does not cancel other callers' initialization. Active cancellation is checked between forwards. Native generations own their process and temporary files; termination escalates to TERM/KILL within bounds, and disposal awaits cleanup. A later explicit request may recover a failed worker.
 
-- Gemma's native template merges the logical system instructions into its first user turn. The adapter uses the GGUF's Jinja template, includes the model BOS token, and appends the incomplete assistant answer prefix. It rejects unsupported roles or non-alternating histories instead of rewriting them.
-- Both input interfaces share the exact v1 classifier fragments and scoring rules. Probabilities are normalized over permitted labels only. Responses are not guaranteed identical to Hugging Face inference: engine arithmetic and weight representation differ.
-- Advanced metadata identifies `llama.cpp`. Native suffix batches do not pad; padding metrics are zero, and forward/token counts reflect actual execution. Prefix KV state is reused only within a request.
-- Canonical JSON sorts object keys by Unicode code points and uses ECMAScript number formatting. Arbitrary floating-point prompt byte parity is not guaranteed across languages. Exact Pydantic coercions/error wording and generated documentation markup are outside the compatibility target.
-- HTTP transport imposes an 8 MiB body limit. CLI devices are `auto`, `cpu`, and `metal`; HF revision/dtype loading flags are not supported. Registry extension requires reviewed provenance, checksum, template, and cache checks.
+Default limits are 16,384 tokens per branch, 100 branches per request, 32 suffix sequences per batch, and a 32,768-token suffix budget. The schema permits 256 questions and 2–50 choice/score entries, subject to branch capacity. CPU and Metal cache/full-forward equivalence are exercised separately.
+
+## Local agent and autonomous pi proof
 
 ```sh
+npm run agent:build
+node dist/cli.js model fetch --model google/gemma-4-31B-it-qat-q4_0
+node dist/cli.js agent start --device metal --port 8081
+node dist/cli.js agent status
+npm run test:live-pi
+node dist/cli.js agent stop
+```
+
+The owned agent server binds `127.0.0.1`, verifies model/template hashes and native revision, and records an owned state file. The live pi exercise uses a real local provider stream with no fake stream or required tool-choice setting. It separately records requested-classification tool selection and a direct-answer control. The older `scripts/pi-smoke.mjs` is a deterministic orchestration proof: classifier inference is real, but the next tool call is authored by the harness. These establish different evidence lanes.
+
+## Quality evaluation
+
+[fixtures/quality.jsonl](./fixtures/quality.jsonl) was authored and frozen before inference: 300 labeled records in 150 context groups, state/chat pairs, grouped 60/20/20 train/validation/test splits, and 100 records per answer type. Noul has 40 true, 40 false, 20 unknown records. Choice pairs reverse candidate order. Cases cover negation, attribution, conditional plans, quotations, corrections, and uncertainty. Whole-file SHA-256: `cd3de2d07db024aeb0f8d22be394ffa9024307680efbe2967569c325bc7af3c9`.
+
+```sh
+npm run eval -- --version v1 --split validation --output .build/quality-v1.json
+npm run eval -- --version v2 --split validation --output .build/quality-v2.json
+# Only after selecting and freezing the final candidate:
+# npm run eval -- --version v2 --split test --output .build/quality-final-test.json
+```
+
+Gates: choice accuracy ≥0.90, clear Noul accuracy ≥0.95, Noul Brier ≤0.10, normalized score MAE ≤0.10, zero errors, all marked regressions passing. Reports bind the selected dataset, actual artifact/template metadata, per-record logical prompt hashes, and an aggregate prompt manifest hash. Failed gates exit 1 while preserving the report. Validation selects candidates; held-out labels must not be used for tuning or relabeled to improve metrics. Runtime success alone does not establish quality. See [current evidence](./VERIFICATION.md).
+
+## RFDT
+
+TypeScript owns validation, canonical prompts, native tokenizer/answer-boundary capture, grouped splits, local-teacher labeling/cache, provenance, export, and promotion. A pinned Python/MLX helper performs selected-last-position soft cross-entropy LoRA optimization on Google Gemma 3. It saves/reloads adapters, fuses safetensors, and invokes the pinned llama.cpp converter for F16 GGUF. It does not train on generated prose.
+
+```sh
+bash scripts/build-rfdt.sh
+node dist/cli.js rfdt doctor
+```
+
+The official training checkpoint is gated. Enable access at [Google Gemma 3 on Hugging Face](https://huggingface.co/google/gemma-3-1b-it), then authenticate locally with `.build/rfdt-venv/bin/hf auth login`. Do not put tokens into dataset files, Git, or chat. No other checkpoint is substituted.
+
+RFDT JSONL uses stable `id`, `group_id`, classifier `request`, and question-keyed `targets`. Supplied targets take priority over teacher estimates. Answers may be choice IDs, score indices, Noul booleans, or Noul `null` for uncertainty. Full label probability distributions are also supported:
+
+```json
+{
+  "id": "refund-1",
+  "group_id": "refund-context-1",
+  "split": "train",
+  "request": {
+    "state": "Please refund the duplicate charge.",
+    "questions": [
+      {
+        "id": "refund",
+        "type": "noul",
+        "instructions": "Does the customer ask for a refund?"
+      }
+    ]
+  },
+  "targets": { "refund": { "answer": true } }
+}
+```
+
+```sh
+node dist/cli.js rfdt doctor --fetch
+node dist/cli.js rfdt prepare --input training.jsonl --template v2
+# Use the printed run directory:
+node dist/cli.js rfdt train --run .jev/rfdt/RUN_ID --steps 8
+# Before export this evaluates the MLX adapter:
+node dist/cli.js rfdt evaluate --run .jev/rfdt/RUN_ID --split validation
+node dist/cli.js rfdt export --run .jev/rfdt/RUN_ID --model jev/gemma-3-1b-rfdt
+# After export these evaluate the native GGUF; test is explicit and final:
+node dist/cli.js rfdt evaluate --run .jev/rfdt/RUN_ID --split validation
+# Continue only after validation passes and this candidate is selected:
+node dist/cli.js rfdt evaluate --run .jev/rfdt/RUN_ID --split test
+node dist/cli.js rfdt approve --run .jev/rfdt/RUN_ID
+```
+
+`rfdt label` accepts an explicit local teacher URL/model and records revision/cache provenance. Training requires native/HF tokenizer and answer-boundary parity. Runs retain data hashes, splits, hyperparameters, dependency/converter identities, adapters, and export manifests. After export, explicit evaluation uses a scoped native candidate registry and the bundled frozen quality corpus, independently of the user's training-data splits. Choose the final candidate after validation, then explicitly evaluate test once. Native evaluations are serialized per run, and claiming the final test permanently reserves that artifact's test attempt. Permanent approval requires passing native validation/test gates bound to the exact run, frozen corpus, prompt manifest, template, and exported artifact. Training loss reduction and MLX fixtures do not establish native quality or promotion readiness.
+
+## Benchmarks and verification
+
+```sh
+node dist/cli.js bench --iterations 3 --context-sizes 256,1024 \
+  --branch-counts 1,3 --queued-callers 1,4 --output .build/bench.json
 npm run check
 npm test
 npm run build
-JEV_DEVICE=cpu npm run smoke
-node scripts/pi-smoke.mjs
-node scripts/http-smoke.mjs
+npm run format:check
+node scripts/compatibility-check.mjs
+npm run test:package
+npm audit
 ```
 
-Unit tests need no weights, Python, credentials, or live service. Captured Python fixtures verify exact prompt fragments and scoring within `1e-6`. The CPU build disables BLAS and weight repacking to keep the reference arithmetic consistent. Full-forward comparison evaluates each complete question independently. The native smoke test verifies cached/full-forward probabilities within `1e-5`, zero outputs, prefix reuse, and both context forms. The HTTP smoke test exercises real localhost transport, errors, diagnostics, and recovery after disconnect. The pi smoke test sends a prompt through the real session and agent loop, validates and dispatches `jev_classify`, executes local Gemma inference, and passes the result to the next assistant turn. Its orchestration harness is deterministic and sends no provider request. It does not establish autonomous agent tool selection or task quality.
+Benchmarks measure cold initialization, warm requests, context/branch workloads, queued callers, latency percentiles, native RSS, temporary disk, model/runtime/hardware identity, and computed-token/forward counts. Local inference has no remote API charge; report actual resource use and accepted-answer quality rather than invented billing savings.
 
-Native model/runtime builds and downloaded weights stay outside Git. RFDT, automatic routing/evaluation hooks, sf-pi Manager integration, and browser demos are deferred.
+Weights-free CI runs checks, tests, build, formatting, and package boundaries on Node 22 and 26. It does not prove GPU execution, autonomous behavior, quality gates, or real RFDT training. Native builds, weights, run data, and proof artifacts stay outside Git. [VERIFICATION.md](./VERIFICATION.md) records exercised lanes and unresolved completion gates.
 
-For an independent native-template check after smoke, run `python3 scripts/template-check.py` with Python ≥3.12 and Jinja2 installed. For full sf-pi coexistence testing, create an isolated source/dependency copy at `.build/sf-pi` and run `node scripts/pi-smoke.mjs --with-sf-pi`; no user settings or original sf-pi checkout are changed.
-
-[Implementation evidence](./VERIFICATION.md) records the tested model/runtime identities, CPU and Metal cache checks, pi/sf-pi coexistence, and real HTTP recovery results.
-
-## Deferred
-
-- Hardening
-- Recovery
-- Concurrency
-- Security
-- Cleanup
-- Edge cases
-- Governance
-- Cost
-- Compliance
-- Scale
-- Answer quality
-- Autonomous tool selection
-- RFDT
-- Automatic routing and evaluation hooks
-- sf-pi Manager integration
-- Browser demos
+Canonical JSON sorts keys by Unicode code points and uses ECMAScript number formatting. Arbitrary floating-point byte parity with Python and exact Pydantic coercions/error wording are outside compatibility. Engine arithmetic can differ from Hugging Face. Captured Python fixtures and cache/full-forward comparisons test the declared contract.

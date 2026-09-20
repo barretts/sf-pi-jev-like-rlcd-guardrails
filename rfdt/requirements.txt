@@ -1,0 +1,5 @@
+# Python 3.13 on Apple Silicon. Base model access uses existing HF credentials.
+mlx==0.32.2
+mlx-lm @ git+https://github.com/ml-explore/mlx-lm.git@9d1e356e7cc6549e7d1697adabe2ea01ff8e062c
+transformers==5.11.0
+# The separate llama.cpp HF-to-GGUF converter additionally needs torch==2.11.0.

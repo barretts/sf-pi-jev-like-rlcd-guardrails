@@ -1,10 +1,18 @@
-import { InvalidRequest, validateRequest, type Request } from "./core.js";
+import {
+  InvalidRequest,
+  validateRequest,
+  INPUT_LIMIT_BYTES,
+  INPUT_DEPTH_LIMIT,
+  type Request,
+} from "./core.js";
 // A small JSON reader keeps lexical object order separately from JS enumeration.
 // JSON.parse still owns scalar syntax/escaping; duplicate object keys are rejected.
 class OrderedObject {
   constructor(public pairs: [string, unknown][]) {}
 }
 export function parseHttpRequest(source: string): Request {
+  if (Buffer.byteLength(source) > INPUT_LIMIT_BYTES)
+    throw new InvalidRequest("Request exceeds input byte limit");
   let i = 0;
   const ws = () => {
     while (/[ \t\r\n]/.test(source[i] ?? "") && i < source.length) i++;
@@ -21,7 +29,9 @@ export function parseHttpRequest(source: string): Request {
     }
     throw new InvalidRequest("Unterminated JSON string");
   };
-  const read = (): unknown => {
+  const read = (depth = 0): unknown => {
+    if (depth > INPUT_DEPTH_LIMIT)
+      throw new InvalidRequest("Request exceeds nesting depth limit");
     ws();
     const c = source[i];
     if (c === '"') return string();
@@ -42,7 +52,7 @@ export function parseHttpRequest(source: string): Request {
         keys.add(key);
         ws();
         if (source[i++] !== ":") throw new InvalidRequest("Expected colon");
-        pairs.push([key, read()]);
+        pairs.push([key, read(depth + 1)]);
         ws();
         const sep = source[i++];
         if (sep === "}") break;
@@ -59,7 +69,7 @@ export function parseHttpRequest(source: string): Request {
         return a;
       }
       while (true) {
-        a.push(read());
+        a.push(read(depth + 1));
         ws();
         const sep = source[i++];
         if (sep === "]") break;

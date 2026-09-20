@@ -6,3 +6,5 @@ models/*.gguf
 models/*.part
 .build-log
 .pi-test/
+.jev/
+models/*.jinja
