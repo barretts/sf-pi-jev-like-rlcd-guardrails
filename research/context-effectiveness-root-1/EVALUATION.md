@@ -19,3 +19,34 @@ Frozen run protocol SHA-256: `17c0649f10a4d9733afaef650660bd2923c9efa6e580fd1f16
 Local preparation checks: 21 focused Node protocol tests passed. The actual inference campaign is separate evidence and is not yet complete.
 
 An additional reproducible Python gold checker was implemented after inference began. It independently verified all 24 original cases (56 fields) and all 24 exact long scopes against unchanged gold. Its timing is explicit in `gold-check.json`; it is not a second prospective blind author. Seven adversarial CPU tests passed, covering altered gold, malformed diff hunks, repeated-record counts, lookalikes, physical versus timestamp order, unknown usage and full error/unrun denominators. A separate Python scalar/hash auditor checks each saved workflow and frozen source pin, reconstructs family/stratum and paired outcomes, and reports judge disagreements. Final model text was deliberately not persisted, so aggregate auditing is not independent answer rescoring.
+
+The original author's protocol suggested a different four-arm codec/helper experiment. This campaign preserves that author's questions, traces and gold, but follows its separately frozen two-arm exact-excerpt protocol. It does not claim to execute the author's four-arm protocol.
+
+To reproduce with a new output directory, prepare first and use the returned protocol SHA for execution:
+
+```sh
+node scripts/context-reduction-smoke.mjs --prepare \
+  --output "$PWD/.build/context-effectiveness-new" \
+  --quality-fixture "$PWD/fixtures/context-effectiveness/v1.json" \
+  --strategy excerpts --with-sf-pi \
+  --sf-pi-path /Users/bsonntag/code/sf-pi-jev-manager
+
+node scripts/context-reduction-smoke.mjs --run \
+  --output "$PWD/.build/context-effectiveness-new" \
+  --quality-fixture "$PWD/fixtures/context-effectiveness/v1.json" \
+  --strategy excerpts --with-sf-pi \
+  --sf-pi-path /Users/bsonntag/code/sf-pi-jev-manager \
+  --expected-protocol-sha RETURNED_SHA \
+  --api-key-file /Users/bsonntag/opt/eval-agents/secrets/llmgw-key
+
+python3 scripts/context-effectiveness-gold.py \
+  --fixture fixtures/context-effectiveness/v1.json \
+  --output .build/context-effectiveness-new/gold-check.json
+
+python3 scripts/context-effectiveness-audit.py \
+  --directory .build/context-effectiveness-new \
+  --fixture fixtures/context-effectiveness/v1.json \
+  --output .build/context-effectiveness-new/independent-audit.json
+```
+
+The audit reports both paired completed-answer outcomes and paired whole-workflow acceptance. A correct compressed answer paired with a raw execution error is a workflow improvement, not proof that the compressed answer was more factually accurate than a completed raw answer. Results also separate short and long usage and retain per-case repetitions. The two repetitions are correlated observations of invented cases and are not treated as independent population samples.

@@ -131,7 +131,13 @@ def audit(directory, fixture_path):
             outcome = ('both_accepted' if accepted(raw) and accepted(compressed) else
                        'regression' if accepted(raw) else
                        'improvement' if accepted(compressed) else 'both_incorrect')
+        acceptance_outcome = ('unrun_pair' if raw is None or compressed is None else
+                              'both_accepted' if accepted(raw) and accepted(compressed) else
+                              'raw_favored' if accepted(raw) else
+                              'compressed_favored' if accepted(compressed) else 'neither_accepted')
         pairs.append({'pairId':pair,'outcome':outcome,
+                      'workflowAcceptanceOutcome':acceptance_outcome,
+                      'rawAccepted':accepted(raw),'compressedAccepted':accepted(compressed),
                       'compressionApplied':bool(compressed and compressed['compressionApplied'])})
     family_matrix = []
     for family in sorted({row['family'] for row in fixture['cases']}):
@@ -142,6 +148,21 @@ def audit(directory, fixture_path):
                                   **{arm:group([s for s in slots if s['arm'] == arm
                                                 and s['caseId'] in cases],runs)
                                      for arm in ['raw','compressed']}})
+    strata = {}
+    for stratum in ['native-short','scoped-long']:
+        case_ids = {r['id'] for r in fixture['cases'] if r['stratum'] == stratum}
+        strata[stratum] = {}
+        for arm in ['raw','compressed']:
+            selected = [s for s in slots if s['arm'] == arm and s['caseId'] in case_ids]
+            request_rows = [r for r in physical if planned[r['workflowId']]['arm'] == arm
+                            and planned[r['workflowId']]['caseId'] in case_ids and r['kind'] != 'judge']
+            strata[stratum][arm] = {**group(selected,runs),'taskAndCompressorUsage':usage(request_rows)}
+    variants = []
+    for id_, case in gold.items():
+        selected = [s for s in slots if s['caseId'] == id_]
+        variants.append({'caseId':id_,'family':case['family'],'stratum':case['stratum'],
+                         **{arm:group([s for s in selected if s['arm']==arm],runs)
+                            for arm in ['raw','compressed']}})
     judges = {}
     disagreements = []
     for arm in ['raw','compressed']:
@@ -175,6 +196,9 @@ def audit(directory, fixture_path):
             'allPairOutcomes':dict(Counter(p['outcome'] for p in pairs)),
             'appliedPairOutcomes':dict(Counter(p['outcome'] for p in applied_pairs)),
             'appliedPairCount':len(applied_pairs),'pairs':pairs,
+            'pairedWorkflowAcceptanceOutcomes':dict(Counter(p['workflowAcceptanceOutcome'] for p in pairs)),
+            'appliedWorkflowAcceptanceOutcomes':dict(Counter(p['workflowAcceptanceOutcome'] for p in applied_pairs)),
+            'strata':strata,'caseVariants':variants,
             'familyMatrix':family_matrix,'judges':judges,
             'judgeDisagreements':disagreements,
             'taskAndCompressorPromptReductionFraction':reduction,
@@ -194,4 +218,4 @@ if __name__ == '__main__':
     result=audit(args.directory,args.fixture)
     Path(args.output).write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:v for k,v in result.items()
-                      if k not in ['pairs','familyMatrix','limitations']}))
+                      if k not in ['pairs','familyMatrix','limitations','strata','caseVariants']}))
