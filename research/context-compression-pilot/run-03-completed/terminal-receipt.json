@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "observed_exit_code": 0,
+  "observation": "exec session74107 completed with exit0 after all18calls; tool chunk7b02e5",
+  "result_sha256": "df69217bdbf1a6b07caa3ab574772065d9f23d96bda666317e3b1d194d0eff47",
+  "protocol_sha256": "5c6586cdfba52b288d28c76b9af03b3229ee720956d580a95c7982de3bc0cd18",
+  "limitations": [
+    "Synthetic consumed validation only; no fullPi/billing/heldout claim.",
+    "Remote prompt caching was observed in this repeated comparison."
+  ]
+}

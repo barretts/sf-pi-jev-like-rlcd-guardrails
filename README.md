@@ -123,6 +123,8 @@ A successful complete builtin read of a valid bundle receives a `Jev loaded requ
 
 This path is under evaluation. Local integration checks establish its argument, lifecycle, and accounting behavior; reliable developer judgments and a complete-workflow speed improvement remain unproven. The frozen corpus, hypotheses, failures, and acceptance conditions are recorded in [EXPERIMENTS.md](./EXPERIMENTS.md).
 
+An experimental [context-compression pilot](./research/context-compression-pilot.md) separately measures a lossless representation of repeated completed-tool lines. It uses the existing Grok 4.6 gateway model in both comparison arms, preserves originals and occurrence counts, and does not install a Pi context hook. The six fixed samples retain correct answers with about 60% fewer prompt tokens, while observed answer latency increases. Local Gemma training and native quality results remain separate evidence.
+
 The developer workflow evaluator also has a `configuredGateway` lane for the existing Pi `llmgw/gpt-5.6-sol` registration. Set `JEV_REVIEWED_PROVIDER_ORIGIN` to the exact gateway origin pinned in the evaluator, then prepare the frozen review suite:
 
 ```sh
