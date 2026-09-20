@@ -98,6 +98,99 @@ const safeFields = [
   "run_id",
 ];
 
+function objectRecord(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
+}
+
+function numericSummaryFields(
+  value: unknown,
+  counts: string[],
+  metrics: string[] = [],
+) {
+  const record = objectRecord(value);
+  if (!record) return undefined;
+  return Object.fromEntries(
+    [...counts, ...metrics]
+      .filter(
+        (key) =>
+          (typeof record[key] === "number" && Number.isFinite(record[key])) ||
+          (metrics.includes(key) && record[key] === null),
+      )
+      .map((key) => [key, record[key]]),
+  );
+}
+
+function nativeQualitySummary(value: unknown) {
+  const record = objectRecord(value);
+  if (!record) return undefined;
+  const result: Record<string, unknown> = {
+    ...numericSummaryFields(record, ["records", "failures"]),
+  };
+  for (const [key, counts, metrics] of [
+    ["choice", ["count", "correct"], ["accuracy"]],
+    [
+      "noul",
+      ["clear_count", "clear_correct", "uncertain_count"],
+      ["clear_accuracy", "brier", "uncertainty_mae"],
+    ],
+    ["score", ["count"], ["normalized_mae"]],
+    ["regressions", ["count", "passed"], []],
+  ] as const) {
+    const section = numericSummaryFields(
+      record[key],
+      [...counts],
+      [...metrics],
+    );
+    if (section) result[key] = section;
+  }
+  const gates = objectRecord(record.gates);
+  if (gates)
+    result.gates = Object.fromEntries(
+      [
+        "no_failures",
+        "choice_accuracy",
+        "noul_clear_accuracy",
+        "noul_brier",
+        "normalized_score_mae",
+        "known_regressions",
+        "passed",
+      ]
+        .filter((key) => typeof gates[key] === "boolean")
+        .map((key) => [key, gates[key]]),
+    );
+  return result;
+}
+
+function rfdtEvaluationSummary(value: unknown) {
+  const record = objectRecord(value);
+  if (!record) return undefined;
+  const result: Record<string, unknown> = {
+    ...numericSummaryFields(
+      record,
+      ["rows"],
+      ["mean_loss", "selected_label_accuracy"],
+    ),
+  };
+  if (record.artifact === "mlx_adapter" || record.artifact === "native_gguf")
+    result.artifact = record.artifact;
+  if (
+    typeof record.completed_at === "string" &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(
+      record.completed_at,
+    ) &&
+    Number.isFinite(Date.parse(record.completed_at))
+  )
+    result.completed_at = record.completed_at;
+  for (const key of ["artifact_sha256", "sha256"])
+    if (typeof record[key] === "string" && /^[a-f0-9]{64}$/i.test(record[key]))
+      result[key] = record[key];
+  const nativeSummary = nativeQualitySummary(record.summary);
+  if (nativeSummary) result.summary = nativeSummary;
+  return result;
+}
+
 function summary(record: unknown, id: string, kind: string) {
   if (!record || typeof record !== "object" || Array.isArray(record))
     throw new Error("Invalid saved report");
@@ -178,25 +271,33 @@ function summary(record: unknown, id: string, kind: string) {
       "completed_at",
     ]);
     result.artifact = pick(value.exports, ["id", "sha256", "size"]);
-    const prepared = value.prepared as Record<string, unknown> | undefined;
-    result.prepared = prepared
-      ? pick(prepared, ["sha256", "branches"])
-      : undefined;
-    const evaluation = value.evaluation as Record<string, unknown> | undefined;
-    if (evaluation && typeof evaluation === "object")
+    const prepared = objectRecord(value.prepared);
+    if (prepared) {
+      result.prepared = {
+        ...(typeof prepared.sha256 === "string" &&
+        /^[a-f0-9]{64}$/i.test(prepared.sha256)
+          ? { sha256: prepared.sha256 }
+          : {}),
+        ...(objectRecord(prepared.branches)
+          ? {
+              branches: numericSummaryFields(prepared.branches, [
+                "train",
+                "validation",
+                "test",
+              ]),
+            }
+          : {}),
+      };
+    }
+    const evaluation = objectRecord(value.evaluation);
+    if (evaluation)
       result.evaluation = Object.fromEntries(
-        ["validation", "test"]
-          .filter((split) => Object.hasOwn(evaluation, split))
-          .map((split) => [
-            split,
-            pick(evaluation[split], [
-              "rows",
-              "mean_loss",
-              "selected_label_accuracy",
-              "completed_at",
-              "artifact",
-            ]),
-          ]),
+        ["validation", "test", "native_validation", "native_test"].flatMap(
+          (split) => {
+            const report = rfdtEvaluationSummary(evaluation[split]);
+            return report ? [[split, report]] : [];
+          },
+        ),
       );
   }
   result.id = id;

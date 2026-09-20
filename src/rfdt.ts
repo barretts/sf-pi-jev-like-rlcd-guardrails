@@ -1217,6 +1217,8 @@ export async function exportRfdt(
         ...workerArgs("fuse", options.modelPath),
         "--adapter",
         String(manifest.training.adapter_dir),
+        "--data",
+        manifest.prepared.files.train,
         "--output",
         fused,
       ],

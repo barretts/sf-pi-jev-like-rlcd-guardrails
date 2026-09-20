@@ -8,3 +8,5 @@ models/*.part
 .pi-test/
 .jev/
 models/*.jinja
+__pycache__/
+*.py[cod]

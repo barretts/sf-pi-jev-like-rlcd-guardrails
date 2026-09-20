@@ -440,6 +440,160 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
     return {"ok": True, "provenance": identity, "prompt_parity": parity, "adapter_dir": str(adapter) if adapter else None, **evaluate_rows(model, rows)}
 
 
+def project_text_tokenizer(model_dir: Path, output: Path, vocab_size: int) -> dict[str, Any]:
+    """Restore the source tokenizer and remove only its untrained image placeholder."""
+    placeholder = "<image_soft_token>"
+    names = ["tokenizer.json", "tokenizer_config.json", "added_tokens.json", "special_tokens_map.json", "tokenizer.model", "chat_template.jinja"]
+    source = {name: (model_dir / name).read_bytes() for name in names if (model_dir / name).is_file()}
+    if "tokenizer.json" not in source or "tokenizer_config.json" not in source:
+        raise ValueError("Text tokenizer projection requires the original tokenizer JSON and configuration")
+    def unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"Duplicate original tokenizer JSON key: {key}")
+            result[key] = value
+        return result
+
+    documents = {name: json.loads(content, object_pairs_hook=unique_object) for name, content in source.items() if name.endswith(".json")}
+    tokenizer = documents["tokenizer.json"]
+    vocab = tokenizer.get("model", {}).get("vocab")
+    if type(vocab_size) is not int or vocab_size <= 0 or not isinstance(vocab, dict):
+        raise ValueError("Text tokenizer projection requires a model vocabulary and embedding vocabulary size")
+    if len(vocab) != vocab_size or any(type(token) is not int for token in vocab.values()) or set(vocab.values()) != set(range(vocab_size)):
+        raise ValueError("Original tokenizer model vocabulary must exactly cover the trained embedding IDs")
+    inverse_vocab = {token: content for content, token in vocab.items()}
+    removed = []
+    changed = set()
+    drop = object()
+    token_fields = {"content", "id", "lstrip", "normalized", "rstrip", "single_word", "special"}
+
+    def token_object(value: dict[str, Any], name: str, location: str, expected_id: int | None = None) -> None:
+        if not set(value).issubset(token_fields):
+            raise ValueError(f"Unsupported original tokenizer token metadata: {name}/{location}")
+        if "id" in value and (type(value["id"]) is not int or (expected_id is not None and value["id"] != expected_id)):
+            raise ValueError(f"Contradictory original tokenizer token ID: {name}/{location}")
+
+    def added_token(name: str, location: str, token: Any, content: Any) -> bool:
+        if type(token) is not int or token < 0 or not isinstance(content, str):
+            raise ValueError(f"Invalid original tokenizer token declaration: {name}/{location}")
+        if token == vocab_size and content == placeholder and placeholder not in vocab:
+            removed.append({"file": name, "location": location})
+            changed.add(name)
+            return True
+        if token >= vocab_size:
+            raise ValueError(f"Unexpected out-of-range tokenizer token: {name}/{location}")
+        if inverse_vocab[token] != content:
+            raise ValueError(f"Added token changes a trained model vocabulary entry: {name}/{location}")
+        return False
+
+    added = tokenizer.get("added_tokens", [])
+    if not isinstance(added, list) or any(not isinstance(item, dict) for item in added):
+        raise ValueError("Original tokenizer added_tokens must be token declarations")
+    for index, item in enumerate(added):
+        token_object(item, "tokenizer.json", f"added_tokens/{index}")
+    tokenizer["added_tokens"] = [item for index, item in enumerate(added) if not added_token("tokenizer.json", f"added_tokens/{index}", item.get("id"), item.get("content"))]
+    config = documents["tokenizer_config.json"]
+    decoder = config.get("added_tokens_decoder", {})
+    if not isinstance(decoder, dict):
+        raise ValueError("Original tokenizer added_tokens_decoder must be an object")
+    for key, item in list(decoder.items()):
+        if not isinstance(key, str) or not key.isdecimal() or str(int(key)) != key or not isinstance(item, dict):
+            raise ValueError("Invalid original tokenizer added_tokens_decoder entry")
+        token_object(item, "tokenizer_config.json", f"added_tokens_decoder/{key}", int(key))
+        if added_token("tokenizer_config.json", f"added_tokens_decoder/{key}", int(key), item.get("content")):
+            del decoder[key]
+    extra = documents.get("added_tokens.json", {})
+    if not isinstance(extra, dict):
+        raise ValueError("Original added_tokens.json must be an object")
+    for content, token in list(extra.items()):
+        if added_token("added_tokens.json", content, token, content):
+            del extra[content]
+
+    def clean_special(name: str, location: str, value: Any) -> Any:
+        if value is None:
+            return value
+        content = value.get("content") if isinstance(value, dict) and "content" in value else value
+        if isinstance(content, str):
+            if isinstance(value, dict):
+                token_object(value, name, location, vocab_size if content == placeholder and removed else vocab.get(content))
+            if content == placeholder and removed and placeholder not in vocab:
+                removed.append({"file": name, "location": location})
+                changed.add(name)
+                return drop
+            if content not in vocab:
+                raise ValueError(f"Special token is outside the trained vocabulary: {name}/{location}")
+            return value
+        if isinstance(value, list):
+            return [cleaned for index, item in enumerate(value) if (cleaned := clean_special(name, f"{location}/{index}", item)) is not drop]
+        if isinstance(value, dict):
+            return {key: cleaned for key, item in value.items() if (cleaned := clean_special(name, f"{location}/{key}", item)) is not drop}
+        raise ValueError(f"Invalid special token declaration: {name}/{location}")
+
+    for name in ["tokenizer_config.json", "special_tokens_map.json"]:
+        document = documents.get(name, {})
+        if not isinstance(document, dict):
+            raise ValueError(f"Original {name} must be an object")
+        for key, value in list(document.items()):
+            if key in {"extra_special_tokens", "additional_special_tokens", "model_specific_special_tokens"} or (key.endswith("_token") and not key.startswith("add_")):
+                cleaned = clean_special(name, key, value)
+                if cleaned is drop:
+                    del document[key]
+                else:
+                    document[key] = cleaned
+            elif key == "image_token_id" and type(value) is int and value == vocab_size and removed:
+                del document[key]
+                removed.append({"file": name, "location": key})
+                changed.add(name)
+
+    def verify_ids(value: Any, location: str = "") -> None:
+        if isinstance(value, dict):
+            for key, item in value.items():
+                if key in {"id", "ids", "token_index"} or key.endswith("_id") or key.endswith("_ids") or key.endswith("_token_index"):
+                    tokens = item if isinstance(item, list) else [item]
+                    if key == "id" and isinstance(item, str):
+                        tokens = [vocab.get(item)]
+                    if any(type(token) is not int or not 0 <= token < vocab_size for token in tokens):
+                        raise ValueError(f"Unexpected out-of-range tokenizer metadata: {location}/{key}")
+                verify_ids(item, f"{location}/{key}")
+        elif isinstance(value, list):
+            for index, item in enumerate(value):
+                verify_ids(item, f"{location}/{index}")
+
+    for name, document in documents.items():
+        verify_ids(document, name)
+    if tokenizer["model"]["vocab"] != vocab:
+        raise ValueError("Text tokenizer projection changed the trained model vocabulary")
+    output.mkdir(parents=True, exist_ok=True)
+    for name in names:
+        target = output / name
+        if name in source:
+            target.write_bytes(source[name])
+        elif target.is_file():
+            target.unlink()
+    for name in changed:
+        write_json(output / name, documents[name])
+    return {
+        "derivation": "original tokenizer with only the untrained out-of-range image placeholder removed",
+        "model_vocab_size": vocab_size,
+        "source_model_config_sha256": sha256(model_dir / "config.json"),
+        "model_vocab_sha256": hashlib.sha256(json.dumps(vocab, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest(),
+        "removed_special_tokens": [{"id": vocab_size, "content": placeholder, "occurrences": removed}] if removed else [],
+        "source_files": {name: hashlib.sha256(content).hexdigest() for name, content in source.items()},
+        "export_files": {name: sha256(output / name) for name in source},
+    }
+
+
+def fusion_training_rows(adapter: Path, manifest: dict[str, Any], data: str | None = None) -> tuple[Path, list[dict[str, Any]]]:
+    path = Path(data).expanduser().resolve() if data else adapter.parent / "train.jsonl"
+    if not path.is_file() or sha256(path) != manifest.get("training_data_sha256"):
+        raise ValueError("Fusion requires the exact frozen training prompts from the adapter manifest")
+    rows = read_rows(path, "train")
+    if rows[0]["template_version"] != manifest.get("template_version"):
+        raise ValueError("Fusion training prompt template does not match the adapter")
+    return path, rows
+
+
 def fuse(args: argparse.Namespace) -> dict[str, Any]:
     import mlx.core as mx
     from mlx.utils import tree_map, tree_unflatten
@@ -449,7 +603,9 @@ def fuse(args: argparse.Namespace) -> dict[str, Any]:
     identity = provenance()
     adapter = Path(args.adapter).expanduser().resolve()
     manifest = validate_adapter(adapter)
+    data_path, rows = fusion_training_rows(adapter, manifest, getattr(args, "data", None))
     model_dir = resolve_model(args.model, fetch=True)
+    source_parity = verify_prompt_parity(load_tokenizer(model_dir), rows)
     output = Path(args.output).expanduser().resolve()
     if output.exists():
         raise ValueError("The fusion output already exists; use a new directory")
@@ -463,8 +619,14 @@ def fuse(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError("Expected 52 query/value LoRA modules to fuse")
     model.update_modules(tree_unflatten(linears))
     save(output, model_dir, model, tokenizer, config, donate_model=False)
+    projection = project_text_tokenizer(model_dir, output, config["vocab_size"])
+    export_tokenizer = load_tokenizer(output)
+    if any(type(token) is not int or not 0 <= token < config["vocab_size"] for token in export_tokenizer.get_vocab().values()):
+        raise ValueError("Projected export tokenizer contains a token outside the trained embedding vocabulary")
+    export_parity = verify_prompt_parity(export_tokenizer, rows)
+    projection["prompt_parity"] = {"source": source_parity, "export": export_parity, "training_data_file": str(data_path), "training_data_sha256": sha256(data_path)}
     files = {file.name: sha256(file) for file in sorted(output.iterdir()) if file.is_file()}
-    result = {"ok": True, "fused": True, "fusion_dtype": "float32", "output_dir": str(output), "format": "safetensors", "gguf_exported": False, "provenance": identity, "template_version": manifest["template_version"], "adapter_sha256": manifest["adapter_sha256"], "files": files}
+    result = {"ok": True, "fused": True, "fusion_dtype": "float32", "output_dir": str(output), "format": "safetensors", "gguf_exported": False, "provenance": identity, "template_version": manifest["template_version"], "adapter_sha256": manifest["adapter_sha256"], "tokenizer_projection": projection, "files": files}
     write_json(output / "rfdt-fused-manifest.json", result)
     return result
 
@@ -596,6 +758,7 @@ def parser() -> argparse.ArgumentParser:
             command.add_argument("--split", choices=["train", "validation", "test"])
         elif name == "fuse":
             command.add_argument("--adapter", required=True)
+            command.add_argument("--data")
         elif name == "doctor":
             command.add_argument("--data")
             command.add_argument("--fetch", action="store_true")

@@ -21,7 +21,9 @@
   "files": [
     "dist",
     "native",
-    "rfdt",
+    "rfdt/worker.py",
+    "rfdt/requirements.txt",
+    "rfdt/requirements.lock",
     "fixtures",
     "integrations",
     "scripts",

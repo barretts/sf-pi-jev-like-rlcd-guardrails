@@ -383,25 +383,21 @@ export function preparePrompt(
             "\nRate the probability that the answer is yes, from 0.1 to 0.9. Encode probability with 0.1 being the lowers, and 0.9 as the highest"
           : "Truth criteria:\n" +
             canonical(q.criteria ?? {}) +
-            "\nSelect one integer rating: 1 = clearly false; 2 = very unlikely; 3 = unlikely; 4 = somewhat unlikely; 5 = unknown or balanced evidence; 6 = somewhat likely; 7 = likely; 8 = very likely; 9 = clearly true.\nExplicit support for the proposition means 9. Explicit contradiction, including a denial or negation, means 1. Missing evidence means 5. Evaluate the exact proposition, including who acted and what was requested or completed."
+            '\nSelect one integer rating: 1 = clearly false; 2 = very unlikely; 3 = unlikely; 4 = somewhat unlikely; 5 = unknown or balanced evidence; 6 = somewhat likely; 7 = likely; 8 = very likely; 9 = clearly true.\nEvaluate the exact proposition, including its actor, action, time, and qualifiers. Use established facts and their straightforward logical consequences. Apply a denial or negation only to the claim it concerns.\nThree-way truth table (P denotes the selected proposition):\nEvidence establishes P and does not establish not-P: {"answer": 9}\nEvidence establishes not-P and does not establish P: {"answer": 1}\nEvidence establishes neither P nor not-P: {"answer": 5}\nBalanced or conflicting evidence for P and not-P: {"answer": 5}\nA proposition that is not proven true is not thereby proven false. Missing evidence or an unrecorded outcome belongs to the undetermined row, rating 5. Use intermediate ratings when the evidence favors a conclusion without establishing it.'
         : version === "v2"
-          ? (q.type === "choice"
-              ? "Choose the option that answers the question."
-              : "Choose the best matching level from the ordered rubric, lowest to highest. Evaluate each part of the rubric against the actual context.") +
-            "\n" +
-            answers
-              .map(
-                (answer, i) =>
-                  labels[i] +
-                  ": " +
-                  (q.type === "choice" ? canonical({ answer }) + " " : "") +
-                  canonical(
-                    q.type === "choice"
-                      ? q.criteria[i].description
-                      : q.criteria[i],
-                  ),
+          ? q.type === "choice"
+            ? "Choose the option whose meaning answers the selected question using the actual context. Return its label, not its candidate ID.\nOptions:\n" +
+              canonical(
+                answers.map((answer, i) => ({
+                  label: labels[i],
+                  answer,
+                  description: q.criteria[i].description,
+                })),
               )
-              .join("\n")
+            : "Choose the best matching level from the ordered rubric, lowest to highest. Evaluate each part of the rubric against the actual context.\n" +
+              answers
+                .map((_, i) => labels[i] + ": " + canonical(q.criteria[i]))
+                .join("\n")
           : (q.type === "choice"
               ? "Select the best option"
               : "Select the best matching level from the ordered rubric, lowest to highest") +
@@ -426,10 +422,8 @@ export function preparePrompt(
           text +
           "\n" +
           detail +
-          (q.type === "score"
-            ? "\nReturn only JSON with one answer field containing the selected label as " +
-              (letters ? "a string." : "an integer.")
-            : "\nReturn only the selected label.")
+          "\nReturn only JSON with one answer field containing the selected label as " +
+          (letters ? "a string." : "an integer.")
         : "Question to score now:\n" +
           text +
           "\n" +
@@ -457,25 +451,22 @@ export function preparePrompt(
       ];
     else {
       messages = structuredClone(request.messages!);
+      const normalizeContext = version === "v2" && q.type !== "score";
+      if (normalizeContext)
+        for (const message of messages)
+          message.content = "Actual context:\n" + message.content;
       if (messages[0].role === "system")
         messages[0].content = system + "\n" + messages[0].content;
       else messages.unshift({ role: "system", content: system });
-      messages.push({ role: "user", content: suffix + instruction });
+      if (normalizeContext && messages.at(-1)?.role === "user")
+        messages.at(-1)!.content += "\n\n" + suffix + instruction;
+      else messages.push({ role: "user", content: suffix + instruction });
     }
     return {
       branch_id: String(index),
       question_id: q.id,
       instruction,
-      answer_prefix:
-        version === "v2"
-          ? q.type === "score"
-            ? letters
-              ? '{"answer": "'
-              : '{"answer": '
-            : "Answer:\n"
-          : letters
-            ? '{"answer": "'
-            : '{"answer": ',
+      answer_prefix: letters ? '{"answer": "' : '{"answer": ',
       output_labels: labels,
       answer_labels: answers,
       messages,

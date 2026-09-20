@@ -860,13 +860,24 @@ export async function approveTrainedArtifact(
   const descriptor = await verifyTrainedArtifactExport(manifest);
   await verifyNativeRfdtAcceptance(manifest);
   const registryPath = resolve(opts.registryPath ?? localRegistryDefault());
-  const artifacts = (await localArtifacts(registryPath)).filter(
-    (a) => a.id !== descriptor.id,
-  );
-  artifacts.push(descriptor);
   await mkdir(dirname(registryPath), { recursive: true });
+  const lockPath = `${registryPath}.lock`;
+  // Exclusive creation coordinates independent processes as well as callers in
+  // this process. A busy or abandoned lock requires explicit recovery; never
+  // retry implicitly or take over a lock whose owner may still be writing.
+  const lock = await open(lockPath, "wx", 0o600).catch((error) => {
+    if ((error as NodeJS.ErrnoException).code === "EEXIST")
+      throw Object.assign(new Error(`Artifact registry is busy: ${lockPath}`), {
+        code: "ERR_ARTIFACT_REGISTRY_BUSY",
+      });
+    throw error;
+  });
   const part = `${registryPath}.${randomUUID()}.part`;
   try {
+    const artifacts = (await localArtifacts(registryPath)).filter(
+      (a) => a.id !== descriptor.id,
+    );
+    artifacts.push(descriptor);
     await writeFile(
       part,
       JSON.stringify({ version: 1, artifacts }, null, 2) + "\n",
@@ -874,7 +885,15 @@ export async function approveTrainedArtifact(
     );
     await rename(part, registryPath);
   } finally {
-    await rm(part, { force: true });
+    try {
+      await rm(part, { force: true });
+    } finally {
+      try {
+        await lock.close();
+      } finally {
+        await rm(lockPath);
+      }
+    }
   }
   return descriptor;
 }
