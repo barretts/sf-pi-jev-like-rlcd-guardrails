@@ -6,7 +6,11 @@ Manager controls are implemented. Real TRAIN extraction, public Pi/Grok smokes,
 a rate-limited public validation and a completed 192-session SF comparison are
 recorded below. The SF campaign resolved the harness lifecycle and rate-capacity
 failures, but its repetition codec reduced prompt tokens only 0.298% and did not
-qualify. Native routing validation exercised only the strong fallback; the
+qualify. The new bounded excerpt/retrieval benchmark measured 61.67% fewer
+whole-workflow prompt tokens, meeting the current 50% reduction target on its
+long synthetic outputs. The optional caveman comparison measured only 14.88%
+reduction and failed that target; answer effectiveness remains deferred. Native routing
+validation exercised only the strong fallback; the
 subsequent direct head diagnostic failed safety and latency. Production quality,
 speed and billing gains remain unproved. No rejected RFDT model has been promoted.
 
@@ -282,17 +286,99 @@ and its `TaskContextSummaryResult` is `{text, complete}`. A host may supply the
 Grok summary implementation; there is no automatic credential resolution or
 additional model startup. With no callback, caveman mode falls back to excerpts.
 
-The bounded 12-workflow actual-SF reduction benchmark is pending. No 50% measured
-reduction claim is made for the replacement implementation. The user's current
-acceptance target is a measured 50% reduction in whole-workflow prompt tokens.
-Answer effectiveness is deferred and has not passed a quality evaluation.
+The user's current acceptance target is a measured 50% reduction in
+whole-workflow prompt tokens. Answer effectiveness is deferred and has not
+passed a quality evaluation.
+
+## First excerpt benchmark meets the bounded reduction target
+
+The [first actual Pi/Grok excerpt benchmark](context-reduction-smoke-root-1/result-projection.json)
+loaded all 23 controlled SF factories and used three invented 20–40 KiB tool
+trace cases, two counterbalanced repetitions and six workflows per arm. Each
+frozen trace was approximately 34 KiB and 325 lines. All 12 scheduled workflows
+completed, with zero errors and zero unrun slots. Full canonical original text
+remained exact and the request projection was verified at the provider wire.
+Abort, shutdown, disposal and runtime-key cleanup completed safely.
+
+The [measurement](context-reduction-smoke-root-1/measurement.json) includes all
+26 physical requests, including recovery requests: 12 raw and 14 compressed.
+There were zero summary-model calls and no unknown-usage requests.
+
+| Measure                           |           Raw |      Excerpts |       Recorded change |
+| --------------------------------- | ------------: | ------------: | --------------------: |
+| Whole-workflow prompt tokens      |       140,766 |        53,955 |             −61.6704% |
+| Output tokens                     |         1,348 |         4,091 | 3.0349 times baseline |
+| Total tokens                      |       142,114 |        58,046 |             −59.1553% |
+| Summed paced workflow elapsed, ms | 60,761.197751 | 85,339.984875 | 1.4045 times baseline |
+
+The measured prompt reduction exceeds the user's 50% acceptance target for this
+bounded long-output workload. Output and elapsed time increased. Effectiveness
+was deliberately deferred: no judge or answer-quality acceptance gate ran, and
+production improvement remains unqualified. Provider-cache accounting is
+incomplete and billing was not measured. The controlled source-pinned setup is
+not a claim about normal installed SF defaults, universal 50% reduction, short
+context or the amount of protected content that must remain. This result does
+not erase the full 192-session repetition-codec failure or routing-head failures.
+
+The [protocol](context-reduction-smoke-root-1/protocol.json) binds source commit
+`2860d17b005f3c0d6cca9a25a9e0b0d118113665`, exact executed source hashes, the SF
+setup and frozen parameters. It uses zero retries, a 300-second workflow limit,
+at most four task requests and four summary requests per workflow, and shared
+five-second pacing. The
+[local validation record](context-reduction-smoke-root-1/local-validation.json)
+reports passing typecheck/build, 969 Vitest checks, 241 Node protocol checks,
+formatting and fresh package-consumer checks; it explicitly did not test answer
+quality. No new tests or provider requests were run to write this document.
+
+The reproducible prepare/run commands are in the
+[README](../README.md#bounded-context-reduction-benchmark).
+Preparation uses `--prepare --strategy excerpts --with-sf-pi --sf-pi-path` and a
+new output directory. Execution uses the same directory, strategy and SF path
+with `--run --expected-protocol-sha` set to the returned SHA and an explicit
+`--api-key-file` pointing to an existing local credential file.
+
+## Optional caveman benchmark fails the reduction target
+
+The [later caveman comparison](context-reduction-caveman-smoke-root-1/result-projection.json)
+used the same frozen inputs and source, a fresh run directory and its own raw
+comparison. All 12 scheduled workflows completed with zero workflow errors and
+zero unrun slots. Canonical-original preservation, provider-wire projection and
+cleanup checks passed. The 50% whole-workflow prompt objective nevertheless
+failed, and the
+[publication manifest](context-reduction-caveman-smoke-root-1/publication-manifest.json)
+preserves harness exit code 1.
+
+Its [measurement](context-reduction-caveman-smoke-root-1/measurement.json)
+includes all 35 physical requests: 12 raw task requests, 15 compressed task
+requests and eight summary requests. Summary input/output usage of 3,226/7,680
+tokens is included in the compressed totals. Of the eight summary requests,
+three completed and five were recorded as incomplete. Passing workflow
+execution does not qualify summary generation or answer quality, and fallback
+may occur. There were no unknown-usage requests.
+
+| Measure                           |           Raw | Caveman, including summaries |       Recorded change |
+| --------------------------------- | ------------: | ---------------------------: | --------------------: |
+| Whole-workflow prompt tokens      |       141,186 |                      120,175 |             −14.8818% |
+| Output tokens                     |         1,766 |                       12,724 | 7.2050 times baseline |
+| Total tokens                      |       142,952 |                      132,899 |              −7.0324% |
+| Summed paced workflow elapsed, ms | 61,574.647999 |               141,954.134416 | 2.3054 times baseline |
+
+Task-only prompt reduction was 17.1667%, also below 50%; it cannot replace the
+whole-workflow objective that includes summary requests. The
+[caveman protocol](context-reduction-caveman-smoke-root-1/protocol.json) records
+the separately frozen comparison. Effectiveness remains deferred, there was no
+judge or answer-quality gate, and production improvement remains unqualified.
+Excerpts remain the ordinary registration strategy and retain their bounded
+61.67% passing result; optional caveman remains opt-in. These recorded runs do
+not establish universal reduction, cost savings, speed improvements or causal
+model/training benefits.
 
 ## Remaining work
 
-Report the bounded actual-SF excerpt benchmark when its safe evidence is
-released, retaining every failed and unrun scheduled slot. Keep the requested
-50% target separate from measured provider usage, and postpone effectiveness
-claims until their own evaluation is complete.
+Keep both completed benchmarks and every scheduled slot in the evidence record.
+Answer effectiveness remains deferred. Keep the demonstrated bounded excerpt
+prompt reduction and failed caveman objective separate from quality, latency and
+billing claims.
 For routing, retain the failed head and checker evidence and prepare a better
 encoder/training hypothesis while addressing the production completeness
 checker's zero coverage through actual supplied-source proof. Host labels and

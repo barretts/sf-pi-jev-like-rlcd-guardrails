@@ -186,7 +186,37 @@ The [corrected SF smoke](./research/context-workflow-sf-smoke-root-4/result-proj
 
 The subsequent [full SF comparison](./research/context-workflow-sf-validation-root-1/result-projection.json) saved all 192 scheduled sessions with no unrun slots, extension failures or HTTP 429 responses. Baseline completed 96/96 workflows with 88 correct answers; compaction completed 95/96 with 89 correct answers and one completion-length error. All shutdowns were safe, and all 24 context judges passed preservation checks. Across the full recorded population, prompt tokens fell only 0.298%, from 554,728 to 553,075. Output tokens rose from 11,232 to 30,184, and total tokens rose 3.06%, from 565,960 to 583,259. Summed workflow time rose 5.98%, from 3,821.50 to 4,050.17 seconds. These paced timings include the CPU observer and uncontrolled provider-cache effects. Qualified comparison ratios remain null and both functional and performance qualification are false. Repetition compression did not provide the requested 50% reduction on this workload.
 
-Task-aware excerpts, retained-original retrieval and the optional injected summary callback are implemented as the replacement strategy. A bounded 12-workflow actual-SF benchmark is pending. The `0.5` option is not a measured 50% reduction in whole-workflow prompt tokens, and answer effectiveness has been deferred rather than passed. The earlier repetition-codec results remain preserved.
+### Bounded context reduction benchmark
+
+The [first excerpt/retrieval benchmark](./research/context-reduction-smoke-root-1/result-projection.json) met the requested reduction target on a bounded long-output workload. It used actual Pi/Grok execution with all 23 controlled SF factories, three invented 20–40 KiB trace cases, two counterbalanced repetitions and six workflows per arm. All 12 workflows completed with zero errors or unrun slots. Canonical original text remained exact, the provider-wire projection was verified, and cleanup completed. Across every physical request, including recovery requests, prompt tokens fell from **140,766 to 53,955, a 61.67% reduction**. There were 12 raw-arm and 14 compressed-arm requests, with zero summary-model calls.
+
+The [measurement](./research/context-reduction-smoke-root-1/measurement.json) also records total tokens falling from 142,114 to 58,046 (59.16%), while output tokens increased from 1,348 to 4,091. Summed paced workflow elapsed increased from 60.7612 to 85.3400 seconds, or 1.4045 times baseline. Answer effectiveness was deferred: there were no judges or answer-quality acceptance gates, and production improvement remains unqualified. Provider-cache accounting is incomplete, so this is no billing or latency benefit claim. This controlled source setup does not establish the same reduction for normal installed defaults, short context or inputs whose protected content cannot be omitted. The earlier 192-session repetition-codec result and failed routing results remain preserved.
+
+The later [optional caveman comparison](./research/context-reduction-caveman-smoke-root-1/result-projection.json) used the same frozen inputs and source with its own raw comparison. All 12 workflows completed with zero errors or unrun slots, and canonical-original, wire-projection and cleanup checks passed. It **failed the 50% reduction objective**: whole-workflow prompt tokens fell from 141,186 to 120,175, only 14.88%. Task-only reduction was 17.17%, but the objective includes all summary requests. Its 35 physical requests were 12 raw task requests, 15 compressed task requests and eight summary requests; summary input/output usage of 3,226/7,680 tokens is included. Three summary requests completed and five were recorded as incomplete. These execution results do not qualify summary generation or answer quality, and fallback may occur.
+
+The [caveman measurement](./research/context-reduction-caveman-smoke-root-1/measurement.json) records total tokens falling from 142,952 to 132,899 (7.03%), output tokens increasing from 1,766 to 12,724 (7.2050 times baseline), and summed paced workflow elapsed increasing from 61.5746 to 141.9541 seconds (2.3054 times baseline). Its [publication manifest](./research/context-reduction-caveman-smoke-root-1/publication-manifest.json) preserves harness exit code 1 for the unmet reduction objective. Effectiveness remains deferred and production improvement remains unqualified. Excerpts remain the ordinary registration strategy; optional caveman remains opt-in. Neither campaign establishes a universal reduction, cost saving, speed improvement or model-training benefit.
+
+To prepare the same benchmark shape from this repository, use the controlled SF checkout and a new output directory:
+
+```sh
+node scripts/context-reduction-smoke.mjs --prepare \
+  --output "$PWD/.build/context-reduction-excerpts-sf-round-1" \
+  --strategy excerpts --with-sf-pi \
+  --sf-pi-path /Users/bsonntag/code/sf-pi-jev-manager
+```
+
+Preparation returns `protocolSha256`. Replace `RETURNED_PROTOCOL_SHA` below with that value and the credential-file placeholder with an existing local file, retaining the same output directory, strategy and SF checkout:
+
+```sh
+node scripts/context-reduction-smoke.mjs --run \
+  --output "$PWD/.build/context-reduction-excerpts-sf-round-1" \
+  --strategy excerpts --with-sf-pi \
+  --sf-pi-path /Users/bsonntag/code/sf-pi-jev-manager \
+  --expected-protocol-sha RETURNED_PROTOCOL_SHA \
+  --api-key-file /path/to/existing/local/llmgw-key
+```
+
+The frozen protocol uses zero retries, a 300-second workflow limit, at most four task requests and four summary requests per workflow, and shared five-second pacing. The [excerpt protocol](./research/context-reduction-smoke-root-1/protocol.json) records source commit `2860d17b005f3c0d6cca9a25a9e0b0d118113665` and individually pins the executed source and SF setup; [local validation](./research/context-reduction-smoke-root-1/local-validation.json) is separate from answer-quality evidence. To reproduce the optional comparison, use `--strategy caveman` and a fresh output directory, retaining the prepare/run SHA binding and explicit credential-file input. Its [protocol](./research/context-reduction-caveman-smoke-root-1/protocol.json) preserves the separately frozen run.
 
 Counterbalanced order, failed and unrun slots, provider usage and cache counts, original-text preservation, and local transform time remain explicit in evaluator results. These Grok-controlled harness tests are separate from changes to local Gemma training. [EXPERIMENTS.md](./EXPERIMENTS.md) records the runs, remaining failures, and acceptance gates.
 
