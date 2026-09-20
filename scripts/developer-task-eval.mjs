@@ -5,6 +5,7 @@ import {
   appendFile,
   chmod,
   cp,
+  lstat,
   mkdir,
   readFile,
   readdir,
@@ -530,6 +531,187 @@ async function fingerprints(directory, exclude = () => false) {
       }),
   );
 }
+const executionScope = (output, owner) => ({
+  output,
+  directory: join(output, "execution"),
+  workspace: join(output, "execution", "workspace"),
+  owner_marker: join(output, "execution", "owner.json"),
+  owner,
+});
+function assertExecutionPaths(scope) {
+  const build = resolve(root, ".build");
+  assert.ok(
+    scope &&
+      typeof scope.output === "string" &&
+      scope.output === resolve(scope.output) &&
+      scope.output !== build &&
+      inside(build, scope.output) &&
+      typeof scope.owner === "string" &&
+      /^[a-f0-9-]{36}$/.test(scope.owner),
+    "Execution scope must belong to a fresh evaluator output under .build",
+  );
+  assert.equal(
+    canonicalJson(scope),
+    canonicalJson(executionScope(scope.output, scope.owner)),
+    "Execution scope paths must be derived from the owned output",
+  );
+}
+async function assertExecutionOwner(scope) {
+  assertExecutionPaths(scope);
+  for (const path of [scope.output, scope.directory]) {
+    assert.ok(
+      (await lstat(path)).isDirectory(),
+      "Execution scope is not a directory",
+    );
+    assert.equal(
+      await realpath(path),
+      path,
+      "Symlinked execution scope is forbidden",
+    );
+  }
+  assert.ok(
+    (await lstat(scope.owner_marker)).isFile(),
+    "Execution owner marker must be a regular file",
+  );
+  assert.equal(await realpath(scope.owner_marker), scope.owner_marker);
+  assert.equal(
+    canonicalJson(JSON.parse(await readFile(scope.owner_marker, "utf8"))),
+    canonicalJson(scope),
+    "Execution owner marker does not match this fresh output",
+  );
+}
+export async function createFreshOutput(output) {
+  const build = resolve(root, ".build");
+  assert.ok(
+    output === resolve(output) && output !== build && inside(build, output),
+  );
+  let ancestor = dirname(output);
+  for (;;) {
+    const existing = await lstat(ancestor).catch((error) => {
+      if (error.code === "ENOENT") return null;
+      throw error;
+    });
+    if (existing) {
+      assert.ok(
+        existing.isDirectory(),
+        "Output parent must be a directory without symlinks",
+      );
+      assert.equal(
+        await realpath(ancestor),
+        ancestor,
+        "Symlinked output parent is forbidden",
+      );
+      break;
+    }
+    ancestor = dirname(ancestor);
+  }
+  await mkdir(dirname(output), { recursive: true, mode: 0o700 });
+  assert.equal(await realpath(dirname(output)), dirname(output));
+  await mkdir(output, { mode: 0o700 });
+}
+export async function createExecutionWorkspace(output) {
+  output = resolve(output);
+  const scope = executionScope(output, randomUUID());
+  assertExecutionPaths(scope);
+  assert.equal(await realpath(output), output, "Symlinked output is forbidden");
+  // Exclusive creation refuses existing foreign directories and symlinks.
+  await mkdir(scope.directory, { mode: 0o700 });
+  await writeFile(scope.owner_marker, JSON.stringify(scope) + "\n", {
+    mode: 0o600,
+    flag: "wx",
+  });
+  await assertExecutionOwner(scope);
+  return scope;
+}
+export function executionWorkspaceReusable(invocation, proof) {
+  return (
+    [0, 1].includes(invocation?.exit_code) &&
+    invocation.signal === null &&
+    invocation.timed_out === false &&
+    !invocation.error &&
+    invocation.child_reaped === true &&
+    invocation.process_group_absent === true &&
+    proof?.worker_proof_present === true &&
+    typeof proof.passed === "boolean" &&
+    proof.cleanup_complete === true
+  );
+}
+export async function restoreExecutionWorkspace(
+  scope,
+  origin,
+  previous = null,
+) {
+  await assertExecutionOwner(scope);
+  assert.ok(
+    previous === null ||
+      executionWorkspaceReusable(previous.invocation, previous.proof),
+    "Prior worker cleanup is uncertain; execution workspace is quarantined",
+  );
+  const existing = await lstat(scope.workspace).catch((error) => {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  });
+  if (existing) {
+    assert.ok(
+      existing.isDirectory(),
+      "Execution workspace cannot be a symlink or file",
+    );
+    assert.equal(await realpath(scope.workspace), scope.workspace);
+    assert.ok(
+      previous !== null,
+      "Existing execution workspace has no prior owned worker",
+    );
+    await files(scope.workspace); // Reject nested symlinks before any deletion.
+  }
+  assert.equal(
+    await realpath(origin),
+    resolve(origin),
+    "Symlinked fixture origin is forbidden",
+  );
+  assert.ok(
+    !inside(scope.directory, resolve(origin)) &&
+      !inside(resolve(origin), scope.directory),
+    "Fixture origin overlaps the execution scope",
+  );
+  await files(origin); // Validate the replacement before deleting the owned workspace.
+  if (existing) await rm(scope.workspace, { recursive: true });
+  await cp(origin, scope.workspace, {
+    recursive: true,
+    filter: (path) => !path.split(sep).includes(".compiled"),
+  });
+  return scope.workspace;
+}
+export async function assertExecutionWorkspace(config) {
+  const scope = config.execution_scope;
+  await assertExecutionOwner(scope);
+  assert.ok(/^[a-z][a-z0-9-]+$/.test(config.prepared?.id));
+  assert.ok(Number.isSafeInteger(config.repetition) && config.repetition > 0);
+  assert.ok(["baseline", "candidate"].includes(config.arm));
+  const directory = join(
+    scope.output,
+    "runs",
+    `${config.prepared.id}-r${config.repetition}-${config.arm}`,
+  );
+  assert.equal(
+    config.directory,
+    directory,
+    "Worker archive is outside its derived run scope",
+  );
+  assert.equal(config.agent_dir, join(directory, "agent"));
+  assert.equal(
+    config.workspace,
+    scope.workspace,
+    "Worker must use the shared execution workspace",
+  );
+  for (const path of [directory, config.agent_dir, config.workspace]) {
+    assert.ok((await lstat(path)).isDirectory());
+    assert.equal(
+      await realpath(path),
+      path,
+      "Symlinked worker scope is forbidden",
+    );
+  }
+}
 async function identities() {
   const tracked = [
     "scripts/developer-task-eval.mjs",
@@ -569,13 +751,14 @@ async function identities() {
     files: result,
   };
 }
-async function command(argv, cwd, timeoutMs = 60000, env = process.env) {
+export async function command(argv, cwd, timeoutMs = 60000, env = process.env) {
   const started = performance.now();
   return await new Promise((fulfill) => {
     let stdout = "",
       stderr = "",
       timedOut = false,
-      settled = false;
+      settled = false,
+      reapTimer;
     const child = spawn(argv[0], argv.slice(1), {
       cwd,
       env,
@@ -587,6 +770,12 @@ async function command(argv, cwd, timeoutMs = 60000, env = process.env) {
       try {
         process.kill(-child.pid, "SIGKILL");
       } catch {}
+      reapTimer = setTimeout(() => {
+        child.unref();
+        child.stdout.destroy();
+        child.stderr.destroy();
+        done(null, null, "Worker termination could not be confirmed", false);
+      }, 5000);
     }, timeoutMs);
     child.stdout.on("data", (data) => {
       stdout += data;
@@ -594,16 +783,26 @@ async function command(argv, cwd, timeoutMs = 60000, env = process.env) {
     child.stderr.on("data", (data) => {
       stderr += data;
     });
-    const done = (code, signal, error) => {
+    const done = (code, signal, error, reaped = false) => {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
+      clearTimeout(reapTimer);
+      let groupAbsent = false;
+      if (reaped && Number.isSafeInteger(child.pid))
+        try {
+          process.kill(-child.pid, 0);
+        } catch (groupError) {
+          groupAbsent = groupError.code === "ESRCH";
+        }
       fulfill({
         argv,
         cwd,
         exit_code: code,
         signal,
         timed_out: timedOut,
+        child_reaped: reaped && Number.isSafeInteger(child.pid),
+        process_group_absent: groupAbsent,
         elapsed_ms: performance.now() - started,
         stdout,
         stderr,
@@ -611,7 +810,7 @@ async function command(argv, cwd, timeoutMs = 60000, env = process.env) {
       });
     };
     child.on("error", (error) => done(null, null, error));
-    child.on("close", (code, signal) => done(code, signal));
+    child.on("close", (code, signal) => done(code, signal, undefined, true));
   });
 }
 function commandArgv(item) {
@@ -959,6 +1158,34 @@ async function bounded(operation, timeoutMs, onTimeout) {
     clearTimeout(timer);
   }
 }
+export async function cleanupWorkerSession(
+  session,
+  observation,
+  timeoutMs = 10000,
+) {
+  const before = observation.errors.length;
+  let complete = true;
+  try {
+    await bounded(session.abort(), timeoutMs);
+    await bounded(
+      session.extensionRunner.emit({ type: "session_shutdown" }),
+      timeoutMs,
+    );
+  } catch (error) {
+    observation.errors.push(`Shutdown: ${error}`);
+    complete = false;
+  }
+  try {
+    await session.dispose();
+  } catch (error) {
+    observation.errors.push(`Disposal: ${error}`);
+    complete = false;
+  }
+  // SDK emit() resolves even when a handler failed and notified onError.
+  complete &&= observation.errors.length === before;
+  if (!complete) observation.passed = false;
+  return complete;
+}
 export async function startFetchObservation(config, observation) {
   // Preserve Pi's deliberate caller-provided fetch override. Never replace its
   // provider stream, tool choice, request body, response, or response stream.
@@ -1189,6 +1416,7 @@ async function worker(configPath) {
     "Actual model calls require the root agent's explicit run clearance",
   );
   const config = JSON.parse(await readFile(configPath, "utf8"));
+  await assertExecutionWorkspace(config);
   const gateway = config.provider_lane === "configuredGateway";
   if (gateway) {
     assert.ok(
@@ -1214,17 +1442,13 @@ async function worker(configPath) {
       method: "POST",
     });
   }
-  assert.ok(inside(resolve(root, ".build"), config.directory));
-  assert.ok(
-    inside(config.directory, config.workspace) &&
-      inside(config.directory, config.agent_dir),
-  );
   const beforeResource = process.resourceUsage(),
     totalStarted = performance.now();
   const observation = {
     task: config.prepared.id,
     workflow: config.prepared.kind ?? "repair",
     workspace: config.workspace,
+    execution_scope: config.execution_scope,
     review_input_sha256: config.prepared.input_sha256 ?? null,
     previous_arm: config.previous_arm ?? null,
     pair_position: config.pair_position ?? null,
@@ -1801,29 +2025,27 @@ async function worker(configPath) {
       );
     }
   } finally {
+    const cleanupErrorsBefore = observation.errors.length;
+    let cleanupComplete = true;
     if (interval) clearInterval(interval);
     unsubscribe?.();
-    if (session) {
-      try {
-        await bounded(session.abort(), 10000);
-        await bounded(
-          session.extensionRunner.emit({ type: "session_shutdown" }),
-          10000,
-        );
-      } catch (error) {
-        observation.errors.push(`Shutdown: ${error}`);
-        observation.passed = false;
-      }
-      session.dispose();
-    }
-    await sampling.catch((error) =>
-      observation.errors.push(`Evidence journal: ${error}`),
-    );
+    if (session)
+      cleanupComplete = await cleanupWorkerSession(session, observation);
+    await sampling.catch((error) => {
+      observation.errors.push(`Evidence journal: ${error}`);
+      cleanupComplete = false;
+    });
     if (transport)
       await bounded(transport.finish(), 15000).catch((error) => {
         observation.errors.push(`Transport evidence: ${error}`);
         observation.passed = false;
+        cleanupComplete = false;
       });
+    cleanupComplete &&= observation.errors.length === cleanupErrorsBefore;
+    observation.cleanup_complete = cleanupComplete;
+    if (!cleanupComplete) observation.passed = false;
+    observation.cleanup_scope =
+      "SDK abort, extension shutdown, session disposal and evidence drain completed before proof; coordinator separately requires normal worker exit, reaping and absent process group. Detached descendants outside that group are not independently enumerated; any deadline or uncertain receipt quarantines the workspace.";
     observation.provider_usage = accountObservedProviderUsage(
       observation,
       config.provider_lane,
@@ -1904,6 +2126,50 @@ const hostScoringWork = () => ({
   scope:
     "Host-side final-answer scoring has no measured provider/native work. Actual workflow usage and Jev tool receipts are reported separately; empty host work is not complete measurement.",
 });
+export function unavailableWorkerProof(
+  config,
+  invocation,
+  error,
+  records = null,
+) {
+  const task = config.prepared,
+    skipped = invocation.state === "skipped_workspace_quarantine";
+  const proof = {
+    task: task.id,
+    workflow: task.kind ?? "repair",
+    workspace: config.workspace,
+    review_input_sha256: task.input_sha256 ?? null,
+    previous_arm: config.previous_arm,
+    pair_position: config.pair_position,
+    worker_proof_present: false,
+    cleanup_complete: false,
+    agent_completed: false,
+    skipped_due_to_workspace_quarantine: skipped,
+    arm: config.arm,
+    comparison: config.comparison,
+    repetition: config.repetition,
+    execution_order: config.execution_order,
+    passed: false,
+    total_elapsed_ms: invocation.elapsed_ms,
+    prompt_sha256: task.prompt_sha256,
+    provider_usage: {
+      generated_tokens: null,
+      complete: false,
+      generated_tokens_lower_bound: 0,
+      accounting: skipped
+        ? "Worker not run because prior cleanup is uncertain; no generation measurement"
+        : "Missing worker proof; exact work unknown",
+    },
+    errors: [`Worker did not persist proof: ${error}`],
+  };
+  if (task.kind === "review") {
+    proof.acceptance = scoreReviewFinal({ text: "", records });
+    proof.acceptance.summary.work = hostScoringWork();
+    proof.acceptance.failure_scope =
+      "Worker unavailable or skipped; all six expected host-gold judgments retained as failures";
+  }
+  return proof;
+}
 const observedGeneration = (run) => {
   const config = run.generation_config;
   return object(config?.model) &&
@@ -2387,8 +2653,13 @@ export function comparisonReport(runs, comparison) {
         item.execution_order < candidate.execution_order
           ? "baseline"
           : "candidate",
+      same_execution_workspace:
+        typeof item.workspace === "string" &&
+        typeof candidate.workspace === "string"
+          ? item.workspace === candidate.workspace
+          : null,
       provider_prompt_scope:
-        "Matched raw user prompt/input; SDK system prompt includes each isolated cwd and candidate has the added Jev catalog. Whole provider prompts differ and are retained verbatim.",
+        "Matched raw user prompt/input; actual worker cwd is retained in cache observations. Current evaluator restores one shared absolute cwd across sequential arms; candidate retains the added Jev catalog. Whole provider prompts differ and are retained verbatim; path equality alone establishes no cache benefit.",
     });
   }
   return {
@@ -2571,7 +2842,9 @@ export function reviewSuiteSummary(runs, expectedBatches, repetitions) {
       ).length,
       scored_judgments: attempts.length,
       expected_runs: expectedBatches.length * repetitions,
-      observed_runs: selected.length,
+      observed_runs: selected.filter(
+        (run) => !run.skipped_due_to_workspace_quarantine,
+      ).length,
       missing_worker_proofs: slots.filter((slot) => !slot.persisted).length,
       invalid_run_slots: slots
         .filter((slot) => !slot.complete)
@@ -2860,21 +3133,8 @@ async function main() {
           randomUUID().slice(0, 8),
       ),
   );
-  assert.ok(
-    inside(resolve(root, ".build"), output),
-    "Output must be an isolated .build directory",
-  );
-  assert.ok(
-    !(await stat(output).then(
-      () => true,
-      (error) => {
-        if (error.code === "ENOENT") return false;
-        throw error;
-      },
-    )),
-    "Output already exists; use a fresh evidence directory",
-  );
-  await mkdir(output, { recursive: true, mode: 0o700 });
+  await createFreshOutput(output);
+  const sharedExecution = await createExecutionWorkspace(output);
   const tasks =
     values.workflow === "review"
       ? []
@@ -2997,6 +3257,9 @@ async function main() {
     arms: values.arm,
     repetitions,
     order: values.order,
+    execution_scope: sharedExecution,
+    execution_workspace_policy:
+      "One stable absolute cwd across sequential arms and trials; complete fixture restore before each arm, fresh per-arm agent directory and immutable run archives. Reuse requires a normally exited reaped worker and affirmative cleanup receipts, including completed acceptance failures; uncertainty preserves the workspace and records every later expected arm as a failure. No cache or latency gain follows from path equality alone.",
     actual_provider_stream: "Pi SDK unmodified",
     tool_choice: "automatic",
     same_settings: null,
@@ -3101,7 +3364,9 @@ async function main() {
           })),
         )
       : null;
-  let executionOrder = 0;
+  let executionOrder = 0,
+    previousWorker = null,
+    workspaceQuarantine = null;
   for (let repetition = 1; repetition <= repetitions; repetition++)
     for (let taskIndex = 0; taskIndex < prepared.length; taskIndex++) {
       const task = prepared[taskIndex];
@@ -3121,22 +3386,27 @@ async function main() {
             "runs",
             `${task.id}-r${repetition}-${arm}`,
           ),
-          workspace = join(directory, "workspace"),
+          workspace = sharedExecution.workspace,
           agentDir = join(directory, "agent");
         await mkdir(agentDir, { recursive: true, mode: 0o700 });
-        await cp(task.origin, workspace, {
-          recursive: true,
-          filter: (path) => !path.split(sep).includes(".compiled"),
-        });
-        await snapshotTask(
-          workspace,
-          join(directory, "source-before"),
-          task.kind,
-        );
+        const blockedBy = workspaceQuarantine;
+        if (!blockedBy) {
+          await restoreExecutionWorkspace(
+            sharedExecution,
+            task.origin,
+            previousWorker,
+          );
+          await snapshotTask(
+            workspace,
+            join(directory, "source-before"),
+            task.kind,
+          );
+        }
         const environment = cleanEnvironment(agentDir);
         const config = {
           directory,
           workspace,
+          execution_scope: sharedExecution,
           agent_dir: agentDir,
           prepared: task,
           arm,
@@ -3164,12 +3434,25 @@ async function main() {
         };
         const configPath = join(directory, "config.json");
         await save(configPath, config);
-        const invocation = await command(
-          [process.execPath, script, "--worker", configPath],
-          root,
-          timeoutMs + 90000,
-          environment.env,
-        );
+        const invocation = blockedBy
+          ? {
+              state: "skipped_workspace_quarantine",
+              exit_code: null,
+              signal: null,
+              timed_out: false,
+              child_reaped: false,
+              process_group_absent: false,
+              elapsed_ms: null,
+              stdout: "",
+              stderr: "",
+              error: `Not run: shared workspace quarantined by ${blockedBy.run}`,
+            }
+          : await command(
+              [process.execPath, script, "--worker", configPath],
+              root,
+              timeoutMs + 90000,
+              environment.env,
+            );
         await save(join(directory, "invocation.json"), invocation);
         await save(
           join(directory, "worker.log"),
@@ -3177,44 +3460,48 @@ async function main() {
         );
         let proof;
         try {
+          if (blockedBy) throw new Error(invocation.error);
           proof = JSON.parse(
             await readFile(join(directory, "proof.json"), "utf8"),
           );
           proof.worker_proof_present = true;
         } catch (error) {
-          proof = {
-            task: task.id,
-            workflow: task.kind ?? "repair",
-            workspace,
-            review_input_sha256: task.input_sha256 ?? null,
-            previous_arm: config.previous_arm,
-            pair_position: config.pair_position,
-            worker_proof_present: false,
-            arm,
-            comparison: values.comparison,
-            repetition,
-            execution_order: config.execution_order,
-            passed: false,
-            total_elapsed_ms: invocation.elapsed_ms,
-            prompt_sha256: task.prompt_sha256,
-            provider_usage: {
-              generated_tokens: null,
-              complete: false,
-              generated_tokens_lower_bound: 0,
-              accounting: "Missing worker proof; exact work unknown",
-            },
-            errors: [`Worker did not persist proof: ${error}`],
-          };
-          if (task.kind === "review") {
-            const records = expectedReviewBatches.find(
-              (batch) => batch.id === task.id,
-            ).records;
-            proof.acceptance = scoreReviewFinal({ text: "", records });
-            proof.acceptance.summary.work = hostScoringWork();
-            proof.acceptance.failure_scope =
-              "Missing worker proof; all six expected host-gold judgments retained as failures";
-          }
+          proof = unavailableWorkerProof(
+            config,
+            invocation,
+            error,
+            task.kind === "review"
+              ? expectedReviewBatches.find((batch) => batch.id === task.id)
+                  .records
+              : null,
+          );
+          if (task.kind === "review")
+            await save(
+              join(directory, "acceptance", "review-quality.json"),
+              proof.acceptance,
+            );
         }
+        const workspaceReusable = executionWorkspaceReusable(invocation, proof);
+        proof.worker_invocation_accepted =
+          invocation.exit_code === 0 && workspaceReusable;
+        if (!proof.worker_invocation_accepted) proof.passed = false;
+        if (!blockedBy && !workspaceReusable) {
+          workspaceQuarantine = {
+            run: relative(output, directory),
+            reason:
+              "Workspace reuse requires normal worker exit, completed cleanup, reaping and absent process group",
+          };
+          protocol.execution_workspace_quarantine = workspaceQuarantine;
+          await save(
+            join(sharedExecution.directory, "quarantine.json"),
+            workspaceQuarantine,
+          );
+          proof.passed = false;
+          proof.errors ??= [];
+          proof.errors.push(workspaceQuarantine.reason);
+        }
+        if (!blockedBy) previousWorker = { invocation, proof };
+        await save(join(directory, "coordinator-proof.json"), proof);
         protocol.runs.push(proof);
         protocol.paired = comparisonReport(protocol.runs, values.comparison);
         protocol.same_settings =
@@ -3239,7 +3526,10 @@ async function main() {
             "Functional workflow acceptance only; review quality, coverage and improvement gates are separate",
           evaluation_complete:
             protocol.runs.length ===
-            prepared.length * repetitions * (values.arm === "pair" ? 2 : 1),
+              prepared.length * repetitions * (values.arm === "pair" ? 2 : 1) &&
+            !protocol.runs.some(
+              (run) => run.skipped_due_to_workspace_quarantine,
+            ),
           functional_acceptance:
             protocol.runs.every((run) => run.passed) &&
             protocol.paired.pairs.every((pair) => pair.protocol_passed),

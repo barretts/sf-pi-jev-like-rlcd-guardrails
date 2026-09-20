@@ -136,6 +136,8 @@ node scripts/developer-task-eval.mjs \
 
 Preparation uses the actual SDK registration with an in-memory model store, credential reads disabled, and catalog refresh disabled. It reports pending upstream verification until a reviewed attribution proof binds the alias, actual model lineage, origin, and registration digest. Inference additionally requires that frozen proof, explicit read-only auth configuration, and run clearance. The local Google Gemma lane remains the default. Both lanes retain the full controlled SF tool set, all review correctness and resource gates, and the four required repair tasks. Repair advice and autonomous Jev tools use the same selected classifier model, file, device, and optional disposable research registry.
 
+Sequential benchmark trials use one restored absolute workspace, with fresh agent state and separate run archives. Completed wrong answers retain their actual judgments and allow later trials after confirmed cleanup. Uncertain cleanup quarantines the workspace and retains every unrun slot as a failure. This controls a prompt-path difference; it does not establish cache reuse or a speed improvement.
+
 ## Library
 
 ```ts

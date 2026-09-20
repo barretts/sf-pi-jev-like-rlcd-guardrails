@@ -1,13 +1,31 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createHash } from "node:crypto";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  cp,
+  lstat,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { validateQualityRecords } from "../dist/evaluation.js";
 import { scoreReviewFinal } from "../scripts/developer-review-scoring.mjs";
 import {
   comparisonReport,
+  command,
+  cleanupWorkerSession,
+  createFreshOutput,
+  createExecutionWorkspace,
+  restoreExecutionWorkspace,
+  assertExecutionWorkspace,
+  executionWorkspaceReusable,
+  unavailableWorkerProof,
   accountObservedProviderUsage,
   approvedGatewayOrigin,
   assertProviderRequest,
@@ -26,6 +44,341 @@ import {
   taskClassifierConfig,
   validateUpstreamProof,
 } from "../scripts/developer-task-eval.mjs";
+
+async function executionFixture(t) {
+  const parent = fileURLToPath(
+    new URL("../.build/improvement-experiments/", import.meta.url),
+  );
+  await mkdir(parent, { recursive: true });
+  const output = await mkdtemp(join(parent, "stable-workspace-test-"));
+  t.after(() => rm(output, { recursive: true, force: true }));
+  const origin = join(output, "prepared", "cpu-task", "workspace");
+  await mkdir(join(origin, "src"), { recursive: true });
+  await writeFile(join(origin, "src", "task.ts"), "original fixture\n");
+  const invocation = await command([process.execPath, "-e", ""], output, 5000);
+  const previous = {
+    invocation,
+    proof: { worker_proof_present: true, cleanup_complete: true, passed: true },
+  };
+  assert.equal(executionWorkspaceReusable(invocation, previous.proof), true);
+  return { output, origin, previous };
+}
+
+async function workerConfig(output, scope, arm, repetition = 1) {
+  const directory = join(output, "runs", `cpu-task-r${repetition}-${arm}`);
+  const agent_dir = join(directory, "agent");
+  await mkdir(agent_dir, { recursive: true });
+  return {
+    execution_scope: scope,
+    workspace: scope.workspace,
+    directory,
+    agent_dir,
+    prepared: { id: "cpu-task" },
+    arm,
+    repetition,
+  };
+}
+
+test("sequential arms and trials restore one absolute cwd while preserving separate run archives", async (t) => {
+  const { output, origin, previous } = await executionFixture(t);
+  const scope = await createExecutionWorkspace(output);
+  const baselineCwd = await restoreExecutionWorkspace(scope, origin);
+  const baselineProcess = await command(
+    [process.execPath, "-e", "process.stdout.write(process.cwd())"],
+    baselineCwd,
+    5000,
+  );
+  const baseline = await workerConfig(output, scope, "baseline");
+  await assertExecutionWorkspace(baseline);
+  await cp(
+    join(baselineCwd, "src"),
+    join(baseline.directory, "source-before"),
+    { recursive: true },
+  );
+  await writeFile(join(baselineCwd, "src", "task.ts"), "first arm edit\n");
+  await cp(join(baselineCwd, "src"), join(baseline.directory, "source-after"), {
+    recursive: true,
+  });
+  for (const path of [
+    ".compiled/stale.js",
+    ".jev/session.json",
+    "new-file.txt",
+  ]) {
+    await mkdir(dirname(join(baselineCwd, path)), { recursive: true });
+    await writeFile(join(baselineCwd, path), "first arm state");
+  }
+  const candidateCwd = await restoreExecutionWorkspace(scope, origin, previous);
+  const candidateProcess = await command(
+    [process.execPath, "-e", "process.stdout.write(process.cwd())"],
+    candidateCwd,
+    5000,
+  );
+  const candidate = await workerConfig(output, scope, "candidate");
+  await assertExecutionWorkspace(candidate);
+  assert.equal(candidateCwd, baselineCwd);
+  assert.equal(baselineProcess.stdout, baselineCwd);
+  assert.equal(candidateProcess.stdout, baselineProcess.stdout);
+  assert.equal(candidate.workspace, baseline.workspace);
+  assert.notEqual(candidate.directory, baseline.directory);
+  assert.notEqual(candidate.agent_dir, baseline.agent_dir);
+  assert.equal(
+    await readFile(join(candidateCwd, "src", "task.ts"), "utf8"),
+    "original fixture\n",
+  );
+  for (const path of [".compiled", ".jev", "new-file.txt"])
+    await assert.rejects(lstat(join(candidateCwd, path)), { code: "ENOENT" });
+  assert.equal(
+    await readFile(
+      join(baseline.directory, "source-before", "task.ts"),
+      "utf8",
+    ),
+    "original fixture\n",
+  );
+  assert.equal(
+    await readFile(join(baseline.directory, "source-after", "task.ts"), "utf8"),
+    "first arm edit\n",
+  );
+  await writeFile(join(origin, "src", "task.ts"), "next prepared trial\n");
+  assert.equal(
+    await restoreExecutionWorkspace(scope, origin, previous),
+    baselineCwd,
+  );
+  await assertExecutionWorkspace(
+    await workerConfig(output, scope, "baseline", 2),
+  );
+  assert.equal(
+    await readFile(join(baselineCwd, "src", "task.ts"), "utf8"),
+    "next prepared trial\n",
+  );
+  assert.equal(
+    await readFile(join(baseline.directory, "source-after", "task.ts"), "utf8"),
+    "first arm edit\n",
+  );
+});
+
+test("owned execution and worker guards reject foreign paths, markers and symlinks before restoration deletes anything", async (t) => {
+  const { output, origin, previous } = await executionFixture(t);
+  const scope = await createExecutionWorkspace(output);
+  await restoreExecutionWorkspace(scope, origin);
+  const config = await workerConfig(output, scope, "baseline");
+  const sentinel = join(output, "foreign", "sentinel.txt");
+  await mkdir(dirname(sentinel));
+  await writeFile(sentinel, "outside scope\n");
+  for (const workspace of [
+    output,
+    config.directory,
+    join(output, "foreign"),
+    `${scope.workspace}-sibling`,
+  ]) {
+    await assert.rejects(assertExecutionWorkspace({ ...config, workspace }));
+    await assert.rejects(
+      restoreExecutionWorkspace({ ...scope, workspace }, origin, previous),
+    );
+  }
+  await assert.rejects(
+    assertExecutionWorkspace({
+      ...config,
+      directory: join(output, "runs", "foreign"),
+    }),
+  );
+  await assert.rejects(
+    assertExecutionWorkspace({ ...config, agent_dir: join(output, "foreign") }),
+  );
+  await assert.rejects(restoreExecutionWorkspace(scope, origin));
+  await assert.rejects(createExecutionWorkspace(output), { code: "EEXIST" });
+  await writeFile(
+    scope.owner_marker,
+    JSON.stringify({ ...scope, owner: "foreign" }),
+  );
+  await assert.rejects(restoreExecutionWorkspace(scope, origin, previous));
+  assert.equal(
+    await readFile(join(scope.workspace, "src", "task.ts"), "utf8"),
+    "original fixture\n",
+  );
+  await writeFile(scope.owner_marker, JSON.stringify(scope));
+  await symlink(dirname(sentinel), join(scope.workspace, "foreign-link"));
+  await assert.rejects(
+    restoreExecutionWorkspace(scope, origin, previous),
+    /Symlink not permitted/,
+  );
+  await rm(join(scope.workspace, "foreign-link"));
+  await rm(scope.workspace, { recursive: true });
+  await symlink(dirname(sentinel), scope.workspace);
+  await assert.rejects(restoreExecutionWorkspace(scope, origin, previous));
+  await assert.rejects(assertExecutionWorkspace(config));
+  assert.equal(await readFile(sentinel, "utf8"), "outside scope\n");
+  await rm(scope.workspace);
+  await rm(scope.owner_marker);
+  await symlink(sentinel, scope.owner_marker);
+  await assert.rejects(restoreExecutionWorkspace(scope, origin, previous));
+  assert.equal(await readFile(sentinel, "utf8"), "outside scope\n");
+  await rm(scope.directory, { recursive: true });
+  await symlink(dirname(sentinel), scope.directory);
+  await assert.rejects(createExecutionWorkspace(output), { code: "EEXIST" });
+  assert.equal(await readFile(sentinel, "utf8"), "outside scope\n");
+  await rm(scope.directory);
+  await mkdir(scope.directory);
+  const foreignScopeFile = join(scope.directory, "foreign-sentinel.txt");
+  await writeFile(foreignScopeFile, "unowned existing scope\n");
+  await assert.rejects(createExecutionWorkspace(output), { code: "EEXIST" });
+  assert.equal(
+    await readFile(foreignScopeFile, "utf8"),
+    "unowned existing scope\n",
+  );
+});
+
+test("fresh output rejects symlink parents before creating missing directories or accepting existing output", async (t) => {
+  const { output } = await executionFixture(t);
+  const foreign = join(output, "foreign");
+  await mkdir(foreign);
+  const sentinel = join(foreign, "sentinel.txt");
+  await writeFile(sentinel, "outside intended output\n");
+  const link = join(output, "linked");
+  await symlink(foreign, link);
+  await assert.rejects(
+    createFreshOutput(join(link, "new-parent", "result")),
+    /symlink/i,
+  );
+  await assert.rejects(lstat(join(foreign, "new-parent")), { code: "ENOENT" });
+  assert.equal(await readFile(sentinel, "utf8"), "outside intended output\n");
+  await assert.rejects(createFreshOutput(output), { code: "EEXIST" });
+  const fresh = join(output, "canonical", "result");
+  await createFreshOutput(fresh);
+  await createExecutionWorkspace(fresh);
+});
+
+test("actual CPU child timeout and incomplete cleanup receipts quarantine the workspace without changing prior files", async (t) => {
+  const { output, origin, previous } = await executionFixture(t);
+  const scope = await createExecutionWorkspace(output);
+  await restoreExecutionWorkspace(scope, origin);
+  const retained = join(scope.workspace, "src", "task.ts");
+  const failedInvocation = await command(
+    [process.execPath, "-e", "process.exit(1)"],
+    output,
+    5000,
+  );
+  const failedProof = { ...previous.proof, passed: false };
+  assert.equal(failedInvocation.exit_code, 1);
+  assert.equal(executionWorkspaceReusable(failedInvocation, failedProof), true);
+  await writeFile(retained, "completed failed arm edit\n");
+  await restoreExecutionWorkspace(scope, origin, {
+    invocation: failedInvocation,
+    proof: failedProof,
+  });
+  assert.equal(await readFile(retained, "utf8"), "original fixture\n");
+  await writeFile(retained, "retain uncertain worker state\n");
+  const timedOut = await command(
+    [process.execPath, "-e", "setInterval(() => {}, 1000)"],
+    output,
+    25,
+  );
+  assert.equal(timedOut.timed_out, true);
+  for (const invocation of [
+    timedOut,
+    { ...previous.invocation, exit_code: 2 },
+    { ...previous.invocation, signal: "SIGTERM" },
+    { ...previous.invocation, error: "spawn failed" },
+    { ...previous.invocation, child_reaped: false },
+    { ...previous.invocation, process_group_absent: false },
+  ]) {
+    assert.equal(executionWorkspaceReusable(invocation, previous.proof), false);
+    await assert.rejects(
+      restoreExecutionWorkspace(scope, origin, {
+        invocation,
+        proof: previous.proof,
+      }),
+      /quarantined/,
+    );
+    assert.equal(
+      await readFile(retained, "utf8"),
+      "retain uncertain worker state\n",
+    );
+  }
+  for (const proof of [
+    undefined,
+    {},
+    { worker_proof_present: true },
+    { ...previous.proof, cleanup_complete: false },
+  ]) {
+    assert.equal(executionWorkspaceReusable(previous.invocation, proof), false);
+    await assert.rejects(
+      restoreExecutionWorkspace(scope, origin, {
+        invocation: previous.invocation,
+        proof,
+      }),
+      /quarantined/,
+    );
+    assert.equal(
+      await readFile(retained, "utf8"),
+      "retain uncertain worker state\n",
+    );
+  }
+});
+
+test("actual SDK shutdown handler errors and cleanup deadlines cannot produce an affirmative reuse receipt", async () => {
+  const { ExtensionRunner } = await import("@earendil-works/pi-coding-agent");
+  for (const failure of [
+    null,
+    "handler",
+    "abort",
+    "abort-deadline",
+    "shutdown-deadline",
+    "dispose",
+  ]) {
+    const observation = { errors: [], passed: true },
+      order = [];
+    const runner = new ExtensionRunner(
+      [
+        {
+          path: "cpu-shutdown-regression",
+          handlers: new Map([
+            [
+              "session_shutdown",
+              [
+                async () => {
+                  order.push("shutdown");
+                  if (failure === "handler")
+                    throw new Error("shutdown handler failed");
+                  if (failure === "shutdown-deadline")
+                    await new Promise(() => {});
+                },
+              ],
+            ],
+          ]),
+        },
+      ],
+      {},
+      "/owned/cpu-workspace",
+      {},
+      {},
+    );
+    runner.onError((error) => observation.errors.push(error));
+    const session = {
+      extensionRunner: runner,
+      abort: async () => {
+        order.push("abort");
+        if (failure === "abort") throw new Error("abort failed");
+        if (failure === "abort-deadline") await new Promise(() => {});
+      },
+      dispose: () => {
+        order.push("dispose");
+        if (failure === "dispose") throw new Error("disposal failed");
+      },
+    };
+    const complete = await cleanupWorkerSession(session, observation, 5);
+    assert.equal(complete, failure === null);
+    assert.equal(observation.passed, failure === null);
+    assert.equal(order.at(-1), "dispose");
+    if (failure === null)
+      assert.deepEqual(order, ["abort", "shutdown", "dispose"]);
+    if (failure === "handler")
+      assert.equal(
+        observation.errors[0].event,
+        "session_shutdown",
+        "The SDK resolves emit and reports its caught handler error through onError",
+      );
+  }
+});
 
 function expectedBatches() {
   let id = 0;
@@ -86,6 +439,49 @@ function expectedBatches() {
     };
   });
 }
+
+test("workspace quarantine records unrun arms as failures across all 13 batches and 3 trials", async () => {
+  const batches = expectedBatches();
+  const runs = completeRuns(batches).map((run) => {
+    if (run.arm !== "candidate") return run;
+    const batch = batches.find((item) => item.id === run.task);
+    return unavailableWorkerProof(
+      {
+        prepared: {
+          id: batch.id,
+          kind: "review",
+          prompt_sha256: run.prompt_sha256,
+        },
+        workspace: "/owned/output/execution/workspace",
+        arm: run.arm,
+        comparison: "ordinary",
+        repetition: run.repetition,
+        execution_order: run.execution_order,
+      },
+      { state: "skipped_workspace_quarantine", elapsed_ms: null },
+      "Prior worker cleanup is uncertain",
+      batch.records,
+    );
+  });
+  const suite = await reviewSuiteSummary(runs, batches, 3);
+  assert.equal(suite.arms.candidate.quality.attempts, 234);
+  assert.equal(suite.arms.candidate.quality.execution_failures, 234);
+  assert.equal(suite.arms.candidate.coverage.expected_runs, 39);
+  assert.equal(suite.arms.candidate.coverage.observed_runs, 0);
+  assert.equal(suite.arms.candidate.coverage.observed_judgments, 0);
+  assert.equal(suite.full_confirmation_complete, false);
+  assert.equal(
+    reviewImprovementGates(suite, comparisonReport(runs, "ordinary")).passed,
+    false,
+  );
+  for (const run of runs.filter((item) => item.arm === "candidate")) {
+    assert.equal(run.skipped_due_to_workspace_quarantine, true);
+    assert.equal(run.worker_proof_present, false);
+    assert.equal(run.passed, false);
+    assert.equal(run.provider_usage.generated_tokens, null);
+    assert.equal(run.acceptance.summary.work.applicable, false);
+  }
+});
 
 test("repair advice and extension tools retain the explicit research artifact and selected device", () => {
   const defaults = {
