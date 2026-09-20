@@ -146,11 +146,15 @@ npm run agent:build
 node dist/cli.js model fetch --model google/gemma-4-31B-it-qat-q4_0
 node dist/cli.js agent start --device metal --port 8081
 node dist/cli.js agent status
-npm run test:live-pi
+npm run test:live-pi -- --timeout-ms 600000
 node dist/cli.js agent stop
 ```
 
+For the all-sf-pi exercise, replace the live command with `npm run test:live-pi -- --with-sf-pi --sf-pi-path ../sf-pi-jev-manager --timeout-ms 600000`, pointing to the isolated sf-pi checkout with the Manager contract installed.
+
 The owned agent server binds `127.0.0.1`, verifies model/template hashes and native revision, and records an owned state file. The live pi exercise uses a real local provider stream with no fake stream or required tool-choice setting. It separately records requested-classification tool selection and a direct-answer control. The older `scripts/pi-smoke.mjs` is a deterministic orchestration proof: classifier inference is real, but the next tool call is authored by the harness. These establish different evidence lanes.
+
+Loading all sf-pi tools produced a 20,641-token agent prompt on the target M3 Max. Cold Gemma 4 prompt processing exceeded the exercise's default three-minute case deadline before dispatch; the command above explicitly allows ten minutes per case. The actual prompt, provider stream, and automatic tool selection are unchanged by this deadline option.
 
 ## Quality evaluation
 
@@ -165,6 +169,8 @@ npm run eval -- --version v2 --split validation --output .build/quality-v2.json
 
 Gates: choice accuracy ≥0.90, clear Noul accuracy ≥0.95, Noul Brier ≤0.10, normalized score MAE ≤0.10, zero errors, all marked regressions passing. Reports bind the selected dataset, actual artifact/template metadata, per-record logical prompt hashes, and an aggregate prompt manifest hash. Failed gates exit 1 while preserving the report. Validation selects candidates; held-out labels must not be used for tuning or relabeled to improve metrics. Runtime success alone does not establish quality. See [current evidence](./VERIFICATION.md).
 
+The real 64-step Gemma 3 1B RFDT student passed every validation gate, then failed its single held-out score gate: normalized score MAE was 0.1139 against the 0.10 maximum. Held-out choice accuracy was 0.95 and clear Noul accuracy was 1.00, with zero execution errors. That exported student remains unapproved; the default remains the reviewed official Gemma 3 1B artifact. The official base models also failed the full authored quality gates, so callers should evaluate answer quality for their use case before depending on the classifier's judgments.
+
 ## RFDT
 
 TypeScript owns validation, canonical prompts, native tokenizer/answer-boundary capture, grouped splits, local-teacher labeling/cache, provenance, export, and promotion. A pinned Python/MLX helper performs selected-last-position soft cross-entropy LoRA optimization on Google Gemma 3. It saves/reloads adapters, fuses safetensors, and invokes the pinned llama.cpp converter for F16 GGUF. It does not train on generated prose.
@@ -175,6 +181,8 @@ node dist/cli.js rfdt doctor
 ```
 
 The official training checkpoint is gated. Enable access at [Google Gemma 3 on Hugging Face](https://huggingface.co/google/gemma-3-1b-it), then authenticate locally with `.build/rfdt-venv/bin/hf auth login`. Do not put tokens into dataset files, Git, or chat. No other checkpoint is substituted.
+
+Teacher requests use a missing-question JSON schema and validate returned targets before caching them. Cache identity includes the exact instructions and schema; cached targets are validated before use. Supplied labels and provenance are preserved. The real local Gemma 4 trial returned one valid choice estimate, reused it without another request, and skipped the teacher for fully supplied labels. These are training estimates rather than verified facts or calibrated probabilities.
 
 RFDT JSONL uses stable `id`, `group_id`, classifier `request`, and question-keyed `targets`. Supplied targets take priority over teacher estimates. Answers may be choice IDs, score indices, Noul booleans, or Noul `null` for uncertainty. Full label probability distributions are also supported:
 
