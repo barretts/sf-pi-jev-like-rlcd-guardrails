@@ -20,7 +20,7 @@ Local preparation checks: 21 focused Node protocol tests passed. The actual infe
 
 An additional reproducible Python gold checker was implemented after inference began. It independently verified all 24 original cases (56 fields) and all 24 exact long scopes against unchanged gold. Its timing is explicit in `gold-check.json`; it is not a second prospective blind author. Seven adversarial CPU tests passed, covering altered gold, malformed diff hunks, repeated-record counts, lookalikes, physical versus timestamp order, unknown usage and full error/unrun denominators. A separate Python scalar/hash auditor checks each saved workflow and frozen source pin, reconstructs family/stratum and paired outcomes, and reports judge disagreements. Final model text was deliberately not persisted, so aggregate auditing is not independent answer rescoring.
 
-The original author's protocol suggested a different four-arm codec/helper experiment. This campaign preserves that author's questions, traces and gold, but follows its separately frozen two-arm exact-excerpt protocol. It does not claim to execute the author's four-arm protocol.
+The original author's protocol recorded ROOT's earlier plan for a four-arm codec/helper experiment. This campaign preserves that author's questions, traces and gold, but follows its separately frozen two-arm exact-excerpt protocol. It does not claim to execute the author's four-arm protocol.
 
 To reproduce with a new output directory, prepare first and use the returned protocol SHA for execution:
 
