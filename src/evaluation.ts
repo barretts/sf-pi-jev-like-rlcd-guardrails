@@ -229,7 +229,8 @@ function targetNumber(target: QualityTarget, question: Question): number {
   );
 }
 
-function scorePrediction(
+/** Grade a validated original question and target without rewriting inference metadata. */
+export function scorePrediction(
   question: Question,
   target: QualityTarget,
   prediction: Answer,
