@@ -1,0 +1,81 @@
+{
+  "kind": "jev_answer_effectiveness_publication",
+  "protocolSha256": "17c0649f10a4d9733afaef650660bd2923c9efa6e580fd1f169791b2dfdf95ab",
+  "resultSha256": "d42a2f6a786ac5dcbaf4ffa117244ca5b4ebfef66bd7538f399ea002de3883d4",
+  "all192WorkflowSlotsObserved": true,
+  "cliExitCode": 1,
+  "workflowErrors": 5,
+  "productionQualified": false,
+  "nodeProtocolTestsPassed": 21,
+  "pythonAuditTestsPassed": 8,
+  "credentialScanFiles": 18,
+  "credentialScanArchiveMembers": 26,
+  "credentialScanHits": 0,
+  "files": [
+    {
+      "path": "EVALUATION.md",
+      "sha256": "330589d6777a600a12bc0ad496810951a940c43896641203d70c295062be22f3",
+      "bytes": 7531
+    },
+    {
+      "path": "RESULTS.md",
+      "sha256": "20de7cb5541d14ec23e11fdbcd4fcb6ff28228961a42bbfa836bb5fe9d31373d",
+      "bytes": 7347
+    },
+    {
+      "path": "author-protocol.md",
+      "sha256": "4a6ba0015c9c86dec6af8febb63b77252fb228bac77e9305f969583e95e2c867",
+      "bytes": 7030
+    },
+    {
+      "path": "discordant-workflows.json",
+      "sha256": "82ece2b84da2e5a8f0f8a3b64fdc19742f9eedfc92569781639d3943485a51cd",
+      "bytes": 4716
+    },
+    {
+      "path": "gold-check.json",
+      "sha256": "fec2a49e4aded5be90c23c185b36d54db12f0acae863d8878a995515392e6092",
+      "bytes": 438
+    },
+    {
+      "path": "independent-audit.json",
+      "sha256": "d3f45f4bff90acc76b02b8864b83c97d29bb1baa66154aa8f8c51e73399beb90",
+      "bytes": 67277
+    },
+    {
+      "path": "measurement.json",
+      "sha256": "1726892b45a2bd3dd2c1c7e7d44f5b2647981225889ea72b3fb6aea1065ba2e0",
+      "bytes": 947
+    },
+    {
+      "path": "protocol.json",
+      "sha256": "17c0649f10a4d9733afaef650660bd2923c9efa6e580fd1f169791b2dfdf95ab",
+      "bytes": 61854
+    },
+    {
+      "path": "publication-review.md",
+      "sha256": "0ad4d710670b688bccfbc479d7b86cea04321ce1366f6c2bc0337f7289df2673",
+      "bytes": 2438
+    },
+    {
+      "path": "result-projection.json",
+      "sha256": "d42a2f6a786ac5dcbaf4ffa117244ca5b4ebfef66bd7538f399ea002de3883d4",
+      "bytes": 759687
+    },
+    {
+      "path": "run-claim.json",
+      "sha256": "576974a288301217ee9afb94c615be217a9bffbef1732e90d3634432ac55799f",
+      "bytes": 134
+    },
+    {
+      "path": "source-evidence.tar.gz",
+      "sha256": "76d588c2392d54303bd7733d7ff5e508b64a3ee50330d3054017623d379061d3",
+      "bytes": 181786
+    },
+    {
+      "path": "source-manifest.json",
+      "sha256": "2b447809f4e33cba45e5e8e5fec07165b338cbc1211186ccbeb9ca67c985b645",
+      "bytes": 4973
+    }
+  ]
+}

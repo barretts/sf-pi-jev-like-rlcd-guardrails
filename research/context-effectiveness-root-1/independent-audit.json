@@ -1,0 +1,2735 @@
+{
+  "kind": "jev_answer_effectiveness_independent_audit",
+  "status": "error",
+  "protocolSha256": "17c0649f10a4d9733afaef650660bd2923c9efa6e580fd1f169791b2dfdf95ab",
+  "resultSha256": "d42a2f6a786ac5dcbaf4ffa117244ca5b4ebfef66bd7538f399ea002de3883d4",
+  "fixtureSha256": "50705ffe1f622d72a5bb96018006240a8c77ec84975a612cad1495303b174f2a",
+  "allSlotsObserved": true,
+  "fullSuccessfulExecution": false,
+  "sourcePinsVerified": 26,
+  "sfPinsVerified": 24,
+  "runtimeCleanup": "completed",
+  "arms": {
+    "raw": {
+      "scheduled": 96,
+      "observed": 96,
+      "accepted": 84,
+      "incorrectCompleted": 9,
+      "errors": 3,
+      "unrun": 0,
+      "applied": 0,
+      "taskAndCompressorUsage": {
+        "physicalRequests": 193,
+        "knownUsageRequests": 193,
+        "unknownUsageRequests": 0,
+        "totals": {
+          "promptTokens": 1593640,
+          "completionTokens": 67235,
+          "totalTokens": 1660875
+        },
+        "knownUsageLowerBound": {
+          "promptTokens": 1593640,
+          "completionTokens": 67235,
+          "totalTokens": 1660875
+        }
+      },
+      "judgeUsage": {
+        "physicalRequests": 47,
+        "knownUsageRequests": 12,
+        "unknownUsageRequests": 35,
+        "totals": null,
+        "knownUsageLowerBound": {
+          "promptTokens": 128903,
+          "completionTokens": 8515,
+          "totalTokens": 137418
+        }
+      }
+    },
+    "compressed": {
+      "scheduled": 96,
+      "observed": 96,
+      "accepted": 86,
+      "incorrectCompleted": 8,
+      "errors": 2,
+      "unrun": 0,
+      "applied": 48,
+      "taskAndCompressorUsage": {
+        "physicalRequests": 206,
+        "knownUsageRequests": 206,
+        "unknownUsageRequests": 0,
+        "totals": {
+          "promptTokens": 625273,
+          "completionTokens": 86569,
+          "totalTokens": 711842
+        },
+        "knownUsageLowerBound": {
+          "promptTokens": 625273,
+          "completionTokens": 86569,
+          "totalTokens": 711842
+        }
+      },
+      "judgeUsage": {
+        "physicalRequests": 47,
+        "knownUsageRequests": 12,
+        "unknownUsageRequests": 35,
+        "totals": null,
+        "knownUsageLowerBound": {
+          "promptTokens": 128892,
+          "completionTokens": 8081,
+          "totalTokens": 136973
+        }
+      }
+    }
+  },
+  "allPairOutcomes": {
+    "both_accepted": 83,
+    "both_incorrect": 6,
+    "execution_error_pair": 4,
+    "improvement": 2,
+    "regression": 1
+  },
+  "appliedPairOutcomes": {
+    "both_accepted": 42,
+    "execution_error_pair": 3,
+    "improvement": 2,
+    "regression": 1
+  },
+  "appliedPairCount": 48,
+  "pairs": [
+    {
+      "pairId": "quality-v3-01-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-01-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-01-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-01-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-02-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-02-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-02-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-02-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-03-short__r1",
+      "outcome": "both_incorrect",
+      "workflowAcceptanceOutcome": "neither_accepted",
+      "rawAccepted": false,
+      "compressedAccepted": false,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-03-short__r2",
+      "outcome": "both_incorrect",
+      "workflowAcceptanceOutcome": "neither_accepted",
+      "rawAccepted": false,
+      "compressedAccepted": false,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-03-long__r1",
+      "outcome": "execution_error_pair",
+      "workflowAcceptanceOutcome": "neither_accepted",
+      "rawAccepted": false,
+      "compressedAccepted": false,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-03-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-04-short__r1",
+      "outcome": "both_incorrect",
+      "workflowAcceptanceOutcome": "neither_accepted",
+      "rawAccepted": false,
+      "compressedAccepted": false,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-04-short__r2",
+      "outcome": "both_incorrect",
+      "workflowAcceptanceOutcome": "neither_accepted",
+      "rawAccepted": false,
+      "compressedAccepted": false,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-04-long__r1",
+      "outcome": "execution_error_pair",
+      "workflowAcceptanceOutcome": "neither_accepted",
+      "rawAccepted": false,
+      "compressedAccepted": false,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-04-long__r2",
+      "outcome": "execution_error_pair",
+      "workflowAcceptanceOutcome": "compressed_favored",
+      "rawAccepted": false,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-05-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-05-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-05-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-05-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-06-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-06-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-06-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-06-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-07-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-07-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-07-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-07-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-08-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-08-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-08-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-08-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-09-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-09-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-09-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-09-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-10-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-10-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-10-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-10-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-11-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-11-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-11-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-11-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-12-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-12-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-12-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-12-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-13-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-13-short__r2",
+      "outcome": "execution_error_pair",
+      "workflowAcceptanceOutcome": "neither_accepted",
+      "rawAccepted": false,
+      "compressedAccepted": false,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-13-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-13-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-14-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-14-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-14-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-14-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-15-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-15-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-15-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-15-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-16-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-16-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-16-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-16-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-17-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-17-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-17-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-17-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-18-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-18-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-18-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-18-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-19-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-19-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-19-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-19-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-20-short__r1",
+      "outcome": "both_incorrect",
+      "workflowAcceptanceOutcome": "neither_accepted",
+      "rawAccepted": false,
+      "compressedAccepted": false,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-20-short__r2",
+      "outcome": "both_incorrect",
+      "workflowAcceptanceOutcome": "neither_accepted",
+      "rawAccepted": false,
+      "compressedAccepted": false,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-20-long__r1",
+      "outcome": "improvement",
+      "workflowAcceptanceOutcome": "compressed_favored",
+      "rawAccepted": false,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-20-long__r2",
+      "outcome": "improvement",
+      "workflowAcceptanceOutcome": "compressed_favored",
+      "rawAccepted": false,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-21-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-21-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-21-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-21-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-22-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-22-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-22-long__r1",
+      "outcome": "regression",
+      "workflowAcceptanceOutcome": "raw_favored",
+      "rawAccepted": true,
+      "compressedAccepted": false,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-22-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-23-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-23-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-23-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-23-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-24-short__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-24-short__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": false
+    },
+    {
+      "pairId": "quality-v3-24-long__r1",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    },
+    {
+      "pairId": "quality-v3-24-long__r2",
+      "outcome": "both_accepted",
+      "workflowAcceptanceOutcome": "both_accepted",
+      "rawAccepted": true,
+      "compressedAccepted": true,
+      "compressionApplied": true
+    }
+  ],
+  "pairedWorkflowAcceptanceOutcomes": {
+    "both_accepted": 83,
+    "neither_accepted": 9,
+    "compressed_favored": 3,
+    "raw_favored": 1
+  },
+  "appliedWorkflowAcceptanceOutcomes": {
+    "both_accepted": 42,
+    "neither_accepted": 2,
+    "compressed_favored": 3,
+    "raw_favored": 1
+  },
+  "strata": {
+    "native-short": {
+      "raw": {
+        "scheduled": 48,
+        "observed": 48,
+        "accepted": 41,
+        "incorrectCompleted": 6,
+        "errors": 1,
+        "unrun": 0,
+        "applied": 0,
+        "taskAndCompressorUsage": {
+          "physicalRequests": 97,
+          "knownUsageRequests": 97,
+          "unknownUsageRequests": 0,
+          "totals": {
+            "promptTokens": 226938,
+            "completionTokens": 28020,
+            "totalTokens": 254958
+          },
+          "knownUsageLowerBound": {
+            "promptTokens": 226938,
+            "completionTokens": 28020,
+            "totalTokens": 254958
+          }
+        }
+      },
+      "compressed": {
+        "scheduled": 48,
+        "observed": 48,
+        "accepted": 41,
+        "incorrectCompleted": 6,
+        "errors": 1,
+        "unrun": 0,
+        "applied": 0,
+        "taskAndCompressorUsage": {
+          "physicalRequests": 97,
+          "knownUsageRequests": 97,
+          "unknownUsageRequests": 0,
+          "totals": {
+            "promptTokens": 226938,
+            "completionTokens": 28020,
+            "totalTokens": 254958
+          },
+          "knownUsageLowerBound": {
+            "promptTokens": 226938,
+            "completionTokens": 28020,
+            "totalTokens": 254958
+          }
+        }
+      }
+    },
+    "scoped-long": {
+      "raw": {
+        "scheduled": 48,
+        "observed": 48,
+        "accepted": 43,
+        "incorrectCompleted": 3,
+        "errors": 2,
+        "unrun": 0,
+        "applied": 0,
+        "taskAndCompressorUsage": {
+          "physicalRequests": 96,
+          "knownUsageRequests": 96,
+          "unknownUsageRequests": 0,
+          "totals": {
+            "promptTokens": 1366702,
+            "completionTokens": 39215,
+            "totalTokens": 1405917
+          },
+          "knownUsageLowerBound": {
+            "promptTokens": 1366702,
+            "completionTokens": 39215,
+            "totalTokens": 1405917
+          }
+        }
+      },
+      "compressed": {
+        "scheduled": 48,
+        "observed": 48,
+        "accepted": 45,
+        "incorrectCompleted": 2,
+        "errors": 1,
+        "unrun": 0,
+        "applied": 48,
+        "taskAndCompressorUsage": {
+          "physicalRequests": 109,
+          "knownUsageRequests": 109,
+          "unknownUsageRequests": 0,
+          "totals": {
+            "promptTokens": 398335,
+            "completionTokens": 58549,
+            "totalTokens": 456884
+          },
+          "knownUsageLowerBound": {
+            "promptTokens": 398335,
+            "completionTokens": 58549,
+            "totalTokens": 456884
+          }
+        }
+      }
+    }
+  },
+  "caseVariants": [
+    {
+      "caseId": "quality-v3-01-short",
+      "family": "timestamp_unordered_offsets",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-01-long",
+      "family": "timestamp_unordered_offsets",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-02-short",
+      "family": "timestamp_unordered_offsets",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-02-long",
+      "family": "timestamp_unordered_offsets",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-03-short",
+      "family": "literal_signed_prefix_rows",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 0,
+        "incorrectCompleted": 2,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 0,
+        "incorrectCompleted": 2,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-03-long",
+      "family": "literal_signed_prefix_rows",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 1,
+        "incorrectCompleted": 0,
+        "errors": 1,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 1,
+        "incorrectCompleted": 1,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-04-short",
+      "family": "literal_signed_prefix_rows",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 0,
+        "incorrectCompleted": 2,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 0,
+        "incorrectCompleted": 2,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-04-long",
+      "family": "literal_signed_prefix_rows",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 0,
+        "incorrectCompleted": 1,
+        "errors": 1,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 1,
+        "incorrectCompleted": 0,
+        "errors": 1,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-05-short",
+      "family": "explicit_arithmetic",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-05-long",
+      "family": "explicit_arithmetic",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-06-short",
+      "family": "explicit_arithmetic",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-06-long",
+      "family": "explicit_arithmetic",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-07-short",
+      "family": "config_diff_control",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-07-long",
+      "family": "config_diff_control",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-08-short",
+      "family": "config_diff_control",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-08-long",
+      "family": "config_diff_control",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-09-short",
+      "family": "unique_error_needle",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-09-long",
+      "family": "unique_error_needle",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-10-short",
+      "family": "unique_error_needle",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-10-long",
+      "family": "unique_error_needle",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-11-short",
+      "family": "status_progression_final_failure",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-11-long",
+      "family": "status_progression_final_failure",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-12-short",
+      "family": "status_progression_final_failure",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-12-long",
+      "family": "status_progression_final_failure",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-13-short",
+      "family": "ordered_last_write",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 1,
+        "incorrectCompleted": 0,
+        "errors": 1,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 1,
+        "incorrectCompleted": 0,
+        "errors": 1,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-13-long",
+      "family": "ordered_last_write",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-14-short",
+      "family": "ordered_last_write",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-14-long",
+      "family": "ordered_last_write",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-15-short",
+      "family": "legitimate_repeated_event_counts",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-15-long",
+      "family": "legitimate_repeated_event_counts",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-16-short",
+      "family": "legitimate_repeated_event_counts",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-16-long",
+      "family": "legitimate_repeated_event_counts",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-17-short",
+      "family": "quoted_instructions_are_data",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-17-long",
+      "family": "quoted_instructions_are_data",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-18-short",
+      "family": "quoted_instructions_are_data",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-18-long",
+      "family": "quoted_instructions_are_data",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-19-short",
+      "family": "unicode_crlf_literal_fidelity",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-19-long",
+      "family": "unicode_crlf_literal_fidelity",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-20-short",
+      "family": "unicode_crlf_literal_fidelity",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 0,
+        "incorrectCompleted": 2,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 0,
+        "incorrectCompleted": 2,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-20-long",
+      "family": "unicode_crlf_literal_fidelity",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 0,
+        "incorrectCompleted": 2,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-21-short",
+      "family": "multiline_record_scoped_header",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-21-long",
+      "family": "multiline_record_scoped_header",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-22-short",
+      "family": "multiline_exact_body_line",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-22-long",
+      "family": "multiline_exact_body_line",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 1,
+        "incorrectCompleted": 1,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-23-short",
+      "family": "heterogeneous_token_lookalike_lookup",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-23-long",
+      "family": "heterogeneous_token_lookalike_lookup",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "caseId": "quality-v3-24-short",
+      "family": "heterogeneous_full_line_lookup",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "caseId": "quality-v3-24-long",
+      "family": "heterogeneous_full_line_lookup",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    }
+  ],
+  "familyMatrix": [
+    {
+      "family": "config_diff_control",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "config_diff_control",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 4
+      }
+    },
+    {
+      "family": "explicit_arithmetic",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "explicit_arithmetic",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 4
+      }
+    },
+    {
+      "family": "heterogeneous_full_line_lookup",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "heterogeneous_full_line_lookup",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "family": "heterogeneous_token_lookalike_lookup",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "heterogeneous_token_lookalike_lookup",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "family": "legitimate_repeated_event_counts",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "legitimate_repeated_event_counts",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 4
+      }
+    },
+    {
+      "family": "literal_signed_prefix_rows",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 0,
+        "incorrectCompleted": 4,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 0,
+        "incorrectCompleted": 4,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "literal_signed_prefix_rows",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 1,
+        "incorrectCompleted": 1,
+        "errors": 2,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 2,
+        "incorrectCompleted": 1,
+        "errors": 1,
+        "unrun": 0,
+        "applied": 4
+      }
+    },
+    {
+      "family": "multiline_exact_body_line",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "multiline_exact_body_line",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 1,
+        "incorrectCompleted": 1,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "family": "multiline_record_scoped_header",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "multiline_record_scoped_header",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 2,
+        "observed": 2,
+        "accepted": 2,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 2
+      }
+    },
+    {
+      "family": "ordered_last_write",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 3,
+        "incorrectCompleted": 0,
+        "errors": 1,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 3,
+        "incorrectCompleted": 0,
+        "errors": 1,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "ordered_last_write",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 4
+      }
+    },
+    {
+      "family": "quoted_instructions_are_data",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "quoted_instructions_are_data",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 4
+      }
+    },
+    {
+      "family": "status_progression_final_failure",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "status_progression_final_failure",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 4
+      }
+    },
+    {
+      "family": "timestamp_unordered_offsets",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "timestamp_unordered_offsets",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 4
+      }
+    },
+    {
+      "family": "unicode_crlf_literal_fidelity",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 2,
+        "incorrectCompleted": 2,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 2,
+        "incorrectCompleted": 2,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "unicode_crlf_literal_fidelity",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 2,
+        "incorrectCompleted": 2,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 4
+      }
+    },
+    {
+      "family": "unique_error_needle",
+      "stratum": "native-short",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      }
+    },
+    {
+      "family": "unique_error_needle",
+      "stratum": "scoped-long",
+      "raw": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 0
+      },
+      "compressed": {
+        "scheduled": 4,
+        "observed": 4,
+        "accepted": 4,
+        "incorrectCompleted": 0,
+        "errors": 0,
+        "unrun": 0,
+        "applied": 4
+      }
+    }
+  ],
+  "judges": {
+    "raw": {
+      "scheduled": 48,
+      "unrun": 1,
+      "failed": 35,
+      "invalidFormat": 0,
+      "valid": 12,
+      "supported": 12,
+      "unsupported": 0
+    },
+    "compressed": {
+      "scheduled": 48,
+      "unrun": 1,
+      "failed": 35,
+      "invalidFormat": 0,
+      "valid": 12,
+      "supported": 12,
+      "unsupported": 0
+    }
+  },
+  "judgeDisagreements": [],
+  "taskAndCompressorPromptReductionFraction": 0.6076447629326573,
+  "http429Count": 0,
+  "productionQualified": false,
+  "limitations": [
+    "Independent audit recomputes aggregates and verifies archived scorer provenance; final model text was deliberately not persisted, so this is not independent rescoring.",
+    "Repeated invented cases do not establish population noninferiority.",
+    "Judge failures and unknown usage remain explicit; no assumed zero usage."
+  ]
+}

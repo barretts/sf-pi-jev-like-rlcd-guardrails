@@ -1,6 +1,6 @@
 # Exact-excerpt answer-effectiveness evaluation, prospective V1
 
-This campaign is running. It has no final answer-quality conclusion yet.
+This campaign finished with all 192 workflow records present. See [RESULTS.md](./RESULTS.md) and the independent audit. The CLI exited 1 because five workflows failed; the completed evaluation is not an all-green execution or production qualification.
 
 The intervention is the existing exact-excerpt implementation, with Google/local model training held fixed by using the same configured Grok 4.6 task model in both arms. Actual Pi sessions load all 23 controlled SF extension factories. They use genuine builtin `read` and the registered `jev_context_read` recovery tool; access to other files and tools is blocked. Original short traces and long scoped variants are evaluated in both arms, in two counterbalanced repetitions: 192 scheduled workflows, 96 per arm.
 

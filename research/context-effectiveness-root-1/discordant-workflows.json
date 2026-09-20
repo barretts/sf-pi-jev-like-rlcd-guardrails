@@ -1,0 +1,169 @@
+{
+  "pairsWithDifferentWorkflowAcceptance": 4,
+  "workflows": [
+    {
+      "id": "quality-v3-04-long__r2__raw",
+      "caseId": "quality-v3-04-long",
+      "arm": "raw",
+      "status": "error",
+      "answerScore": null,
+      "compressionApplied": false,
+      "canonicalOriginalVerified": true,
+      "wireProjectionVerified": true,
+      "cleanup": {
+        "affirmative": true,
+        "abort": "completed",
+        "shutdown": "completed",
+        "dispose": "completed"
+      }
+    },
+    {
+      "id": "quality-v3-04-long__r2__compressed",
+      "caseId": "quality-v3-04-long",
+      "arm": "compressed",
+      "status": "completed",
+      "answerScore": {
+        "accepted": true,
+        "validJson": true,
+        "matchedFields": 3,
+        "totalFields": 3
+      },
+      "compressionApplied": true,
+      "canonicalOriginalVerified": true,
+      "wireProjectionVerified": true,
+      "cleanup": {
+        "affirmative": true,
+        "abort": "completed",
+        "shutdown": "completed",
+        "dispose": "completed"
+      }
+    },
+    {
+      "id": "quality-v3-20-long__r1__raw",
+      "caseId": "quality-v3-20-long",
+      "arm": "raw",
+      "status": "completed",
+      "answerScore": {
+        "accepted": false,
+        "validJson": false,
+        "matchedFields": 0,
+        "totalFields": 2
+      },
+      "compressionApplied": false,
+      "canonicalOriginalVerified": true,
+      "wireProjectionVerified": true,
+      "cleanup": {
+        "affirmative": true,
+        "abort": "completed",
+        "shutdown": "completed",
+        "dispose": "completed"
+      }
+    },
+    {
+      "id": "quality-v3-20-long__r1__compressed",
+      "caseId": "quality-v3-20-long",
+      "arm": "compressed",
+      "status": "completed",
+      "answerScore": {
+        "accepted": true,
+        "validJson": true,
+        "matchedFields": 2,
+        "totalFields": 2
+      },
+      "compressionApplied": true,
+      "canonicalOriginalVerified": true,
+      "wireProjectionVerified": true,
+      "cleanup": {
+        "affirmative": true,
+        "abort": "completed",
+        "shutdown": "completed",
+        "dispose": "completed"
+      }
+    },
+    {
+      "id": "quality-v3-20-long__r2__raw",
+      "caseId": "quality-v3-20-long",
+      "arm": "raw",
+      "status": "completed",
+      "answerScore": {
+        "accepted": false,
+        "validJson": false,
+        "matchedFields": 0,
+        "totalFields": 2
+      },
+      "compressionApplied": false,
+      "canonicalOriginalVerified": true,
+      "wireProjectionVerified": true,
+      "cleanup": {
+        "affirmative": true,
+        "abort": "completed",
+        "shutdown": "completed",
+        "dispose": "completed"
+      }
+    },
+    {
+      "id": "quality-v3-20-long__r2__compressed",
+      "caseId": "quality-v3-20-long",
+      "arm": "compressed",
+      "status": "completed",
+      "answerScore": {
+        "accepted": true,
+        "validJson": true,
+        "matchedFields": 2,
+        "totalFields": 2
+      },
+      "compressionApplied": true,
+      "canonicalOriginalVerified": true,
+      "wireProjectionVerified": true,
+      "cleanup": {
+        "affirmative": true,
+        "abort": "completed",
+        "shutdown": "completed",
+        "dispose": "completed"
+      }
+    },
+    {
+      "id": "quality-v3-22-long__r1__raw",
+      "caseId": "quality-v3-22-long",
+      "arm": "raw",
+      "status": "completed",
+      "answerScore": {
+        "accepted": true,
+        "validJson": true,
+        "matchedFields": 2,
+        "totalFields": 2
+      },
+      "compressionApplied": false,
+      "canonicalOriginalVerified": true,
+      "wireProjectionVerified": true,
+      "cleanup": {
+        "affirmative": true,
+        "abort": "completed",
+        "shutdown": "completed",
+        "dispose": "completed"
+      }
+    },
+    {
+      "id": "quality-v3-22-long__r1__compressed",
+      "caseId": "quality-v3-22-long",
+      "arm": "compressed",
+      "status": "completed",
+      "answerScore": {
+        "accepted": false,
+        "validJson": true,
+        "matchedFields": 1,
+        "totalFields": 2
+      },
+      "compressionApplied": true,
+      "canonicalOriginalVerified": true,
+      "wireProjectionVerified": true,
+      "cleanup": {
+        "affirmative": true,
+        "abort": "completed",
+        "shutdown": "completed",
+        "dispose": "completed"
+      }
+    }
+  ],
+  "interpretation": "Unicode raw answers failed JSON parsing. The multiline regression returned valid JSON with one of two fields matching; which field was wrong is unknown because final answer text was not persisted. The regression workflow made three physical task requests, including a recovery turn. No omission-only cause is established."
+}

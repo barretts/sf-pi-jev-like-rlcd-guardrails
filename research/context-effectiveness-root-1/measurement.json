@@ -1,0 +1,26 @@
+{
+  "raw": {
+    "physicalTaskRequests": 193,
+    "physicalTaskElapsedSumMsIncludingPacing": 1052687.7730779985,
+    "workflowElapsedSumMsIncludingJudges": 1447711.1933759996,
+    "canonicalOriginalVerifiedWorkflows": 95,
+    "cleanupAffirmativeWorkflows": 96
+  },
+  "compressed": {
+    "physicalTaskRequests": 206,
+    "physicalTaskElapsedSumMsIncludingPacing": 1249276.0754619993,
+    "workflowElapsedSumMsIncludingJudges": 1671068.1228340012,
+    "canonicalOriginalVerifiedWorkflows": 95,
+    "cleanupAffirmativeWorkflows": 96
+  },
+  "comparison": {
+    "totalTokenReductionFraction": 0.5714054338827426,
+    "outputTokenRatio": 1.2875585632483082,
+    "physicalTaskElapsedRatioIncludingPacing": 1.186748917781374,
+    "campaignElapsedMs": 3127240.609208,
+    "cliExitCode": 1,
+    "fullSuccessfulExecution": false,
+    "causeOfExecutionAndJudgeFailures": "not captured; not inferred from HTTP status",
+    "finalAnswersPersisted": false
+  }
+}
