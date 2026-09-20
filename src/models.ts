@@ -1,11 +1,14 @@
 import { createHash, randomUUID } from "node:crypto";
 import { createReadStream } from "node:fs";
 import {
+  lstat,
   mkdir,
   open,
+  readdir,
   readFile,
   rename,
   rm,
+  rmdir,
   stat,
   writeFile,
 } from "node:fs/promises";
@@ -169,6 +172,233 @@ export interface FetchOptions {
   /** Transport injection is intended for bounded offline verification. */
   fetch?: typeof globalThis.fetch;
 }
+const MODEL_RANGE_SIZE = 64 * 1024 * 1024;
+interface DownloadIdentity {
+  repository: string;
+  revision: string;
+  file: string;
+  source_file: string;
+  sha256: string;
+  size: number;
+  range_size: number;
+}
+interface DownloadJournal {
+  version: 1;
+  descriptor: DownloadIdentity;
+  ranges: { start: number; end: number; sha256: string }[];
+}
+interface OwnedDownload {
+  directory: string;
+  part: string;
+  journal: DownloadJournal;
+}
+function ownerIsAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return (error as NodeJS.ErrnoException).code !== "ESRCH";
+  }
+}
+async function saveDownloadJournal(state: OwnedDownload): Promise<void> {
+  const temporary = join(state.directory, `journal.${randomUUID()}.tmp`);
+  const handle = await open(temporary, "wx", 0o600);
+  try {
+    await handle.writeFile(JSON.stringify(state.journal));
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+  await rename(temporary, join(state.directory, "journal.json"));
+}
+function isOwnedDownloadEntry(name: string): boolean {
+  return (
+    ["owner.json", "journal.json", "artifact.part"].includes(name) ||
+    /^journal\.[a-f0-9-]{36}\.tmp$/.test(name)
+  );
+}
+async function removeOwnedDownload(state: OwnedDownload): Promise<void> {
+  for (const entry of await readdir(state.directory, { withFileTypes: true })) {
+    if (isOwnedDownloadEntry(entry.name) && !entry.isDirectory())
+      await rm(join(state.directory, entry.name), { force: true });
+  }
+  // A caller adding unrelated content to an owned directory must not lose it.
+  try {
+    await rmdir(state.directory);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOTEMPTY") throw error;
+  }
+}
+function releaseDownloadReader(
+  reader?: ReadableStreamDefaultReader<Uint8Array>,
+): void {
+  if (!reader) return;
+  // cancel() settles pending reads, but an underlying source can return a
+  // never-settling cancellation promise. Initiate cancellation without waiting.
+  try {
+    void reader.cancel().catch(() => {});
+  } catch {}
+  try {
+    reader.releaseLock();
+  } catch {}
+}
+async function ownRangeDownload(
+  destination: string,
+  descriptor: ModelFile,
+): Promise<OwnedDownload> {
+  const identity: DownloadIdentity = {
+    repository: descriptor.repository,
+    revision: descriptor.revision,
+    file: descriptor.file,
+    source_file: descriptor.source_file ?? descriptor.file,
+    sha256: descriptor.sha256,
+    size: descriptor.size,
+    range_size: MODEL_RANGE_SIZE,
+  };
+  const serialized = JSON.stringify(identity);
+  const key = createHash("sha256").update(serialized).digest("hex");
+  const prefix = `${descriptor.file}.${key}.resume.`;
+  const parent = dirname(destination);
+  const activeName = () => `${prefix}active-${process.pid}-${randomUUID()}`;
+  const writeOwner = async (directory: string) =>
+    writeFile(
+      join(directory, "owner.json"),
+      JSON.stringify({ version: 1, state: "active", pid: process.pid, key }),
+      { mode: 0o600 },
+    );
+  for (const entry of await readdir(parent, { withFileTypes: true })) {
+    if (!entry.isDirectory() || !entry.name.startsWith(prefix)) continue;
+    const suffix = entry.name.slice(prefix.length);
+    const active = /^active-([1-9][0-9]*)-([a-f0-9-]{36})$/.exec(suffix);
+    const paused = /^paused-([a-f0-9-]{36})$/.test(suffix);
+    if (!active && !paused) continue;
+    const directory = join(parent, entry.name);
+    let journal: DownloadJournal;
+    try {
+      const entries = await readdir(directory, { withFileTypes: true });
+      let owned = true;
+      for (const child of entries) {
+        const details = await lstat(join(directory, child.name));
+        if (
+          !isOwnedDownloadEntry(child.name) ||
+          !details.isFile() ||
+          details.nlink !== 1
+        ) {
+          owned = false;
+          break;
+        }
+      }
+      if (!owned) continue;
+      if (active && ownerIsAlive(Number(active[1]))) continue;
+      if (!(await lstat(join(directory, "owner.json"))).isFile()) continue;
+      const owner = JSON.parse(
+        await readFile(join(directory, "owner.json"), "utf8"),
+      );
+      if (
+        owner.version !== 1 ||
+        owner.key !== key ||
+        !Number.isSafeInteger(owner.pid) ||
+        owner.pid < 1
+      )
+        continue;
+      if (active) {
+        // The name prevents another caller taking a newly claimed directory
+        // before its owner record has been replaced. Unknown locks stay intact.
+        if (
+          owner.pid !== Number(active[1]) ||
+          !["active", "paused"].includes(owner.state) ||
+          ownerIsAlive(owner.pid)
+        )
+          continue;
+      } else if (owner.state !== "paused") continue;
+      if (!(await lstat(join(directory, "journal.json"))).isFile()) continue;
+      journal = JSON.parse(
+        await readFile(join(directory, "journal.json"), "utf8"),
+      );
+      if (
+        journal.version !== 1 ||
+        JSON.stringify(journal.descriptor) !== serialized ||
+        !Array.isArray(journal.ranges)
+      )
+        continue;
+      const starts = new Set<number>();
+      if (
+        journal.ranges.some((range) => {
+          const invalid =
+            !Number.isSafeInteger(range.start) ||
+            range.start < 0 ||
+            range.start >= descriptor.size ||
+            range.start % MODEL_RANGE_SIZE !== 0 ||
+            range.end !==
+              Math.min(range.start + MODEL_RANGE_SIZE, descriptor.size) - 1 ||
+            !/^[a-f0-9]{64}$/.test(range.sha256 ?? "") ||
+            starts.has(range.start);
+          starts.add(range.start);
+          return invalid;
+        })
+      )
+        continue;
+      const part = await lstat(join(directory, "artifact.part"));
+      if (!part.isFile() || part.size !== descriptor.size) continue;
+    } catch {
+      // Unrecognized, incomplete, or concurrently claimed state is not ours.
+      continue;
+    }
+    const claimed = join(parent, activeName());
+    try {
+      // Each source name is unique and never recreated. Exactly one caller can
+      // move a paused/dead-owner directory into its private active namespace.
+      await rename(directory, claimed);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
+      throw error;
+    }
+    await writeOwner(claimed);
+    return {
+      directory: claimed,
+      part: join(claimed, "artifact.part"),
+      journal,
+    };
+  }
+  const directory = join(parent, activeName());
+  await mkdir(directory, { mode: 0o700 });
+  await writeOwner(directory);
+  const state: OwnedDownload = {
+    directory,
+    part: join(directory, "artifact.part"),
+    journal: { version: 1, descriptor: identity, ranges: [] },
+  };
+  const handle = await open(state.part, "wx", 0o600);
+  try {
+    await handle.truncate(descriptor.size);
+  } finally {
+    await handle.close();
+  }
+  await saveDownloadJournal(state);
+  return state;
+}
+async function waitForTransport<T>(
+  operation: Promise<T>,
+  signal: AbortSignal,
+): Promise<T> {
+  if (signal.aborted) {
+    void operation.catch(() => {});
+    signal.throwIfAborted();
+  }
+  let aborted: (() => void) | undefined;
+  try {
+    return await Promise.race([
+      operation,
+      new Promise<never>((_resolve, reject) => {
+        aborted = () => reject(signal.reason);
+        signal.addEventListener("abort", aborted, { once: true });
+        if (signal.aborted) aborted();
+      }),
+    ]);
+  } finally {
+    if (aborted) signal.removeEventListener("abort", aborted);
+  }
+}
 export async function fetchApprovedFile(
   descriptor: ModelFile,
   opts: FetchOptions = {},
@@ -224,12 +454,36 @@ export async function fetchApprovedFile(
   };
   let handle: Awaited<ReturnType<typeof open>> | undefined;
   let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+  let resumable: OwnedDownload | undefined;
+  let discardResume = false;
   try {
-    if (concurrency > 1 && descriptor.size > 128 * 1024 * 1024) {
-      handle = await open(part, "wx", 0o600);
-      await handle.truncate(descriptor.size);
+    if (descriptor.size > 128 * 1024 * 1024) {
+      resumable = await ownRangeDownload(destination, descriptor);
+      handle = await open(resumable.part, "r+");
+      // Journal hashes are only checkpoints, not approval. Re-read every saved
+      // range after claiming it; final pinned artifact verification is mandatory.
+      const completed = new Map<number, DownloadJournal["ranges"][number]>();
+      for (const range of resumable.journal.ranges) {
+        const hash = createHash("sha256");
+        for await (const chunk of createReadStream(resumable.part, {
+          start: range.start,
+          end: range.end,
+          signal,
+        })) {
+          signal.throwIfAborted();
+          hash.update(chunk);
+        }
+        if (hash.digest("hex") === range.sha256)
+          completed.set(range.start, range);
+      }
+      resumable.journal.ranges = [...completed.values()];
+      await saveDownloadJournal(resumable);
       let nextOffset = 0;
-      let received = 0;
+      let received = [...completed.values()].reduce(
+        (sum, range) => sum + range.end - range.start + 1,
+        0,
+      );
+      let checkpoint = Promise.resolve();
       const active = new Map<number, number>();
       const report = () =>
         opts.onProgress?.(
@@ -238,13 +492,15 @@ export async function fetchApprovedFile(
           descriptor.size,
           descriptor.file,
         );
+      report();
       const download = opts.fetch ?? globalThis.fetch;
       const url = `https://huggingface.co/${descriptor.repository}/resolve/${descriptor.revision}/${descriptor.source_file ?? descriptor.file}`;
       const worker = async () => {
         while (nextOffset < descriptor.size) {
           const start = nextOffset;
-          const end = Math.min(start + 64 * 1024 * 1024, descriptor.size) - 1;
+          const end = Math.min(start + MODEL_RANGE_SIZE, descriptor.size) - 1;
           nextOffset = end + 1;
+          if (completed.has(start)) continue;
           for (let attempt = 0; attempt < 3; attempt++) {
             const rangeController = new AbortController();
             const rangeSignal = AbortSignal.any([
@@ -269,10 +525,16 @@ export async function fetchApprovedFile(
               signal.throwIfAborted();
               reset();
               active.set(start, 0);
-              const response = await download(url, {
-                headers: { Range: `bytes=${start}-${end}` },
-                signal: rangeSignal,
-              });
+              const requestUrl = new URL(url);
+              if (attempt > 0)
+                requestUrl.searchParams.set("jev_range_retry", randomUUID());
+              const response = await waitForTransport(
+                download(requestUrl.href, {
+                  headers: { Range: `bytes=${start}-${end}` },
+                  signal: rangeSignal,
+                }),
+                rangeSignal,
+              );
               if (response.status === 429 || response.status >= 500)
                 throw new TypeError(
                   `Model range transport failed: HTTP ${response.status}`,
@@ -292,7 +554,10 @@ export async function fetchApprovedFile(
               while (true) {
                 rangeSignal.throwIfAborted();
                 reset();
-                const { done, value } = await rangeReader.read();
+                const { done, value } = await waitForTransport(
+                  rangeReader.read(),
+                  rangeSignal,
+                );
                 if (done) break;
                 if (count + value.byteLength > buffer.byteLength)
                   throw new Error("Model range exceeds approved size");
@@ -302,7 +567,9 @@ export async function fetchApprovedFile(
                 report();
               }
               if (count !== buffer.byteLength)
-                throw new Error("Model range is incomplete");
+                throw new TypeError("Model range is incomplete");
+              clearTimeout(stalled);
+              rangeSignal.throwIfAborted();
               let written = 0;
               while (written < buffer.byteLength) {
                 const result = await handle!.write(
@@ -315,16 +582,36 @@ export async function fetchApprovedFile(
                   throw new Error("Model artifact write made no progress");
                 written += result.bytesWritten;
               }
+              const range = {
+                start,
+                end,
+                sha256: createHash("sha256").update(buffer).digest("hex"),
+              };
+              // Serialize durable journal replacement across workers. A range
+              // becomes reusable only after its bytes have reached the file.
+              checkpoint = checkpoint.then(async () => {
+                await handle!.sync();
+                completed.set(start, range);
+                resumable!.journal.ranges = [...completed.values()].sort(
+                  (a, b) => a.start - b.start,
+                );
+                await saveDownloadJournal(resumable!);
+              });
+              await checkpoint;
               active.delete(start);
               received += count;
               report();
               break;
             } catch (error) {
               active.delete(start);
+              const code = (error as NodeJS.ErrnoException).code;
+              const publicAbort =
+                error instanceof Error && error.name === "AbortError";
               const transportError =
-                error instanceof TypeError ||
-                rangeController.signal.aborted ||
-                (error as NodeJS.ErrnoException).code?.startsWith("E");
+                !publicAbort &&
+                (error instanceof TypeError ||
+                  rangeController.signal.aborted ||
+                  (typeof code === "string" && code.startsWith("E")));
               if (!signal.aborted && transportError && attempt < 2)
                 retry = true;
               else {
@@ -333,10 +620,13 @@ export async function fetchApprovedFile(
               }
             } finally {
               clearTimeout(stalled);
-              await rangeReader?.cancel().catch(() => {});
+              releaseDownloadReader(rangeReader);
             }
             if (retry)
-              await new Promise((done) => setTimeout(done, 250 * 2 ** attempt));
+              await waitForTransport(
+                new Promise((done) => setTimeout(done, 250 * 2 ** attempt)),
+                signal,
+              );
           }
         }
       };
@@ -350,17 +640,26 @@ export async function fetchApprovedFile(
       await handle.sync();
       await handle.close();
       handle = undefined;
-      const found = await hashArtifact(part, signal);
-      if (found.sha256 !== descriptor.sha256 || found.size !== descriptor.size)
+      const found = await hashArtifact(resumable.part, signal);
+      if (
+        found.sha256 !== descriptor.sha256 ||
+        found.size !== descriptor.size
+      ) {
+        discardResume = true;
         throw new Error("Model download size or checksum mismatch");
+      }
       signal.throwIfAborted();
-      await rename(part, destination);
+      await rename(resumable.part, destination);
+      discardResume = true;
       return destination;
     }
     resetIdle();
-    const response = await (opts.fetch ?? globalThis.fetch)(
-      `https://huggingface.co/${descriptor.repository}/resolve/${descriptor.revision}/${descriptor.source_file ?? descriptor.file}`,
-      { signal },
+    const response = await waitForTransport(
+      (opts.fetch ?? globalThis.fetch)(
+        `https://huggingface.co/${descriptor.repository}/resolve/${descriptor.revision}/${descriptor.source_file ?? descriptor.file}`,
+        { signal },
+      ),
+      signal,
     );
     if (!response.ok || !response.body)
       throw new Error(`Download failed: HTTP ${response.status}`);
@@ -374,7 +673,7 @@ export async function fetchApprovedFile(
     while (true) {
       signal.throwIfAborted();
       resetIdle();
-      const { value, done } = await reader.read();
+      const { value, done } = await waitForTransport(reader.read(), signal);
       if (done) break;
       received += value.byteLength;
       if (received > descriptor.size)
@@ -397,8 +696,28 @@ export async function fetchApprovedFile(
   } finally {
     clearTimeout(deadline);
     clearTimeout(idle);
-    await reader?.cancel().catch(() => {});
+    releaseDownloadReader(reader);
     await handle?.close().catch(() => {});
+    if (resumable) {
+      if (discardResume || resumable.journal.ranges.length === 0)
+        await removeOwnedDownload(resumable);
+      else {
+        const ownerPath = join(resumable.directory, "owner.json");
+        const owner = JSON.parse(await readFile(ownerPath, "utf8"));
+        await writeFile(
+          ownerPath,
+          JSON.stringify({ ...owner, state: "paused" }),
+          {
+            mode: 0o600,
+          },
+        );
+        const paused = resumable.directory.replace(
+          /active-[1-9][0-9]*-[a-f0-9-]{36}$/,
+          `paused-${randomUUID()}`,
+        );
+        await rename(resumable.directory, paused);
+      }
+    }
     await rm(part, { force: true });
   }
 }

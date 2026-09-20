@@ -1,5 +1,15 @@
-import { createHash } from "node:crypto";
-import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { createHash, randomUUID } from "node:crypto";
+import { spawnSync } from "node:child_process";
+import {
+  link,
+  mkdtemp,
+  open,
+  readFile,
+  readdir,
+  rename,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, expect, it } from "vitest";
@@ -9,6 +19,7 @@ import {
   approvedModels,
   fetchApprovedFile,
   fetchApprovedModel,
+  hashArtifact,
   modelDescriptor,
   verifyArtifact,
   verifyTrainedArtifactExport,
@@ -175,6 +186,310 @@ it("retries an interrupted range without repeating completed ranges", async () =
   expect(
     (await readFile(join(directoryPath, descriptor.file))).equals(bytes),
   ).toBe(true);
+});
+const rangeSize = 64 * 1024 * 1024;
+function requestedRange(init?: RequestInit) {
+  const match = new Headers(init!.headers)
+    .get("Range")!
+    .match(/^bytes=(\d+)-(\d+)$/)!;
+  return { start: Number(match[1]), end: Number(match[2]) };
+}
+function rangeResponse(bytes: Buffer, init?: RequestInit) {
+  const { start, end } = requestedRange(init);
+  return new Response(bytes.subarray(start, end + 1), {
+    status: 206,
+    headers: { "content-range": `bytes ${start}-${end}/${bytes.length}` },
+  });
+}
+async function interruptedDownload(directoryPath: string, bytes: Buffer) {
+  const descriptor = fixture(bytes);
+  await expect(
+    fetchApprovedFile(descriptor, {
+      directory: directoryPath,
+      concurrency: 1,
+      fetch: async (_input, init) => {
+        if (requestedRange(init).start === 2 * rangeSize)
+          throw new TypeError("Interrupted final range");
+        return rangeResponse(bytes, init);
+      },
+    }),
+  ).rejects.toThrow("Interrupted final range");
+  const name = (await readdir(directoryPath)).find((name) =>
+    name.includes(".resume.paused-"),
+  )!;
+  const state = join(directoryPath, name);
+  return { descriptor, state };
+}
+it("retains completed ranges after failure and rechecks them before restart reuse", async () => {
+  const directoryPath = await directory();
+  const bytes = Buffer.alloc(2 * rangeSize + 1, 3);
+  const unrelated = join(directoryPath, "another-download.part");
+  await writeFile(unrelated, "untouched");
+  const { descriptor, state } = await interruptedDownload(directoryPath, bytes);
+  const journal = JSON.parse(
+    await readFile(join(state, "journal.json"), "utf8"),
+  );
+  expect(journal.ranges.map((range: { start: number }) => range.start)).toEqual(
+    [0, rangeSize],
+  );
+  const calls: number[] = [];
+  const progress: number[] = [];
+  await fetchApprovedFile(descriptor, {
+    directory: directoryPath,
+    concurrency: 1,
+    onProgress: (completed) => progress.push(completed),
+    fetch: async (_input, init) => {
+      calls.push(requestedRange(init).start);
+      return rangeResponse(bytes, init);
+    },
+  });
+  expect(calls).toEqual([2 * rangeSize]);
+  expect(progress[0]).toBe(2 * rangeSize);
+  expect(await hashArtifact(join(directoryPath, descriptor.file))).toEqual({
+    sha256: descriptor.sha256,
+    size: descriptor.size,
+  });
+  expect(await readFile(unrelated, "utf8")).toBe("untouched");
+  expect((await readdir(directoryPath)).sort()).toEqual([
+    "another-download.part",
+    descriptor.file,
+  ]);
+});
+it("refetches a saved range whose bytes no longer match its checkpoint", async () => {
+  const directoryPath = await directory();
+  const bytes = Buffer.alloc(2 * rangeSize + 1, 4);
+  const { descriptor, state } = await interruptedDownload(directoryPath, bytes);
+  const handle = await open(join(state, "artifact.part"), "r+");
+  await handle.write(Buffer.from([9]), 0, 1, 0);
+  await handle.close();
+  const calls: number[] = [];
+  await fetchApprovedFile(descriptor, {
+    directory: directoryPath,
+    concurrency: 1,
+    fetch: async (_input, init) => {
+      calls.push(requestedRange(init).start);
+      return rangeResponse(bytes, init);
+    },
+  });
+  expect(calls).toEqual([0, 2 * rangeSize]);
+  expect(
+    (await hashArtifact(join(directoryPath, descriptor.file))).sha256,
+  ).toBe(descriptor.sha256);
+});
+it("requires the full pinned digest even when modified saved bytes match a journal hash", async () => {
+  const directoryPath = await directory();
+  const bytes = Buffer.alloc(2 * rangeSize + 1, 5);
+  const { descriptor, state } = await interruptedDownload(directoryPath, bytes);
+  const destination = join(directoryPath, descriptor.file);
+  await writeFile(destination, "previous artifact");
+  bytes[0] = 9;
+  const handle = await open(join(state, "artifact.part"), "r+");
+  await handle.write(bytes.subarray(0, 1), 0, 1, 0);
+  await handle.close();
+  const journalPath = join(state, "journal.json");
+  const journal = JSON.parse(await readFile(journalPath, "utf8"));
+  journal.ranges[0].sha256 = createHash("sha256")
+    .update(bytes.subarray(0, rangeSize))
+    .digest("hex");
+  await writeFile(journalPath, JSON.stringify(journal));
+  const calls: number[] = [];
+  await expect(
+    fetchApprovedFile(descriptor, {
+      directory: directoryPath,
+      concurrency: 1,
+      fetch: async (_input, init) => {
+        calls.push(requestedRange(init).start);
+        return rangeResponse(bytes, init);
+      },
+    }),
+  ).rejects.toThrow("checksum mismatch");
+  expect(calls).toEqual([2 * rangeSize]);
+  expect(await readFile(destination, "utf8")).toBe("previous artifact");
+  expect(await readdir(directoryPath)).toEqual([descriptor.file]);
+});
+it("preserves live ownership and recovers an exact journal only after its recorded PID exits", async () => {
+  const directoryPath = await directory();
+  const bytes = Buffer.alloc(2 * rangeSize + 1, 6);
+  const { descriptor, state } = await interruptedDownload(directoryPath, bytes);
+  const unknown = join(state, "unrelated-notes.txt");
+  await writeFile(unknown, "keep unrelated state");
+  let callsForUnknown = 0;
+  await fetchApprovedFile(descriptor, {
+    directory: directoryPath,
+    concurrency: 1,
+    fetch: async (_input, init) => {
+      callsForUnknown++;
+      return rangeResponse(bytes, init);
+    },
+  });
+  expect(callsForUnknown).toBe(3);
+  expect(await readFile(unknown, "utf8")).toBe("keep unrelated state");
+  await rm(unknown);
+  await rm(join(directoryPath, descriptor.file));
+  const linked = join(directoryPath, "unrelated-linked-artifact.bin");
+  await link(join(state, "artifact.part"), linked);
+  const linkedIdentity = await hashArtifact(linked);
+  let callsForLinked = 0;
+  await fetchApprovedFile(descriptor, {
+    directory: directoryPath,
+    concurrency: 1,
+    fetch: async (_input, init) => {
+      callsForLinked++;
+      return rangeResponse(bytes, init);
+    },
+  });
+  expect(callsForLinked).toBe(3);
+  expect(await hashArtifact(linked)).toEqual(linkedIdentity);
+  await rm(linked);
+  await rm(join(directoryPath, descriptor.file));
+  const owner = JSON.parse(await readFile(join(state, "owner.json"), "utf8"));
+  const liveState = state.replace(
+    /paused-[a-f0-9-]{36}$/,
+    `active-${process.pid}-${randomUUID()}`,
+  );
+  await rename(state, liveState);
+  const liveOwner = { ...owner, state: "active", pid: process.pid };
+  await writeFile(join(liveState, "owner.json"), JSON.stringify(liveOwner));
+  const liveCalls: number[] = [];
+  await fetchApprovedFile(descriptor, {
+    directory: directoryPath,
+    concurrency: 1,
+    fetch: async (_input, init) => {
+      liveCalls.push(requestedRange(init).start);
+      return rangeResponse(bytes, init);
+    },
+  });
+  expect(liveCalls).toEqual([0, rangeSize, 2 * rangeSize]);
+  expect(
+    JSON.parse(await readFile(join(liveState, "owner.json"), "utf8")),
+  ).toEqual(liveOwner);
+  await rm(join(directoryPath, descriptor.file));
+  const child = spawnSync(process.execPath, ["-e", ""], { stdio: "ignore" });
+  expect(child.status).toBe(0);
+  expect(() => process.kill(child.pid, 0)).toThrow();
+  const deadState = liveState.replace(
+    /active-[1-9][0-9]*-[a-f0-9-]{36}$/,
+    `active-${child.pid}-${randomUUID()}`,
+  );
+  await rename(liveState, deadState);
+  await writeFile(
+    join(deadState, "owner.json"),
+    JSON.stringify({ ...liveOwner, pid: child.pid }),
+  );
+  const calls: number[] = [];
+  await fetchApprovedFile(descriptor, {
+    directory: directoryPath,
+    concurrency: 1,
+    fetch: async (_input, init) => {
+      calls.push(requestedRange(init).start);
+      return rangeResponse(bytes, init);
+    },
+  });
+  expect(calls).toEqual([2 * rangeSize]);
+  expect(await readdir(directoryPath)).toEqual([descriptor.file]);
+});
+it("bounds stalled range retries and cache-busts only the immutable revision URL", async () => {
+  const directoryPath = await directory();
+  const bytes = Buffer.alloc(2 * rangeSize + 1, 7);
+  const descriptor = fixture(bytes);
+  const urls: URL[] = [];
+  await fetchApprovedFile(descriptor, {
+    directory: directoryPath,
+    concurrency: 1,
+    idleTimeoutMs: 100,
+    fetch: async (input, init) => {
+      urls.push(new URL(String(input)));
+      if (urls.length === 1) return await new Promise<Response>(() => {});
+      return rangeResponse(bytes, init);
+    },
+  });
+  expect(urls).toHaveLength(4);
+  expect(urls[0].search).toBe("");
+  expect(urls[1].searchParams.get("jev_range_retry")).toMatch(
+    /^[a-f0-9-]{36}$/,
+  );
+  expect(
+    urls.every(
+      (url) =>
+        url.pathname ===
+        `/google/gemma-fixture/resolve/${descriptor.revision}/${descriptor.file}`,
+    ),
+  ).toBe(true);
+  expect(
+    (await hashArtifact(join(directoryPath, descriptor.file))).sha256,
+  ).toBe(descriptor.sha256);
+});
+it("settles stalled range readers even when their source cancellation never resolves", async () => {
+  const directoryPath = await directory();
+  const descriptor = fixture(Buffer.from("GGUFfixture"));
+  descriptor.size = 2 * rangeSize + 1;
+  const streams: ReadableStream<Uint8Array>[] = [];
+  let calls = 0;
+  await expect(
+    fetchApprovedFile(descriptor, {
+      directory: directoryPath,
+      concurrency: 1,
+      idleTimeoutMs: 10,
+      fetch: async (_input, init) => {
+        calls++;
+        const { start, end } = requestedRange(init);
+        const body = new ReadableStream<Uint8Array>({
+          cancel: () => new Promise<void>(() => {}),
+        });
+        streams.push(body);
+        return new Response(body, {
+          status: 206,
+          headers: {
+            "content-range": `bytes ${start}-${end}/${descriptor.size}`,
+          },
+        });
+      },
+    }),
+  ).rejects.toThrow("stalled");
+  expect(calls).toBe(3);
+  expect(streams.every((stream) => !stream.locked)).toBe(true);
+  expect(await readdir(directoryPath)).toEqual([]);
+});
+it("does not retry a public range AbortError", async () => {
+  const directoryPath = await directory();
+  const descriptor = fixture(Buffer.from("GGUFfixture"));
+  descriptor.size = 2 * rangeSize + 1;
+  let calls = 0;
+  await expect(
+    fetchApprovedFile(descriptor, {
+      directory: directoryPath,
+      fetch: async () => {
+        calls++;
+        throw new DOMException("Fixture canceled", "AbortError");
+      },
+      concurrency: 1,
+    }),
+  ).rejects.toMatchObject({ name: "AbortError" });
+  expect(calls).toBe(1);
+  expect(await readdir(directoryPath)).toEqual([]);
+});
+it("bounds small-file transports and releases a stalled reader without waiting on cancellation", async () => {
+  const directoryPath = await directory();
+  const descriptor = fixture(Buffer.from("GGUFfixture"));
+  await expect(
+    fetchApprovedFile(descriptor, {
+      directory: directoryPath,
+      idleTimeoutMs: 10,
+      fetch: async () => await new Promise<Response>(() => {}),
+    }),
+  ).rejects.toThrow("stalled");
+  const body = new ReadableStream<Uint8Array>({
+    cancel: () => new Promise<void>(() => {}),
+  });
+  await expect(
+    fetchApprovedFile(descriptor, {
+      directory: directoryPath,
+      idleTimeoutMs: 10,
+      fetch: async () => new Response(body),
+    }),
+  ).rejects.toThrow("stalled");
+  expect(body.locked).toBe(false);
+  expect(await readdir(directoryPath)).toEqual([]);
 });
 async function trainingFixture() {
   const fixture = await rfdtFixture(await directory());
