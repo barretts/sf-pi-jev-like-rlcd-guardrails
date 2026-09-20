@@ -241,7 +241,10 @@ it("bounds stalled RPCs, never replays them, and cleans before returning", async
   const { backend, config, operations, modeFile } =
     await runtime("stall-evaluate");
   const compiled = await backend.compile(preparePrompt(input));
-  config.requestTimeoutMs = 30;
+  const pid = backend.status.process_id!;
+  const directory = backend.status.temporary_directory!;
+  // Allow the fixture process to receive the request under concurrent CPU load.
+  config.requestTimeoutMs = 500;
   await expect(backend.evaluate(compiled)).rejects.toMatchObject({
     stage: "request",
   });
@@ -251,6 +254,8 @@ it("bounds stalled RPCs, never replays them, and cleans before returning", async
       .filter((op) => op === "evaluate"),
   ).toHaveLength(1);
   expect(backend.status.process_id).toBeNull();
+  expect(() => process.kill(pid, 0)).toThrow();
+  await expect(stat(directory)).rejects.toMatchObject({ code: "ENOENT" });
   await writeFile(modeFile, "basic");
   config.requestTimeoutMs = 5_000;
   expect(

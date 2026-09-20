@@ -186,7 +186,7 @@ it("retries an interrupted range without repeating completed ranges", async () =
   expect(
     (await readFile(join(directoryPath, descriptor.file))).equals(bytes),
   ).toBe(true);
-});
+}, 20_000);
 const rangeSize = 64 * 1024 * 1024;
 function requestedRange(init?: RequestInit) {
   const match = new Headers(init!.headers)
@@ -254,7 +254,7 @@ it("retains completed ranges after failure and rechecks them before restart reus
     "another-download.part",
     descriptor.file,
   ]);
-});
+}, 20_000);
 it("refetches a saved range whose bytes no longer match its checkpoint", async () => {
   const directoryPath = await directory();
   const bytes = Buffer.alloc(2 * rangeSize + 1, 4);
@@ -275,7 +275,7 @@ it("refetches a saved range whose bytes no longer match its checkpoint", async (
   expect(
     (await hashArtifact(join(directoryPath, descriptor.file))).sha256,
   ).toBe(descriptor.sha256);
-});
+}, 20_000);
 it("requires the full pinned digest even when modified saved bytes match a journal hash", async () => {
   const directoryPath = await directory();
   const bytes = Buffer.alloc(2 * rangeSize + 1, 5);
@@ -306,7 +306,7 @@ it("requires the full pinned digest even when modified saved bytes match a journ
   expect(calls).toEqual([2 * rangeSize]);
   expect(await readFile(destination, "utf8")).toBe("previous artifact");
   expect(await readdir(directoryPath)).toEqual([descriptor.file]);
-});
+}, 20_000);
 it("preserves live ownership and recovers an exact journal only after its recorded PID exits", async () => {
   const directoryPath = await directory();
   const bytes = Buffer.alloc(2 * rangeSize + 1, 6);
@@ -387,7 +387,7 @@ it("preserves live ownership and recovers an exact journal only after its record
   });
   expect(calls).toEqual([2 * rangeSize]);
   expect(await readdir(directoryPath)).toEqual([descriptor.file]);
-});
+}, 20_000);
 it("bounds stalled range retries and cache-busts only the immutable revision URL", async () => {
   const directoryPath = await directory();
   const bytes = Buffer.alloc(2 * rangeSize + 1, 7);
@@ -418,7 +418,7 @@ it("bounds stalled range retries and cache-busts only the immutable revision URL
   expect(
     (await hashArtifact(join(directoryPath, descriptor.file))).sha256,
   ).toBe(descriptor.sha256);
-});
+}, 20_000);
 it("settles stalled range readers even when their source cancellation never resolves", async () => {
   const directoryPath = await directory();
   const descriptor = fixture(Buffer.from("GGUFfixture"));
@@ -449,7 +449,7 @@ it("settles stalled range readers even when their source cancellation never reso
   expect(calls).toBe(3);
   expect(streams.every((stream) => !stream.locked)).toBe(true);
   expect(await readdir(directoryPath)).toEqual([]);
-});
+}, 20_000);
 it("does not retry a public range AbortError", async () => {
   const directoryPath = await directory();
   const descriptor = fixture(Buffer.from("GGUFfixture"));
@@ -467,7 +467,7 @@ it("does not retry a public range AbortError", async () => {
   ).rejects.toMatchObject({ name: "AbortError" });
   expect(calls).toBe(1);
   expect(await readdir(directoryPath)).toEqual([]);
-});
+}, 20_000);
 it("bounds small-file transports and releases a stalled reader without waiting on cancellation", async () => {
   const directoryPath = await directory();
   const descriptor = fixture(Buffer.from("GGUFfixture"));

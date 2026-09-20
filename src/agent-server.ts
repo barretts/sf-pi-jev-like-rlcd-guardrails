@@ -259,6 +259,10 @@ export class AgentServer {
       "1",
       "--n-gpu-layers",
       device === "metal" ? "all" : "0",
+      // The pinned llama.cpp logger maps backend INFO evidence to trace level 4.
+      // Its default level 3 omits the GPU name and positive layer-offload count.
+      "--verbosity",
+      "4",
       "--reasoning",
       "on",
       "--cors-origins",
@@ -344,9 +348,12 @@ export class AgentServer {
           ? await readFile(logFile, "utf8")
           : this.startupLog;
         const layers = startupLog.match(/offloaded (\d+)\/\d+ layers to GPU/);
-        const deviceName = startupLog
-          .match(/GPU name:\s*([^\n]+)/)?.[1]
-          ?.trim();
+        const deviceName = (
+          startupLog.match(/GPU name:\s*([^\n]+)/)?.[1] ??
+          startupLog.match(
+            /llama_prepare_model_devices: using device (MTL\d+ \([^\n)]+\)) \(/,
+          )?.[1]
+        )?.trim();
         if (layers) {
           state.gpu_layers = Number(layers[1]);
           state.actual_device =
