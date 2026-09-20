@@ -111,17 +111,17 @@ The prospective comparison completed all 312 attempts: the same 78 developer VAL
 
 Two initial synthetic capabilities failed before any generation POST: this server requires a fresh owned `--slot-save-path` for slot erasure, and its template endpoint intentionally strips literal BOS when the tokenizer inserts it. ROOT corrected the isolated harness and retained both failures. The third complete capability passed all three actual answer types, proving exactly one BOS through actual token-array equality and independent original-Jinja rendering. Its ROOT attestation SHA-256 is `eb2b5f3c06e05736bc60ec7805cd6687a0530d713f7832196937b40ef910fc44`. The full run was then frozen as plan SHA-256 `b86374313ece4139ea1c8c6bfcb864a48a901e5ceaa76d36588307cc34765f1c`; no settings or criteria changed during it.
 
-| Measure | Direct selected labels | Generated RFDT targets |
-| --- | --- | --- |
-| Attempts / execution errors | 156 / 0 | 156 / 0 |
-| Correct judgments | 136/156 (87.18%) | 146/156 (93.59%) |
-| Correct judgments in each repetition | 68/78 | 73/78 |
-| Correct clear decisions among eligible cases | 124/144 (86.11%) | 134/144 (93.06%) |
-| Incorrect score judgments | 20/52 | 10/52 |
-| Normalized score MAE | 0.04799691 | 0.02884615 |
-| All-attempt elapsed per correct judgment | 6.169 s | 7.296 s |
-| Actual computed prompt tokens | 96,628 | 92,090 |
-| Actual generated output tokens | 0 | 2,348 |
+| Measure                                      | Direct selected labels | Generated RFDT targets |
+| -------------------------------------------- | ---------------------- | ---------------------- |
+| Attempts / execution errors                  | 156 / 0                | 156 / 0                |
+| Correct judgments                            | 136/156 (87.18%)       | 146/156 (93.59%)       |
+| Correct judgments in each repetition         | 68/78                  | 73/78                  |
+| Correct clear decisions among eligible cases | 124/144 (86.11%)       | 134/144 (93.06%)       |
+| Incorrect score judgments                    | 20/52                  | 10/52                  |
+| Normalized score MAE                         | 0.04799691             | 0.02884615             |
+| All-attempt elapsed per correct judgment     | 6.169 s                | 7.296 s                |
+| Actual computed prompt tokens                | 96,628                 | 92,090                 |
+| Actual generated output tokens               | 0                      | 2,348                  |
 
 Routing and clear truth judgments were correct in both arms, and uncertainty judgments passed. Both arms still passed the unchanged aggregate quality gates. However, the direct arm produced fewer correct judgments, completed only 86.11% of eligible clear decisions against the required 90%, and missed both predeclared twofold timing conditions. The conditional paired median generated/direct latency ratio was 1.2636 over the 124 pairs with correct clear answers; all-attempt elapsed per correct judgment ratio was 1.1826. The respective repetition ratios were 1.3218/1.2513 and 1.1802/1.1193. A modest timing advantage does not qualify this result, and zero generation does not imply fewer computed prompt tokens or lower monetary cost. Average score error had concealed individual score misses; no quality threshold was relaxed.
 
@@ -138,6 +138,12 @@ A fresh owned Metal process then actually evaluated those same three synthetic q
 Native diagnostics observed all 61 layers offloaded to Metal, effective flash attention enabled, and KV buffers of 320 and 3,200 MiB. The emitted native provenance still records the effective flash field as unobserved; the enabled observation is attributed separately to its actual native log. These are three-question feasibility and runtime observations, not full rubric-range token feasibility, model-quality qualification, accepted developer-task performance, or a gain. A separately attributed successor grader preserves original requests, targets and rubric units while requiring the new explicit physical identity. ROOT verified its complete frozen source inventory and all 14 injected CPU tests; old physical attribution and rewritten response metadata are rejected.
 
 Each changed candidate requires a fresh full 194-record VALIDATION run with unchanged existing gates and complete attribution before a new performance claim. The half-grid candidate prospectively adds at least 90% individual developer-score correctness using the original 0.1 normalized-error tolerance. It changes categorical representation, not probability calibration. After the original run closed and its final attestation completed, production now exports its unchanged `scorePrediction` helper for validated original questions and targets. This permits a separate research grader to reuse the exact scorer while retaining new inference logical IDs and raw metadata; production `evaluateRecords`, accepted template versions and quality thresholds remain unchanged. All nine existing evaluation tests, TypeScript checking and the normal build passed. The candidates are uninstalled and unapproved, and do not alter the completed comparison. No new TEST or production promotion occurred.
+
+The successor completed its fresh, frozen 194-record VALIDATION run on 2026-09-20: 60 legacy records, 78 developer records and 56 diagnostic representations, covering 83 independent groups. All 194 inference operations completed without an execution error. It passed the unchanged quality gates independently on the legacy and developer sets, uncertainty-error and complete-coverage checks, and all 56 diagnostic choices across the 14 groups and four representations. It also passed the prospectively added individual developer-score gate: 24/26 correct (92.31%, required at least 90%) under the unchanged original normalized-error tolerance. The original candidate had scored 16/26 correctly in each repetition of the completed direct comparison. This is an observed validation improvement for the changed logical and physical candidate, not a controlled attribution to either change alone or a held-out generalization claim.
+
+ROOT independently reconstructed every actual typed response from the saved native logits, rerendered every prompt with the pinned original Jinja, verified one initial BOS and each actual one-token label guard, and reproduced the complete stored quality report using the original scorer. Full current model, binary, source, static-library, template, runtime and prerequisite hashes were checked. The result receipt is `.build/improvement-experiments/gemma4-runtime-candidate-1/quality-run/native-proof-root-1/root-final-receipt-1.json`, SHA-256 `81cda5f9d4632733a720ec201083f98a3cc720e698c61418d74bf5401247e7f7`, bound to frozen plan SHA-256 `4cd1a1b6e3732f214e17d411a30fb57bec3447fabdd2f9a80f148e4ee42959a9`. The owned process exited 0 with independent exit and stdio closure observed; PID 65800 was independently confirmed absent.
+
+The successor actually computed 113,008 prompt tokens through 194 submitted decode calls and generated zero output tokens. Submitted calls are not a count of internal Metal microbatches or kernels. The full validation stage took 998.37 seconds, with actual diagnostics observing 61/61 layers on Metal and effective flash attention enabled. This unmatched validation timing establishes no speedup. The emitted effective-flash provenance field remains unobserved; the enabled observation is separately attributed to native stderr. A separate matched 312-attempt direct/generated protocol was declared before this validation result and remains pending source review, CPU checks and ROOT execution. No new TEST inference, production classifier approval, configured-default inference or complete developer-workflow gain occurred. The 970-row smaller-model training follow-up remains frozen and unstarted.
 
 ## Additional complete pi workflow
 
