@@ -9,6 +9,7 @@ import {
   registerTaskContextCompression,
   TASK_CONTEXT_READ_TOOL,
 } from "../src/context-projection-extension.js";
+import { registerContextActivity } from "../src/context-activity.js";
 
 const hash = (text: string) => createHash("sha256").update(text).digest("hex");
 const size = (value: unknown) => Buffer.byteLength(JSON.stringify(value));
@@ -110,11 +111,18 @@ function harness(
     setModel: vi.fn(),
   };
   const controller = registerTaskContextCompression(pi, options);
-  const ctx: any = { model, signal: undefined };
+  const activity = registerContextActivity(pi, controller);
+  const ctx: any = {
+    model,
+    signal: undefined,
+    hasUI: true,
+    ui: { setStatus: vi.fn(), setWidget: vi.fn(), notify: vi.fn() },
+  };
   return {
     pi,
     tools,
     controller,
+    activity,
     ctx,
     async emit(name: string, event: any = {}) {
       let result;
@@ -183,6 +191,111 @@ it("defaults disabled with no instructions, archives or no-op host mutations", a
   });
   expect(h.pi.appendEntry).not.toHaveBeenCalled();
   expect(h.pi.sendMessage).not.toHaveBeenCalled();
+});
+
+it("reports applied excerpts only after validation and keeps activity out of model/session data", async () => {
+  const h = harness({ enabled: true });
+  await h.start();
+  const input = freeze(messages());
+  const before = JSON.stringify(input);
+  const projected = await h.project(input);
+  expect(h.controller.status().candidate?.applied).toBe(true);
+  expect(h.ctx.ui.setStatus.mock.lastCall[1]).toContain("checking");
+  expect(h.ctx.ui.setWidget.mock.lastCall[1].join("\n")).not.toContain(
+    "Applied",
+  );
+  const guarded = await h.guard(h.payload(projected));
+  expect(h.controller.status().validatedProviderRequests).toBe(1);
+  expect(h.ctx.ui.setStatus.mock.lastCall[1]).toContain("applied excerpts");
+  expect(h.ctx.ui.setStatus.mock.lastCall[1]).toContain("request bytes");
+  expect(h.ctx.ui.setWidget.mock.lastCall[1].join("\n")).toContain(
+    "Applied #1",
+  );
+  h.activity.showLog(h.ctx);
+  expect(h.ctx.ui.notify.mock.lastCall[0]).toContain("Estimated tokens");
+  expect(h.ctx.ui.notify.mock.lastCall[0]).toContain("Originals retained");
+  expect(h.ctx.ui.notify.mock.lastCall[0]).not.toContain(
+    "deploy alpha final_state",
+  );
+  expect(JSON.stringify(guarded)).not.toContain("Applied #1");
+  expect(JSON.stringify(input)).toBe(before);
+  expect(h.pi.sendMessage).not.toHaveBeenCalled();
+  expect(h.pi.appendEntry).not.toHaveBeenCalled();
+});
+
+it("explains request overhead and failed provider checks without logging a prepared projection as applied", async () => {
+  for (const failure of ["overhead", "schema"]) {
+    const h = harness({ enabled: true });
+    await h.start();
+    const projected = await h.project(messages());
+    const payload = h.payload(projected);
+    if (failure === "overhead")
+      payload.tools.push({
+        type: "function",
+        function: { name: "large_catalog", description: "x".repeat(150000) },
+      });
+    else
+      payload.tools.find(
+        (entry: any) => entry.function.name === TASK_CONTEXT_READ_TOOL,
+      ).function.parameters = { type: "object", properties: {} };
+    const guarded = await h.guard(payload);
+    expect(h.controller.status().candidate?.applied).toBe(false);
+    expect(
+      guarded.messages.find((entry: any) => entry.role === "tool").content,
+    ).toBe(source);
+    expect(h.ctx.ui.setStatus.mock.lastCall[1]).toContain("kept originals");
+    h.activity.showLog(h.ctx);
+    expect(h.ctx.ui.notify.mock.lastCall[0]).not.toContain("Applied #");
+    expect(h.ctx.ui.notify.mock.lastCall[0]).toContain(
+      failure === "overhead"
+        ? "50% target cannot be reached with protected context"
+        : "provider request check failed",
+    );
+  }
+});
+
+it("allows hidden/headless/broken UI logging without changing excerpt execution", async () => {
+  for (const mode of ["hidden", "headless", "broken"]) {
+    const h = harness({ enabled: true });
+    if (mode === "hidden") h.activity.setLogging(false, h.ctx);
+    if (mode === "headless") h.ctx.hasUI = false;
+    if (mode === "broken") {
+      h.ctx.ui.setStatus.mockImplementation(() => {
+        throw new Error("UI unavailable");
+      });
+    }
+    h.ctx.ui.setStatus.mockClear();
+    h.ctx.ui.setWidget.mockClear();
+    await h.start();
+    const projected = await h.project(messages());
+    await h.guard(h.payload(projected));
+    expect(h.controller.status().validatedProviderRequests).toBe(1);
+    expect(h.controller.status().candidate?.applied).toBe(true);
+    expect(h.pi.sendMessage).not.toHaveBeenCalled();
+    expect(h.pi.appendEntry).not.toHaveBeenCalled();
+    if (mode !== "broken") {
+      expect(h.ctx.ui.setStatus).not.toHaveBeenCalled();
+      expect(h.ctx.ui.setWidget).not.toHaveBeenCalled();
+    }
+  }
+});
+
+it("shows empty checks and HTTP rejection separately, then clears the widget at shutdown", async () => {
+  const h = harness({ enabled: true });
+  await h.start();
+  const projected = await h.project([messages()[0]]);
+  await h.guard(h.payload(projected));
+  h.activity.showLog(h.ctx);
+  expect(h.ctx.ui.notify.mock.lastCall[0]).toContain("no completed tool text");
+  await h.emit("after_provider_response", { status: 400 });
+  expect(h.ctx.ui.setStatus.mock.lastCall[1]).toContain("HTTP 400");
+  h.activity.showLog(h.ctx);
+  expect(h.ctx.ui.notify.mock.lastCall[0]).toContain(
+    "Provider rejected request #1",
+  );
+  await h.emit("session_shutdown");
+  expect(h.ctx.ui.setStatus.mock.lastCall).toEqual(["jev-context", undefined]);
+  expect(h.ctx.ui.setWidget.mock.lastCall).toEqual(["jev-context", undefined]);
 });
 
 it("offers no retrieval schema or extra instructions before any applied source", async () => {

@@ -83,7 +83,7 @@ function harness() {
   const context: any = {
     cwd: "",
     hasUI: true,
-    ui: { notify: vi.fn() },
+    ui: { notify: vi.fn(), setStatus: vi.fn(), setWidget: vi.fn() },
     sessionManager: {
       getSessionId: () => "session",
       getBranch: () => [],
@@ -144,6 +144,10 @@ it("registers a v2-default tool and cache-only Manager descriptor without creati
     enabled: false,
   });
   expect(controller.contextCompression.status().enabled).toBe(false);
+  expect(h.context.ui.setStatus).toHaveBeenCalledWith(
+    "jev-context",
+    "Jev context: off",
+  );
   expect(controller.contextCompression.status()).toMatchObject({
     strategy: "excerpts",
     targetReduction: 0.5,
@@ -164,6 +168,17 @@ it("registers a v2-default tool and cache-only Manager descriptor without creati
   });
   await h.commands.get("jev-context").handler("excerpts", h.context);
   expect(controller.contextCompression.status().strategy).toBe("excerpts");
+  expect(h.context.ui.setStatus.mock.lastCall[1]).toContain("excerpts");
+  await h.commands.get("jev-context").handler("log", h.context);
+  expect(h.context.ui.notify.mock.lastCall[0]).toContain("Enabled excerpts");
+  await h.commands.get("jev-context").handler("logging off", h.context);
+  expect(h.context.ui.setWidget.mock.lastCall).toEqual([
+    "jev-context",
+    undefined,
+  ]);
+  expect(controller.contextCompression.status().enabled).toBe(true);
+  await h.commands.get("jev-context").handler("logging on", h.context);
+  expect(h.context.ui.setStatus.mock.lastCall[1]).toContain("excerpts");
   await h.commands.get("jev-context").handler("reset", h.context);
   expect(controller.contextCompression.status().contextCalls).toBe(0);
   await h.commands.get("jev-context").handler("off", h.context);

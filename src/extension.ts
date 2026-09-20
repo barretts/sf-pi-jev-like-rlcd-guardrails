@@ -27,6 +27,7 @@ import {
   type ContextCompressionOptions,
 } from "./context-extension.js";
 import { registerContextManager } from "./context-manager.js";
+import { registerContextActivity } from "./context-activity.js";
 import {
   registerRoutingDispatcher,
   ROUTING_DISPATCHER_API,
@@ -406,6 +407,7 @@ export function registerExtension(
         }
       : {}),
   });
+  const contextActivity = registerContextActivity(pi, contextCompression);
   const contextManagerActions = registerContextManager(pi, {
     compression: {
       status: () => {
@@ -416,14 +418,20 @@ export function registerExtension(
           lastContext: current.lastContext ?? undefined,
         };
       },
-      setEnabled: (enabled) => contextCompression.setEnabled(enabled),
+      setEnabled: (enabled) => {
+        contextCompression.setEnabled(enabled);
+        contextActivity.refresh(undefined, true);
+      },
     },
   });
   pi.registerCommand("jev-context", {
     description:
-      "Task-aware tool context: status, on, off, reset, excerpts, or caveman",
+      "Task-aware tool context: status, on, off, reset, excerpts, caveman, log, logging on|off",
     handler: async (args, ctx) => {
       const command = args.trim() || "status";
+      if (command === "log") return contextActivity.showLog(ctx);
+      if (command === "logging on" || command === "logging off")
+        return contextActivity.setLogging(command === "logging on", ctx);
       if (command === "on" || command === "off")
         contextCompression.setEnabled(command === "on");
       else if (command === "reset") contextCompression.resetMetrics();
@@ -434,8 +442,10 @@ export function registerExtension(
         contextCompression.setEnabled(true);
       } else if (command !== "status")
         throw new Error(
-          "Usage: /jev-context [status|on|off|reset|excerpts|caveman]",
+          "Usage: /jev-context [status|on|off|reset|excerpts|caveman|log|logging on|logging off]",
         );
+      if (command === "reset") contextActivity.reset(ctx);
+      else contextActivity.refresh(ctx, command !== "status");
       display(contextCompression.status(), ctx);
     },
   });
@@ -644,6 +654,7 @@ export function registerExtension(
     managerActions,
     contextManagerActions,
     contextCompression,
+    contextActivity,
     routingReady,
     preferences: () => ({ ...resolved.values }),
     get classifier() {

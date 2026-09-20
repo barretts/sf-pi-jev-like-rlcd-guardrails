@@ -65,13 +65,28 @@ The Manager contract is a general external-extension contribution seam; Jev impo
 
 Context reduction is **disabled by default**. The installed extension provides these session controls:
 
-| Command                                | Purpose                                                 |
-| -------------------------------------- | ------------------------------------------------------- |
-| `/jev-context on` / `/jev-context off` | Enable or disable context reduction                     |
-| `/jev-context status`                  | Inspect the current mode and cached reduction estimates |
-| `/jev-context reset`                   | Reset session context-reduction state                   |
-| `/jev-context excerpts`                | Select task-aware exact excerpts and enable reduction   |
-| `/jev-context caveman`                 | Select the injected summary mode and enable reduction   |
+| Command                                   | Purpose                                                 |
+| ----------------------------------------- | ------------------------------------------------------- |
+| `/jev-context on` / `/jev-context off`    | Enable or disable context reduction                     |
+| `/jev-context status`                     | Inspect the current mode and cached reduction estimates |
+| `/jev-context reset`                      | Reset session context-reduction state                   |
+| `/jev-context excerpts`                   | Select task-aware exact excerpts and enable reduction   |
+| `/jev-context caveman`                    | Select the injected summary mode and enable reduction   |
+| `/jev-context log`                        | Show the last 50 activity entries from this session     |
+| `/jev-context logging on` / `logging off` | Show or hide the activity widget and footer status      |
+
+Interactive Pi displays Jev's context status above the prompt and in the footer.
+It changes from `off` to `checking`, then reports `applied excerpts` or
+`checked | kept originals` for each provider request. Applied entries include
+the verified request byte reduction; `/jev-context log` also shows tool-text
+sizes and explicitly estimated token counts. A candidate prepared by the context
+hook is reported as applied only after the provider request check passes. Skipped
+requests explain whether there was no completed tool text, the 50% target could
+not be reached with protected context, or a provider/retention check failed.
+The activity log is bounded to this session and clears on reload or session
+navigation. Hiding the log leaves the compression setting in effect. Activity
+uses Pi's UI APIs only; it adds no model messages, tool schemas, or saved session
+entries.
 
 The ordinary `registerExtension` path selects task-aware exact excerpts when reduction is enabled. Selected excerpts retain the source text verbatim; full original tool results remain in memory and persisted session history for retrieval. The request view omits other text, so excerpt delivery alone does not establish answer correctness. The default `targetReduction` is `0.5`, a requested reduction target. Status labels token counts as estimates; actual provider usage needs separate measurement. The current acceptance target is a measured **50% reduction in whole-workflow prompt tokens**. A [completed bounded answer-effectiveness evaluation](./research/context-effectiveness-root-1/RESULTS.md) recorded 86/96 accepted excerpt answers versus 84/96 with full context, with one paired regression. Production answer quality remains unqualified.
 
