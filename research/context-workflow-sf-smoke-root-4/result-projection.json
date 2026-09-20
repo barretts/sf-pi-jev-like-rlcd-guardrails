@@ -1,0 +1,696 @@
+{
+  "kind": "jev_context_workflow_result",
+  "schemaVersion": 1,
+  "completedAt": "2026-09-20T18:09:05.838Z",
+  "evidenceMode": "real-sdk-workflow",
+  "protocolSha256": "dee350c29704d395c32a930fed35375b018209feb622e5b69c5308ed2fe41502",
+  "summary": {
+    "scheduledSessions": 4,
+    "observedSessions": 4,
+    "unrunSessions": 0,
+    "fullCoverage": true,
+    "arms": {
+      "baseline": {
+        "scheduled": 2,
+        "observed": 2,
+        "unrun": 0,
+        "completed": 2,
+        "errors": 0,
+        "acceptedAnswers": 2,
+        "acceptanceRateFullPopulation": 1,
+        "correctFinalAnswerObservations": 2,
+        "correctAnswersInFailedWorkflows": 0,
+        "usageComplete": true,
+        "usage": {
+          "promptTokens": 9738,
+          "completionTokens": 134,
+          "totalTokens": 9872,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 9738
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 9738,
+          "completionTokens": 134,
+          "totalTokens": 9872,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 9738
+        },
+        "acceptedAnswerTimeP50Ms": 7207.00975,
+        "acceptedAnswerTimeP95Ms": 9493.085374999995,
+        "workflowElapsedSumMs": 16703.307458999996
+      },
+      "compact": {
+        "scheduled": 2,
+        "observed": 2,
+        "unrun": 0,
+        "completed": 2,
+        "errors": 0,
+        "acceptedAnswers": 2,
+        "acceptanceRateFullPopulation": 1,
+        "correctFinalAnswerObservations": 2,
+        "correctAnswersInFailedWorkflows": 0,
+        "usageComplete": true,
+        "usage": {
+          "promptTokens": 8512,
+          "completionTokens": 234,
+          "totalTokens": 8746,
+          "cachedPromptTokens": 384,
+          "uncachedPromptTokens": 8128
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 8512,
+          "completionTokens": 234,
+          "totalTokens": 8746,
+          "cachedPromptTokens": 384,
+          "uncachedPromptTokens": 8128
+        },
+        "acceptedAnswerTimeP50Ms": 13755.493749999998,
+        "acceptedAnswerTimeP95Ms": 15473.838416999999,
+        "workflowElapsedSumMs": 29230.481042000003
+      }
+    },
+    "pairs": [
+      {
+        "pairId": "root-final-unit-failure__r1",
+        "caseId": "root-final-unit-failure",
+        "family": "integration-smoke",
+        "order": [
+          "baseline",
+          "compact"
+        ],
+        "observed": true,
+        "complete": true,
+        "bothAccepted": true,
+        "acceptedAnswerTimeDeltaMs": 8266.828666999998,
+        "acceptedAnswerTimeRatio": 2.1470539035971195,
+        "workflowElapsedRatio": 2.1463753989008976,
+        "originalBytes": 5810,
+        "compressedBytes": 105,
+        "contextBlocksCompressed": 1
+      },
+      {
+        "pairId": "root-final-unit-failure__r2",
+        "caseId": "root-final-unit-failure",
+        "family": "integration-smoke",
+        "order": [
+          "compact",
+          "baseline"
+        ],
+        "observed": true,
+        "complete": true,
+        "bothAccepted": true,
+        "acceptedAnswerTimeDeltaMs": 4262.408375000003,
+        "acceptedAnswerTimeRatio": 1.4490013738025616,
+        "workflowElapsedRatio": 1.4489599953257337,
+        "originalBytes": 5810,
+        "compressedBytes": 105,
+        "contextBlocksCompressed": 1
+      }
+    ],
+    "strata": [
+      {
+        "family": "integration-smoke",
+        "scheduledPairs": 2,
+        "observedPairs": 2,
+        "completedPairs": 2,
+        "acceptedPairs": 2,
+        "latencySamplePairs": 2,
+        "medianWorkflowElapsedRatio": 1.4489599953257337
+      }
+    ],
+    "eligibilityUsage": {
+      "baseline": {
+        "scheduled": 2,
+        "complete": true,
+        "promptTokens": 9738,
+        "observedPromptTokensLowerBound": 9738
+      },
+      "compact": {
+        "scheduled": 2,
+        "complete": true,
+        "promptTokens": 8512,
+        "observedPromptTokensLowerBound": 8512
+      }
+    },
+    "measuredChanges": {
+      "promptTokenReductionFraction": 0.1258985417950298,
+      "completionTokenChangeFraction": 0.7462686567164178,
+      "totalTokenChangeFraction": -0.11405996758508918,
+      "uncachedPromptTokenChangeFraction": -0.16533169028547956,
+      "acceptedPairs": 2,
+      "pairedAcceptedAnswerTimeDeltaSumMs": 12529.237042,
+      "eligiblePromptTokenReductionFraction": 0.1258985417950298,
+      "medianPairedWorkflowElapsedRatio": 1.4489599953257337,
+      "aggregateWorkflowElapsedRatio": 1.7499816197330533
+    },
+    "observedCapacityAndLatencyGates": {
+      "eligiblePromptReductionAtLeast20Percent": false,
+      "fullMixedPromptTokensDoNotIncrease": true,
+      "noAcceptedTaskRegression": true,
+      "medianPairedWorkflowElapsedAtMostBaseline": false,
+      "aggregateWorkflowElapsedAtMostBaseline": false
+    },
+    "liveCompressionQualified": true,
+    "passed": true,
+    "productionImprovementQualified": false,
+    "interpretation": "Functional acceptance, original preservation, measured token reduction and observed latency are distinct. All failed/unrun slots remain in denominators. Synthetic paired evidence alone does not qualify production speed, billing or general answer quality.",
+    "functionalAndJudgeAcceptance": true
+  },
+  "judgeSummary": {
+    "scheduled": 1,
+    "completed": 1,
+    "errors": 0,
+    "unrun": 0,
+    "preserved": 1,
+    "passed": 1,
+    "qualified": true
+  },
+  "requestPacing": {
+    "settings": {
+      "minRequestIntervalMs": 5000,
+      "rateLimitCooldownMs": 60000,
+      "maxRateLimitCooldownMs": 120000,
+      "maxConsecutive429": 3
+    },
+    "status": {
+      "minRequestIntervalMs": 5000,
+      "rateLimitCooldownMs": 60000,
+      "maxRateLimitCooldownMs": 120000,
+      "maxConsecutive429": 3,
+      "dispatches": 9,
+      "consecutive429": 0,
+      "circuitOpen": false,
+      "nextDispatchAtMs": 55615.1135
+    },
+    "physicalRequests": [
+      {
+        "index": 0,
+        "requestedAtMs": 1849.046291,
+        "requestSha256": "a0944a9c9fc33e6690b05f02321ab9be087122d68ff8a49bf337ddb2b1e2ccb2",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 0.0757499999999709,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 0,
+        "dispatchedAtMs": 1849.212666,
+        "transportHeadersElapsedMs": 971.5421249999999
+      },
+      {
+        "index": 1,
+        "requestedAtMs": 5932.451833,
+        "requestSha256": "2f3f7fbd71fe8c74a1d0148312abebdd70eb448fbc00e4139737ee0570dbea3b",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 917.6240829999997,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 1,
+        "dispatchedAtMs": 6850.146541,
+        "transportHeadersElapsedMs": 743.3794170000001
+      },
+      {
+        "index": 2,
+        "requestedAtMs": 7631.845375,
+        "requestSha256": "7c168abc5c8c14930f748889099fa29fa1bcc80ceaf8b1e31ab8c281715f4e67",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 4218.636125,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 2,
+        "dispatchedAtMs": 11850.516833,
+        "transportHeadersElapsedMs": 913.8545000000013
+      },
+      {
+        "index": 3,
+        "requestedAtMs": 22400.206833,
+        "requestSha256": "31e975af6b6214d710d3cab687344a9ff7381e69a2a86db6064c2add38057975",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 0.016332999999576714,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 3,
+        "dispatchedAtMs": 22400.247708,
+        "transportHeadersElapsedMs": 666.8880409999983
+      },
+      {
+        "index": 4,
+        "requestedAtMs": 23555.522458,
+        "requestSha256": "ee6b632c15fa19efb02a9b704140ee2afe70b49279c5d7965d130a84383c37f6",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 3844.853667000003,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 4,
+        "dispatchedAtMs": 27400.403375,
+        "transportHeadersElapsedMs": 907.4989580000001
+      },
+      {
+        "index": 5,
+        "requestedAtMs": 35613.542708,
+        "requestSha256": "dba4109a34a47cea260d1b78185688bff7165967d1717e258703efb911ed946a",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 0.02224999999452848,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 5,
+        "dispatchedAtMs": 35613.610958,
+        "transportHeadersElapsedMs": 1173.8061250000028
+      },
+      {
+        "index": 6,
+        "requestedAtMs": 36876.391,
+        "requestSha256": "4d53767737a169d0492a63cdf979fa30f2673463f2e363b5ed5c140463842194",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 3737.3342919999996,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 6,
+        "dispatchedAtMs": 40613.759,
+        "transportHeadersElapsedMs": 802.7035830000023
+      },
+      {
+        "index": 7,
+        "requestedAtMs": 42239.592458,
+        "requestSha256": "02ea4c72610aea13a192fafdfce663ee27df41a15c726485772adcb7a4355025",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 3375.312208000003,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 7,
+        "dispatchedAtMs": 45614.936833,
+        "transportHeadersElapsedMs": 700.1472090000025
+      },
+      {
+        "index": 8,
+        "requestedAtMs": 46339.177708,
+        "requestSha256": "a8f3b913aeb771bf98c2d182a79717b6040cfc1b00149abc037116537d958909",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 4275.911208999998,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 8,
+        "dispatchedAtMs": 50615.1135,
+        "transportHeadersElapsedMs": 56799.038292000005
+      }
+    ],
+    "physicalAttemptCount": 9,
+    "http429Count": 0,
+    "notDispatchedCount": 0
+  },
+  "cleanup": {
+    "runtimeCredential": "completed",
+    "sessionsAffirmative": true,
+    "affirmative": true
+  },
+  "limits": [
+    "Machine-authored synthetic validation cases are not human gold or unseen production TEST",
+    "Remote cache state is uncontrolled; cache and uncached prompt counters are reported separately",
+    "Concurrent pair workers can create gateway contention; latency is this controlled workflow observation",
+    "Configured zero SDK prices do not establish billed cost or savings",
+    "Body hashes bind observed bytes; raw response bodies are not retained for independent replay",
+    "Task prompts and provider parameters are frozen; SDK-generated system prompts and hook nonces are recorded in actual requests",
+    "Shared request pacing and rate-limit cooldown wait are separately recorded and remain included in complete workflow elapsed time; paced timing cannot establish provider speed",
+    "HTTP 429 attempts are retained with unknown usage and never silently retried; an opened consecutive-429 circuit leaves remaining scheduled cells unrun"
+  ],
+  "runs": [
+    {
+      "id": "root-final-unit-failure__r1__baseline",
+      "caseId": "root-final-unit-failure",
+      "family": "integration-smoke",
+      "arm": "baseline",
+      "status": "completed",
+      "passed": true,
+      "answerCorrect": true,
+      "answerAccepted": true,
+      "acceptedAnswerTimeMs": 7207.00975,
+      "workflowElapsedMs": 7209.557917,
+      "startupMs": 1169.403083,
+      "promptElapsedMs": 6033.987042000001,
+      "errors": [],
+      "extensionFailures": [],
+      "controllerStatus": {
+        "enabled": false,
+        "readyForCurrentTurn": false,
+        "contextCalls": 0,
+        "compressedBlocks": 0,
+        "originalBytes": 0,
+        "compressedBytes": 0,
+        "toolTextBytesSaved": 0,
+        "bytesSaved": 0,
+        "manifestBytes": 0,
+        "fallbackCount": 0,
+        "lastFallback": null,
+        "lastContext": null,
+        "validatedProviderRequests": 0,
+        "restoredProviderRequests": 0,
+        "unverifiedProviderRequests": 0,
+        "contextTransformElapsedMs": 0,
+        "providerValidationElapsedMs": 0
+      },
+      "usage": {
+        "complete": true,
+        "observedRequests": 2,
+        "fullyMeasuredRequests": 2,
+        "totals": {
+          "promptTokens": 4869,
+          "completionTokens": 67,
+          "totalTokens": 4936,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4869
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 4869,
+          "completionTokens": 67,
+          "totalTokens": 4936,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4869
+        }
+      },
+      "cleanup": {
+        "abort": "completed",
+        "shutdownAttempted": true,
+        "shutdown": "completed",
+        "shutdownExtensionErrors": 0,
+        "dispose": "completed",
+        "affirmative": true
+      },
+      "controlledSfFactoryCount": 23,
+      "liveCompression": {
+        "required": false,
+        "passed": true,
+        "validatedRequests": 0,
+        "evidence": []
+      }
+    },
+    {
+      "id": "root-final-unit-failure__r1__compact",
+      "caseId": "root-final-unit-failure",
+      "family": "integration-smoke",
+      "arm": "compact",
+      "status": "completed",
+      "passed": true,
+      "answerCorrect": true,
+      "answerAccepted": true,
+      "acceptedAnswerTimeMs": 15473.838416999999,
+      "workflowElapsedMs": 15474.41775,
+      "startupMs": 17.363000000000284,
+      "promptElapsedMs": 15455.081957999999,
+      "errors": [],
+      "extensionFailures": [],
+      "controllerStatus": {
+        "enabled": true,
+        "readyForCurrentTurn": false,
+        "contextCalls": 2,
+        "compressedBlocks": 1,
+        "originalBytes": 5810,
+        "compressedBytes": 105,
+        "toolTextBytesSaved": 5705,
+        "bytesSaved": 5624,
+        "manifestBytes": 81,
+        "fallbackCount": 0,
+        "lastFallback": null,
+        "lastContext": {
+          "compressedBlocks": 1,
+          "originalBytes": 5810,
+          "compressedBytes": 105,
+          "toolTextBytesSaved": 5705,
+          "bytesSaved": 5624,
+          "manifestBytes": 81,
+          "instructionBytes": 958,
+          "fallbackCount": 0,
+          "lastFallback": null,
+          "reused": false,
+          "transformElapsedMs": 0.8513750000020082,
+          "providerValidationElapsedMs": 0.09266700000080164,
+          "blocks": [
+            {
+              "messageIndex": 5,
+              "contentIndex": 0,
+              "toolResultOrdinal": 1,
+              "format": "jev-tool-text-v2",
+              "originalSha256": "38f809dbe6efd62f9418f602ab164296b387a70a3f2bab290bb35b66d0e41ccf",
+              "compressedSha256": "8472cc93bf775f0ced2cdf6fbaeb1ff1a4056f8b8f0eb0832a723171d173442b",
+              "originalBytes": 5810,
+              "compressedBytes": 105
+            }
+          ]
+        },
+        "validatedProviderRequests": 1,
+        "restoredProviderRequests": 0,
+        "unverifiedProviderRequests": 0,
+        "contextTransformElapsedMs": 0.9372500000017681,
+        "providerValidationElapsedMs": 0.09266700000080164
+      },
+      "usage": {
+        "complete": true,
+        "observedRequests": 2,
+        "fullyMeasuredRequests": 2,
+        "totals": {
+          "promptTokens": 4448,
+          "completionTokens": 66,
+          "totalTokens": 4514,
+          "cachedPromptTokens": 384,
+          "uncachedPromptTokens": 4064
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 4448,
+          "completionTokens": 66,
+          "totalTokens": 4514,
+          "cachedPromptTokens": 384,
+          "uncachedPromptTokens": 4064
+        }
+      },
+      "cleanup": {
+        "abort": "completed",
+        "shutdownAttempted": true,
+        "shutdown": "completed",
+        "shutdownExtensionErrors": 0,
+        "dispose": "completed",
+        "affirmative": true
+      },
+      "controlledSfFactoryCount": 23,
+      "liveCompression": {
+        "required": true,
+        "passed": true,
+        "validatedRequests": 1,
+        "evidence": [
+          {
+            "requestIndex": 1,
+            "requestSha256": "31e975af6b6214d710d3cab687344a9ff7381e69a2a86db6064c2add38057975",
+            "manifestSha256": "82646354aa7e6df2c47d719be8fef4cee809634e61ddfeb0b1af7f8edd5f3084",
+            "nonce": "56dedd72bddd518b45df51d3",
+            "generation": 1,
+            "blocks": [
+              {
+                "messageIndex": 5,
+                "contentIndex": 0,
+                "toolResultOrdinal": 1,
+                "toolCallId": "call_7ea52da64aa05e278f59adf20860de9e",
+                "compressedSha256": "8472cc93bf775f0ced2cdf6fbaeb1ff1a4056f8b8f0eb0832a723171d173442b"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "root-final-unit-failure__r2__compact",
+      "caseId": "root-final-unit-failure",
+      "family": "integration-smoke",
+      "arm": "compact",
+      "status": "completed",
+      "passed": true,
+      "answerCorrect": true,
+      "answerAccepted": true,
+      "acceptedAnswerTimeMs": 13755.493749999998,
+      "workflowElapsedMs": 13756.063292000003,
+      "startupMs": 243.8572920000006,
+      "promptElapsedMs": 13509.472333000002,
+      "errors": [],
+      "extensionFailures": [],
+      "controllerStatus": {
+        "enabled": true,
+        "readyForCurrentTurn": false,
+        "contextCalls": 2,
+        "compressedBlocks": 1,
+        "originalBytes": 5810,
+        "compressedBytes": 105,
+        "toolTextBytesSaved": 5705,
+        "bytesSaved": 5624,
+        "manifestBytes": 81,
+        "fallbackCount": 0,
+        "lastFallback": null,
+        "lastContext": {
+          "compressedBlocks": 1,
+          "originalBytes": 5810,
+          "compressedBytes": 105,
+          "toolTextBytesSaved": 5705,
+          "bytesSaved": 5624,
+          "manifestBytes": 81,
+          "instructionBytes": 958,
+          "fallbackCount": 0,
+          "lastFallback": null,
+          "reused": false,
+          "transformElapsedMs": 1.424458000001323,
+          "providerValidationElapsedMs": 0.023457999996026047,
+          "blocks": [
+            {
+              "messageIndex": 5,
+              "contentIndex": 0,
+              "toolResultOrdinal": 1,
+              "format": "jev-tool-text-v2",
+              "originalSha256": "38f809dbe6efd62f9418f602ab164296b387a70a3f2bab290bb35b66d0e41ccf",
+              "compressedSha256": "8472cc93bf775f0ced2cdf6fbaeb1ff1a4056f8b8f0eb0832a723171d173442b",
+              "originalBytes": 5810,
+              "compressedBytes": 105
+            }
+          ]
+        },
+        "validatedProviderRequests": 1,
+        "restoredProviderRequests": 0,
+        "unverifiedProviderRequests": 0,
+        "contextTransformElapsedMs": 1.4541659999995318,
+        "providerValidationElapsedMs": 0.023457999996026047
+      },
+      "usage": {
+        "complete": true,
+        "observedRequests": 2,
+        "fullyMeasuredRequests": 2,
+        "totals": {
+          "promptTokens": 4064,
+          "completionTokens": 168,
+          "totalTokens": 4232,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4064
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 4064,
+          "completionTokens": 168,
+          "totalTokens": 4232,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4064
+        }
+      },
+      "cleanup": {
+        "abort": "completed",
+        "shutdownAttempted": true,
+        "shutdown": "completed",
+        "shutdownExtensionErrors": 0,
+        "dispose": "completed",
+        "affirmative": true
+      },
+      "controlledSfFactoryCount": 23,
+      "liveCompression": {
+        "required": true,
+        "passed": true,
+        "validatedRequests": 1,
+        "evidence": [
+          {
+            "requestIndex": 1,
+            "requestSha256": "dba4109a34a47cea260d1b78185688bff7165967d1717e258703efb911ed946a",
+            "manifestSha256": "6177ff884cfea91a3062e074dbeb231ced3f26479755159e3499e418fd68ad49",
+            "nonce": "d98b5d801078bcbdece50fd0",
+            "generation": 1,
+            "blocks": [
+              {
+                "messageIndex": 5,
+                "contentIndex": 0,
+                "toolResultOrdinal": 1,
+                "toolCallId": "call_fb0cda43e2085ccab44def3e72dcac55",
+                "compressedSha256": "8472cc93bf775f0ced2cdf6fbaeb1ff1a4056f8b8f0eb0832a723171d173442b"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "root-final-unit-failure__r2__baseline",
+      "caseId": "root-final-unit-failure",
+      "family": "integration-smoke",
+      "arm": "baseline",
+      "status": "completed",
+      "passed": true,
+      "answerCorrect": true,
+      "answerAccepted": true,
+      "acceptedAnswerTimeMs": 9493.085374999995,
+      "workflowElapsedMs": 9493.749541999998,
+      "startupMs": 28.277792000000773,
+      "promptElapsedMs": 9463.181125000003,
+      "errors": [],
+      "extensionFailures": [],
+      "controllerStatus": {
+        "enabled": false,
+        "readyForCurrentTurn": false,
+        "contextCalls": 0,
+        "compressedBlocks": 0,
+        "originalBytes": 0,
+        "compressedBytes": 0,
+        "toolTextBytesSaved": 0,
+        "bytesSaved": 0,
+        "manifestBytes": 0,
+        "fallbackCount": 0,
+        "lastFallback": null,
+        "lastContext": null,
+        "validatedProviderRequests": 0,
+        "restoredProviderRequests": 0,
+        "unverifiedProviderRequests": 0,
+        "contextTransformElapsedMs": 0,
+        "providerValidationElapsedMs": 0
+      },
+      "usage": {
+        "complete": true,
+        "observedRequests": 2,
+        "fullyMeasuredRequests": 2,
+        "totals": {
+          "promptTokens": 4869,
+          "completionTokens": 67,
+          "totalTokens": 4936,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4869
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 4869,
+          "completionTokens": 67,
+          "totalTokens": 4936,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4869
+        }
+      },
+      "cleanup": {
+        "abort": "completed",
+        "shutdownAttempted": true,
+        "shutdown": "completed",
+        "shutdownExtensionErrors": 0,
+        "dispose": "completed",
+        "affirmative": true
+      },
+      "controlledSfFactoryCount": 23,
+      "liveCompression": {
+        "required": false,
+        "passed": true,
+        "validatedRequests": 0,
+        "evidence": []
+      }
+    }
+  ],
+  "rawResultSha256": "55cadf61986bbdc3db01259251ccc2294a97de0c2b37eda0247fee8b444feccd",
+  "interpretation": "4 of4 completed correct workflows and1passingGrokjudge; all23SFfactoriesloaded,session_shutdown completed,0extensionerrors,0HTTP429; livecompression validates. Functionalacceptancepasses; smallsample promptreduction12.59%,workflowratio1.74998 failsperformancegates; productionimprovementunproved. Capturedprovidercontexts remainlocal."
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "latest-request",
+  "title": "Suppress stale concurrent request updates",
+  "goal": "Let the latest-started request alone publish data, error, and status across out-of-order success and failure.",
+  "allowed_edit_files": ["src/latest.ts"],
+  "preloaded_source_files": ["src/latest.ts"],
+  "instructions_file": "INSTRUCTIONS.md",
+  "commands": {
+    "acceptance": [
+      {
+        "id": "compile",
+        "argv": [
+          "node",
+          "{repo_root}/node_modules/typescript/bin/tsc",
+          "--project",
+          "tsconfig.json"
+        ]
+      },
+      {
+        "id": "test",
+        "argv": [
+          "node",
+          "--test",
+          "--test-reporter=tap",
+          "tests/latest.test.mjs"
+        ]
+      }
+    ],
+    "diagnostic": [
+      {
+        "id": "compile",
+        "argv": [
+          "node",
+          "{repo_root}/node_modules/typescript/bin/tsc",
+          "--project",
+          "tsconfig.json"
+        ]
+      },
+      {
+        "id": "test",
+        "argv": [
+          "node",
+          "--test",
+          "--test-reporter=tap",
+          "tests/latest.test.mjs"
+        ]
+      }
+    ]
+  },
+  "expected_initial_failure": {
+    "command_id": "test",
+    "exit_code": "nonzero",
+    "output_patterns": [
+      "not ok",
+      "stale success",
+      "stale failure",
+      "older success arrives later"
+    ]
+  }
+}

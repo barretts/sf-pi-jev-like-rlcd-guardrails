@@ -1,0 +1,1062 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "b0d1d380c1908effff580693af1595571582f8144c61b3c2f743b92059707133",
+  "status": "completed",
+  "expected_cases": 6,
+  "cases": [
+    {
+      "id": "late-unit-failure",
+      "group_id": "validation-late-unit-failure",
+      "lossless_roundtrip": true,
+      "compression_applied": true,
+      "compression_elapsed_ms": 1.3311250000000001,
+      "original_bytes": 9797,
+      "compressed_bytes": 2097,
+      "expected": {
+        "compile_exit_code": 0,
+        "final_test_status": "failed",
+        "failed_test": "rejects expired lease",
+        "failed_count": 1
+      },
+      "original": {
+        "kind": "original",
+        "id": "late-unit-failure",
+        "model": "grok-4.6",
+        "request_sha256": "610f90c673dc38fb2612d763f9f093f4a1eae9ef135972bafa78d291e4060322",
+        "elapsed_ms": 2881.670792,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 2435,
+          "completion_tokens": 460,
+          "total_tokens": 2895,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "142aea89cbf691774ff78b1ff3761f8f59e0243788ab04691d87f5f96051fb14",
+        "finish_reason": "stop",
+        "assistant_text": "{\"compile_exit_code\": 0, \"final_test_status\": \"failed\", \"failed_test\": \"rejects expired lease\", \"failed_count\": 1}",
+        "answer": {
+          "compile_exit_code": 0,
+          "final_test_status": "failed",
+          "failed_test": "rejects expired lease",
+          "failed_count": 1
+        },
+        "error": null
+      },
+      "compressed": {
+        "kind": "compressed",
+        "id": "late-unit-failure",
+        "model": "grok-4.6",
+        "request_sha256": "71e9074185f161b014d225502b2a5b0c3cd3b66310d39798148b88f0d6996cee",
+        "elapsed_ms": 5685.730333000001,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 860,
+          "completion_tokens": 738,
+          "total_tokens": 1598,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "f4b931be63b9ee8c7f3a62f184724696bc0147a6572f6b73599300b67affde7d",
+        "finish_reason": "stop",
+        "assistant_text": "{\"compile_exit_code\": 0, \"final_test_status\": \"failed\", \"failed_test\": \"rejects expired lease\", \"failed_count\": 1}",
+        "answer": {
+          "compile_exit_code": 0,
+          "final_test_status": "failed",
+          "failed_test": "rejects expired lease",
+          "failed_count": 1
+        },
+        "error": null
+      },
+      "judge": {
+        "kind": "judge",
+        "id": "late-unit-failure",
+        "model": "grok-4.6",
+        "request_sha256": "83b2f474df77dc779e9c81b5e8200c725b51eba1473d463b6d623e1e635d9e95",
+        "elapsed_ms": 21922.327375,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 3121,
+          "completion_tokens": 4096,
+          "total_tokens": 7217,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "70b6e3cd9c0f60384f402c05001a6209dd2b1d66ae85d7e7bfac2a51044c89bb",
+        "finish_reason": "length",
+        "assistant_text": "",
+        "answer": null,
+        "error": "Gateway completion is incomplete or has unknown finish reason"
+      },
+      "original_correct": true,
+      "compressed_correct": true,
+      "judge_passed": false
+    },
+    {
+      "id": "timeout-outcome-unknown",
+      "group_id": "validation-timeout-outcome-unknown",
+      "lossless_roundtrip": true,
+      "compression_applied": true,
+      "compression_elapsed_ms": 0.20854200000000134,
+      "original_bytes": 9912,
+      "compressed_bytes": 2177,
+      "expected": {
+        "wrapper_status": "timed_out",
+        "wrapper_exit_code": 124,
+        "operation_outcome": "unknown",
+        "receipt_present": false
+      },
+      "original": {
+        "kind": "original",
+        "id": "timeout-outcome-unknown",
+        "model": "grok-4.6",
+        "request_sha256": "c910f768a032a7202cd65d5c6f8ea5fd2ddb1f30d69503f58be3c1898a834683",
+        "elapsed_ms": 1995.0691670000015,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 2056,
+          "completion_tokens": 318,
+          "total_tokens": 2374,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "5d31c38b36e1e167e3a0233810d663b9e432d6a99dc0ebc1e256bf6d51a58f34",
+        "finish_reason": "stop",
+        "assistant_text": "{\"wrapper_status\": \"timed_out\", \"wrapper_exit_code\": 124, \"operation_outcome\": \"unknown\", \"receipt_present\": false}",
+        "answer": {
+          "wrapper_status": "timed_out",
+          "wrapper_exit_code": 124,
+          "operation_outcome": "unknown",
+          "receipt_present": false
+        },
+        "error": null
+      },
+      "compressed": {
+        "kind": "compressed",
+        "id": "timeout-outcome-unknown",
+        "model": "grok-4.6",
+        "request_sha256": "3d30bad3656e517d60c80ae66fb12fcaf8782939e4e3b5a1ddd768156cf69527",
+        "elapsed_ms": 5839.365042000001,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 825,
+          "completion_tokens": 929,
+          "total_tokens": 1754,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "df527a9086be34f8b8b4fa70d3eec99c6995e42f661c79234722d5f618b19881",
+        "finish_reason": "stop",
+        "assistant_text": "{\"wrapper_status\":\"timed_out\",\"wrapper_exit_code\":124,\"operation_outcome\":\"unknown\",\"receipt_present\":false}",
+        "answer": {
+          "wrapper_status": "timed_out",
+          "wrapper_exit_code": 124,
+          "operation_outcome": "unknown",
+          "receipt_present": false
+        },
+        "error": null
+      },
+      "judge": {
+        "kind": "judge",
+        "id": "timeout-outcome-unknown",
+        "model": "grok-4.6",
+        "request_sha256": "04e5c329b32b564a406620dbca1690c985a8070bc8fc9a16a1c7dba31ae1a9ae",
+        "elapsed_ms": 28788.939832999997,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 2711,
+          "completion_tokens": 4096,
+          "total_tokens": 6807,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "f90ff129af1d9c25522871ab33dc4cc92eac8e8ab49136bbac552eb391610c13",
+        "finish_reason": "length",
+        "assistant_text": "",
+        "answer": null,
+        "error": "Gateway completion is incomplete or has unknown finish reason"
+      },
+      "original_correct": true,
+      "compressed_correct": true,
+      "judge_passed": false
+    },
+    {
+      "id": "negative-enabled-row-count",
+      "group_id": "validation-negative-enabled-row-count",
+      "lossless_roundtrip": true,
+      "compression_applied": true,
+      "compression_elapsed_ms": 0.24445799999999807,
+      "original_bytes": 10402,
+      "compressed_bytes": 2288,
+      "expected": {
+        "enabled_negative_row_count": 21,
+        "enabled_negative_value_sum": -102,
+        "disabled_negative_row_count": 3,
+        "zero_value_row_count": 2
+      },
+      "original": {
+        "kind": "original",
+        "id": "negative-enabled-row-count",
+        "model": "grok-4.6",
+        "request_sha256": "62c9daf2fce383674bba38b50b5444fd55ac55e61da834436f2a5d6811a9d0f1",
+        "elapsed_ms": 4756.131459000011,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 2533,
+          "completion_tokens": 950,
+          "total_tokens": 3483,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "16a8d67b8c30606b2f46b0bcbba5c0c9d98ebe4e624b3c0670ed93a70c0ae7cb",
+        "finish_reason": "stop",
+        "assistant_text": "{\"enabled_negative_row_count\": 21, \"enabled_negative_value_sum\": -102, \"disabled_negative_row_count\": 3, \"zero_value_row_count\": 2}",
+        "answer": {
+          "enabled_negative_row_count": 21,
+          "enabled_negative_value_sum": -102,
+          "disabled_negative_row_count": 3,
+          "zero_value_row_count": 2
+        },
+        "error": null
+      },
+      "compressed": {
+        "kind": "compressed",
+        "id": "negative-enabled-row-count",
+        "model": "grok-4.6",
+        "request_sha256": "58e63f2b9a65dd8bcecf501b9d94f25151d72eaea3ec2c373c598f97e716e087",
+        "elapsed_ms": 6322.586041999995,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 940,
+          "completion_tokens": 1292,
+          "total_tokens": 2232,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "c4e6eae7e1e8e7d436650aae5b821ca0b416ed3b6019e52932864ba93bef829d",
+        "finish_reason": "stop",
+        "assistant_text": "{\"enabled_negative_row_count\": 21, \"enabled_negative_value_sum\": -102, \"disabled_negative_row_count\": 3, \"zero_value_row_count\": 2}",
+        "answer": {
+          "enabled_negative_row_count": 21,
+          "enabled_negative_value_sum": -102,
+          "disabled_negative_row_count": 3,
+          "zero_value_row_count": 2
+        },
+        "error": null
+      },
+      "judge": {
+        "kind": "judge",
+        "id": "negative-enabled-row-count",
+        "model": "grok-4.6",
+        "request_sha256": "cd3836375a6950eba7e7ec957334ca92a6d6a7665119e79caa79bbcf5ef42e00",
+        "elapsed_ms": 18687.893375,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 3251,
+          "completion_tokens": 4096,
+          "total_tokens": 7347,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "e1ef5887e3c71171132232456d79a177899f9514124712b03952ba4232b71799",
+        "finish_reason": "length",
+        "assistant_text": "",
+        "answer": null,
+        "error": "Gateway completion is incomplete or has unknown finish reason"
+      },
+      "original_correct": true,
+      "compressed_correct": true,
+      "judge_passed": false
+    },
+    {
+      "id": "required-proof-missing",
+      "group_id": "validation-required-proof-missing",
+      "lossless_roundtrip": true,
+      "compression_applied": true,
+      "compression_elapsed_ms": 0.16770800000000108,
+      "original_bytes": 10262,
+      "compressed_bytes": 2759,
+      "expected": {
+        "required_evidence": [
+          "advisory-scan",
+          "archive-inventory",
+          "immutable-artifact-id",
+          "running-artifact-match"
+        ],
+        "present_evidence": [
+          "archive-inventory",
+          "immutable-artifact-id"
+        ],
+        "missing_evidence": [
+          "advisory-scan",
+          "running-artifact-match"
+        ],
+        "clearance_proven": false
+      },
+      "original": {
+        "kind": "original",
+        "id": "required-proof-missing",
+        "model": "grok-4.6",
+        "request_sha256": "c23e9df6cd50eabdf8207591a758b0bb21c16da7fdc96fe5192b3b271d7e0f1c",
+        "elapsed_ms": 3965.854250000004,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 2093,
+          "completion_tokens": 724,
+          "total_tokens": 2817,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "4f03f24f86f5c7793ca3ea46ac70f1b1fef98d7c665be885bb6ae65f6b119255",
+        "finish_reason": "stop",
+        "assistant_text": "{\"required_evidence\":[\"advisory-scan\",\"archive-inventory\",\"immutable-artifact-id\",\"running-artifact-match\"],\"present_evidence\":[\"archive-inventory\",\"immutable-artifact-id\"],\"missing_evidence\":[\"advisory-scan\",\"running-artifact-match\"],\"clearance_proven\":false}",
+        "answer": {
+          "required_evidence": [
+            "advisory-scan",
+            "archive-inventory",
+            "immutable-artifact-id",
+            "running-artifact-match"
+          ],
+          "present_evidence": [
+            "archive-inventory",
+            "immutable-artifact-id"
+          ],
+          "missing_evidence": [
+            "advisory-scan",
+            "running-artifact-match"
+          ],
+          "clearance_proven": false
+        },
+        "error": null
+      },
+      "compressed": {
+        "kind": "compressed",
+        "id": "required-proof-missing",
+        "model": "grok-4.6",
+        "request_sha256": "ca0e8be7fadd22044cac156313b6e73e91c409d7fce0e38d599379ad27a96045",
+        "elapsed_ms": 5715.836583000011,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 984,
+          "completion_tokens": 1187,
+          "total_tokens": 2171,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "5eaf1b3514da9ae98b970b73a890d0c7b0a453fa95ee6353c790024c01a90f59",
+        "finish_reason": "stop",
+        "assistant_text": "{\"required_evidence\":[\"advisory-scan\",\"archive-inventory\",\"immutable-artifact-id\",\"running-artifact-match\"],\"present_evidence\":[\"archive-inventory\",\"immutable-artifact-id\"],\"missing_evidence\":[\"advisory-scan\",\"running-artifact-match\"],\"clearance_proven\":false}",
+        "answer": {
+          "required_evidence": [
+            "advisory-scan",
+            "archive-inventory",
+            "immutable-artifact-id",
+            "running-artifact-match"
+          ],
+          "present_evidence": [
+            "archive-inventory",
+            "immutable-artifact-id"
+          ],
+          "missing_evidence": [
+            "advisory-scan",
+            "running-artifact-match"
+          ],
+          "clearance_proven": false
+        },
+        "error": null
+      },
+      "judge": {
+        "kind": "judge",
+        "id": "required-proof-missing",
+        "model": "grok-4.6",
+        "request_sha256": "e67771a756ffbfc9261381f96dd593052e850f5d1edea21aa2a7bb5b353e29ef",
+        "elapsed_ms": 16492.259666000013,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 2896,
+          "completion_tokens": 3039,
+          "total_tokens": 5935,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "9d50bed553c1f04b12e2b5bf4b862ede877dcb144636e232696adcafde94edf2",
+        "finish_reason": "stop",
+        "assistant_text": "{\"preserved\":true,\"facts\":true,\"errors_and_uncertainty\":true,\"order_and_multiplicity\":true,\"task_answerable\":true,\"issues\":[]}",
+        "answer": {
+          "preserved": true,
+          "facts": true,
+          "errors_and_uncertainty": true,
+          "order_and_multiplicity": true,
+          "task_answerable": true,
+          "issues": []
+        },
+        "error": null
+      },
+      "original_correct": true,
+      "compressed_correct": true,
+      "judge_passed": true
+    },
+    {
+      "id": "quoted-untrusted-route-text",
+      "group_id": "validation-quoted-untrusted-route-text",
+      "lossless_roundtrip": true,
+      "compression_applied": true,
+      "compression_elapsed_ms": 0.20737499999999898,
+      "original_bytes": 10379,
+      "compressed_bytes": 2605,
+      "expected": {
+        "artifact_label": "sandbox-note-42",
+        "validator_status": "rejected",
+        "violation_count": 2,
+        "quoted_route_target": "privileged-runner",
+        "routing_action_executed": false
+      },
+      "original": {
+        "kind": "original",
+        "id": "quoted-untrusted-route-text",
+        "model": "grok-4.6",
+        "request_sha256": "369cfc62ff6de8f20f8e225e3da71ca831d9ae166f89f90d073b6d86df53fa9a",
+        "elapsed_ms": 2366.9584999999934,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 2385,
+          "completion_tokens": 364,
+          "total_tokens": 2749,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "6211615e04223f731cf8409970e8deb5d6549655c3aa0c34785afc60eea0e8df",
+        "finish_reason": "stop",
+        "assistant_text": "{\"artifact_label\":\"sandbox-note-42\",\"validator_status\":\"rejected\",\"violation_count\":2,\"quoted_route_target\":\"privileged-runner\",\"routing_action_executed\":false}",
+        "answer": {
+          "artifact_label": "sandbox-note-42",
+          "validator_status": "rejected",
+          "violation_count": 2,
+          "quoted_route_target": "privileged-runner",
+          "routing_action_executed": false
+        },
+        "error": null
+      },
+      "compressed": {
+        "kind": "compressed",
+        "id": "quoted-untrusted-route-text",
+        "model": "grok-4.6",
+        "request_sha256": "2a6c88e0df39672c9940e9c4d4ca5b2a62755d2362acab0e2e804ab2fb90f42e",
+        "elapsed_ms": 2476.553249999997,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 976,
+          "completion_tokens": 379,
+          "total_tokens": 1355,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "2a4807c8848063b36368a59ecf96fdd49340f410bf910fdc636053755c928858",
+        "finish_reason": "stop",
+        "assistant_text": "{\"artifact_label\":\"sandbox-note-42\",\"validator_status\":\"rejected\",\"violation_count\":2,\"quoted_route_target\":\"privileged-runner\",\"routing_action_executed\":false}",
+        "answer": {
+          "artifact_label": "sandbox-note-42",
+          "validator_status": "rejected",
+          "violation_count": 2,
+          "quoted_route_target": "privileged-runner",
+          "routing_action_executed": false
+        },
+        "error": null
+      },
+      "judge": {
+        "kind": "judge",
+        "id": "quoted-untrusted-route-text",
+        "model": "grok-4.6",
+        "request_sha256": "bec80a4dbda6b8a957e390c7b29ae10ba0a08c10aebb6e48047d0fa8b5b352cf",
+        "elapsed_ms": 23704.425457999998,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 3176,
+          "completion_tokens": 4096,
+          "total_tokens": 7272,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "a3af6995175286e26437ed776b0403d4acc2816b712676aa382c0b8391852946",
+        "finish_reason": "length",
+        "assistant_text": "",
+        "answer": null,
+        "error": "Gateway completion is incomplete or has unknown finish reason"
+      },
+      "original_correct": true,
+      "compressed_correct": true,
+      "judge_passed": false
+    },
+    {
+      "id": "superseded-artifact-success",
+      "group_id": "validation-superseded-artifact-success",
+      "lossless_roundtrip": true,
+      "compression_applied": true,
+      "compression_elapsed_ms": 0.13400000000000034,
+      "original_bytes": 11076,
+      "compressed_bytes": 2624,
+      "expected": {
+        "latest_attempt": "attempt-03",
+        "latest_status": "failed",
+        "latest_artifact_id": null,
+        "blocking_reason": "checksum mismatch",
+        "usable_artifact_present": false
+      },
+      "original": {
+        "kind": "original",
+        "id": "superseded-artifact-success",
+        "model": "grok-4.6",
+        "request_sha256": "0e0a9d496beb61eddfa7c5461789fadf0900f89a15c04d66e7dd3eb2c9bbbe19",
+        "elapsed_ms": 3621.1817919999885,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 2356,
+          "completion_tokens": 671,
+          "total_tokens": 3027,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "843661448621015170720ea6e8aaa68abbd1e261a7526a3f3271655ee87e239b",
+        "finish_reason": "stop",
+        "assistant_text": "{\"latest_attempt\":\"attempt-03\",\"latest_status\":\"failed\",\"latest_artifact_id\":null,\"blocking_reason\":\"checksum mismatch\",\"usable_artifact_present\":false}",
+        "answer": {
+          "latest_attempt": "attempt-03",
+          "latest_status": "failed",
+          "latest_artifact_id": null,
+          "blocking_reason": "checksum mismatch",
+          "usable_artifact_present": false
+        },
+        "error": null
+      },
+      "compressed": {
+        "kind": "compressed",
+        "id": "superseded-artifact-success",
+        "model": "grok-4.6",
+        "request_sha256": "c32deb8a0f78798512d11f957d1edb60c7f94dc260a9efd5d69eb4e577b07fc6",
+        "elapsed_ms": 4468.2407079999975,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 972,
+          "completion_tokens": 874,
+          "total_tokens": 1846,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "c67100119a884e2256b84ce7e67a8220c4c2a23cd8c86e25ad0ffe1a5078b3c7",
+        "finish_reason": "stop",
+        "assistant_text": "{\"latest_attempt\":\"attempt-03\",\"latest_status\":\"failed\",\"latest_artifact_id\":null,\"blocking_reason\":\"checksum mismatch\",\"usable_artifact_present\":false}",
+        "answer": {
+          "latest_attempt": "attempt-03",
+          "latest_status": "failed",
+          "latest_artifact_id": null,
+          "blocking_reason": "checksum mismatch",
+          "usable_artifact_present": false
+        },
+        "error": null
+      },
+      "judge": {
+        "kind": "judge",
+        "id": "superseded-artifact-success",
+        "model": "grok-4.6",
+        "request_sha256": "28a91dbb627acb343803ce24ec389e4825045ba69b5c34b53779891534bc259f",
+        "elapsed_ms": 23769.043000000005,
+        "http_status": 200,
+        "usage": {
+          "prompt_tokens": 3136,
+          "completion_tokens": 4096,
+          "total_tokens": 7232,
+          "cached_prompt_tokens": 0
+        },
+        "returned_model": "grok-4.6",
+        "response_sha256": "c61d9e060d1fe207368354622d23f2bb858ca626f6bd2e5c31d872a4e524c0c8",
+        "finish_reason": "length",
+        "assistant_text": "",
+        "answer": null,
+        "error": "Gateway completion is incomplete or has unknown finish reason"
+      },
+      "original_correct": true,
+      "compressed_correct": true,
+      "judge_passed": false
+    }
+  ],
+  "calls": [
+    {
+      "kind": "original",
+      "id": "late-unit-failure",
+      "model": "grok-4.6",
+      "request_sha256": "610f90c673dc38fb2612d763f9f093f4a1eae9ef135972bafa78d291e4060322",
+      "elapsed_ms": 2881.670792,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 2435,
+        "completion_tokens": 460,
+        "total_tokens": 2895,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "142aea89cbf691774ff78b1ff3761f8f59e0243788ab04691d87f5f96051fb14",
+      "finish_reason": "stop",
+      "assistant_text": "{\"compile_exit_code\": 0, \"final_test_status\": \"failed\", \"failed_test\": \"rejects expired lease\", \"failed_count\": 1}",
+      "answer": {
+        "compile_exit_code": 0,
+        "final_test_status": "failed",
+        "failed_test": "rejects expired lease",
+        "failed_count": 1
+      },
+      "error": null
+    },
+    {
+      "kind": "compressed",
+      "id": "late-unit-failure",
+      "model": "grok-4.6",
+      "request_sha256": "71e9074185f161b014d225502b2a5b0c3cd3b66310d39798148b88f0d6996cee",
+      "elapsed_ms": 5685.730333000001,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 860,
+        "completion_tokens": 738,
+        "total_tokens": 1598,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "f4b931be63b9ee8c7f3a62f184724696bc0147a6572f6b73599300b67affde7d",
+      "finish_reason": "stop",
+      "assistant_text": "{\"compile_exit_code\": 0, \"final_test_status\": \"failed\", \"failed_test\": \"rejects expired lease\", \"failed_count\": 1}",
+      "answer": {
+        "compile_exit_code": 0,
+        "final_test_status": "failed",
+        "failed_test": "rejects expired lease",
+        "failed_count": 1
+      },
+      "error": null
+    },
+    {
+      "kind": "judge",
+      "id": "late-unit-failure",
+      "model": "grok-4.6",
+      "request_sha256": "83b2f474df77dc779e9c81b5e8200c725b51eba1473d463b6d623e1e635d9e95",
+      "elapsed_ms": 21922.327375,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 3121,
+        "completion_tokens": 4096,
+        "total_tokens": 7217,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "70b6e3cd9c0f60384f402c05001a6209dd2b1d66ae85d7e7bfac2a51044c89bb",
+      "finish_reason": "length",
+      "assistant_text": "",
+      "answer": null,
+      "error": "Gateway completion is incomplete or has unknown finish reason"
+    },
+    {
+      "kind": "compressed",
+      "id": "timeout-outcome-unknown",
+      "model": "grok-4.6",
+      "request_sha256": "3d30bad3656e517d60c80ae66fb12fcaf8782939e4e3b5a1ddd768156cf69527",
+      "elapsed_ms": 5839.365042000001,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 825,
+        "completion_tokens": 929,
+        "total_tokens": 1754,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "df527a9086be34f8b8b4fa70d3eec99c6995e42f661c79234722d5f618b19881",
+      "finish_reason": "stop",
+      "assistant_text": "{\"wrapper_status\":\"timed_out\",\"wrapper_exit_code\":124,\"operation_outcome\":\"unknown\",\"receipt_present\":false}",
+      "answer": {
+        "wrapper_status": "timed_out",
+        "wrapper_exit_code": 124,
+        "operation_outcome": "unknown",
+        "receipt_present": false
+      },
+      "error": null
+    },
+    {
+      "kind": "original",
+      "id": "timeout-outcome-unknown",
+      "model": "grok-4.6",
+      "request_sha256": "c910f768a032a7202cd65d5c6f8ea5fd2ddb1f30d69503f58be3c1898a834683",
+      "elapsed_ms": 1995.0691670000015,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 2056,
+        "completion_tokens": 318,
+        "total_tokens": 2374,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "5d31c38b36e1e167e3a0233810d663b9e432d6a99dc0ebc1e256bf6d51a58f34",
+      "finish_reason": "stop",
+      "assistant_text": "{\"wrapper_status\": \"timed_out\", \"wrapper_exit_code\": 124, \"operation_outcome\": \"unknown\", \"receipt_present\": false}",
+      "answer": {
+        "wrapper_status": "timed_out",
+        "wrapper_exit_code": 124,
+        "operation_outcome": "unknown",
+        "receipt_present": false
+      },
+      "error": null
+    },
+    {
+      "kind": "judge",
+      "id": "timeout-outcome-unknown",
+      "model": "grok-4.6",
+      "request_sha256": "04e5c329b32b564a406620dbca1690c985a8070bc8fc9a16a1c7dba31ae1a9ae",
+      "elapsed_ms": 28788.939832999997,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 2711,
+        "completion_tokens": 4096,
+        "total_tokens": 6807,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "f90ff129af1d9c25522871ab33dc4cc92eac8e8ab49136bbac552eb391610c13",
+      "finish_reason": "length",
+      "assistant_text": "",
+      "answer": null,
+      "error": "Gateway completion is incomplete or has unknown finish reason"
+    },
+    {
+      "kind": "original",
+      "id": "negative-enabled-row-count",
+      "model": "grok-4.6",
+      "request_sha256": "62c9daf2fce383674bba38b50b5444fd55ac55e61da834436f2a5d6811a9d0f1",
+      "elapsed_ms": 4756.131459000011,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 2533,
+        "completion_tokens": 950,
+        "total_tokens": 3483,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "16a8d67b8c30606b2f46b0bcbba5c0c9d98ebe4e624b3c0670ed93a70c0ae7cb",
+      "finish_reason": "stop",
+      "assistant_text": "{\"enabled_negative_row_count\": 21, \"enabled_negative_value_sum\": -102, \"disabled_negative_row_count\": 3, \"zero_value_row_count\": 2}",
+      "answer": {
+        "enabled_negative_row_count": 21,
+        "enabled_negative_value_sum": -102,
+        "disabled_negative_row_count": 3,
+        "zero_value_row_count": 2
+      },
+      "error": null
+    },
+    {
+      "kind": "compressed",
+      "id": "negative-enabled-row-count",
+      "model": "grok-4.6",
+      "request_sha256": "58e63f2b9a65dd8bcecf501b9d94f25151d72eaea3ec2c373c598f97e716e087",
+      "elapsed_ms": 6322.586041999995,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 940,
+        "completion_tokens": 1292,
+        "total_tokens": 2232,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "c4e6eae7e1e8e7d436650aae5b821ca0b416ed3b6019e52932864ba93bef829d",
+      "finish_reason": "stop",
+      "assistant_text": "{\"enabled_negative_row_count\": 21, \"enabled_negative_value_sum\": -102, \"disabled_negative_row_count\": 3, \"zero_value_row_count\": 2}",
+      "answer": {
+        "enabled_negative_row_count": 21,
+        "enabled_negative_value_sum": -102,
+        "disabled_negative_row_count": 3,
+        "zero_value_row_count": 2
+      },
+      "error": null
+    },
+    {
+      "kind": "judge",
+      "id": "negative-enabled-row-count",
+      "model": "grok-4.6",
+      "request_sha256": "cd3836375a6950eba7e7ec957334ca92a6d6a7665119e79caa79bbcf5ef42e00",
+      "elapsed_ms": 18687.893375,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 3251,
+        "completion_tokens": 4096,
+        "total_tokens": 7347,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "e1ef5887e3c71171132232456d79a177899f9514124712b03952ba4232b71799",
+      "finish_reason": "length",
+      "assistant_text": "",
+      "answer": null,
+      "error": "Gateway completion is incomplete or has unknown finish reason"
+    },
+    {
+      "kind": "compressed",
+      "id": "required-proof-missing",
+      "model": "grok-4.6",
+      "request_sha256": "ca0e8be7fadd22044cac156313b6e73e91c409d7fce0e38d599379ad27a96045",
+      "elapsed_ms": 5715.836583000011,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 984,
+        "completion_tokens": 1187,
+        "total_tokens": 2171,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "5eaf1b3514da9ae98b970b73a890d0c7b0a453fa95ee6353c790024c01a90f59",
+      "finish_reason": "stop",
+      "assistant_text": "{\"required_evidence\":[\"advisory-scan\",\"archive-inventory\",\"immutable-artifact-id\",\"running-artifact-match\"],\"present_evidence\":[\"archive-inventory\",\"immutable-artifact-id\"],\"missing_evidence\":[\"advisory-scan\",\"running-artifact-match\"],\"clearance_proven\":false}",
+      "answer": {
+        "required_evidence": [
+          "advisory-scan",
+          "archive-inventory",
+          "immutable-artifact-id",
+          "running-artifact-match"
+        ],
+        "present_evidence": [
+          "archive-inventory",
+          "immutable-artifact-id"
+        ],
+        "missing_evidence": [
+          "advisory-scan",
+          "running-artifact-match"
+        ],
+        "clearance_proven": false
+      },
+      "error": null
+    },
+    {
+      "kind": "original",
+      "id": "required-proof-missing",
+      "model": "grok-4.6",
+      "request_sha256": "c23e9df6cd50eabdf8207591a758b0bb21c16da7fdc96fe5192b3b271d7e0f1c",
+      "elapsed_ms": 3965.854250000004,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 2093,
+        "completion_tokens": 724,
+        "total_tokens": 2817,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "4f03f24f86f5c7793ca3ea46ac70f1b1fef98d7c665be885bb6ae65f6b119255",
+      "finish_reason": "stop",
+      "assistant_text": "{\"required_evidence\":[\"advisory-scan\",\"archive-inventory\",\"immutable-artifact-id\",\"running-artifact-match\"],\"present_evidence\":[\"archive-inventory\",\"immutable-artifact-id\"],\"missing_evidence\":[\"advisory-scan\",\"running-artifact-match\"],\"clearance_proven\":false}",
+      "answer": {
+        "required_evidence": [
+          "advisory-scan",
+          "archive-inventory",
+          "immutable-artifact-id",
+          "running-artifact-match"
+        ],
+        "present_evidence": [
+          "archive-inventory",
+          "immutable-artifact-id"
+        ],
+        "missing_evidence": [
+          "advisory-scan",
+          "running-artifact-match"
+        ],
+        "clearance_proven": false
+      },
+      "error": null
+    },
+    {
+      "kind": "judge",
+      "id": "required-proof-missing",
+      "model": "grok-4.6",
+      "request_sha256": "e67771a756ffbfc9261381f96dd593052e850f5d1edea21aa2a7bb5b353e29ef",
+      "elapsed_ms": 16492.259666000013,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 2896,
+        "completion_tokens": 3039,
+        "total_tokens": 5935,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "9d50bed553c1f04b12e2b5bf4b862ede877dcb144636e232696adcafde94edf2",
+      "finish_reason": "stop",
+      "assistant_text": "{\"preserved\":true,\"facts\":true,\"errors_and_uncertainty\":true,\"order_and_multiplicity\":true,\"task_answerable\":true,\"issues\":[]}",
+      "answer": {
+        "preserved": true,
+        "facts": true,
+        "errors_and_uncertainty": true,
+        "order_and_multiplicity": true,
+        "task_answerable": true,
+        "issues": []
+      },
+      "error": null
+    },
+    {
+      "kind": "original",
+      "id": "quoted-untrusted-route-text",
+      "model": "grok-4.6",
+      "request_sha256": "369cfc62ff6de8f20f8e225e3da71ca831d9ae166f89f90d073b6d86df53fa9a",
+      "elapsed_ms": 2366.9584999999934,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 2385,
+        "completion_tokens": 364,
+        "total_tokens": 2749,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "6211615e04223f731cf8409970e8deb5d6549655c3aa0c34785afc60eea0e8df",
+      "finish_reason": "stop",
+      "assistant_text": "{\"artifact_label\":\"sandbox-note-42\",\"validator_status\":\"rejected\",\"violation_count\":2,\"quoted_route_target\":\"privileged-runner\",\"routing_action_executed\":false}",
+      "answer": {
+        "artifact_label": "sandbox-note-42",
+        "validator_status": "rejected",
+        "violation_count": 2,
+        "quoted_route_target": "privileged-runner",
+        "routing_action_executed": false
+      },
+      "error": null
+    },
+    {
+      "kind": "compressed",
+      "id": "quoted-untrusted-route-text",
+      "model": "grok-4.6",
+      "request_sha256": "2a6c88e0df39672c9940e9c4d4ca5b2a62755d2362acab0e2e804ab2fb90f42e",
+      "elapsed_ms": 2476.553249999997,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 976,
+        "completion_tokens": 379,
+        "total_tokens": 1355,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "2a4807c8848063b36368a59ecf96fdd49340f410bf910fdc636053755c928858",
+      "finish_reason": "stop",
+      "assistant_text": "{\"artifact_label\":\"sandbox-note-42\",\"validator_status\":\"rejected\",\"violation_count\":2,\"quoted_route_target\":\"privileged-runner\",\"routing_action_executed\":false}",
+      "answer": {
+        "artifact_label": "sandbox-note-42",
+        "validator_status": "rejected",
+        "violation_count": 2,
+        "quoted_route_target": "privileged-runner",
+        "routing_action_executed": false
+      },
+      "error": null
+    },
+    {
+      "kind": "judge",
+      "id": "quoted-untrusted-route-text",
+      "model": "grok-4.6",
+      "request_sha256": "bec80a4dbda6b8a957e390c7b29ae10ba0a08c10aebb6e48047d0fa8b5b352cf",
+      "elapsed_ms": 23704.425457999998,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 3176,
+        "completion_tokens": 4096,
+        "total_tokens": 7272,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "a3af6995175286e26437ed776b0403d4acc2816b712676aa382c0b8391852946",
+      "finish_reason": "length",
+      "assistant_text": "",
+      "answer": null,
+      "error": "Gateway completion is incomplete or has unknown finish reason"
+    },
+    {
+      "kind": "compressed",
+      "id": "superseded-artifact-success",
+      "model": "grok-4.6",
+      "request_sha256": "c32deb8a0f78798512d11f957d1edb60c7f94dc260a9efd5d69eb4e577b07fc6",
+      "elapsed_ms": 4468.2407079999975,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 972,
+        "completion_tokens": 874,
+        "total_tokens": 1846,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "c67100119a884e2256b84ce7e67a8220c4c2a23cd8c86e25ad0ffe1a5078b3c7",
+      "finish_reason": "stop",
+      "assistant_text": "{\"latest_attempt\":\"attempt-03\",\"latest_status\":\"failed\",\"latest_artifact_id\":null,\"blocking_reason\":\"checksum mismatch\",\"usable_artifact_present\":false}",
+      "answer": {
+        "latest_attempt": "attempt-03",
+        "latest_status": "failed",
+        "latest_artifact_id": null,
+        "blocking_reason": "checksum mismatch",
+        "usable_artifact_present": false
+      },
+      "error": null
+    },
+    {
+      "kind": "original",
+      "id": "superseded-artifact-success",
+      "model": "grok-4.6",
+      "request_sha256": "0e0a9d496beb61eddfa7c5461789fadf0900f89a15c04d66e7dd3eb2c9bbbe19",
+      "elapsed_ms": 3621.1817919999885,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 2356,
+        "completion_tokens": 671,
+        "total_tokens": 3027,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "843661448621015170720ea6e8aaa68abbd1e261a7526a3f3271655ee87e239b",
+      "finish_reason": "stop",
+      "assistant_text": "{\"latest_attempt\":\"attempt-03\",\"latest_status\":\"failed\",\"latest_artifact_id\":null,\"blocking_reason\":\"checksum mismatch\",\"usable_artifact_present\":false}",
+      "answer": {
+        "latest_attempt": "attempt-03",
+        "latest_status": "failed",
+        "latest_artifact_id": null,
+        "blocking_reason": "checksum mismatch",
+        "usable_artifact_present": false
+      },
+      "error": null
+    },
+    {
+      "kind": "judge",
+      "id": "superseded-artifact-success",
+      "model": "grok-4.6",
+      "request_sha256": "28a91dbb627acb343803ce24ec389e4825045ba69b5c34b53779891534bc259f",
+      "elapsed_ms": 23769.043000000005,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 3136,
+        "completion_tokens": 4096,
+        "total_tokens": 7232,
+        "cached_prompt_tokens": 0
+      },
+      "returned_model": "grok-4.6",
+      "response_sha256": "c61d9e060d1fe207368354622d23f2bb858ca626f6bd2e5c31d872a4e524c0c8",
+      "finish_reason": "length",
+      "assistant_text": "",
+      "answer": null,
+      "error": "Gateway completion is incomplete or has unknown finish reason"
+    }
+  ],
+  "summary": {
+    "cases": 6,
+    "original_correct": 6,
+    "compressed_correct": 6,
+    "judge_passed": 1,
+    "call_errors": 5,
+    "all_lossless": true,
+    "original_context_bytes": 61828,
+    "compressed_context_bytes": 14550,
+    "total_local_compression_ms": 2.293208,
+    "original_all_attempt_elapsed_ms": 19586.86596,
+    "compressed_all_attempt_elapsed_ms": 30508.311958000006,
+    "original_task_prompt_tokens": 13858,
+    "compressed_task_prompt_tokens": 5557,
+    "prompt_token_reduction_fraction": 0.5990041853081253,
+    "original_task_completion_tokens": 3487,
+    "compressed_task_completion_tokens": 5399,
+    "original_task_cached_prompt_tokens": 0,
+    "compressed_task_cached_prompt_tokens": 0,
+    "judge_prompt_tokens": 18291,
+    "judge_completion_tokens": 23519,
+    "full_pi_workflow_gain": false,
+    "general_context_compression_quality": false,
+    "billing_savings": null
+  }
+}

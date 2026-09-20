@@ -1,0 +1,158 @@
+{
+  "protocolSha256": "aa9eb72467e4bb90965eb3afe6b7c5d2b4966b4a1527add004b768681e0b4906",
+  "sourceGitCommit": "2860d17b005f3c0d6cca9a25a9e0b0d118113665",
+  "members": [
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/scripts/context-reduction-smoke.mjs",
+      "archivePath": "source/scripts/context-reduction-smoke.mjs",
+      "bytes": 49779,
+      "sha256": "dce49394d29340e69086dd36bcb89346089c1d47aecc9b0bd7cbd211f5e9ad68"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/scripts/context-workflow-eval.mjs",
+      "archivePath": "source/scripts/context-workflow-eval.mjs",
+      "bytes": 83531,
+      "sha256": "5a2aaf1af575a39002355e058720059ce25eb45a6e21ed99d820589020f9b058"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/src/context-projection-extension.ts",
+      "archivePath": "source/src/context-projection-extension.ts",
+      "bytes": 38923,
+      "sha256": "89f3d6fd075892fbdcc7812e70777eecac0f665a4d6c004ffe8adbffa98e8d13"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/dist/context-projection-extension.js",
+      "archivePath": "source/dist/context-projection-extension.js",
+      "bytes": 37204,
+      "sha256": "f34e905decd08ebb26ad5eaeb26ba7625050afe5c984da6e86f0a26a2d23f51d"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/src/context-projection.ts",
+      "archivePath": "source/src/context-projection.ts",
+      "bytes": 20003,
+      "sha256": "399d69cffee3380881e59782d9991425dba7ea9868ceff130cf2ef733d084cf5"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/dist/context-projection.js",
+      "archivePath": "source/dist/context-projection.js",
+      "bytes": 17800,
+      "sha256": "a54375480d22a9915290cf60c637a7ca2c4fdfc65b91bf89d25a6a6a9866066b"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/src/context-originals.ts",
+      "archivePath": "source/src/context-originals.ts",
+      "bytes": 14398,
+      "sha256": "1174357a487f428c8f51ce89a3cea9322ce2a9371cff5a4818281f0711fcd6e6"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/dist/context-originals.js",
+      "archivePath": "source/dist/context-originals.js",
+      "bytes": 13595,
+      "sha256": "05e18391f1b28c1de6e51a538db9f63bd8173becdb77526003cdf01c52532a48"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/src/gateway.ts",
+      "archivePath": "source/src/gateway.ts",
+      "bytes": 16449,
+      "sha256": "990bbbe3d4dfc731551fda4df9077042e74cd69bf86dba4feef59a883742d142"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/dist/gateway.js",
+      "archivePath": "source/dist/gateway.js",
+      "bytes": 16040,
+      "sha256": "64853c8f08c7419952c78d5436edfe2a662115c40192931854fea8380335e17d"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/package.json",
+      "archivePath": "source/package.json",
+      "bytes": 2665,
+      "sha256": "5740f66d0a2d106b8fd02a4bf61dbed5cc0735c138cf37e3079109a346d0cffe"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/package-lock.json",
+      "archivePath": "source/package-lock.json",
+      "bytes": 167256,
+      "sha256": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/package.json",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/package.json",
+      "bytes": 4145,
+      "sha256": "f1738e4b42203e5f22bcb513f13fb2fb224f1e98d1f129ff042f87048665a94c"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/sdk.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/dist/core/sdk.js",
+      "bytes": 12703,
+      "sha256": "6969bd56ba8e1628cd033bb15cb15fe38299f00b5ad84f4f8ef37a33a98681c9"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/agent-session.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/dist/core/agent-session.js",
+      "bytes": 125310,
+      "sha256": "fb8a3981c20c8c0bbd42231b1c99a10335fb3858b659056b341954de9cfa467f"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/model-runtime.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/dist/core/model-runtime.js",
+      "bytes": 27319,
+      "sha256": "32cd50599d9e6e001229090e3d0554b60e4addb8ab7b3165635a574feb660b74"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/auth-storage.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/dist/core/auth-storage.js",
+      "bytes": 16351,
+      "sha256": "0b45029901579032b19273a1427f63b622df8e1aaf9ea185eb932c0d4898998c"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/models-store.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/dist/core/models-store.js",
+      "bytes": 4501,
+      "sha256": "acef4e29470ea2ed5adc4f8e8d4981e9214c79ebf4e7eba4ad705ff81da68ed4"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/messages.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/dist/core/messages.js",
+      "bytes": 4111,
+      "sha256": "a4e4865e343bf87f8078f75ff179a2a77cd7c2700cf8473476bd4dc5ed36adb6"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/resource-loader.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/dist/core/resource-loader.js",
+      "bytes": 39133,
+      "sha256": "8e8a1bc1c5bc9e955f6a2314dd1db02071be56d48b1fea7b8b2cacb4fc9a0628"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/extensions/runner.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/dist/core/extensions/runner.js",
+      "bytes": 40140,
+      "sha256": "0de12ed1275e02595f92476eec3f61ae1f2e54fd2225ced721ddc90af58a5e61"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/tools/read.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/dist/core/tools/read.js",
+      "bytes": 10069,
+      "sha256": "c3d1fa1994c44541e044629b6b5a206bfc7b6e1f93488c0118364d51fa41d888"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/tools/truncate.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/dist/core/tools/truncate.js",
+      "bytes": 7277,
+      "sha256": "3a627a6407f3726aa56a9580548db230c20e4fee59b212ea3d12e2c45073f75d"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js",
+      "bytes": 22932,
+      "sha256": "6732a1c65c09577d2ffcb716b48e4f4673e57e3e333f10ebfce5132d82e4d7a2"
+    },
+    {
+      "originalPath": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-ai/dist/api/openai-completions.js",
+      "archivePath": "source/node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-ai/dist/api/openai-completions.js",
+      "bytes": 64241,
+      "sha256": "1e2097ced37cf0e21aa5711297eecc77916de8a4ed81a9019bc7d97b22825fa3"
+    }
+  ],
+  "sfSourcesArchived": false,
+  "rawProviderBodiesArchived": false
+}

@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "name": "evidence.tar.gz",
+  "bytes": 192632,
+  "sha256": "5fb8728725d5f64f7b7ad50f5de0b01bd3f787cd31a847aac5432251736a3e08",
+  "sourceMembersVerified": 16,
+  "externalPythonLauncherPinnedButNotArchived": true,
+  "interpretation": "All 180 production-completeness fallbacks; zero model requests; usefulness fails; head quality untested. Fresh source-blind V2 corpus is now consumed validation."
+}

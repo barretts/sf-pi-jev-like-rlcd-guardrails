@@ -1,0 +1,627 @@
+{
+  "schema_version": 1,
+  "kind": "incremental_research_checkpoint",
+  "source_directory": ".build/improvement-experiments",
+  "base_manifest": "research/checkpoint-2026-09-20/manifest.json",
+  "base_manifest_sha256": "0005554c9a2c1e58a486972a26c997a921e8d6e2706cc67900c2862e73e54484",
+  "unchanged_files_in_base": 2831,
+  "archives": [
+    {
+      "archive": "source-01.tar.gz",
+      "bytes": 23101,
+      "sha256": "9c3b92047ac06aafdf5691808d67749a30ff273aef75a52a3bbf216e6b2ca1e2",
+      "files": [
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-export-recovery-root-1/recover-export.py",
+          "bytes": 18535,
+          "sha256": "87c18960a7a7472443a1f4cc527b9a210f18e2709e75d1f629b4dd4c1ae9e297"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-independent-selection-source-2/README.md",
+          "bytes": 6791,
+          "sha256": "aafad6326497178b596524ea85d4cd58164938e8d211758abb7189a1fda0e231"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-independent-selection-source-2/attest.cpu.test.mjs",
+          "bytes": 12402,
+          "sha256": "9e2534d1e12fb7a4c75a9e7a65d3f6546e015b34c3b15979a3f176a4b5f8fe3c"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-independent-selection-source-2/attest.mjs",
+          "bytes": 14413,
+          "sha256": "0fb380832782f4bee1eadd843999a09cf7d576fb7b30baebf6974e9e60e922b0"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-independent-selection-source-2/freeze-source.mjs",
+          "bytes": 4260,
+          "sha256": "a0848f4f65fe72e82d317e8972465b25eba491f0648659e83ced34f03536d7ff"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/README.md",
+          "bytes": 1472,
+          "sha256": "e32694c9861fd6054cb203984126f80b8c8ab126e132b97ee15bfcb1c4cf5619"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/validate-only.py",
+          "bytes": 10861,
+          "sha256": "bc857974fbef2ad76c889fcadf400616061bc0c08ff6ab6c671571f8e34a0b5f"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-selection-root-1/root-attest-initial-path-failure.mjs",
+          "bytes": 8612,
+          "sha256": "55d2ccfc6b9b9b350ae7ebff312fb0aa0a7ada8dd9fd01ebe7bd2b4d242262dc"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-selection-root-1/root-attest.mjs",
+          "bytes": 8830,
+          "sha256": "533f79030da405f7a0e976d8dc9fc33f9d8ebd1a7368add37aca69df457cbdf7"
+        }
+      ]
+    },
+    {
+      "archive": "evidence-01.tar.gz",
+      "bytes": 188194,
+      "sha256": "0e43133d789e2d8f965d21f678da1dc738b912c09d83652bffab83156b58d11f",
+      "files": [
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7/developer-validation-progress.json",
+          "bytes": 359,
+          "sha256": "604aa296e644f7bc0aba0fc57be527e6aa116ed9ec22a19401850cf9df95c7dc"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7/developer-validation-report.json",
+          "bytes": 199480,
+          "sha256": "5d691a3dcbafdf47506da3f44636cfbf4e43e1f9d737958305aa2a10f7452b4f"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7/diagnosis-validation-progress.json",
+          "bytes": 359,
+          "sha256": "c622cfe3ab9766605432b10412c5d7dd7859bff9a8b4bfd07d04d17a6e4b847a"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7/diagnosis-validation-report.json",
+          "bytes": 167046,
+          "sha256": "8e711add9a841f1989222ed16604f5ed0e0fdbaa7607c3c00a7b0a39bfe88435"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7/run/artifact.json",
+          "bytes": 596,
+          "sha256": "60c34a97c63000b56ef8148b6e3264c49041621f268515758c7d25d5d59c99f3"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7/run/manifest.json",
+          "bytes": 49928,
+          "sha256": "867098ea943972fe9ce15151f2c4e2276df3d68baf3ec3a0a4bae1e808ad421a"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7/run/native-validation-report.json",
+          "bytes": 141191,
+          "sha256": "77fc416ff5dc026143dfa477fcbdfab48df2975e2e6e46e4e7f949d36e0d8b0f"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-export-recovery-root-1/export.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-export-recovery-root-1/export.stdout.json",
+          "bytes": 596,
+          "sha256": "60c34a97c63000b56ef8148b6e3264c49041621f268515758c7d25d5d59c99f3"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-export-recovery-root-1/journal.json",
+          "bytes": 5780,
+          "sha256": "d04538985874e3d3cf86ad740439cb0a29d75b690b8017f69c153d46c3051a07"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-export-recovery-root-1/original-stale-job.json",
+          "bytes": 8130,
+          "sha256": "350a3f6ab806ba7f70645cc45f005efdb4cfc8c9b8a00af1e027ba79c2258590"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-export-recovery-root-1/original-trained-manifest.json",
+          "bytes": 41947,
+          "sha256": "e1f56cb7c97d084d6c763475d48c5b99203d5d0c4c94d6c77a00ab63f64293e6"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-export-recovery-root-1/owned-process-observations.jsonl",
+          "bytes": 12091,
+          "sha256": "d59b54acb6984f0ac86de5ef22b90cb52415d3812811af29677a2a89a7b777b8"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-export-recovery-root-1/post-exit-observation.json",
+          "bytes": 973,
+          "sha256": "61dbe5e9adc989780ecfbd0e39fb825d82f079fc319b9af9f70e22deddb248c1"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-export-recovery-root-1/preflight.json",
+          "bytes": 26582,
+          "sha256": "58fca9bf2826c4aea81b28688ccd49694037e1d43c0142ba0799b021f3d3bb8f"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-independent-selection-source-2/cpu-proof.json",
+          "bytes": 944,
+          "sha256": "768d94bf3aa0fb9fafa40fb9265fdd0c0dcbecbe862b2c26e0d669e814ef06c4"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-independent-selection-source-2/cpu-tap.txt",
+          "bytes": 1957,
+          "sha256": "3ea06967a8413a91049cc084f8892c467fd522eb5c84ebf7ba52c8b589f5b02a"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-independent-selection-source-2/source-freeze.json",
+          "bytes": 4643,
+          "sha256": "11f2949da8e53fae3f5400f5a2bcd1b87bda7c48a9610a3fe66c7a9501ed3faa"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/developer_validation.processes.jsonl",
+          "bytes": 4772,
+          "sha256": "85bc43d11c293d72edebe87412c9d4f99809cf834161f800ec2eaa026459f426"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/developer_validation.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/developer_validation.stdout.json",
+          "bytes": 199480,
+          "sha256": "5d691a3dcbafdf47506da3f44636cfbf4e43e1f9d737958305aa2a10f7452b4f"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/diagnosis_validation.processes.jsonl",
+          "bytes": 3783,
+          "sha256": "367606bc9b5bab0383e27673238105b4ef6cd011c6a2fb0a2ea65b3c55846d49"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/diagnosis_validation.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/diagnosis_validation.stdout.json",
+          "bytes": 167046,
+          "sha256": "8e711add9a841f1989222ed16604f5ed0e0fdbaa7607c3c00a7b0a39bfe88435"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/journal.json",
+          "bytes": 37329,
+          "sha256": "bdfd2dddcd86e5416e5655f14f466d76e2946260be86927f9956c744d370320e"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/legacy_validation.processes.jsonl",
+          "bytes": 2796,
+          "sha256": "b89431f506e72d1ca890cc4da41b26ca00fdd1a19569f0ce78df578f7c0354fe"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/legacy_validation.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/legacy_validation.stdout.json",
+          "bytes": 141245,
+          "sha256": "5cfa919a145ef68555ae0ed5cc7fd9aef13878d552c706fdefd7ef2c97be19b7"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/original-exported-manifest.json",
+          "bytes": 48002,
+          "sha256": "3caa5e83fdfb35f7908987b81c09637e49d33dc3dbc3ded30e7d0fe587bf062a"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/post-exit-observation.json",
+          "bytes": 4772,
+          "sha256": "beea3424ac5eb77d8923cb643d5d5a336379e77944b0eaffdef2d3fbd0b0399f"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-native-validation-recovery-root-1/prepared-source.json",
+          "bytes": 7435,
+          "sha256": "8ba2120fa30dc0861691c41884036e69906119a151dd709296aec51e0e134a76"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-selection-root-1/host-selection.json",
+          "bytes": 848472,
+          "sha256": "92791596414caacfe9cb6ca9f0f77257d5c178e47af58ccf03064357bc6a3045"
+        },
+        {
+          "path": ".build/improvement-experiments/rfdt-round-7-selection-root-1/root-receipt.json",
+          "bytes": 1856,
+          "sha256": "3d6bc8935d5919d276d2ebc3ce90b03917382d1f19ca1b9b847967f0971688ca"
+        }
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "path": ".build/improvement-experiments/gemma4-label-prototype/gemma4-label-prototype",
+      "bytes": 9671064,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    },
+    {
+      "path": ".build/improvement-experiments/gemma4-label-prototype/versions/v0/gemma4-label-prototype",
+      "bytes": 9653112,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    },
+    {
+      "path": ".build/improvement-experiments/gemma4-label-prototype/versions/v1/gemma4-label-prototype",
+      "bytes": 9670712,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    },
+    {
+      "path": ".build/improvement-experiments/gemma4-runtime-candidate-1/gemma4-label-prototype",
+      "bytes": 9671688,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    },
+    {
+      "path": ".build/improvement-experiments/parity-probe/__pycache__/probe.cpython-314.pyc",
+      "bytes": 55923,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/fused/README.md",
+      "bytes": 81,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/fused/added_tokens.json",
+      "bytes": 3,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/fused/config.json",
+      "bytes": 974,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/fused/generation_config.json",
+      "bytes": 215,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/fused/model.safetensors",
+      "bytes": 3999582717,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/fused/model.safetensors.index.json",
+      "bytes": 24829,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/fused/rfdt-fused-manifest.json",
+      "bytes": 5100,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/fused/special_tokens_map.json",
+      "bytes": 623,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/fused/tokenizer.json",
+      "bytes": 37677224,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/fused/tokenizer.model",
+      "bytes": 4689074,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/fused/tokenizer_config.json",
+      "bytes": 1158219,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-2/run/gemma-3-1b-rfdt-f16.gguf",
+      "bytes": 2006573408,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/fused/README.md",
+      "bytes": 81,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/fused/added_tokens.json",
+      "bytes": 3,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/fused/config.json",
+      "bytes": 974,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/fused/generation_config.json",
+      "bytes": 215,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/fused/model.safetensors",
+      "bytes": 3999582717,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/fused/model.safetensors.index.json",
+      "bytes": 24829,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/fused/rfdt-fused-manifest.json",
+      "bytes": 5100,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/fused/special_tokens_map.json",
+      "bytes": 623,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/fused/tokenizer.json",
+      "bytes": 37677224,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/fused/tokenizer.model",
+      "bytes": 4689074,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/fused/tokenizer_config.json",
+      "bytes": 1158219,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-3/run/gemma-3-1b-rfdt-f16.gguf",
+      "bytes": 2006573408,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/fused/README.md",
+      "bytes": 81,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/fused/added_tokens.json",
+      "bytes": 3,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/fused/config.json",
+      "bytes": 974,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/fused/generation_config.json",
+      "bytes": 215,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/fused/model.safetensors",
+      "bytes": 3999582717,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/fused/model.safetensors.index.json",
+      "bytes": 24829,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/fused/rfdt-fused-manifest.json",
+      "bytes": 5100,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/fused/special_tokens_map.json",
+      "bytes": 623,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/fused/tokenizer.json",
+      "bytes": 37677224,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/fused/tokenizer.model",
+      "bytes": 4689074,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/fused/tokenizer_config.json",
+      "bytes": 1158219,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-4/run/gemma-3-1b-rfdt-f16.gguf",
+      "bytes": 2006573408,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/fused/README.md",
+      "bytes": 81,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/fused/added_tokens.json",
+      "bytes": 3,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/fused/config.json",
+      "bytes": 974,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/fused/generation_config.json",
+      "bytes": 215,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/fused/model.safetensors",
+      "bytes": 3999582717,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/fused/model.safetensors.index.json",
+      "bytes": 24829,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/fused/rfdt-fused-manifest.json",
+      "bytes": 5100,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/fused/special_tokens_map.json",
+      "bytes": 623,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/fused/tokenizer.json",
+      "bytes": 37677224,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/fused/tokenizer.model",
+      "bytes": 4689074,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/fused/tokenizer_config.json",
+      "bytes": 1158219,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-5/run/gemma-3-1b-rfdt-f16.gguf",
+      "bytes": 2006573408,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/fused/README.md",
+      "bytes": 81,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/fused/added_tokens.json",
+      "bytes": 3,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/fused/config.json",
+      "bytes": 974,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/fused/generation_config.json",
+      "bytes": 215,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/fused/model.safetensors",
+      "bytes": 3999582717,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/fused/model.safetensors.index.json",
+      "bytes": 24829,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/fused/rfdt-fused-manifest.json",
+      "bytes": 5100,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/fused/special_tokens_map.json",
+      "bytes": 623,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/fused/tokenizer.json",
+      "bytes": 37677224,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/fused/tokenizer.model",
+      "bytes": 4689074,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/fused/tokenizer_config.json",
+      "bytes": 1158219,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-6/run/gemma-3-1b-rfdt-f16.gguf",
+      "bytes": 2006573408,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/fused/README.md",
+      "bytes": 81,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/fused/added_tokens.json",
+      "bytes": 3,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/fused/config.json",
+      "bytes": 974,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/fused/generation_config.json",
+      "bytes": 215,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/fused/model.safetensors",
+      "bytes": 3999582717,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/fused/model.safetensors.index.json",
+      "bytes": 24829,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/fused/rfdt-fused-manifest.json",
+      "bytes": 5100,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/fused/special_tokens_map.json",
+      "bytes": 623,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/fused/tokenizer.json",
+      "bytes": 37677224,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/fused/tokenizer.model",
+      "bytes": 4689074,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/fused/tokenizer_config.json",
+      "bytes": 1158219,
+      "reason": "generated fused-model directory; identities remain in run reports"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-round-7/run/gemma-3-1b-rfdt-f16.gguf",
+      "bytes": 2006573408,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    },
+    {
+      "path": ".build/improvement-experiments/rfdt-runner.lock",
+      "bytes": 75,
+      "reason": "compiled binary, full model artifact, tokenizer binary, bytecode, or runtime lock"
+    }
+  ],
+  "previously_included_paths_now_absent": []
+}

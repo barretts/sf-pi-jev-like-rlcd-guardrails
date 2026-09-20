@@ -1,8 +1,20 @@
 # Implementation evidence
 
-The TypeScript package is at `/Users/bsonntag/code/simple-jev-ts`, on `main` in the private repository `barretts/simple-jev-ts`. The initial delivered commit is `0fef15dab99ec01d8ec091359c773b3e2db942be`; the expanded source checkpoint is `7a8f823e0375419030b08d81de81efdc580d77e6`, the hardened source checkpoint is `4d30c58d43912c76fe0e1dffd236517f730d4909`, the download-recovery source checkpoint is `47d7c2efc02374912aa9444efaf939550690348e`, the Metal startup/fixture checkpoint is `ba82de592fb80b2e9014c685e708b748724740d6`, and the typed-teacher/cache checkpoint is `e6b64ac24760a726f3d8a848c8e7a6a080e0cd09`. All were committed and pushed privately. Subsequent real-model evidence is recorded below. Native builds, weights, private run data, and raw proof files are excluded from Git.
+The TypeScript package is at `/Users/bsonntag/code/simple-jev-ts`, with current evaluation work on `feat/developer-improvement` in the private repository `barretts/simple-jev-ts`. The initial delivered commit is `0fef15dab99ec01d8ec091359c773b3e2db942be`; the expanded source checkpoint is `7a8f823e0375419030b08d81de81efdc580d77e6`, the hardened source checkpoint is `4d30c58d43912c76fe0e1dffd236517f730d4909`, the download-recovery source checkpoint is `47d7c2efc02374912aa9444efaf939550690348e`, the Metal startup/fixture checkpoint is `ba82de592fb80b2e9014c685e708b748724740d6`, and the typed-teacher/cache checkpoint is `e6b64ac24760a726f3d8a848c8e7a6a080e0cd09`. All were committed and pushed privately. Subsequent real-model evidence is recorded below. Native builds, weights, private run data, and raw proof files are excluded from Git.
 
 The original Simple Jev checkout remains unchanged. The original sf-pi checkout remains unchanged, including its existing untracked `.logs/`. Manager work is isolated in `/Users/bsonntag/code/sf-pi-jev-manager`, branch `barretts/jev-external-manager`, against baseline `4f901db9c3f5076ea0305dea33ad6e8856e467da`. Global pi preferences are preserved; integration exercises use isolated agent/workspace directories. No public sf-pi push is part of this delivery.
+
+## Completed exact-excerpt answer-effectiveness evaluation
+
+The [final evidence](./research/context-effectiveness-root-1/RESULTS.md) records all 192 scheduled Pi/sf-pi workflows, zero unrun workflow slots, the fixed Grok 4.6 task model, all 23 controlled factories and genuine builtin reads with registered original retrieval. Native short controls and exact scoped long variants preserve the original source-blind V3 gold. A reproducible post-freeze CPU checker verified 24 original cases/56 fields and all 24 long scopes; its timing is declared rather than presented as a prospective blind check.
+
+Full context accepted 84/96 workflows (87.50%); excerpts accepted 86/96 (89.58%). Short controls accepted 41/48 per arm and did not compress. Long cases applied compression in all 48 excerpt workflows, accepting 45/48 versus 43/48 raw. Paired whole-workflow results were 83 both accepted, three excerpt-favored, one raw-favored and nine neither accepted. Of the three excerpt-favored pairs, two were completed Unicode answers whose raw counterparts failed JSON parsing; one was a correct excerpt answer paired with a raw execution error. The regression was `quality-v3-22-long__r1`, a multiline exact body-count/position task: the excerpt answer parsed as JSON but matched only one of two fields, despite a recovery turn. The second repetition passed. Which field was wrong and an omission-only cause are not established because final model text was deliberately not persisted.
+
+All 399 physical task requests have complete core server usage: raw 1,593,640 prompt/67,235 output/1,660,875 total tokens; excerpts 625,273 prompt/86,569 output/711,842 total. Aggregate prompt reduction was 60.76% and total-token reduction 57.14%, including failed physical calls and recovery. Output increased 28.76%. Summed physical task-request elapsed, including shared pacing and failures but excluding judges, increased 18.67%; this is not production latency. The strict successful-execution gate remains false and the CLI exited 1 because three raw and two excerpt workflows failed. The independent audit separates all-slots-observed from all-successful execution; no failure was deleted to calculate a passing result.
+
+All 187 completed workflows verified exact canonical originals, provider-wire delivery and affirmative cleanup. Original proof was affirmative for 190/192 total records; the two failed short last-write workflows lack affirmative original proof. All 192 session cleanups and final runtime credential cleanup completed. No HTTP 429 responses occurred. The supplementary Grok judge attempted 94 of 96 scheduled judgments: 24 valid/supporting, 70 failed, two unrun. No disagreement occurred within the valid subset; unknown judge usage stays unknown and does not establish support for failed cases.
+
+The independent audit verifies 26 executed source/runtime pins and 24 controlled SF pins, individual workflow records, full-denominator quality, family/stratum summaries, physical request multiplicity and judge disagreement accounting. Source archive and protocol bind the dirty preparation snapshot rather than claiming inference used a later documentation HEAD. Eight Python audit/gold/report tests and 21 focused Node protocol tests passed. No model training, scoring or frozen-case changes were made in response to inference results. Production qualification, natural developer-task effectiveness, population noninferiority and billing savings remain unproven.
 
 ## Inputs and identities
 
@@ -150,6 +162,57 @@ The TypeScript workflow validates targets/provenance, grouped splits, native bou
 Artifact registry updates now also hold an exclusive per-registry lock through read, merge, atomic rename, and cleanup. Concurrent or abandoned locks fail explicitly with `ERR_ARTIFACT_REGISTRY_BUSY`; there is no implicit retry or stale takeover. Four public-API regression cases prove that successful distinct-ID approvals are retained, another process's lock is untouched, failures clean up the owned lock, and failed acceptance creates no registry. Forty-four focused model/concurrency tests passed.
 
 ## Verification and delivery boundaries
+
+The context/routing development checkpoint on 2026-09-20 passed the local
+TypeScript check and build, **813 Vitest tests across 38 files**, and **161 Node
+protocol tests**. An offline fresh package consumer passed library and extension
+imports, public declarations, installed CLI/server entry points, and actionable
+missing-model behavior. The package contained 141 files and no model weights.
+These checks establish source and distribution behavior; live acceptance is
+recorded separately in [the context/routing progress dossier](research/CONTEXT_ROUTING_PROGRESS.md).
+No new hosted CI result is claimed for this checkpoint.
+
+The new frozen-Gemma routing head completed all 240 TRAIN feature extractions
+and a stationary TypeScript logistic fit. Its independent 1,249-check audit
+found no arithmetic or provenance discrepancy. Both subsequent production
+validation campaigns completed their 180 scheduled classifications, but the
+completeness checker rejected every request before any model call. Both therefore
+failed usefulness, and neither measures the head's accuracy. Their retained
+negative evidence is in [round 1](research/routing-head-validation-round-1/archive-manifest.json)
+and [source-blind V2](research/routing-head-validation-v2/archive-manifest.json).
+CPU fallback timing from these campaigns is not Gemma inference timing.
+
+The separate direct head diagnostic then completed **180 actual feature calls**,
+with no errors or unrun cells and confirmed runtime disposal. It forced encoder
+eligibility only for laboratory measurement. Each of the three passes routed
+19/20 easy cases and 35/40 strong-required cases to fast, failing the declared
+safety policy. Warm operational p95 was 260.82 ms, exceeding the 100 ms target.
+An optimistic score-cutoff diagnostic could retain only 2/20 easy cases while
+excluding every strong-required case. No cutoff or head was changed. The head
+is unapproved; no downstream answer generation or production qualification
+occurred. Exact evidence is retained in
+[the direct diagnostic archive](research/routing-head-raw-validation-v2/archive-manifest.json).
+
+The real Pi/Grok context smoke with concise instructions completed all four
+sessions and the context judge with correct literal answers. Input tokens fell
+from 5,262 to 3,646, while generated output increased from 240 to 483 tokens.
+The two paired repetitions are too small to establish general speed or billing
+gains. The subsequent 192-session campaign recorded 23 correct completed
+sessions and 169 HTTP 429 failures. Its full-population performance comparisons
+remain unknown, and it is not qualified. Both successful and failed runs retain
+their exact executed source archives. The approved 23-extension SF smoke then
+reached the model without throttling and preserved the compressed wire context,
+but two of four workflows reported SF extension errors. Correct final answers
+from those errored workflows do not satisfy integration acceptance.
+
+After the harness gained bounded `session_shutdown` emission before disposal,
+the next real SF smoke passed **4/4 workflows and its Grok judge**, with all 23
+factories loaded, clean shutdowns, preserved original history and zero extension
+or HTTP 429 errors. Prompt usage decreased 12.59%, while aggregate workflow time
+increased to 1.75 times baseline. This proves the lifecycle correction and
+functional path, but does not pass the performance gates. Its safe projection
+and exact source archive are retained in
+[SF smoke 4](research/context-workflow-sf-smoke-root-4/archive-manifest.json).
 
 An independent fresh private GitHub clone of checkpoint `7a8f823e0375419030b08d81de81efdc580d77e6` passed **200 tests across 19 files**, including the final RFDT approval, distribution, concurrency, and subprocess-cleanup fixes. TypeScript check and formatting passed. The current v1 compatibility checker passed 72 whole-Plan and 432 answer/usage comparisons. A fresh Node26 CI-style install with dependency scripts and audit disabled passed compilation and CLI tests. The repeated fresh package consumer passed library/extension imports, public TypeScript declarations, both installed bin symlinks, and actionable missing-model doctor behavior. The checkpoint package contained 61 files, 159,942 compressed bytes and 799,670 unpacked bytes, including the Manager patch and notices, with no weights, native vendor binaries, fetched templates, logs, or private run data. Its SHA-256 was `24d7d3c980d1f45165f0a28bf1bc0b430fe5061aeac085fc0b5be16199871d26`. Subsequent source/documentation changes alter that archive identity.
 

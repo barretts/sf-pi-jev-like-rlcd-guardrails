@@ -1,0 +1,676 @@
+{
+  "kind": "jev_context_workflow_result",
+  "schemaVersion": 1,
+  "completedAt": "2026-09-20T17:44:05.012Z",
+  "evidenceMode": "real-sdk-workflow",
+  "protocolSha256": "89ad14f10cbb1344d1e69f447b69fcf37b08eb7879de85b263cc37f853ddbd7b",
+  "summary": {
+    "scheduledSessions": 4,
+    "observedSessions": 4,
+    "unrunSessions": 0,
+    "fullCoverage": false,
+    "arms": {
+      "baseline": {
+        "scheduled": 2,
+        "observed": 2,
+        "unrun": 0,
+        "completed": 1,
+        "errors": 1,
+        "acceptedAnswers": 2,
+        "acceptanceRateFullPopulation": 1,
+        "usageComplete": true,
+        "usage": {
+          "promptTokens": 10122,
+          "completionTokens": 135,
+          "totalTokens": 10257,
+          "cachedPromptTokens": 384,
+          "uncachedPromptTokens": 9738
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 10122,
+          "completionTokens": 135,
+          "totalTokens": 10257,
+          "cachedPromptTokens": 384,
+          "uncachedPromptTokens": 9738
+        },
+        "acceptedAnswerTimeP50Ms": null,
+        "acceptedAnswerTimeP95Ms": 11124.06725,
+        "workflowElapsedSumMs": 21190.390375000003
+      },
+      "compact": {
+        "scheduled": 2,
+        "observed": 2,
+        "unrun": 0,
+        "completed": 1,
+        "errors": 1,
+        "acceptedAnswers": 2,
+        "acceptanceRateFullPopulation": 1,
+        "usageComplete": true,
+        "usage": {
+          "promptTokens": 8140,
+          "completionTokens": 141,
+          "totalTokens": 8281,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 8140
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 8140,
+          "completionTokens": 141,
+          "totalTokens": 8281,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 8140
+        },
+        "acceptedAnswerTimeP50Ms": null,
+        "acceptedAnswerTimeP95Ms": 10012.753708999997,
+        "workflowElapsedSumMs": 21947.884958999995
+      }
+    },
+    "pairs": [
+      {
+        "pairId": "root-final-unit-failure__r1",
+        "caseId": "root-final-unit-failure",
+        "family": "integration-smoke",
+        "order": [
+          "baseline",
+          "compact"
+        ],
+        "observed": true,
+        "complete": false,
+        "bothAccepted": false,
+        "acceptedAnswerTimeDeltaMs": null,
+        "acceptedAnswerTimeRatio": null,
+        "workflowElapsedRatio": null,
+        "originalBytes": 5810,
+        "compressedBytes": 105,
+        "contextBlocksCompressed": 1
+      },
+      {
+        "pairId": "root-final-unit-failure__r2",
+        "caseId": "root-final-unit-failure",
+        "family": "integration-smoke",
+        "order": [
+          "compact",
+          "baseline"
+        ],
+        "observed": true,
+        "complete": false,
+        "bothAccepted": false,
+        "acceptedAnswerTimeDeltaMs": null,
+        "acceptedAnswerTimeRatio": null,
+        "workflowElapsedRatio": null,
+        "originalBytes": 5810,
+        "compressedBytes": 105,
+        "contextBlocksCompressed": 1
+      }
+    ],
+    "strata": [
+      {
+        "family": "integration-smoke",
+        "scheduledPairs": 2,
+        "observedPairs": 2,
+        "completedPairs": 0,
+        "acceptedPairs": 0,
+        "latencySamplePairs": 0,
+        "medianWorkflowElapsedRatio": null
+      }
+    ],
+    "eligibilityUsage": {
+      "baseline": {
+        "scheduled": 2,
+        "complete": true,
+        "promptTokens": 10122
+      },
+      "compact": {
+        "scheduled": 2,
+        "complete": true,
+        "promptTokens": 8140
+      }
+    },
+    "measuredChanges": {
+      "promptTokenReductionFraction": 0.19581110452479744,
+      "completionTokenChangeFraction": 0.04444444444444451,
+      "totalTokenChangeFraction": -0.19264892268694545,
+      "uncachedPromptTokenChangeFraction": -0.16409940439515303,
+      "acceptedPairs": 0,
+      "pairedAcceptedAnswerTimeDeltaSumMs": null,
+      "eligiblePromptTokenReductionFraction": 0.19581110452479744,
+      "medianPairedWorkflowElapsedRatio": null,
+      "aggregateWorkflowElapsedRatio": null
+    },
+    "observedCapacityAndLatencyGates": {
+      "eligiblePromptReductionAtLeast20Percent": false,
+      "fullMixedPromptTokensDoNotIncrease": true,
+      "noAcceptedTaskRegression": false,
+      "medianPairedWorkflowElapsedAtMostBaseline": false,
+      "aggregateWorkflowElapsedAtMostBaseline": false
+    },
+    "liveCompressionQualified": true,
+    "passed": false,
+    "productionImprovementQualified": false,
+    "interpretation": "Functional acceptance, original preservation, measured token reduction and observed latency are distinct. All failed/unrun slots remain in denominators. Synthetic paired evidence alone does not qualify production speed, billing or general answer quality.",
+    "functionalAndJudgeAcceptance": false
+  },
+  "judgeSummary": {
+    "scheduled": 1,
+    "completed": 1,
+    "errors": 0,
+    "unrun": 0,
+    "preserved": 1,
+    "passed": 1,
+    "qualified": true
+  },
+  "requestPacing": {
+    "settings": {
+      "minRequestIntervalMs": 5000,
+      "rateLimitCooldownMs": 60000,
+      "maxRateLimitCooldownMs": 120000,
+      "maxConsecutive429": 3
+    },
+    "status": {
+      "minRequestIntervalMs": 5000,
+      "rateLimitCooldownMs": 60000,
+      "maxRateLimitCooldownMs": 120000,
+      "maxConsecutive429": 3,
+      "dispatches": 9,
+      "consecutive429": 0,
+      "circuitOpen": false,
+      "nextDispatchAtMs": 52734.2415
+    },
+    "physicalRequests": [
+      {
+        "index": 0,
+        "requestedAtMs": 2390.795959,
+        "requestSha256": "ca584fd6dce1f05dd8c2aca0900958d498dc1f088f913765636b69d45c8a46bc",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 0.0749999999998181,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 0,
+        "dispatchedAtMs": 2390.956167,
+        "transportHeadersElapsedMs": 902.1942090000002
+      },
+      {
+        "index": 1,
+        "requestedAtMs": 9676.489417,
+        "requestSha256": "c3ee28d9cdf7630d60dbb270821f1f39fb8618d5ed63552dab10a6a052b8811a",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 1.0874999999996362,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 1,
+        "dispatchedAtMs": 9677.729959,
+        "transportHeadersElapsedMs": 1819.2198329999992
+      },
+      {
+        "index": 2,
+        "requestedAtMs": 11536.179959,
+        "requestSha256": "f168868456004a0a3e861934e1a922cf5732b95d78003074809836a7e8526474",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 3142.2038749999992,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 2,
+        "dispatchedAtMs": 14678.411709,
+        "transportHeadersElapsedMs": 824.7986669999991
+      },
+      {
+        "index": 3,
+        "requestedAtMs": 22729.95,
+        "requestSha256": "9cd69b2039bda333cbfa58907d272c9c164309f1c591345cea8be8dc5b4d67f3",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 0.035500000001775334,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 3,
+        "dispatchedAtMs": 22730.055959,
+        "transportHeadersElapsedMs": 705.8559159999968
+      },
+      {
+        "index": 4,
+        "requestedAtMs": 24013.2315,
+        "requestSha256": "e0ffc53dbfd39bed905b62f89e8b38cfd543070aa18078473350b810fdc57287",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 3717.7859580000004,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 4,
+        "dispatchedAtMs": 27731.0415,
+        "transportHeadersElapsedMs": 1130.2569579999981
+      },
+      {
+        "index": 5,
+        "requestedAtMs": 29915.384542,
+        "requestSha256": "1210db85f3b859910bba9245b80b37543874861b60b8f5207e4c103666065ed4",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 2816.5678339999977,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 5,
+        "dispatchedAtMs": 32732.079334,
+        "transportHeadersElapsedMs": 724.8094169999968
+      },
+      {
+        "index": 6,
+        "requestedAtMs": 33504.817125,
+        "requestSha256": "58febbe4dfb1a490669b0a15a0ffbc36ef0366295afe699c3841197a6b151578",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 4227.6784999999945,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 6,
+        "dispatchedAtMs": 37732.530834,
+        "transportHeadersElapsedMs": 932.3335000000006
+      },
+      {
+        "index": 7,
+        "requestedAtMs": 40426.917959,
+        "requestSha256": "7c6f1344d1c420021ffdd84a5373ae73153c06f4579b5edde40671987ee7ad60",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 2306.2975420000002,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 7,
+        "dispatchedAtMs": 42733.338042,
+        "transportHeadersElapsedMs": 786.1569159999999
+      },
+      {
+        "index": 8,
+        "requestedAtMs": 43538.743709,
+        "requestSha256": "a8f3b913aeb771bf98c2d182a79717b6040cfc1b00149abc037116537d958909",
+        "physical": true,
+        "status": "response_received",
+        "httpStatus": 200,
+        "queuedRateWaitMs": 4195.451832999999,
+        "rateLimit": null,
+        "error": null,
+        "dispatchIndex": 8,
+        "dispatchedAtMs": 47734.2415,
+        "transportHeadersElapsedMs": 56621.074541
+      }
+    ],
+    "physicalAttemptCount": 9,
+    "http429Count": 0,
+    "notDispatchedCount": 0
+  },
+  "cleanup": {
+    "runtimeCredential": "completed",
+    "sessionsAffirmative": true,
+    "affirmative": true
+  },
+  "limits": [
+    "Machine-authored synthetic validation cases are not human gold or unseen production TEST",
+    "Remote cache state is uncontrolled; cache and uncached prompt counters are reported separately",
+    "Concurrent pair workers can create gateway contention; latency is this controlled workflow observation",
+    "Configured zero SDK prices do not establish billed cost or savings",
+    "Body hashes bind observed bytes; raw response bodies are not retained for independent replay",
+    "Task prompts and provider parameters are frozen; SDK-generated system prompts and hook nonces are recorded in actual requests",
+    "Shared request pacing and rate-limit cooldown wait are separately recorded and remain included in complete workflow elapsed time; paced timing cannot establish provider speed",
+    "HTTP 429 attempts are retained with unknown usage and never silently retried; an opened consecutive-429 circuit leaves remaining scheduled cells unrun"
+  ],
+  "runs": [
+    {
+      "id": "root-final-unit-failure__r1__baseline",
+      "caseId": "root-final-unit-failure",
+      "family": "integration-smoke",
+      "arm": "baseline",
+      "status": "completed",
+      "passed": true,
+      "answerAccepted": true,
+      "acceptedAnswerTimeMs": 11124.06725,
+      "workflowElapsedMs": 11124.241875000002,
+      "startupMs": 1589.700875,
+      "promptElapsedMs": 9531.581750000001,
+      "errors": [],
+      "controllerStatus": {
+        "enabled": false,
+        "readyForCurrentTurn": false,
+        "contextCalls": 0,
+        "compressedBlocks": 0,
+        "originalBytes": 0,
+        "compressedBytes": 0,
+        "toolTextBytesSaved": 0,
+        "bytesSaved": 0,
+        "manifestBytes": 0,
+        "fallbackCount": 0,
+        "lastFallback": null,
+        "lastContext": null,
+        "validatedProviderRequests": 0,
+        "restoredProviderRequests": 0,
+        "unverifiedProviderRequests": 0,
+        "contextTransformElapsedMs": 0,
+        "providerValidationElapsedMs": 0
+      },
+      "usage": {
+        "complete": true,
+        "observedRequests": 2,
+        "fullyMeasuredRequests": 2,
+        "totals": {
+          "promptTokens": 5253,
+          "completionTokens": 68,
+          "totalTokens": 5321,
+          "cachedPromptTokens": 384,
+          "uncachedPromptTokens": 4869
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 5253,
+          "completionTokens": 68,
+          "totalTokens": 5321,
+          "cachedPromptTokens": 384,
+          "uncachedPromptTokens": 4869
+        }
+      },
+      "cleanup": {
+        "abort": "completed",
+        "dispose": "completed",
+        "affirmative": true
+      },
+      "controlledSfFactoryCount": 23,
+      "liveCompression": {
+        "required": false,
+        "passed": true,
+        "validatedRequests": 0,
+        "evidence": []
+      }
+    },
+    {
+      "id": "root-final-unit-failure__r1__compact",
+      "caseId": "root-final-unit-failure",
+      "family": "integration-smoke",
+      "arm": "compact",
+      "status": "error",
+      "passed": false,
+      "answerAccepted": true,
+      "acceptedAnswerTimeMs": null,
+      "workflowElapsedMs": 11934.989125000002,
+      "startupMs": 16.891583999999057,
+      "promptElapsedMs": 11914.839,
+      "errors": [
+        "Extension failure; private details withheld",
+        "Workflow failed; private provider/auth details withheld"
+      ],
+      "controllerStatus": {
+        "enabled": true,
+        "readyForCurrentTurn": false,
+        "contextCalls": 2,
+        "compressedBlocks": 1,
+        "originalBytes": 5810,
+        "compressedBytes": 105,
+        "toolTextBytesSaved": 5705,
+        "bytesSaved": 5624,
+        "manifestBytes": 81,
+        "fallbackCount": 0,
+        "lastFallback": null,
+        "lastContext": {
+          "compressedBlocks": 1,
+          "originalBytes": 5810,
+          "compressedBytes": 105,
+          "toolTextBytesSaved": 5705,
+          "bytesSaved": 5624,
+          "manifestBytes": 81,
+          "instructionBytes": 958,
+          "fallbackCount": 0,
+          "lastFallback": null,
+          "reused": false,
+          "transformElapsedMs": 2.847250000002532,
+          "providerValidationElapsedMs": 0.1968749999978172,
+          "blocks": [
+            {
+              "messageIndex": 5,
+              "contentIndex": 0,
+              "toolResultOrdinal": 1,
+              "format": "jev-tool-text-v2",
+              "originalSha256": "38f809dbe6efd62f9418f602ab164296b387a70a3f2bab290bb35b66d0e41ccf",
+              "compressedSha256": "8472cc93bf775f0ced2cdf6fbaeb1ff1a4056f8b8f0eb0832a723171d173442b",
+              "originalBytes": 5810,
+              "compressedBytes": 105
+            }
+          ]
+        },
+        "validatedProviderRequests": 1,
+        "restoredProviderRequests": 0,
+        "unverifiedProviderRequests": 0,
+        "contextTransformElapsedMs": 2.919333000003462,
+        "providerValidationElapsedMs": 0.1968749999978172
+      },
+      "usage": {
+        "complete": true,
+        "observedRequests": 2,
+        "fullyMeasuredRequests": 2,
+        "totals": {
+          "promptTokens": 4073,
+          "completionTokens": 74,
+          "totalTokens": 4147,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4073
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 4073,
+          "completionTokens": 74,
+          "totalTokens": 4147,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4073
+        }
+      },
+      "cleanup": {
+        "abort": "completed",
+        "dispose": "completed",
+        "affirmative": true
+      },
+      "controlledSfFactoryCount": 23,
+      "liveCompression": {
+        "required": true,
+        "passed": true,
+        "validatedRequests": 1,
+        "evidence": [
+          {
+            "requestIndex": 1,
+            "requestSha256": "9cd69b2039bda333cbfa58907d272c9c164309f1c591345cea8be8dc5b4d67f3",
+            "manifestSha256": "a665bdbee282459521dcc8ca50ebbb6cad84f3411224b2f31624c4b574c932cb",
+            "nonce": "8d88f172b6f838c5c1972ee4",
+            "generation": 1,
+            "blocks": [
+              {
+                "messageIndex": 5,
+                "contentIndex": 0,
+                "toolResultOrdinal": 1,
+                "toolCallId": "call_5abd65a7590754ff84488378c949f875",
+                "compressedSha256": "8472cc93bf775f0ced2cdf6fbaeb1ff1a4056f8b8f0eb0832a723171d173442b"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "root-final-unit-failure__r2__compact",
+      "caseId": "root-final-unit-failure",
+      "family": "integration-smoke",
+      "arm": "compact",
+      "status": "completed",
+      "passed": true,
+      "answerAccepted": true,
+      "acceptedAnswerTimeMs": 10012.753708999997,
+      "workflowElapsedMs": 10012.895833999995,
+      "startupMs": 324.9547089999978,
+      "promptElapsedMs": 9685.033249999997,
+      "errors": [],
+      "controllerStatus": {
+        "enabled": true,
+        "readyForCurrentTurn": false,
+        "contextCalls": 2,
+        "compressedBlocks": 1,
+        "originalBytes": 5810,
+        "compressedBytes": 105,
+        "toolTextBytesSaved": 5705,
+        "bytesSaved": 5624,
+        "manifestBytes": 81,
+        "fallbackCount": 0,
+        "lastFallback": null,
+        "lastContext": {
+          "compressedBlocks": 1,
+          "originalBytes": 5810,
+          "compressedBytes": 105,
+          "toolTextBytesSaved": 5705,
+          "bytesSaved": 5624,
+          "manifestBytes": 81,
+          "instructionBytes": 958,
+          "fallbackCount": 0,
+          "lastFallback": null,
+          "reused": false,
+          "transformElapsedMs": 1.5940000000009604,
+          "providerValidationElapsedMs": 0.04104100000040489,
+          "blocks": [
+            {
+              "messageIndex": 5,
+              "contentIndex": 0,
+              "toolResultOrdinal": 1,
+              "format": "jev-tool-text-v2",
+              "originalSha256": "38f809dbe6efd62f9418f602ab164296b387a70a3f2bab290bb35b66d0e41ccf",
+              "compressedSha256": "8472cc93bf775f0ced2cdf6fbaeb1ff1a4056f8b8f0eb0832a723171d173442b",
+              "originalBytes": 5810,
+              "compressedBytes": 105
+            }
+          ]
+        },
+        "validatedProviderRequests": 1,
+        "restoredProviderRequests": 0,
+        "unverifiedProviderRequests": 0,
+        "contextTransformElapsedMs": 1.6225830000003043,
+        "providerValidationElapsedMs": 0.04104100000040489
+      },
+      "usage": {
+        "complete": true,
+        "observedRequests": 2,
+        "fullyMeasuredRequests": 2,
+        "totals": {
+          "promptTokens": 4067,
+          "completionTokens": 67,
+          "totalTokens": 4134,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4067
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 4067,
+          "completionTokens": 67,
+          "totalTokens": 4134,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4067
+        }
+      },
+      "cleanup": {
+        "abort": "completed",
+        "dispose": "completed",
+        "affirmative": true
+      },
+      "controlledSfFactoryCount": 23,
+      "liveCompression": {
+        "required": true,
+        "passed": true,
+        "validatedRequests": 1,
+        "evidence": [
+          {
+            "requestIndex": 1,
+            "requestSha256": "1210db85f3b859910bba9245b80b37543874861b60b8f5207e4c103666065ed4",
+            "manifestSha256": "5fb179f2aae989032c9a38f650281725dbeedd991bd9874147dcea8602c98fa2",
+            "nonce": "9cb50fc501c5c60b37e25720",
+            "generation": 1,
+            "blocks": [
+              {
+                "messageIndex": 5,
+                "contentIndex": 0,
+                "toolResultOrdinal": 1,
+                "toolCallId": "call_efa7224f5f6e5061b24398cb26a954c0",
+                "compressedSha256": "8472cc93bf775f0ced2cdf6fbaeb1ff1a4056f8b8f0eb0832a723171d173442b"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "root-final-unit-failure__r2__baseline",
+      "caseId": "root-final-unit-failure",
+      "family": "integration-smoke",
+      "arm": "baseline",
+      "status": "error",
+      "passed": false,
+      "answerAccepted": true,
+      "acceptedAnswerTimeMs": null,
+      "workflowElapsedMs": 10066.148500000003,
+      "startupMs": 31.272499999999127,
+      "promptElapsedMs": 10032.471083000004,
+      "errors": [
+        "Extension failure; private details withheld",
+        "Workflow failed; private provider/auth details withheld"
+      ],
+      "controllerStatus": {
+        "enabled": false,
+        "readyForCurrentTurn": false,
+        "contextCalls": 0,
+        "compressedBlocks": 0,
+        "originalBytes": 0,
+        "compressedBytes": 0,
+        "toolTextBytesSaved": 0,
+        "bytesSaved": 0,
+        "manifestBytes": 0,
+        "fallbackCount": 0,
+        "lastFallback": null,
+        "lastContext": null,
+        "validatedProviderRequests": 0,
+        "restoredProviderRequests": 0,
+        "unverifiedProviderRequests": 0,
+        "contextTransformElapsedMs": 0,
+        "providerValidationElapsedMs": 0
+      },
+      "usage": {
+        "complete": true,
+        "observedRequests": 2,
+        "fullyMeasuredRequests": 2,
+        "totals": {
+          "promptTokens": 4869,
+          "completionTokens": 67,
+          "totalTokens": 4936,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4869
+        },
+        "completedUsageLowerBound": {
+          "promptTokens": 4869,
+          "completionTokens": 67,
+          "totalTokens": 4936,
+          "cachedPromptTokens": 0,
+          "uncachedPromptTokens": 4869
+        }
+      },
+      "cleanup": {
+        "abort": "completed",
+        "dispose": "completed",
+        "affirmative": true
+      },
+      "controlledSfFactoryCount": 23,
+      "liveCompression": {
+        "required": false,
+        "passed": true,
+        "validatedRequests": 0,
+        "evidence": []
+      }
+    }
+  ],
+  "rawResultSha256": "91d0f3cf9d6e490834d4f3183b9aaa568fd460adfa4eeefc16b65de69080893f",
+  "interpretation": "Historical report acceptance counts incorrectly include answers from errored workflows. Actual complete workflows: 2 of4. All4 returned correct literal answers,2 had SF extension errors; no429. Functional/performance acceptance fails. Captured prompts kept local."
+}

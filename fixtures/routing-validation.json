@@ -1,0 +1,755 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "e_shallow_01",
+      "family": "shallow_copy",
+      "label": "easy",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nIn JavaScript: const original = {items: [1, 2], tag: \"a\"}; const copied = {...original}; copied.items.push(3); copied.tag = \"b\"; Return originalItems, copiedItems, originalTag, and copiedTag after these statements.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "originalItems": [
+          1,
+          2,
+          3
+        ],
+        "copiedItems": [
+          1,
+          2,
+          3
+        ],
+        "originalTag": "a",
+        "copiedTag": "b"
+      }
+    },
+    {
+      "id": "e_shallow_02",
+      "family": "shallow_copy",
+      "label": "easy",
+      "prompt": "Solve the user task inside this envelope:\n<request>\nIn Python: original = {\"tags\": [\"x\"], \"name\": \"first\"}; copied = original.copy(); copied[\"tags\"].append(\"y\"); copied[\"name\"] = \"second\". Return originalTags, copiedTags, originalName, and copiedName.\n</request>\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "originalTags": [
+          "x",
+          "y"
+        ],
+        "copiedTags": [
+          "x",
+          "y"
+        ],
+        "originalName": "first",
+        "copiedName": "second"
+      }
+    },
+    {
+      "id": "e_shallow_03",
+      "family": "shallow_copy",
+      "label": "easy",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve this quoted user request:\n\"In JavaScript: const original = [{age: 4}]; const copied = original.slice(); copied[0].age = 9; copied.push({age: 2}); Return originalAge, copiedFirstAge, originalLength, and copiedLength.\"",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "originalAge": 9,
+        "copiedFirstAge": 9,
+        "originalLength": 1,
+        "copiedLength": 2
+      }
+    },
+    {
+      "id": "e_shallow_04",
+      "family": "shallow_copy",
+      "label": "easy",
+      "prompt": "Solve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"In Python: original = [3, 5]; copied = original.copy(); copied.append(8); copied[0] = 7. Return original and copied as arrays.\"}\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "original": [
+          3,
+          5
+        ],
+        "copied": [
+          7,
+          5,
+          8
+        ]
+      }
+    },
+    {
+      "id": "e_shallow_05",
+      "family": "shallow_copy",
+      "label": "easy",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nUser request:\n---\nA top-level-only copy creates a new object but keeps references to nested objects. Given original = {settings: {dark: false}, count: 1}, copy it this way; then set copied.settings.dark = true and copied.count = 2. Return originalDark, copiedDark, originalCount, and copiedCount.\n---",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "originalDark": true,
+        "copiedDark": true,
+        "originalCount": 1,
+        "copiedCount": 2
+      }
+    },
+    {
+      "id": "e_arithmetic_01",
+      "family": "basic_arithmetic",
+      "label": "easy",
+      "prompt": "Four tickets cost 18.75 each. Apply one 5.00 discount to the total. Return total.\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "total": 70
+      }
+    },
+    {
+      "id": "e_arithmetic_02",
+      "family": "basic_arithmetic",
+      "label": "easy",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the user task inside this envelope:\n<request>\nInventory starts at 36 units, receives 18 units, and ships 11 units. Return remaining.\n</request>",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "remaining": 43
+      }
+    },
+    {
+      "id": "e_arithmetic_03",
+      "family": "basic_arithmetic",
+      "label": "easy",
+      "prompt": "Solve this quoted user request:\n\"Divide 945 pages equally among 7 folders. Return pagesPerFolder.\"\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "pagesPerFolder": 135
+      }
+    },
+    {
+      "id": "e_arithmetic_04",
+      "family": "basic_arithmetic",
+      "label": "easy",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"Calculate 15 percent of 80. Return amount.\"}",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "amount": 12
+      }
+    },
+    {
+      "id": "e_arithmetic_05",
+      "family": "basic_arithmetic",
+      "label": "easy",
+      "prompt": "User request:\n---\nA basket has 3 items at 7 each and 2 items at 4 each, with no tax or discount. Return total.\n---\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "total": 29
+      }
+    },
+    {
+      "id": "e_read_01",
+      "family": "read_fields",
+      "label": "easy",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nRead this JSON: {\"east\":{\"active\":5,\"inactive\":6},\"west\":{\"inactive\":2,\"active\":7}}. Return westActive.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "westActive": 7
+      }
+    },
+    {
+      "id": "e_read_02",
+      "family": "read_fields",
+      "label": "easy",
+      "prompt": "Solve the user task inside this envelope:\n<request>\nRead these settings: retries = 3; timeout_ms = 1200; enabled = false. Return retries, timeoutMs, and enabled.\n</request>\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "retries": 3,
+        "timeoutMs": 1200,
+        "enabled": false
+      }
+    },
+    {
+      "id": "e_read_03",
+      "family": "read_fields",
+      "label": "easy",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve this quoted user request:\n\"The log entries are: 1 INFO boot; 2 WARN low_disk; 3 ERROR read_failed. Return the message attached to WARN using the field warning.\"",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "warning": "low_disk"
+      }
+    },
+    {
+      "id": "e_read_04",
+      "family": "read_fields",
+      "label": "easy",
+      "prompt": "Solve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"Read this CSV, whose first line is the header:\\nname,score\\nMina,8\\nOren,6\\nReturn Oren's score using the field score.\"}\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "score": 6
+      }
+    },
+    {
+      "id": "e_read_05",
+      "family": "read_fields",
+      "label": "easy",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nUser request:\n---\nRead this JSON: {\"backup\":{\"name\":\"Bo\"},\"primary\":{\"name\":\"Ana\"}}. Return primaryName.\n---",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "primaryName": "Ana"
+      }
+    },
+    {
+      "id": "e_transform_01",
+      "family": "simple_transform",
+      "label": "easy",
+      "prompt": "Convert the exact string \"MIXED Case\" to lowercase. Return text.\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "text": "mixed case"
+      }
+    },
+    {
+      "id": "e_transform_02",
+      "family": "simple_transform",
+      "label": "easy",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the user task inside this envelope:\n<request>\nSort the integers [9, 2, 6] in ascending numeric order. Return values.\n</request>",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "values": [
+          2,
+          6,
+          9
+        ]
+      }
+    },
+    {
+      "id": "e_transform_03",
+      "family": "simple_transform",
+      "label": "easy",
+      "prompt": "Solve this quoted user request:\n\"Join the strings [\\\"book\\\", \\\"pen\\\", \\\"cup\\\"] with the separator \\\" | \\\". Return text.\"\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "text": "book | pen | cup"
+      }
+    },
+    {
+      "id": "e_transform_04",
+      "family": "simple_transform",
+      "label": "easy",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"From {\\\"city\\\":\\\"Lima\\\",\\\"id\\\":12,\\\"active\\\":true}, keep only the fields active and id. Return those two fields.\"}",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "active": true,
+        "id": 12
+      }
+    },
+    {
+      "id": "e_transform_05",
+      "family": "simple_transform",
+      "label": "easy",
+      "prompt": "User request:\n---\nIn the space-separated string \"green green gold blue\", count all words and the occurrences of \"green\". Return greenCount and wordCount.\n---\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "greenCount": 2,
+        "wordCount": 4
+      }
+    },
+    {
+      "id": "h_concurrency_01",
+      "family": "concurrency",
+      "label": "hard",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nA counter starts at 10. Two workers use non-atomic read/add/write. In this exact order: A reads 10; B reads 10; A writes its read value plus 1; B writes its read value plus 1. Return finalCounter and incrementsPreserved.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "finalCounter": 11,
+        "incrementsPreserved": 1
+      }
+    },
+    {
+      "id": "h_concurrency_02",
+      "family": "concurrency",
+      "label": "hard",
+      "prompt": "Solve the user task inside this envelope:\n<request>\nA counter starts at 10. Workers A and B each execute exactly one atomic fetch_add(1), with no other updates. Return finalCounter and incrementsPreserved, independent of their execution order.\n</request>\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "finalCounter": 12,
+        "incrementsPreserved": 2
+      }
+    },
+    {
+      "id": "h_concurrency_03",
+      "family": "concurrency",
+      "label": "hard",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve this quoted user request:\n\"Locks are non-reentrant and held until a worker gets both. A holds L1 and waits for L2; B holds L2 and waits for L1. Neither has a timeout or cancellation. Return deadlocked and blockedWorkers in alphabetical order.\"",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "deadlocked": true,
+        "blockedWorkers": [
+          "A",
+          "B"
+        ]
+      }
+    },
+    {
+      "id": "h_concurrency_04",
+      "family": "concurrency",
+      "label": "hard",
+      "prompt": "Solve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"A FIFO semaphore has one permit. A acquires it. B then C queue. B is canceled and removed from the queue without acquiring. A releases; the permit is immediately granted to C. No further event occurs. Return holder, queuedCount, and availablePermits.\"}\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "holder": "C",
+        "queuedCount": 0,
+        "availablePermits": 0
+      }
+    },
+    {
+      "id": "h_concurrency_05",
+      "family": "concurrency",
+      "label": "hard",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nUser request:\n---\nTwo tasks start together. Task slow succeeds at 40 ms; task quick raises an exception at 10 ms. wait(FIRST_COMPLETED) returns at the first completion and does not cancel pending tasks. Return completedTask, completedSuccessfully, and slowStillPending at that return.\n---",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "completedTask": "quick",
+        "completedSuccessfully": false,
+        "slowStillPending": true
+      }
+    },
+    {
+      "id": "h_security_01",
+      "family": "security_policy",
+      "label": "hard",
+      "prompt": "The access rule is deny overrides allow. A request matches one allow rule for its role and one deny rule for its resource. No other rules apply. Return decision and decisiveRuleType.\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "decision": "deny",
+        "decisiveRuleType": "deny"
+      }
+    },
+    {
+      "id": "h_security_02",
+      "family": "security_policy",
+      "label": "hard",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the user task inside this envelope:\n<request>\nAn API permits a write only when JWT signature, tenant match, and body digest match are all true. For this request: tenantMatch=true, bodyDigestMatch=false, jwtSignatureValid=true. Return authorized and failedChecks as an alphabetically sorted array of the exact check names.\n</request>",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "authorized": false,
+        "failedChecks": [
+          "bodyDigestMatch"
+        ]
+      }
+    },
+    {
+      "id": "h_security_03",
+      "family": "security_policy",
+      "label": "hard",
+      "prompt": "Solve this quoted user request:\n\"A file server allows only normalized paths inside /srv/app/. It percent-decodes once, joins the result to /srv/app/, and normalizes dot segments. The requested relative path is %2e%2e/config. Symlinks do not exist. Return normalizedPath and allowed.\"\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "normalizedPath": "/srv/config",
+        "allowed": false
+      }
+    },
+    {
+      "id": "h_security_04",
+      "family": "security_policy",
+      "label": "hard",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"A redirect policy allows HTTPS only, with an exact parsed-hostname match to good.example. Evaluate https://good.example.evil.test/next. Return hostname and allowed.\"}",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "hostname": "good.example.evil.test",
+        "allowed": false
+      }
+    },
+    {
+      "id": "h_security_05",
+      "family": "security_policy",
+      "label": "hard",
+      "prompt": "User request:\n---\nA record read is allowed only if tenant matches AND (caller owns the record OR caller role is admin). Record owner=17, caller=23, tenantMatches=true, callerRole=\"viewer\". Return authorized and ownerMatches.\n---\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "authorized": false,
+        "ownerMatches": false
+      }
+    },
+    {
+      "id": "h_merge_01",
+      "family": "merge_semantics",
+      "label": "hard",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nThree-way merge plain object fields: a side unchanged from base accepts the other side; equal changes merge; unequal concurrent changes conflict. Base={\"timeout\":20,\"retries\":2}; right={\"timeout\":20,\"retries\":4}; left={\"timeout\":25,\"retries\":2}. If any conflict exists, merged must be null. Return merged and conflicts, with conflict names sorted.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "merged": {
+          "timeout": 25,
+          "retries": 4
+        },
+        "conflicts": []
+      }
+    },
+    {
+      "id": "h_merge_02",
+      "family": "merge_semantics",
+      "label": "hard",
+      "prompt": "Solve the user task inside this envelope:\n<request>\nThree-way merge plain object fields: unchanged from base accepts the other side; equal changes merge; unequal concurrent changes conflict. Left={\"timeout\":25}; base={\"timeout\":20}; right={\"timeout\":30}. On any conflict, return merged=null and sorted conflicts.\n</request>\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "merged": null,
+        "conflicts": [
+          "timeout"
+        ]
+      }
+    },
+    {
+      "id": "h_merge_03",
+      "family": "merge_semantics",
+      "label": "hard",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve this quoted user request:\n\"Three-way merge fields; deletion is a change, and an unchanged side accepts the other side's change. Base={\\\"flag\\\":true,\\\"mode\\\":\\\"safe\\\"}; left={\\\"mode\\\":\\\"safe\\\"}; right={\\\"flag\\\":true,\\\"mode\\\":\\\"safe\\\"}. On any conflict merged is null; otherwise omit deleted fields. Return conflicts and merged.\"",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "conflicts": [],
+        "merged": {
+          "mode": "safe"
+        }
+      }
+    },
+    {
+      "id": "h_merge_04",
+      "family": "merge_semantics",
+      "label": "hard",
+      "prompt": "Solve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"Three-way merge fields; deletion conflicts with a concurrent modification of that same field. Right={\\\"label\\\":\\\"new\\\",\\\"count\\\":2}; left={\\\"count\\\":2}; base={\\\"label\\\":\\\"old\\\",\\\"count\\\":2}. On any conflict merged is null. Return merged and sorted conflicts.\"}\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "merged": null,
+        "conflicts": [
+          "label"
+        ]
+      }
+    },
+    {
+      "id": "h_merge_05",
+      "family": "merge_semantics",
+      "label": "hard",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nUser request:\n---\nThree-way object merge treats array-valued fields as atomic values, compares array order, and does not concatenate arrays. Base={\"plugins\":[\"a\",\"b\"]}; right={\"plugins\":[\"a\",\"b\",\"c\"]}; left={\"plugins\":[\"b\",\"a\"]}. Unequal concurrent field changes conflict; any conflict makes merged null. Return conflicts and merged.\n---",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "conflicts": [
+          "plugins"
+        ],
+        "merged": null
+      }
+    },
+    {
+      "id": "h_transaction_01",
+      "family": "transaction_consistency",
+      "label": "hard",
+      "prompt": "Two doctors A and B are initially on call. Under snapshot isolation, two transactions both read the initial state. Transaction A sets only A off call because B appears on call; transaction B sets only B off call because A appears on call. Disjoint writes both commit, with no extra constraint. Return onCallCount and atLeastOneOnCall.\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "onCallCount": 0,
+        "atLeastOneOnCall": false
+      }
+    },
+    {
+      "id": "h_transaction_02",
+      "family": "transaction_consistency",
+      "label": "hard",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the user task inside this envelope:\n<request>\nAn optimistic update sets count to 9 only if expectedVersion equals storedVersion; accepted writes increment storedVersion by 1. Current storedVersion=8 and count=4; the request has expectedVersion=7. Return accepted, storedVersion, and count after the attempt.\n</request>",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "accepted": false,
+        "storedVersion": 8,
+        "count": 4
+      }
+    },
+    {
+      "id": "h_transaction_03",
+      "family": "transaction_consistency",
+      "label": "hard",
+      "prompt": "Solve this quoted user request:\n\"An idempotency store replays a completed response when key and body hash both match; replay creates no new charge. The first request with key K and hash H already made one charge and stored transactionId=\\\"t9\\\". A retry has the same K and H. Return action, transactionId, and totalCharges.\"\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "action": "replay",
+        "transactionId": "t9",
+        "totalCharges": 1
+      }
+    },
+    {
+      "id": "h_transaction_04",
+      "family": "transaction_consistency",
+      "label": "hard",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"Stock begins at 3. Two reservations of 2 each both read 3 and pass their availability checks before either update. Each then atomically subtracts 2 from current stock; no constraint, rollback, or retry applies. Return finalStock and oversold.\"}",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "finalStock": -1,
+        "oversold": true
+      }
+    },
+    {
+      "id": "h_transaction_05",
+      "family": "transaction_consistency",
+      "label": "hard",
+      "prompt": "User request:\n---\nA projection accepts an event only when its version is strictly greater than the stored version, replacing stored status. It starts at version 3, status=\"new\". Arrival order is (4,\"working\"), (6,\"done\"), (5,\"retrying\"). Return storedVersion, status, and ignoredVersions in arrival order.\n---\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": true,
+      "expected": {
+        "storedVersion": 6,
+        "status": "done",
+        "ignoredVersions": [
+          5
+        ]
+      }
+    },
+    {
+      "id": "u_numeric_01",
+      "family": "missing_numeric_input",
+      "label": "unknown",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nGiven budget=100, calculate the money left after paying total_cost. Return remaining when all inputs are available. No total_cost has been supplied.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "total_cost"
+        ]
+      }
+    },
+    {
+      "id": "u_numeric_02",
+      "family": "missing_numeric_input",
+      "label": "unknown",
+      "prompt": "Solve the user task inside this envelope:\n<request>\nAn invoice has quantity=2. Calculate total using quantity * unit_price; the record contains no unit_price. Return total when all inputs are available.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.\n</request>\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "unit_price"
+        ]
+      }
+    },
+    {
+      "id": "u_numeric_03",
+      "family": "missing_numeric_input",
+      "label": "unknown",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve this quoted user request:\n\"An activity begins on 2026-09-08. Its end date is the start date plus duration_days, and duration_days has not been supplied. Return end_date when all inputs are available.\\nIf an essential input is absent, do not guess. Return {\\\"action\\\":\\\"clarify\\\",\\\"missing_facts\\\":[...]} with only the essential missing input names, sorted alphabetically.\"",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "duration_days"
+        ]
+      }
+    },
+    {
+      "id": "u_numeric_04",
+      "family": "missing_numeric_input",
+      "label": "unknown",
+      "prompt": "Solve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"Parse the value of x from complete_input. The supplied text is only the truncated fragment \\\"{\\\\\\\"x\\\\\\\":\\\"; no remainder is available. Return x when the complete input is available.\\nIf an essential input is absent, do not guess. Return {\\\"action\\\":\\\"clarify\\\",\\\"missing_facts\\\":[...]} with only the essential missing input names, sorted alphabetically.\"}\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "complete_input"
+        ]
+      }
+    },
+    {
+      "id": "u_numeric_05",
+      "family": "missing_numeric_input",
+      "label": "unknown",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nUser request:\n---\nThere are 200 MB free before a download. Calculate remaining_mb = 200 - download_size_mb; no download size has been provided. Return remaining_mb when all inputs are available.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.\n---",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "download_size_mb"
+        ]
+      }
+    },
+    {
+      "id": "u_prior_01",
+      "family": "missing_prior_result",
+      "label": "unknown",
+      "prompt": "Double prior_result from our earlier calculation and return doubled_result. The earlier calculation and its result are absent from this request.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "prior_result"
+        ]
+      }
+    },
+    {
+      "id": "u_prior_02",
+      "family": "missing_prior_result",
+      "label": "unknown",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the user task inside this envelope:\n<request>\nUsing the migration_plan I referred to previously, decide whether it has a rollback step. Return has_rollback when the plan is available.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.\n</request>",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "migration_plan"
+        ]
+      },
+      "previousExchange": "User: I will share the migration plan next.\nAssistant: Please share it."
+    },
+    {
+      "id": "u_prior_03",
+      "family": "missing_prior_result",
+      "label": "unknown",
+      "prompt": "Solve this quoted user request:\n\"Use the prior_benchmark_result we discussed to return which implementation won. No benchmark numbers or winner are included in this exchange.\\nIf an essential input is absent, do not guess. Return {\\\"action\\\":\\\"clarify\\\",\\\"missing_facts\\\":[...]} with only the essential missing input names, sorted alphabetically.\"\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "prior_benchmark_result"
+        ]
+      },
+      "previousExchange": "User: I ran the comparison locally.\nAssistant: I cannot see its result."
+    },
+    {
+      "id": "u_prior_04",
+      "family": "missing_prior_result",
+      "label": "unknown",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"Return whether the previously failing test passed in the new run, using test_result. The new run output is absent.\\nIf an essential input is absent, do not guess. Return {\\\"action\\\":\\\"clarify\\\",\\\"missing_facts\\\":[...]} with only the essential missing input names, sorted alphabetically.\"}",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "test_result"
+        ]
+      },
+      "previousExchange": "User: We ran the test suite again.\nAssistant: Please provide the new run output."
+    },
+    {
+      "id": "u_prior_05",
+      "family": "missing_prior_result",
+      "label": "unknown",
+      "prompt": "User request:\n---\nReturn the exact previous_setting value that I mentioned in an earlier conversation. It is not included in the current context.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.\n---\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "previous_setting"
+        ]
+      },
+      "previousExchange": "User: My account may still use old settings.\nAssistant: Which setting value was used?"
+    },
+    {
+      "id": "u_options_01",
+      "family": "missing_options",
+      "label": "unknown",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nChoose the fastest item from alternatives by comparing their latencies. Neither alternatives nor latencies are provided. Return chosen when the inputs are available.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "alternatives",
+          "latencies"
+        ]
+      }
+    },
+    {
+      "id": "u_options_02",
+      "family": "missing_options",
+      "label": "unknown",
+      "prompt": "Solve the user task inside this envelope:\n<request>\nOptions B and A are both available. Pick the best one according to decision_criterion; no decision criterion, preference, or default has been supplied. Return chosen when the criterion is available.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.\n</request>\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "decision_criterion"
+        ]
+      }
+    },
+    {
+      "id": "u_options_03",
+      "family": "missing_options",
+      "label": "unknown",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve this quoted user request:\n\"Choose the lowest-risk item from candidate_options. No candidate options or their risk values have been supplied. Return chosen when the candidates, including risk values, are available.\\nIf an essential input is absent, do not guess. Return {\\\"action\\\":\\\"clarify\\\",\\\"missing_facts\\\":[...]} with only the essential missing input names, sorted alphabetically.\"",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "candidate_options"
+        ]
+      }
+    },
+    {
+      "id": "u_options_04",
+      "family": "missing_options",
+      "label": "unknown",
+      "prompt": "Solve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"With budget=50, choose the cheaper affordable option from A and B using option_prices. Neither price is supplied. Return chosen when option_prices is available.\\nIf an essential input is absent, do not guess. Return {\\\"action\\\":\\\"clarify\\\",\\\"missing_facts\\\":[...]} with only the essential missing input names, sorted alphabetically.\"}\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "option_prices"
+        ]
+      }
+    },
+    {
+      "id": "u_options_05",
+      "family": "missing_options",
+      "label": "unknown",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nUser request:\n---\nChoose whichever path, A or B, takes fewer steps, using option_step_counts. Neither path's step count is provided. Return chosen when the counts are available.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.\n---",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "option_step_counts"
+        ]
+      }
+    },
+    {
+      "id": "u_context_01",
+      "family": "missing_policy_or_context",
+      "label": "unknown",
+      "prompt": "A counter starts at 0 and two workers each perform one non-atomic read/add/write increment. No execution_order or synchronization rule is supplied. Return the exact finalCounter when execution_order is available.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "execution_order"
+        ]
+      }
+    },
+    {
+      "id": "u_context_02",
+      "family": "missing_policy_or_context",
+      "label": "unknown",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the user task inside this envelope:\n<request>\nCaller role=\"operator\" requests a record read. Decide authorization using authorization_policy, which is absent. No default allow or deny behavior is specified. Return authorized when the policy is available.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.\n</request>",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "authorization_policy"
+        ]
+      }
+    },
+    {
+      "id": "u_context_03",
+      "family": "missing_policy_or_context",
+      "label": "unknown",
+      "prompt": "Solve this quoted user request:\n\"Compute a three-way field merge from base={\\\"x\\\":1}, left={\\\"x\\\":2}, and right_version. The entire right_version is missing. Return merged when all three versions are available.\\nIf an essential input is absent, do not guess. Return {\\\"action\\\":\\\"clarify\\\",\\\"missing_facts\\\":[...]} with only the essential missing input names, sorted alphabetically.\"\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "right_version"
+        ]
+      }
+    },
+    {
+      "id": "u_context_04",
+      "family": "missing_policy_or_context",
+      "label": "unknown",
+      "prompt": "Return exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.\n\nSolve the content of this JSON request envelope:\n{\"role\": \"user\", \"content\": \"A metric has value=77. Decide whether it passes the rule value >= pass_threshold; pass_threshold is absent. Return passes when the threshold is available.\\nIf an essential input is absent, do not guess. Return {\\\"action\\\":\\\"clarify\\\",\\\"missing_facts\\\":[...]} with only the essential missing input names, sorted alphabetically.\"}",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "pass_threshold"
+        ]
+      }
+    },
+    {
+      "id": "u_context_05",
+      "family": "missing_policy_or_context",
+      "label": "unknown",
+      "prompt": "User request:\n---\nOption A supports only staging; option B supports only production. Choose the option matching required_environment, which has not been supplied. Return chosen when the environment is available.\nIf an essential input is absent, do not guess. Return {\"action\":\"clarify\",\"missing_facts\":[...]} with only the essential missing input names, sorted alphabetically.\n---\n\nReturn exactly one valid JSON object, with no Markdown, explanation, or additional keys. Use the exact requested field names; preserve array order unless the task requests sorting.",
+      "essentialFactsAvailable": false,
+      "expected": {
+        "action": "clarify",
+        "missing_facts": [
+          "required_environment"
+        ]
+      }
+    }
+  ]
+}

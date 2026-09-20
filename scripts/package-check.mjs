@@ -127,13 +127,17 @@ if (process.argv.includes("--install")) {
   writeFileSync(
     join(directory, "import-check.mjs"),
     `import assert from "node:assert/strict";
-import { Classifier, NativeBackend, configFromEnv, preparePrompt } from ${JSON.stringify(manifest.name)};
+import { Classifier, NativeBackend, configFromEnv, preparePrompt, registerExtension, registerTaskContextCompression, planToolContext, createContextOriginals } from ${JSON.stringify(manifest.name)};
 import extension from ${JSON.stringify(`./node_modules/${manifest.name}/dist/extension.js`)};
 assert.equal(typeof Classifier, "function");
 assert.equal(typeof NativeBackend, "function");
 assert.equal(typeof preparePrompt, "function");
 assert.equal(configFromEnv({}).modelFile, undefined);
 assert.equal(typeof extension, "function");
+assert.equal(typeof registerExtension, "function");
+assert.equal(typeof registerTaskContextCompression, "function");
+assert.equal(typeof planToolContext, "function");
+assert.equal(typeof createContextOriginals, "function");
 console.log("Installed library and Pi extension imports passed");
 `,
   );
