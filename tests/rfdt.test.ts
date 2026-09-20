@@ -2,13 +2,14 @@ import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createServer } from "node:http";
+import { createHash } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   Classifier,
   configFromEnv,
   type InferenceAdapter,
 } from "../src/backend.js";
-import { type Plan, type Question } from "../src/core.js";
+import { canonical, type Plan, type Question } from "../src/core.js";
 import { AGENT_MODEL_ID, modelDescriptor } from "../src/models.js";
 import {
   assignRfdtSplits,
@@ -196,6 +197,54 @@ describe("RFDT native acceptance", () => {
 });
 
 describe("RFDT teacher labeling", () => {
+  async function teacherFixture(row: RfdtExample, targets: unknown[]) {
+    const dir = await mkdtemp(join(tmpdir(), "jev-rfdt-teacher-"));
+    dirs.push(dir);
+    const input = join(dir, "input.jsonl");
+    await writeFile(input, JSON.stringify(row) + "\n");
+    const bodies: any[] = [];
+    const server = createServer(async (request, response) => {
+      const chunks: Buffer[] = [];
+      for await (const chunk of request) chunks.push(Buffer.from(chunk));
+      bodies.push(JSON.parse(Buffer.concat(chunks).toString("utf8")));
+      response.setHeader("content-type", "application/json");
+      response.end(
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                content: JSON.stringify(
+                  targets[Math.min(bodies.length - 1, targets.length - 1)],
+                ),
+              },
+            },
+          ],
+        }),
+      );
+    });
+    await new Promise<void>((resolve) =>
+      server.listen(0, "127.0.0.1", resolve),
+    );
+    const address = server.address();
+    if (!address || typeof address === "string")
+      throw new Error("Invalid server address");
+    return {
+      dir,
+      input,
+      bodies,
+      options: {
+        outputPath: join(dir, "output.jsonl"),
+        teacherUrl: `http://127.0.0.1:${address.port}/v1`,
+        teacherModel: AGENT_MODEL_ID,
+        cacheDir: join(dir, "cache"),
+      },
+      close: () =>
+        new Promise<void>((resolve, reject) =>
+          server.close((error) => (error ? reject(error) : resolve())),
+        ),
+    };
+  }
+
   it("uses supplied labels, marks estimates, and reuses an identity-bound cache", async () => {
     const dir = await mkdtemp(join(tmpdir(), "jev-rfdt-teacher-"));
     dirs.push(dir);
@@ -203,6 +252,9 @@ describe("RFDT teacher labeling", () => {
       output = join(dir, "output.jsonl");
     const row = example();
     delete row.targets.refund;
+    row.target_provenance = {
+      route: { source: "supplied", model: "human-label" },
+    };
     await writeFile(input, JSON.stringify(row) + "\n");
     let calls = 0;
     const bodies: Record<string, unknown>[] = [];
@@ -248,6 +300,21 @@ describe("RFDT teacher labeling", () => {
       });
       expect(calls).toBe(1);
       expect(bodies[0].model).toBe(AGENT_MODEL_ID);
+      const body = bodies[0] as any;
+      expect(
+        JSON.parse(body.messages[1].content).questions.map(
+          (q: Question) => q.id,
+        ),
+      ).toEqual(["refund"]);
+      expect(body.response_format).toMatchObject({
+        type: "json_schema",
+        json_schema: {
+          schema: { required: ["refund"], additionalProperties: false },
+        },
+      });
+      expect(
+        Object.keys(body.response_format.json_schema.schema.properties),
+      ).toEqual(["refund"]);
       const labeled = JSON.parse(await readFile(output, "utf8"));
       expect(labeled.targets.route).toEqual({ answer: "billing" });
       expect(labeled.targets.refund).toEqual({ answer: true });
@@ -257,12 +324,298 @@ describe("RFDT teacher labeling", () => {
         revision: (await modelDescriptor(AGENT_MODEL_ID)).revision,
       });
       expect(labeled.target_provenance.route.source).toBe("supplied");
+      expect(labeled.target_provenance.route.model).toBe("human-label");
     } finally {
       await new Promise<void>((resolve, reject) =>
         server.close((e) => (e ? reject(e) : resolve())),
       );
     }
   });
+
+  it("rejects the observed extra choice fields on every attempt without caching or writing output", async () => {
+    const row = example();
+    delete row.targets.route;
+    const f = await teacherFixture(row, [
+      { route: { answer: "billing", score: 0, noul: false } },
+    ]);
+    try {
+      await expect(labelRfdt(f.input, f.options)).rejects.toThrow(
+        /three attempts: route: unknown field score/,
+      );
+      expect(f.bodies).toHaveLength(3);
+      expect(await readdir(f.options.cacheDir)).toEqual([]);
+      await expect(readFile(f.options.outputPath)).rejects.toMatchObject({
+        code: "ENOENT",
+      });
+      const schema = f.bodies[0].response_format.json_schema.schema;
+      expect(schema.required).toEqual(["route"]);
+      expect(schema.properties.route.anyOf[0]).toEqual({
+        type: "object",
+        properties: {
+          answer: { type: "string", enum: ["billing", "product"] },
+        },
+        required: ["answer"],
+        additionalProperties: false,
+      });
+      expect(f.bodies[0].messages[0].content).not.toContain(
+        "zero-based rubric",
+      );
+      expect(f.bodies[0].messages[0].content).not.toContain(
+        "ordered probability bins",
+      );
+    } finally {
+      await f.close();
+    }
+  });
+
+  it("accepts and caches only the validated retry after an invalid target", async () => {
+    const row = example();
+    delete row.targets.route;
+    const targets = { route: { answer: "product" } };
+    const f = await teacherFixture(row, [
+      { route: { answer: "billing", score: 0 } },
+      targets,
+    ]);
+    try {
+      const first = await labelRfdt(f.input, f.options);
+      expect(first).toMatchObject({ teacher_estimates: 1, cache_hits: 0 });
+      expect(f.bodies).toHaveLength(2);
+      const firstBytes = await readFile(f.options.outputPath, "utf8");
+      const files = await readdir(f.options.cacheDir);
+      expect(files).toHaveLength(1);
+      const cached = JSON.parse(
+        await readFile(join(f.options.cacheDir, files[0]), "utf8"),
+      );
+      expect(cached.targets).toEqual(targets);
+      const sha = (value: string) =>
+        createHash("sha256").update(value).digest("hex");
+      const contractHash = sha(
+        canonical({
+          instructions: f.bodies[0].messages[0].content,
+          schema: f.bodies[0].response_format.json_schema.schema,
+        }),
+      );
+      expect(cached.teacher_contract_sha256).toBe(contractHash);
+      expect(cached.key).toBe(
+        sha(
+          canonical({
+            model: AGENT_MODEL_ID,
+            revision: (await modelDescriptor(AGENT_MODEL_ID)).revision,
+            teacher_contract_sha256: contractHash,
+            request: row.request,
+            questions: [choice],
+          }),
+        ),
+      );
+      expect(files[0]).toBe(cached.key + ".json");
+      expect(await labelRfdt(f.input, f.options)).toMatchObject({
+        teacher_estimates: 1,
+        cache_hits: 1,
+        sha256: first.sha256,
+      });
+      expect(await readFile(f.options.outputPath, "utf8")).toBe(firstBytes);
+      expect(f.bodies).toHaveLength(2);
+    } finally {
+      await f.close();
+    }
+  });
+
+  it.each([
+    {
+      name: "hard answers",
+      targets: {
+        route: { answer: "product" },
+        support: { answer: 1.25 },
+        refund: { answer: null },
+      },
+    },
+    {
+      name: "complete probability maps",
+      targets: {
+        route: { probabilities: { billing: 0.2, product: 0.8 } },
+        support: { probabilities: { "0": 0.1, "1": 0.7, "2": 0.2 } },
+        refund: {
+          probabilities: Object.fromEntries(
+            Array.from("123456789", (label) => [label, Number(label === "5")]),
+          ),
+        },
+      },
+    },
+  ])("supports typed choice, score, and noul $name", async ({ targets }) => {
+    const row = example();
+    row.targets = {};
+    const f = await teacherFixture(row, [targets]);
+    try {
+      expect(await labelRfdt(f.input, f.options)).toMatchObject({
+        teacher_estimates: 3,
+        cache_hits: 0,
+      });
+      expect(f.bodies).toHaveLength(1);
+      const schema = f.bodies[0].response_format.json_schema.schema;
+      expect(schema.required).toEqual(["route", "support", "refund"]);
+      expect(schema.properties.support.anyOf[0].properties.answer).toEqual({
+        type: "number",
+        minimum: 0,
+        maximum: 2,
+      });
+      expect(schema.properties.refund.anyOf[0].properties.answer.anyOf).toEqual(
+        [
+          { type: "boolean" },
+          { type: "null" },
+          { type: "number", minimum: 0, maximum: 1 },
+        ],
+      );
+      for (const [qid, labels] of [
+        ["route", ["billing", "product"]],
+        ["support", ["0", "1", "2"]],
+        ["refund", Array.from("123456789")],
+      ] as const) {
+        const probabilities =
+          schema.properties[qid].anyOf[1].properties.probabilities;
+        expect(probabilities.required).toEqual(labels);
+        expect(probabilities.additionalProperties).toBe(false);
+        expect(Object.keys(probabilities.properties)).toEqual(labels);
+      }
+      const labeled = JSON.parse(await readFile(f.options.outputPath, "utf8"));
+      expect(labeled.targets).toEqual(targets);
+      for (const q of row.request.questions)
+        expect(
+          normalizeRfdtTarget(q, labeled.targets[q.id]).reduce(
+            (a, b) => a + b,
+            0,
+          ),
+        ).toBeCloseTo(1, 12);
+    } finally {
+      await f.close();
+    }
+  });
+
+  it("rejects incomplete or unnormalized probability maps without caching", async () => {
+    const row = example();
+    delete row.targets.route;
+    const f = await teacherFixture(row, [
+      { route: { probabilities: { billing: 1 } } },
+      { route: { probabilities: { billing: 0.7, product: 0.7 } } },
+    ]);
+    try {
+      await expect(labelRfdt(f.input, f.options)).rejects.toThrow(
+        /probabilities must sum to one/,
+      );
+      expect(f.bodies).toHaveLength(3);
+      expect(await readdir(f.options.cacheDir)).toEqual([]);
+    } finally {
+      await f.close();
+    }
+  });
+
+  it("rejects invalid cached targets before use without another POST", async () => {
+    const row = example();
+    delete row.targets.route;
+    const f = await teacherFixture(row, [{ route: { answer: "billing" } }]);
+    try {
+      await labelRfdt(f.input, f.options);
+      const output = await readFile(f.options.outputPath, "utf8");
+      const [name] = await readdir(f.options.cacheDir);
+      const path = join(f.options.cacheDir, name);
+      const cached = JSON.parse(await readFile(path, "utf8"));
+      cached.targets.route.score = 0;
+      await writeFile(path, JSON.stringify(cached));
+      await expect(labelRfdt(f.input, f.options)).rejects.toThrow(
+        /route: unknown field score/,
+      );
+      expect(f.bodies).toHaveLength(1);
+      expect(await readFile(f.options.outputPath, "utf8")).toBe(output);
+    } finally {
+      await f.close();
+    }
+  });
+
+  it("does not reuse an old prompt cache entry", async () => {
+    const row = example();
+    delete row.targets.route;
+    const f = await teacherFixture(row, [{ route: { answer: "billing" } }]);
+    try {
+      await labelRfdt(f.input, f.options);
+      const [current] = await readdir(f.options.cacheDir);
+      await rm(join(f.options.cacheDir, current));
+      const revision = (await modelDescriptor(AGENT_MODEL_ID)).revision;
+      const key = createHash("sha256")
+        .update(
+          canonical({
+            model: AGENT_MODEL_ID,
+            revision,
+            request: row.request,
+            questions: [choice],
+          }),
+        )
+        .digest("hex");
+      const oldPath = join(f.options.cacheDir, key + ".json");
+      const oldBytes = JSON.stringify({
+        key,
+        model: AGENT_MODEL_ID,
+        revision,
+        targets: { route: { answer: "product", score: 0 } },
+      });
+      await writeFile(oldPath, oldBytes);
+      expect(await labelRfdt(f.input, f.options)).toMatchObject({
+        teacher_estimates: 1,
+        cache_hits: 0,
+      });
+      expect(f.bodies).toHaveLength(2);
+      expect(await readFile(oldPath, "utf8")).toBe(oldBytes);
+      expect(
+        JSON.parse(await readFile(f.options.outputPath, "utf8")).targets.route,
+      ).toEqual({ answer: "billing" });
+    } finally {
+      await f.close();
+    }
+  });
+
+  it("does not forward teacher POSTs after a loopback redirect", async () => {
+    const row = example();
+    delete row.targets.route;
+    const dir = await mkdtemp(join(tmpdir(), "jev-rfdt-teacher-"));
+    dirs.push(dir);
+    const input = join(dir, "input.jsonl");
+    await writeFile(input, JSON.stringify(row) + "\n");
+    let posts = 0,
+      forwarded = 0;
+    const server = createServer((request, response) => {
+      if (request.url === "/forwarded") {
+        forwarded++;
+        response.end();
+        return;
+      }
+      posts++;
+      response.writeHead(307, { location: "/forwarded" });
+      response.end();
+    });
+    await new Promise<void>((resolve) =>
+      server.listen(0, "127.0.0.1", resolve),
+    );
+    try {
+      const address = server.address();
+      if (!address || typeof address === "string")
+        throw new Error("Invalid server address");
+      const cacheDir = join(dir, "cache");
+      await expect(
+        labelRfdt(input, {
+          outputPath: join(dir, "output.jsonl"),
+          teacherUrl: `http://127.0.0.1:${address.port}/v1`,
+          teacherModel: AGENT_MODEL_ID,
+          cacheDir,
+        }),
+      ).rejects.toThrow(/three attempts/);
+      expect(posts).toBe(3);
+      expect(forwarded).toBe(0);
+      expect(await readdir(cacheDir)).toEqual([]);
+    } finally {
+      await new Promise<void>((resolve, reject) =>
+        server.close((error) => (error ? reject(error) : resolve())),
+      );
+    }
+  });
+
   it("does not call the teacher for complete labels and rejects an unapproved teacher", async () => {
     const dir = await mkdtemp(join(tmpdir(), "jev-rfdt-teacher-"));
     dirs.push(dir);
