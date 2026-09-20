@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "models": [
+    {
+      "id": "google/gemma-3-1b-it",
+      "base_model": "google/gemma-3-1b-it",
+      "publisher": "Google DeepMind",
+      "repository": "ggml-org/gemma-3-1b-it-GGUF",
+      "revision": "f9c28bcd85737ffc5aef028638d3341d49869c27",
+      "file": "gemma-3-1b-it-f16.gguf",
+      "sha256": "05bd381a5f45611ce53f4fdcc6641cf6cec68c3091d74e8a32ea591f062d3fc5",
+      "size": 2006573568,
+      "license": "gemma"
+    }
+  ]
+}

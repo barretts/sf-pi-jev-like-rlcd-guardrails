@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.vendor/
+.build/
+models/*.gguf
+models/*.part
+.build-log
+.pi-test/
