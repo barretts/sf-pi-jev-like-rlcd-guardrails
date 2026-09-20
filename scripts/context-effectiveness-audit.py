@@ -62,6 +62,8 @@ def audit(directory, fixture_path):
     assert frozen['cases'] == fixture['cases']
     gold = {r['id']: r for r in fixture['cases']}
     slots = protocol['schedule']
+    assert protocol['strategy'] == 'excerpts' and protocol['withSfPi'] is True
+    assert protocol['registration']['id'] == 'grok-4.6'
     assert len(slots) == 192 and len(gold) == 48
     planned = {s['id']: s for s in slots}
     assert len(planned) == 192

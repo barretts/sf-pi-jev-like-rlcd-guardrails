@@ -50,3 +50,13 @@ python3 scripts/context-effectiveness-audit.py \
 ```
 
 The audit reports both paired completed-answer outcomes and paired whole-workflow acceptance. A correct compressed answer paired with a raw execution error is a workflow improvement, not proof that the compressed answer was more factually accurate than a completed raw answer. Results also separate short and long usage and retain per-case repetitions. The two repetitions are correlated observations of invented cases and are not treated as independent population samples.
+
+Final report rendering is gated on all scheduled workflow records being present, terminal campaign state and completed runtime credential cleanup. Eight adversarial Python tests now pass, including refusal to render a live, incomplete or unclean campaign. Run the renderer only after the independent audit has been regenerated from terminal evidence:
+
+```sh
+python3 scripts/context-effectiveness-report.py \
+  --audit .build/context-effectiveness-new/independent-audit.json \
+  --output .build/context-effectiveness-new/RESULTS.md
+```
+
+Evaluator identifiers add a `quality-` prefix and short/long suffix around the embedded original V3 case label. The original author files remain untouched. Native questions, traces, families and expected values remain exact; the long variants add explicit scope to the question and exact enclosing delimiters/padding to the trace. This is a separately frozen derived transport corpus, not a claim that the original author envelope or original four-arm plan was executed unchanged.

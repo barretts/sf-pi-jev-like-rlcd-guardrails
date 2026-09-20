@@ -12,11 +12,19 @@ def module(name,file):
 
 gold=module('gold','context-effectiveness-gold.py')
 audit=module('audit','context-effectiveness-audit.py')
+report=module('report','context-effectiveness-report.py')
 
 class EvidenceTests(unittest.TestCase):
     def setUp(self):
         self.fixture=json.loads((ROOT/'fixtures/context-effectiveness/v1.json').read_bytes())
         self.short=[r for r in self.fixture['cases'] if r['stratum']=='native-short']
+
+    def test_final_report_refuses_missing_live_or_unclean_evidence(self):
+        examples=[{'allSlotsObserved':False},
+                  {'allSlotsObserved':True,'status':'running'},
+                  {'allSlotsObserved':True,'status':'error','runtimeCleanup':'failed_or_unresolved'}]
+        for evidence in examples:
+            with self.assertRaises(AssertionError):report.render(evidence)
 
     def test_all_frozen_gold_recomputes_without_model(self):
         report=gold.verify(ROOT/'fixtures/context-effectiveness/v1.json')
