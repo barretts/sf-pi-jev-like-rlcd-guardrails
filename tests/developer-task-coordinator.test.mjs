@@ -1,12 +1,30 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createHash } from "node:crypto";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { validateQualityRecords } from "../dist/evaluation.js";
 import { scoreReviewFinal } from "../scripts/developer-review-scoring.mjs";
 import {
   comparisonReport,
+  accountObservedProviderUsage,
+  approvedGatewayOrigin,
+  assertProviderRequest,
+  configuredOrigin,
+  configuredProviderBinding,
+  loadConfiguredProvider,
+  localGoogleGemma4Model,
   observeJevWork,
+  providerModelProjection,
+  providerResourceScope,
+  providerSourceBinding,
+  redactProviderEvidence,
   reviewImprovementGates,
   reviewSuiteSummary,
+  startFetchObservation,
+  taskClassifierConfig,
+  validateUpstreamProof,
 } from "../scripts/developer-task-eval.mjs";
 
 function expectedBatches() {
@@ -68,6 +86,105 @@ function expectedBatches() {
     };
   });
 }
+
+test("repair advice and extension tools retain the explicit research artifact and selected device", () => {
+  const defaults = {
+    modelId: "google/gemma-3-1b-it",
+    modelFile: "/official/model.gguf",
+    artifactRegistryPath: "/official/registry.json",
+    templateVersion: "v1",
+    device: "metal",
+    binary: "/owned/jev-native",
+    maxModelLen: 8192,
+    maxBatchSize: 8,
+  };
+  const original = structuredClone(defaults);
+  const selection = {
+    classifier_model: "jev/gemma-3-1b-research",
+    classifier_model_file: "/private/.build/candidate.gguf",
+    classifier_registry_path: "/private/.build/research-registry.json",
+    classifier_device: "cpu",
+  };
+  for (const kind of ["repair", "review"]) {
+    const scoped = taskClassifierConfig({ ...selection, kind }, defaults);
+    assert.deepEqual(scoped, {
+      ...defaults,
+      modelId: selection.classifier_model,
+      modelFile: selection.classifier_model_file,
+      artifactRegistryPath: selection.classifier_registry_path,
+      device: "cpu",
+      templateVersion: "v2",
+    });
+    assert.notEqual(scoped, defaults);
+  }
+  assert.deepEqual(defaults, original, "Global defaults remain untouched");
+});
+
+test("gateway usage counts each SDK assistant once across redacted journal and raw final state", () => {
+  const message = {
+    role: "assistant",
+    timestamp: 1,
+    stopReason: "toolUse",
+    provider: "llmgw",
+    model: "gpt-5.6-sol",
+    usage: {
+      input: 12,
+      output: 3,
+      cacheRead: 2,
+      cacheWrite: 1,
+      totalTokens: 18,
+    },
+    content: [
+      {
+        type: "toolCall",
+        id: "bash-1",
+        name: "bash",
+        arguments: { command: "pwd" },
+      },
+      {
+        type: "text",
+        text: "Bearer synthetic-opaque-value sk-synthetic-secret",
+      },
+    ],
+  };
+  const events = redactProviderEvidence([
+    { type: "message_start", message: { ...message, stopReason: "pending" } },
+    {
+      type: "message_update",
+      assistant_event_type: "text_delta",
+      delta: "work",
+    },
+    { type: "message_end", message },
+  ]);
+  const result = accountObservedProviderUsage(
+    { messages: [message], events },
+    "configuredGateway",
+  );
+  assert.equal(result.complete, true);
+  assert.equal(result.messages.length, 1);
+  assert.equal(result.generated_tokens, 3);
+  assert.deepEqual(result.totals, message.usage);
+  assert.deepEqual(result.reported_usage_lower_bound, message.usage);
+  assert.equal(message.content[0].arguments.command, "pwd");
+  assert.ok(!JSON.stringify(result).includes("synthetic-opaque-value"));
+  const second = {
+    ...message,
+    content: [{ ...message.content[0], id: "bash-2" }],
+  };
+  const two = accountObservedProviderUsage(
+    {
+      messages: [message, second],
+      events: [
+        ...events,
+        { type: "message_end", message: redactProviderEvidence(second) },
+      ],
+    },
+    "configuredGateway",
+  );
+  assert.equal(two.complete, true);
+  assert.equal(two.messages.length, 2);
+  assert.equal(two.generated_tokens, 6);
+});
 
 const ordinaryCatalog = [
   "read",
@@ -870,4 +987,710 @@ test("unknown-only batch categories remain diagnostic rather than functional rej
   assert.equal(acceptance.summary.gates.passed, false);
   assert.equal(acceptance.summary.noul.uncertain_count, 2);
   assert.equal(acceptance.summary.noul.clear_count, 0);
+});
+
+const mockGatewayOrigin = approvedGatewayOrigin;
+function mockGatewayModel() {
+  return {
+    id: "gpt-5.6-sol",
+    name: "Synthetic configured model fixture",
+    provider: "llmgw",
+    api: "openai-completions",
+    baseUrl: `${mockGatewayOrigin}/v1`,
+    reasoning: true,
+    input: ["text"],
+    contextWindow: 128000,
+    maxTokens: 4096,
+    cost: { input: 2, output: 6, cacheRead: 0.2, cacheWrite: 0 },
+    compat: {
+      supportsReasoningEffort: true,
+      maxTokensField: "max_completion_tokens",
+    },
+  };
+}
+// In-memory synthetic validation fixtures only. These are never published as
+// lineage proofs or actual provider/workflow execution receipts.
+function mockReviewedAttribution(binding) {
+  return {
+    kind: "jev_agent_upstream_attribution",
+    schema_version: 1,
+    root_clearance: "ROOT_APPROVED",
+    reviewed_by: "ROOT",
+    verified: true,
+    provider: "llmgw",
+    alias: "gpt-5.6-sol",
+    maker: "OpenAI",
+    non_chinese_maker: true,
+    model_lineage_reviewed: true,
+    non_chinese_lineage: true,
+    upstream_model: "synthetic-mock-upstream",
+    origin: binding.origin,
+    registration_sha256: binding.registration_sha256,
+    reviewed_at: "2026-09-20T00:00:00Z",
+    evidence: [
+      {
+        kind: "operator_attestation",
+        locator: "synthetic-test-fixture-only",
+        sha256: "b".repeat(64),
+        statement:
+          "Synthetic test fixture only; this does not assert actual alias-to-upstream lineage.",
+      },
+    ],
+  };
+}
+function mockConfiguredRuns(batches, repetitions = 3) {
+  const model = mockGatewayModel();
+  const binding = configuredProviderBinding(model, mockGatewayOrigin);
+  const attribution = mockReviewedAttribution(binding);
+  const runs = completeRuns(batches, repetitions);
+  for (const run of runs) {
+    run.provider_lane = "configuredGateway";
+    run.model = structuredClone(model);
+    run.generation_config.model = structuredClone(model);
+    run.source_binding = {
+      ...structuredClone(binding),
+      upstream_verification: "ROOT-reviewed frozen evidence",
+      upstream_proof_sha256: "c".repeat(64),
+      upstream_attribution: structuredClone(attribution),
+    };
+    run.resource_scope = providerResourceScope("configuredGateway");
+    delete run.owned_server;
+  }
+  return runs;
+}
+
+test("configured request policy bounds exact HTTPS origin, path and POST without changing the local lane", () => {
+  const config = {
+    provider_lane: "configuredGateway",
+    provider_origin: mockGatewayOrigin,
+    base_url: `${mockGatewayOrigin}/v1`,
+    model: mockGatewayModel(),
+  };
+  assert.deepEqual(
+    assertProviderRequest(config, `${mockGatewayOrigin}/v1/chat/completions`, {
+      method: "POST",
+    }),
+    {
+      url: new URL(`${mockGatewayOrigin}/v1/chat/completions`),
+      method: "POST",
+    },
+  );
+  for (const [url, method] of [
+    [`${mockGatewayOrigin}/v1/models`, "GET"],
+    [`${mockGatewayOrigin}/v1/chat/completions`, "GET"],
+    [`${mockGatewayOrigin}/v1/chat/completions/`, "POST"],
+    [`${mockGatewayOrigin}/v1/chat/completions?key=synthetic`, "POST"],
+    [`${mockGatewayOrigin}/v1/chat/completions#fragment`, "POST"],
+    ["https://other.example/v1/chat/completions", "POST"],
+    ["https://synthetic-gateway.example:8443/v1/chat/completions", "POST"],
+    ["http://synthetic-gateway.example/v1/chat/completions", "POST"],
+    [
+      "https://synthetic:password@synthetic-gateway.example/v1/chat/completions",
+      "POST",
+    ],
+  ])
+    assert.throws(() => assertProviderRequest(config, url, { method }));
+  for (const origin of [
+    "http://synthetic-gateway.example",
+    "https://other.example",
+    `${mockGatewayOrigin}/v1`,
+    `${mockGatewayOrigin}?x=1`,
+    "https://user:password@synthetic-gateway.example",
+  ])
+    assert.throws(() => configuredOrigin(origin));
+  const local = { base_url: "http://127.0.0.1:8081/v1" };
+  for (const path of ["/health", "/v1/models"])
+    assertProviderRequest(local, `http://127.0.0.1:8081${path}`, {
+      method: "GET",
+    });
+  assertProviderRequest(local, "http://127.0.0.1:8081/v1/chat/completions", {
+    method: "POST",
+  });
+  assert.throws(() =>
+    assertProviderRequest(
+      local,
+      "https://synthetic-gateway.example/v1/chat/completions",
+      { method: "POST" },
+    ),
+  );
+});
+
+test("gateway fetch observation rejects before fetch, preserves stream/body and disables redirects with credential-redacted evidence", async () => {
+  const directory = await mkdtemp(
+    join(tmpdir(), "jev-provider-transport-mock-"),
+  );
+  const original = globalThis.fetch;
+  let transport;
+  const calls = [];
+  let responseStatus = 200,
+    mockResponse;
+  try {
+    const sse =
+      'data: {"choices":[],"usage":{"prompt_tokens":12,"completion_tokens":3,"apiKey":"synthetic-opaque-value"},"timings":{"predicted_n":3,"predicted_ms":20,"headers":{"authorization":"synthetic-opaque-value"},"env":{"API_KEY":"synthetic-opaque-value"}},"headers":{"authorization":"synthetic-opaque-value"}}\n\ndata: [DONE]\n\n';
+    mockResponse = sse;
+    globalThis.fetch = async (input, init) => {
+      calls.push({ input, init });
+      return new Response(mockResponse, {
+        status: responseStatus,
+        headers: {
+          "content-type": "text/event-stream",
+          authorization: "synthetic-opaque-value",
+        },
+      });
+    };
+    const observation = { fetches: [] };
+    const config = {
+      directory,
+      provider_lane: "configuredGateway",
+      provider_origin: mockGatewayOrigin,
+      base_url: `${mockGatewayOrigin}/v1`,
+      model: mockGatewayModel(),
+    };
+    transport = await startFetchObservation(config, observation);
+    await assert.rejects(
+      globalThis.fetch(`${mockGatewayOrigin}/v1/models`, { method: "GET" }),
+    );
+    assert.equal(calls.length, 0);
+    const body = JSON.stringify({
+      model: "gpt-5.6-sol",
+      stream: true,
+      tool_choice: "auto",
+      messages: [{ role: "user", content: "Synthetic ordinary task prompt" }],
+      metadata: {
+        apiKey: "synthetic-opaque-value",
+        headers: { authorization: "synthetic-opaque-value" },
+      },
+    });
+    const response = await globalThis.fetch(
+      `${mockGatewayOrigin}/v1/chat/completions`,
+      {
+        method: "POST",
+        body,
+        redirect: "follow",
+        headers: { authorization: "Bearer synthetic-opaque-value" },
+      },
+    );
+    assert.equal(
+      await response.text(),
+      sse,
+      "The provider receives its unmodified response stream",
+    );
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].init.body, body);
+    assert.equal(calls[0].init.redirect, "error");
+    assert.equal(
+      calls[0].init.headers.authorization,
+      "Bearer synthetic-opaque-value",
+      "Authentication is forwarded but never recorded",
+    );
+    await transport.finish();
+    transport = null;
+    const entry = observation.fetches[1];
+    assert.equal(
+      entry.request_body_sha256,
+      createHash("sha256").update(body).digest("hex"),
+    );
+    assert.deepEqual(entry.server_usage, {
+      prompt_tokens: 12,
+      completion_tokens: 3,
+    });
+    assert.deepEqual(entry.server_timings, {
+      predicted_n: 3,
+      predicted_ms: 20,
+    });
+    assert.equal(entry.response_capture_complete, true);
+    for (const path of ["2.request.json", "2.response.txt", "2.capture.json"])
+      assert.ok(
+        !(await readFile(join(directory, "transport", path), "utf8")).includes(
+          "synthetic-opaque-value",
+        ),
+      );
+    assert.ok(!JSON.stringify(observation).includes("synthetic-opaque-value"));
+    responseStatus = 403;
+    mockResponse =
+      "Unstructured synthetic auth failure: synthetic-opaque-value";
+    const failedObservation = { fetches: [] };
+    transport = await startFetchObservation(config, failedObservation);
+    const failedResponse = await globalThis.fetch(
+      `${mockGatewayOrigin}/v1/chat/completions`,
+      { method: "POST", body },
+    );
+    assert.equal(
+      await failedResponse.text(),
+      mockResponse,
+      "Error stream remains unmodified for Pi",
+    );
+    await transport.finish();
+    transport = null;
+    assert.equal(failedObservation.fetches[0].status, 403);
+    assert.ok(
+      !(
+        await readFile(join(directory, "transport", "1.response.txt"), "utf8")
+      ).includes("synthetic-opaque-value"),
+    );
+    assert.ok(
+      !JSON.stringify(failedObservation).includes("synthetic-opaque-value"),
+    );
+    responseStatus = 200;
+    mockResponse = sse;
+    for (const changed of [
+      { model: "other", stream: true },
+      { model: "gpt-5.6-sol", stream: false },
+      { model: "gpt-5.6-sol", stream: true, tool_choice: "required" },
+      {
+        model: "gpt-5.6-sol",
+        stream: true,
+        chat_template_kwargs: { enable_thinking: true },
+      },
+    ]) {
+      const before = calls.length;
+      // Restore the bounded wrapper for each body check using a fresh observation.
+      transport = await startFetchObservation(config, { fetches: [] });
+      await assert.rejects(
+        globalThis.fetch(`${mockGatewayOrigin}/v1/chat/completions`, {
+          method: "POST",
+          body: JSON.stringify(changed),
+        }),
+      );
+      assert.equal(calls.length, before);
+      await transport.finish();
+      transport = null;
+    }
+  } finally {
+    await transport?.finish();
+    globalThis.fetch = original;
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("provider projection excludes credential commands, key literals and all auth headers while retaining effective model metadata", () => {
+  const model = {
+    ...mockGatewayModel(),
+    apiKey: "!synthetic-command-only",
+    key: "synthetic-secret-only",
+    headers: { authorization: "Bearer synthetic-secret-only" },
+    env: { PRIVATE_KEY: "synthetic-secret-only" },
+  };
+  assert.deepEqual(providerModelProjection(model), mockGatewayModel());
+  const safe = redactProviderEvidence({
+    headers: { authorization: "opaque" },
+    nested: {
+      apiKey: "opaque",
+      key: "opaque",
+      command: "!synthetic-command-only",
+      env: { PRIVATE: "opaque" },
+      responseHeaders: { "set-cookie": "opaque" },
+      error: { message: "opaque" },
+      note: "Bearer synthetic-secret-only",
+      output: 3,
+      cacheRead: 2,
+    },
+  });
+  assert.deepEqual(safe, {
+    nested: { note: "Bearer [REDACTED]", output: 3, cacheRead: 2 },
+  });
+  const binding = configuredProviderBinding(model, mockGatewayOrigin);
+  assert.ok(!JSON.stringify(binding).includes("synthetic-secret-only"));
+  for (const field of [
+    "api",
+    "compat",
+    "contextWindow",
+    "maxTokens",
+    "cost",
+    "thinkingLevelMap",
+  ]) {
+    const changed = mockGatewayModel();
+    if (field === "api") {
+      changed.api = "openai-responses";
+      assert.throws(() =>
+        configuredProviderBinding(changed, mockGatewayOrigin),
+      );
+      continue;
+    }
+    if (field === "compat") changed.compat.supportsReasoningEffort = false;
+    if (field === "contextWindow") changed.contextWindow -= 1;
+    if (field === "maxTokens") changed.maxTokens -= 1;
+    if (field === "cost") changed.cost.output += 1;
+    if (field === "thinkingLevelMap")
+      changed.thinkingLevelMap = { medium: "low" };
+    assert.notEqual(
+      configuredProviderBinding(changed, mockGatewayOrigin).registration_sha256,
+      binding.registration_sha256,
+      field,
+    );
+  }
+  const incompatible = mockGatewayModel();
+  incompatible.compat = localGoogleGemma4Model(
+    "http://127.0.0.1:8081/v1",
+  ).compat;
+  assert.throws(() =>
+    configuredProviderBinding(incompatible, mockGatewayOrigin),
+  );
+});
+
+test("upstream execution proof cannot be inferred from alias/owner and must bind exact origin, registration and reviewed lineage", () => {
+  const binding = configuredProviderBinding(
+    mockGatewayModel(),
+    mockGatewayOrigin,
+  );
+  assert.equal(binding.upstream_verification, "pending");
+  assert.equal(binding.upstream_proof_sha256, null);
+  assert.throws(() =>
+    validateUpstreamProof({ id: "gpt-5.6-sol", owned_by: "openai" }, binding),
+  );
+  const proof = mockReviewedAttribution(binding);
+  assert.deepEqual(validateUpstreamProof(proof, binding), proof);
+  for (const mutate of [
+    (p) => {
+      p.origin = "https://other.example";
+    },
+    (p) => {
+      p.registration_sha256 = "d".repeat(64);
+    },
+    (p) => {
+      p.upstream_model = "unknown";
+    },
+    (p) => {
+      p.non_chinese_lineage = false;
+    },
+    (p) => {
+      p.model_lineage_reviewed = false;
+    },
+    (p) => {
+      p.reviewed_by = "not-ROOT";
+    },
+    (p) => {
+      p.root_clearance = "pending";
+    },
+    (p) => {
+      p.evidence = [];
+    },
+    (p) => {
+      p.evidence[0].statement = "";
+    },
+    (p) => {
+      p.apiKey = "synthetic-secret-only";
+    },
+    (p) => {
+      p.maker = "Other synthetic maker";
+    },
+  ]) {
+    const altered = structuredClone(proof);
+    mutate(altered);
+    assert.throws(() => validateUpstreamProof(altered, binding));
+  }
+  const reviewedOther = {
+    ...proof,
+    maker: "Other synthetic maker",
+    maker_reviewed_non_chinese: true,
+  };
+  assert.deepEqual(
+    validateUpstreamProof(reviewedOther, binding),
+    reviewedOther,
+  );
+});
+
+test("offline configured runtime uses actual Pi ModelRuntime/ModelRegistry registration without auth or catalog-network calls", async () => {
+  const directory = await mkdtemp(
+    join(tmpdir(), "jev-provider-registration-mock-"),
+  );
+  const modelsPath = join(directory, "models.json");
+  const originalFetch = globalThis.fetch;
+  try {
+    const model = mockGatewayModel();
+    const { provider: _provider, baseUrl: _baseUrl, ...definition } = model;
+    await writeFile(
+      modelsPath,
+      JSON.stringify({
+        providers: {
+          llmgw: {
+            api: model.api,
+            baseUrl: model.baseUrl,
+            // Metadata-only registration: this deliberately failing synthetic command
+            // must never be resolved by preparation.
+            apiKey: "!never-execute-synthetic-command",
+            models: [definition],
+          },
+        },
+      }),
+    );
+    let fetches = 0;
+    globalThis.fetch = async () => {
+      fetches++;
+      throw new Error("Network is forbidden in this CPU proof");
+    };
+    const configured = await loadConfiguredProvider({
+      provider_models_path: modelsPath,
+      provider_origin: mockGatewayOrigin,
+    });
+    assert.equal(configured.runtime.constructor.name, "ModelRuntime");
+    assert.equal(configured.registry.constructor.name, "ModelRegistry");
+    assert.deepEqual(
+      configured.registry.find("llmgw", "gpt-5.6-sol"),
+      configured.model,
+    );
+    assert.deepEqual(providerModelProjection(configured.model), model);
+    assert.equal(configured.auth_status.configured, true);
+    assert.equal(configured.auth_status.source, "models_json_command");
+    assert.equal(configured.binding.upstream_verification, "pending");
+    assert.equal(fetches, 0);
+    assert.ok(
+      !JSON.stringify(configured.binding).includes(
+        "never-execute-synthetic-command",
+      ),
+    );
+    assert.equal(configured.catalog.length, 1);
+    assert.deepEqual(
+      JSON.parse(await readFile(modelsPath, "utf8")).providers.llmgw.apiKey,
+      "!never-execute-synthetic-command",
+      "Registration/auth source remains unchanged",
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("preparation creates an in-memory offline catalog and rejects every credential read or mutation", async () => {
+  let options,
+    readonlyAuthConstructed = false,
+    metadataReads = 0;
+  const model = mockGatewayModel();
+  const runtime = {
+    getError: () => undefined,
+    getModel: () => model,
+    getModels: () => [model],
+    getProviderAuthStatus: () => {
+      metadataReads++;
+      return {
+        configured: true,
+        source: "models_json_command",
+        label: "!synthetic-private-command",
+      };
+    },
+  };
+  class MockModelsStore {}
+  class MockRegistry {
+    constructor(value) {
+      assert.equal(value, runtime);
+    }
+    find(provider, id) {
+      assert.equal(provider, "llmgw");
+      assert.equal(id, "gpt-5.6-sol");
+      return model;
+    }
+  }
+  const result = await loadConfiguredProvider(
+    {
+      provider_models_path: "/synthetic/models.json",
+      provider_origin: mockGatewayOrigin,
+      provider_auth_path: "/synthetic/never-read-auth.json",
+    },
+    false,
+    {
+      ModelRuntime: {
+        create: async (value) => {
+          options = value;
+          return runtime;
+        },
+      },
+      ModelRegistry: MockRegistry,
+      InMemoryCodingAgentModelsStore: MockModelsStore,
+      ReadOnlyAuthStorage: class {
+        constructor() {
+          readonlyAuthConstructed = true;
+        }
+      },
+    },
+  );
+  assert.equal(options.allowModelNetwork, false);
+  assert.equal(options.refreshOnCreate, false);
+  assert.ok(options.modelsStore instanceof MockModelsStore);
+  assert.equal(
+    readonlyAuthConstructed,
+    false,
+    "Preparation never constructs a credential-reading auth store",
+  );
+  assert.equal(metadataReads, 1);
+  for (const method of ["read", "list", "modify", "delete"])
+    await assert.rejects(options.credentials[method]("llmgw"));
+  assert.ok(
+    !JSON.stringify(result.binding).includes("synthetic-private-command"),
+  );
+  assert.ok(
+    !JSON.stringify(result.auth_status).includes("synthetic-private-command"),
+  );
+  let runtimeCreated = false;
+  await assert.rejects(
+    loadConfiguredProvider(
+      {
+        provider_models_path: "/synthetic/models.json",
+        provider_origin: "https://other.example",
+      },
+      false,
+      {
+        ModelRuntime: {
+          create: async () => {
+            runtimeCreated = true;
+            return runtime;
+          },
+        },
+      },
+    ),
+  );
+  assert.equal(
+    runtimeCreated,
+    false,
+    "Unauthorized origins fail before runtime/auth creation",
+  );
+});
+
+test("configured CPU mock confirmation retains 13 batches, 3 reps, 234 judgments, 39 groups, receipts and all existing gain gates", async () => {
+  const batches = expectedBatches();
+  const runs = mockConfiguredRuns(batches);
+  const suite = await reviewSuiteSummary(runs, batches, 3);
+  const paired = comparisonReport(runs, "ordinary");
+  assert.equal(suite.full_confirmation_complete, true);
+  assert.equal(suite.independent_context_groups, 39);
+  assert.equal(paired.pairs.length, 39);
+  for (const arm of ["baseline", "candidate"]) {
+    assert.equal(suite.arms[arm].quality.attempts, 234);
+    assert.equal(suite.arms[arm].coverage.expected_runs, 39);
+    assert.equal(suite.arms[arm].coverage.groups.length, 39);
+  }
+  assert.ok(
+    paired.pairs.every(
+      (pair) =>
+        pair.protocol_passed &&
+        pair.same_provider_source_binding &&
+        pair.same_owned_server_binding === null &&
+        pair.same_settings &&
+        pair.same_generation_config &&
+        pair.same_thinking_level &&
+        pair.same_executed_source &&
+        pair.same_sf_factory_sources &&
+        pair.same_existing_sf_and_builtin_tools,
+    ),
+  );
+  const gates = reviewImprovementGates(suite, paired);
+  assert.equal(gates.passed, true);
+  assert.equal(gates.provider_usage_complete, true);
+  assert.equal(gates.jev_usage_complete, true);
+  assert.deepEqual(runs[0].resource_scope, {
+    server_rss_bytes: null,
+    server_gpu_bytes: null,
+    server_energy_joules: null,
+    remote_server_observation:
+      "unknown; cloud server resources are not measured",
+    client_scope:
+      "Evaluator Node RSS/CPU and workspace disk only; SDK usage/cache, Jev native receipts and wall time are separate observations",
+  });
+  for (const mutate of [
+    (r) => {
+      r.source_binding.registration_sha256 = "d".repeat(64);
+    },
+    (r) => {
+      r.source_binding.upstream_proof_sha256 = null;
+    },
+    (r) => {
+      r.source_binding.upstream_attribution.non_chinese_lineage = false;
+    },
+    (r) => {
+      r.generation_config.model.maxTokens -= 1;
+    },
+    (r) => {
+      r.settings.retry.provider.maxRetries = 1;
+    },
+    (r) => {
+      r.thinking_level = "high";
+    },
+    (r) => {
+      r.sf_factory_sources[0].sha256 = "changed";
+    },
+    (r) => {
+      r.provider_usage.complete = false;
+    },
+  ]) {
+    const altered = mockConfiguredRuns(batches);
+    mutate(altered.find((run) => run.arm === "candidate"));
+    const alteredSuite = await reviewSuiteSummary(altered, batches, 3);
+    assert.equal(
+      reviewImprovementGates(
+        alteredSuite,
+        comparisonReport(altered, "ordinary"),
+      ).passed,
+      false,
+    );
+  }
+  const omitted = runs.filter(
+    (run) =>
+      !(
+        run.arm === "candidate" &&
+        run.task === batches[0].id &&
+        run.repetition === 1
+      ),
+  );
+  const incomplete = await reviewSuiteSummary(omitted, batches, 3);
+  assert.equal(incomplete.arms.candidate.quality.attempts, 234);
+  assert.equal(incomplete.arms.candidate.quality.execution_failures, 6);
+  assert.equal(
+    reviewImprovementGates(incomplete, comparisonReport(omitted, "ordinary"))
+      .passed,
+    false,
+  );
+});
+
+test("old local model/settings and required repair contracts stay intact beside the explicit configured switch", async () => {
+  const local = localGoogleGemma4Model("http://127.0.0.1:8081/v1");
+  assert.equal(local.id, "google/gemma-4-31B-it-qat-q4_0");
+  assert.equal(local.contextWindow, 32768);
+  assert.equal(local.maxTokens, 4096);
+  assert.equal(local.compat.thinkingFormat, "chat-template");
+  assert.deepEqual(local.compat.chatTemplateKwargs, {
+    enable_thinking: { $var: "thinking.enabled" },
+  });
+  const runs = completeRuns(expectedBatches());
+  assert.equal(providerSourceBinding(runs[0]).kind, "localGoogleGemma4");
+  assert.ok(
+    comparisonReport(runs, "ordinary").pairs.every(
+      (pair) => pair.same_owned_server_binding && pair.protocol_passed,
+    ),
+  );
+  assert.ok(
+    runs.every(
+      (run) =>
+        run.settings.compaction.enabled === false &&
+        run.settings.retry.enabled === false &&
+        run.settings.retry.provider.maxRetries === 0 &&
+        run.thinking_level === "medium",
+    ),
+  );
+  for (const contract of [
+    "nullable-contact",
+    "abortable-refresh",
+    "exclusive-window",
+    "latest-request",
+  ]) {
+    const manifest = JSON.parse(
+      await readFile(
+        new URL(
+          `../fixtures/developer-tasks/${contract}/manifest.json`,
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
+    assert.equal(manifest.id, contract);
+    assert.ok(
+      manifest.commands.acceptance.some((item) => item.id === "compile"),
+    );
+    const acceptance = manifest.commands.acceptance.find(
+      (item) => item.id === "test",
+    );
+    assert.ok(acceptance, contract);
+    assert.ok(
+      !manifest.allowed_edit_files.includes(acceptance.argv.at(-1)),
+      "Independent repair acceptance stays outside agent edit permission",
+    );
+  }
 });

@@ -123,6 +123,19 @@ A successful complete builtin read of a valid bundle receives a `Jev loaded requ
 
 This path is under evaluation. Local integration checks establish its argument, lifecycle, and accounting behavior; reliable developer judgments and a complete-workflow speed improvement remain unproven. The frozen corpus, hypotheses, failures, and acceptance conditions are recorded in [EXPERIMENTS.md](./EXPERIMENTS.md).
 
+The developer workflow evaluator also has a `configuredGateway` lane for the existing Pi `llmgw/gpt-5.6-sol` registration. Set `JEV_REVIEWED_PROVIDER_ORIGIN` to the exact gateway origin pinned in the evaluator, then prepare the frozen review suite:
+
+```sh
+node scripts/developer-task-eval.mjs \
+  --prepare-only --workflow review \
+  --corpus-freeze .build/improvement-experiments/corpus-freeze.json \
+  --provider-lane configuredGateway \
+  --provider-origin "$JEV_REVIEWED_PROVIDER_ORIGIN" \
+  --provider-models-path "$HOME/.pi/agent/models.json"
+```
+
+Preparation uses the actual SDK registration with an in-memory model store, credential reads disabled, and catalog refresh disabled. It reports pending upstream verification until a reviewed attribution proof binds the alias, actual model lineage, origin, and registration digest. Inference additionally requires that frozen proof, explicit read-only auth configuration, and run clearance. The local Google Gemma lane remains the default. Both lanes retain the full controlled SF tool set, all review correctness and resource gates, and the four required repair tasks. Repair advice and autonomous Jev tools use the same selected classifier model, file, device, and optional disposable research registry.
+
 ## Library
 
 ```ts

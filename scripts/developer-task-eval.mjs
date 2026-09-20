@@ -33,6 +33,11 @@ const { values } = parseArgs({
   args: invokedAsScript ? process.argv.slice(2) : [],
   options: {
     "prepare-only": { type: "boolean", default: false },
+    "provider-lane": { type: "string", default: "localGoogleGemma4" },
+    "provider-origin": { type: "string" },
+    "provider-models-path": { type: "string" },
+    "provider-auth-path": { type: "string" },
+    "upstream-proof": { type: "string" },
     workflow: { type: "string", default: "repair" },
     dataset: {
       type: "string",
@@ -71,6 +76,424 @@ const hash = (value) => createHash("sha256").update(value).digest("hex");
 const snapshot = (value) => JSON.parse(JSON.stringify(value));
 const inside = (parent, child) =>
   child === parent || child.startsWith(parent + sep);
+const gatewayProvider = "llmgw";
+const gatewayAlias = "gpt-5.6-sol";
+export const approvedGatewayOrigin =
+  "https://eng-ai-model-gateway.sfproxy.devx-preprod.aws-esvc1-useast2.aws.sfdc.cl";
+const sha256Pattern = /^[a-f0-9]{64}$/;
+const canonicalJson = (value) =>
+  JSON.stringify(value, (_key, item) =>
+    item && typeof item === "object" && !Array.isArray(item)
+      ? Object.fromEntries(
+          Object.keys(item)
+            .sort()
+            .map((key) => [key, item[key]]),
+        )
+      : item,
+  );
+
+/** A credential-blind record: never retain headers, keys, commands, or env. */
+export function providerModelProjection(model) {
+  return redactProviderEvidence(
+    snapshot(
+      Object.fromEntries(
+        [
+          "id",
+          "name",
+          "provider",
+          "api",
+          "baseUrl",
+          "reasoning",
+          "thinkingLevelMap",
+          "input",
+          "cost",
+          "contextWindow",
+          "maxTokens",
+          "samplingParams",
+          "compat",
+        ]
+          .filter((key) => model[key] !== undefined)
+          .map((key) => [key, model[key]]),
+      ),
+    ),
+  );
+}
+
+export function configuredOrigin(value) {
+  assert.equal(
+    typeof value,
+    "string",
+    "An explicit configured HTTPS origin is required",
+  );
+  const url = new URL(value);
+  assert.ok(
+    url.protocol === "https:" &&
+      url.pathname === "/" &&
+      !url.username &&
+      !url.password &&
+      !url.search &&
+      !url.hash,
+    "Configured provider must use a bare HTTPS origin without credentials or query",
+  );
+  assert.equal(
+    url.origin,
+    approvedGatewayOrigin,
+    "Configured origin must be the exact ROOT-reviewed experiment gateway",
+  );
+  return url.origin;
+}
+
+export function configuredProviderBinding(model, originValue) {
+  const origin = configuredOrigin(originValue);
+  assert.equal(
+    model.provider,
+    gatewayProvider,
+    "Only the configured llmgw provider is permitted",
+  );
+  assert.equal(
+    model.id,
+    gatewayAlias,
+    "Only the selected configured model is permitted",
+  );
+  assert.equal(
+    model.api,
+    "openai-completions",
+    "Selected registration must use the chat completions API",
+  );
+  assert.equal(
+    model.baseUrl,
+    `${origin}/v1`,
+    "Model endpoint must match the exact configured origin and /v1 path",
+  );
+  assert.ok(
+    !["chat-template", "qwen-chat-template"].includes(
+      model.compat?.thinkingFormat,
+    ) &&
+      !model.compat?.chatTemplateKwargs &&
+      !model.compat?.chatTemplateArgs,
+    "Local chat-template compatibility cannot be applied to the gateway model",
+  );
+  const registration = providerModelProjection(model);
+  return {
+    kind: "configuredGateway",
+    provider: gatewayProvider,
+    model_id: gatewayAlias,
+    api: model.api,
+    origin,
+    origin_sha256: hash(origin),
+    registration,
+    registration_sha256: hash(canonicalJson(registration)),
+    upstream_verification: "pending",
+    upstream_proof_sha256: null,
+  };
+}
+
+/** ROOT reviews the underlying evidence before producing this frozen artifact. */
+export function validateUpstreamProof(proof, binding) {
+  assert.ok(
+    proof && typeof proof === "object" && !Array.isArray(proof),
+    "Missing upstream attribution proof",
+  );
+  const proofKeys = new Set([
+    "kind",
+    "schema_version",
+    "root_clearance",
+    "reviewed_by",
+    "verified",
+    "provider",
+    "alias",
+    "maker",
+    "non_chinese_maker",
+    "maker_reviewed_non_chinese",
+    "model_lineage_reviewed",
+    "non_chinese_lineage",
+    "upstream_model",
+    "origin",
+    "registration_sha256",
+    "evidence",
+    "reviewed_at",
+  ]);
+  assert.ok(
+    Object.keys(proof).every((key) => proofKeys.has(key)),
+    "Unexpected upstream proof field",
+  );
+  assert.equal(proof.kind, "jev_agent_upstream_attribution");
+  assert.equal(proof.schema_version, 1);
+  assert.equal(proof.root_clearance, "ROOT_APPROVED");
+  assert.equal(proof.reviewed_by, "ROOT");
+  for (const key of [
+    "verified",
+    "non_chinese_maker",
+    "model_lineage_reviewed",
+    "non_chinese_lineage",
+  ])
+    assert.equal(proof[key], true, `Upstream attribution requires ${key}`);
+  assert.equal(proof.provider, gatewayProvider);
+  assert.equal(proof.alias, gatewayAlias);
+  assert.equal(proof.origin, binding.origin);
+  assert.ok(
+    sha256Pattern.test(proof.registration_sha256),
+    "Registration SHA is required",
+  );
+  assert.equal(proof.registration_sha256, binding.registration_sha256);
+  assert.ok(
+    typeof proof.maker === "string" && proof.maker.trim(),
+    "Exact reviewed maker is required",
+  );
+  if (!["OpenAI", "Google"].includes(proof.maker))
+    assert.equal(
+      proof.maker_reviewed_non_chinese,
+      true,
+      "Other makers require ROOT's explicit maker review",
+    );
+  assert.ok(
+    typeof proof.upstream_model === "string" &&
+      proof.upstream_model.trim() &&
+      !/^(unknown|pending|unverified|n\/a)$/i.test(proof.upstream_model.trim()),
+    "Exact evidenced upstream model is required",
+  );
+  assert.ok(
+    typeof proof.reviewed_at === "string" &&
+      /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z$/.test(proof.reviewed_at) &&
+      Number.isFinite(Date.parse(proof.reviewed_at)),
+    "ROOT review timestamp is required",
+  );
+  assert.ok(
+    Array.isArray(proof.evidence) && proof.evidence.length,
+    "Underlying lineage evidence is required",
+  );
+  for (const evidence of proof.evidence) {
+    assert.ok(
+      evidence &&
+        typeof evidence === "object" &&
+        Object.keys(evidence).every((key) =>
+          ["kind", "locator", "sha256", "statement"].includes(key),
+        ),
+      "Unexpected lineage evidence field",
+    );
+    assert.ok(
+      [
+        "gateway_route_metadata",
+        "operator_attestation",
+        "provider_documentation",
+      ].includes(evidence?.kind),
+    );
+    assert.ok(typeof evidence.locator === "string" && evidence.locator.trim());
+    assert.ok(
+      sha256Pattern.test(evidence.sha256),
+      "Underlying evidence SHA is required",
+    );
+    assert.ok(
+      typeof evidence.statement === "string" && evidence.statement.trim(),
+      "Exact alias-to-upstream evidence statement is required",
+    );
+  }
+  return snapshot(proof);
+}
+
+export function providerResourceScope(lane) {
+  return lane === "configuredGateway"
+    ? {
+        server_rss_bytes: null,
+        server_gpu_bytes: null,
+        server_energy_joules: null,
+        remote_server_observation:
+          "unknown; cloud server resources are not measured",
+        client_scope:
+          "Evaluator Node RSS/CPU and workspace disk only; SDK usage/cache, Jev native receipts and wall time are separate observations",
+      }
+    : {
+        server_gpu_bytes: null,
+        server_energy_joules: null,
+        remote_server_observation:
+          "not applicable; owned local server RSS/CPU is sampled",
+      };
+}
+
+export function redactProviderEvidence(value) {
+  if (typeof value === "string")
+    return value
+      .replace(/\bBearer\s+[^\s\"'<>]+/gi, "Bearer [REDACTED]")
+      .replace(/\bsk-[A-Za-z0-9_-]{8,}/g, "[REDACTED]");
+  if (Array.isArray(value)) return value.map(redactProviderEvidence);
+  if (
+    value &&
+    typeof value === "object" &&
+    (value.type === "error" || value.object === "error")
+  )
+    return { type: "error", private_error_details: "withheld" };
+  if (value && typeof value === "object")
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(
+          ([key]) =>
+            !/(?:headers$|^(?:auth|authorization|proxy-authorization|cookie|set-cookie|apiKey|api_key|api-key|x-api-key|x-auth-token|key|token|access|refresh|access_token|refresh_token|password|client_secret|secret|credential|credentials|env|command|error|errorMessage|stack|cause)$)/i.test(
+              key,
+            ),
+        )
+        .map(([key, item]) => [key, redactProviderEvidence(item)]),
+    );
+  return value;
+}
+
+/** Pure policy checks happen before the original fetch or any response capture. */
+export function assertProviderRequest(config, input, init = {}) {
+  const gateway = config.provider_lane === "configuredGateway";
+  const url = new URL(
+    typeof input === "string"
+      ? input
+      : input instanceof URL
+        ? input.href
+        : input.url,
+  );
+  const method = String(init.method ?? input?.method ?? "GET").toUpperCase();
+  const base = gateway
+    ? new URL(configuredOrigin(config.provider_origin))
+    : new URL(config.base_url);
+  if (!gateway) {
+    assert.equal(base.hostname, "127.0.0.1");
+    assert.equal(base.protocol, "http:");
+    assert.equal(base.pathname, "/v1");
+    assert.ok(!base.search && !base.hash && !base.username && !base.password);
+  }
+  const allowed =
+    url.origin === base.origin &&
+    !url.search &&
+    !url.hash &&
+    !url.username &&
+    !url.password &&
+    ((method === "POST" && url.pathname === "/v1/chat/completions") ||
+      (!gateway &&
+        method === "GET" &&
+        ["/health", "/v1/models"].includes(url.pathname)));
+  assert.ok(
+    allowed,
+    gateway
+      ? "Only POST /v1/chat/completions at the exact configured HTTPS origin is permitted"
+      : "Only the exact owned loopback server may receive fetch requests",
+  );
+  return { url, method };
+}
+
+/** Offline creation never resolves credentials during preparation. */
+export async function loadConfiguredProvider(
+  config,
+  execute = false,
+  injectedSdk,
+) {
+  const origin = configuredOrigin(config.provider_origin);
+  const sdk = injectedSdk ?? {
+    ...(await import("@earendil-works/pi-coding-agent")),
+    ...(await import("../node_modules/@earendil-works/pi-coding-agent/dist/core/auth-storage.js")),
+    ...(await import("../node_modules/@earendil-works/pi-coding-agent/dist/core/models-store.js")),
+  };
+  const noCredentialRead = {
+    read: async () => {
+      throw new Error("Preparation cannot resolve credentials");
+    },
+    list: async () => {
+      throw new Error("Preparation cannot inspect credentials");
+    },
+    modify: async () => {
+      throw new Error("Credential mutation is prohibited");
+    },
+    delete: async () => {
+      throw new Error("Credential mutation is prohibited");
+    },
+  };
+  assert.ok(
+    config.provider_models_path,
+    "An explicit read-only Pi models registration path is required",
+  );
+  if (execute)
+    assert.ok(
+      config.provider_auth_path,
+      "An explicit read-only Pi auth path is required",
+    );
+  const runtime = await sdk.ModelRuntime.create({
+    modelsPath: config.provider_models_path,
+    credentials: execute
+      ? new sdk.ReadOnlyAuthStorage(config.provider_auth_path)
+      : noCredentialRead,
+    modelsStore: new sdk.InMemoryCodingAgentModelsStore(),
+    allowModelNetwork: false,
+    refreshOnCreate: false,
+  });
+  assert.ok(
+    !runtime.getError(),
+    "Configured Pi model registration could not be loaded",
+  );
+  const registry = new sdk.ModelRegistry(runtime);
+  const model = registry.find(gatewayProvider, gatewayAlias);
+  assert.ok(model, "Exact llmgw/gpt-5.6-sol registration is missing");
+  const binding = configuredProviderBinding(model, origin);
+  const authStatus = runtime.getProviderAuthStatus(gatewayProvider);
+  return {
+    runtime,
+    registry,
+    model,
+    binding,
+    auth_status: {
+      configured: authStatus.configured,
+      source: authStatus.source ?? null,
+      scope:
+        "Pi metadata only; no key, command, headers, auth resolution or credential mutation",
+    },
+    catalog: runtime.getModels(gatewayProvider).map(providerModelProjection),
+  };
+}
+
+export function localGoogleGemma4Model(baseUrl) {
+  return {
+    id: "google/gemma-4-31B-it-qat-q4_0",
+    name: "Local Google Gemma 4 31B Instruct QAT Q4_0",
+    provider: "local-gemma",
+    api: "openai-completions",
+    baseUrl,
+    reasoning: true,
+    input: ["text"],
+    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+    contextWindow: 32768,
+    maxTokens: 4096,
+    compat: {
+      supportsStore: false,
+      supportsDeveloperRole: false,
+      supportsReasoningEffort: false,
+      supportsStrictMode: false,
+      maxTokensField: "max_tokens",
+      requiresToolResultName: true,
+      thinkingFormat: "chat-template",
+      chatTemplateKwargs: { enable_thinking: { $var: "thinking.enabled" } },
+    },
+  };
+}
+
+/** The tool factory and repair advice must execute the same selected artifact. */
+export function taskClassifierConfig(config, defaults) {
+  return {
+    ...defaults,
+    modelId: config.classifier_model,
+    templateVersion: "v2",
+    device: config.classifier_device,
+    ...(config.classifier_model_file
+      ? { modelFile: config.classifier_model_file }
+      : {}),
+    ...(config.classifier_registry_path
+      ? { artifactRegistryPath: config.classifier_registry_path }
+      : {}),
+  };
+}
+
+/** Journal and final state need identical projections to deduplicate SDK turns. */
+export function accountObservedProviderUsage(observation, providerLane) {
+  const gateway = providerLane === "configuredGateway";
+  return accountProviderUsage(
+    gateway
+      ? redactProviderEvidence(observation.messages)
+      : observation.messages,
+    gateway ? redactProviderEvidence(observation.events) : observation.events,
+  );
+}
 function integer(value, name, max = 100) {
   const parsed = Number(value);
   assert.ok(Number.isSafeInteger(parsed) && parsed > 0 && parsed <= max, name);
@@ -122,6 +545,11 @@ async function identities() {
     "dist/backend.js",
     "dist/agent-server.js",
     "models/registry.json",
+    "node_modules/@earendil-works/pi-coding-agent/dist/core/model-runtime.js",
+    "node_modules/@earendil-works/pi-coding-agent/dist/core/model-registry.js",
+    "node_modules/@earendil-works/pi-coding-agent/dist/core/provider-composer.js",
+    "node_modules/@earendil-works/pi-coding-agent/dist/core/auth-storage.js",
+    "node_modules/@earendil-works/pi-coding-agent/dist/core/models-store.js",
   ];
   const result = [];
   for (const file of tracked) {
@@ -531,18 +959,16 @@ async function bounded(operation, timeoutMs, onTimeout) {
     clearTimeout(timer);
   }
 }
-async function startFetchObservation(config, observation) {
+export async function startFetchObservation(config, observation) {
   // Preserve Pi's deliberate caller-provided fetch override. Never replace its
   // provider stream, tool choice, request body, response, or response stream.
   await import("../node_modules/@earendil-works/pi-coding-agent/dist/core/http-dispatcher.js");
   const original = globalThis.fetch;
-  const origin = new URL(config.base_url);
-  assert.equal(origin.hostname, "127.0.0.1");
-  assert.equal(origin.protocol, "http:");
-  assert.equal(origin.pathname, "/v1");
-  assert.ok(
-    !origin.search && !origin.hash && !origin.username && !origin.password,
-  );
+  const gateway = config.provider_lane === "configuredGateway";
+  // Validate the configured endpoint before constructing an authenticated runtime.
+  assertProviderRequest(config, `${config.base_url}/chat/completions`, {
+    method: "POST",
+  });
   const pending = [];
   let sequence = 0;
   globalThis.fetch = async (input, init = {}) => {
@@ -557,18 +983,13 @@ async function startFetchObservation(config, observation) {
     const entry = {
       sequence: ++sequence,
       started_at: new Date().toISOString(),
-      url: url.href,
+      // Rejected URLs may themselves carry secrets. Retain only origin/path.
+      url: gateway ? `${url.origin}${url.pathname}` : url.href,
       method,
     };
-    const allowed =
-      url.origin === origin.origin &&
-      !url.search &&
-      !url.hash &&
-      !url.username &&
-      !url.password &&
-      ((method === "GET" && ["/health", "/v1/models"].includes(url.pathname)) ||
-        (method === "POST" && url.pathname === "/v1/chat/completions"));
-    if (!allowed) {
+    try {
+      assertProviderRequest(config, input, init);
+    } catch {
       entry.rejected_before_fetch = true;
       observation.fetches.push(entry);
       await save(
@@ -576,17 +997,21 @@ async function startFetchObservation(config, observation) {
         entry,
       );
       throw new Error(
-        "Only the exact owned loopback server may receive fetch requests",
+        gateway
+          ? "Configured provider request rejected before fetch"
+          : "Only the exact owned loopback server may receive fetch requests",
       );
     }
-    const headers = new Headers(input?.headers);
-    for (const [key, value] of new Headers(init.headers))
-      headers.set(key, value);
-    assert.ok(
-      !headers.has("authorization") ||
-        headers.get("authorization") === "Bearer local-only",
-      "Nonlocal credential rejected",
-    );
+    if (!gateway) {
+      const headers = new Headers(input?.headers);
+      for (const [key, value] of new Headers(init.headers))
+        headers.set(key, value);
+      assert.ok(
+        !headers.has("authorization") ||
+          headers.get("authorization") === "Bearer local-only",
+        "Nonlocal credential rejected",
+      );
+    }
     if (method === "POST") {
       const raw =
         typeof init.body === "string" ? init.body : await input.clone().text();
@@ -597,10 +1022,20 @@ async function startFetchObservation(config, observation) {
         body.tool_choice === undefined || body.tool_choice === "auto",
         "Tool selection must remain automatic",
       );
+      if (gateway)
+        assert.ok(
+          !body.chat_template_kwargs &&
+            !body.chat_template_args &&
+            !Object.hasOwn(body, "enable_thinking"),
+          "Local template body kwargs are prohibited for the gateway",
+        );
       entry.request_body_sha256 = hash(raw);
+      entry.request_capture = gateway
+        ? "Credential-redacted JSON; SHA binds original SDK body"
+        : "Exact SDK body";
       await save(
         join(config.directory, "transport", `${sequence}.request.json`),
-        raw,
+        gateway ? JSON.stringify(redactProviderEvidence(body)) : raw,
       );
     }
     observation.fetches.push(entry);
@@ -608,8 +1043,8 @@ async function startFetchObservation(config, observation) {
     entry.status = response.status;
     entry.headers_at = new Date().toISOString();
     const capturedResponse = response.clone();
-    // A cloned response records the exact SSE bytes while the original is
-    // returned untouched to the provider's own streaming parser.
+    // The original stream is untouched. Gateway evidence omits headers and
+    // redacts authentication fields; the digest still binds original SSE bytes.
     pending.push(
       (async () => {
         const responsePath = join(
@@ -622,18 +1057,44 @@ async function startFetchObservation(config, observation) {
           pendingSse = "";
         const decoder = new TextDecoder();
         const observeLine = (line) => {
+          if (gateway && !response.ok) return;
           if (!line.startsWith("data:")) return;
           try {
             const value = JSON.parse(line.slice(5).trim());
             if (value.usage && typeof value.usage === "object")
-              entry.server_usage = snapshot(value.usage);
+              entry.server_usage = gateway
+                ? redactProviderEvidence(value.usage)
+                : snapshot(value.usage);
             if (value.timings && typeof value.timings === "object")
-              entry.server_timings = snapshot(value.timings);
+              entry.server_timings = gateway
+                ? redactProviderEvidence(value.timings)
+                : snapshot(value.timings);
           } catch {
             /* Non-JSON SSE sentinels and partial lines remain in raw evidence. */
           }
         };
-        await save(responsePath, "");
+        const captureLine = async (line) => {
+          if (!gateway || !response.ok) return;
+          let safe = line;
+          if (line.startsWith("data:")) {
+            try {
+              safe =
+                "data: " +
+                JSON.stringify(
+                  redactProviderEvidence(JSON.parse(line.slice(5).trim())),
+                );
+            } catch {
+              safe = redactProviderEvidence(line);
+            }
+          } else safe = redactProviderEvidence(line);
+          await appendFile(responsePath, safe + "\n", { mode: 0o600 });
+        };
+        await save(
+          responsePath,
+          gateway && !response.ok
+            ? "Non-successful gateway response content withheld; status and original-byte digest retained.\n"
+            : "",
+        );
         try {
           const reader = capturedResponse.body?.getReader();
           if (reader)
@@ -646,18 +1107,30 @@ async function startFetchObservation(config, observation) {
               pendingSse += decoder.decode(value, { stream: true });
               const lines = pendingSse.split("\n");
               pendingSse = lines.pop();
-              for (const line of lines) observeLine(line);
-              await appendFile(responsePath, chunk, { mode: 0o600 });
+              for (const line of lines) {
+                observeLine(line);
+                await captureLine(line);
+              }
+              if (!gateway)
+                await appendFile(responsePath, chunk, { mode: 0o600 });
             }
           pendingSse += decoder.decode();
-          if (pendingSse) observeLine(pendingSse);
+          if (pendingSse) {
+            observeLine(pendingSse);
+            await captureLine(pendingSse);
+          }
           entry.response_capture_complete = true;
         } catch (error) {
-          entry.capture_error = String(error);
+          entry.capture_error = gateway
+            ? "Gateway response capture failed"
+            : String(error);
           entry.response_capture_complete = false;
         } finally {
           entry.response_body_bytes = bytes;
           entry.response_body_sha256 = responseHash.digest("hex");
+          entry.response_capture = gateway
+            ? "Credential-redacted SSE; SHA binds original stream"
+            : "Exact SSE bytes";
           entry.completed_at = new Date().toISOString();
           await save(
             join(
@@ -716,6 +1189,31 @@ async function worker(configPath) {
     "Actual model calls require the root agent's explicit run clearance",
   );
   const config = JSON.parse(await readFile(configPath, "utf8"));
+  const gateway = config.provider_lane === "configuredGateway";
+  if (gateway) {
+    assert.ok(
+      inside(resolve(root, ".build"), config.upstream_proof_path),
+      "Frozen ROOT proof must be under .build",
+    );
+    const proofBytes = await readFile(config.upstream_proof_path);
+    assert.equal(
+      hash(proofBytes),
+      config.upstream_proof_sha256,
+      "Frozen upstream attribution changed",
+    );
+    const attribution = validateUpstreamProof(
+      JSON.parse(proofBytes),
+      config.provider_binding,
+    );
+    assert.equal(
+      canonicalJson(attribution),
+      canonicalJson(config.upstream_attribution),
+      "Worker attribution must match the frozen ROOT proof",
+    );
+    assertProviderRequest(config, `${config.base_url}/chat/completions`, {
+      method: "POST",
+    });
+  }
   assert.ok(inside(resolve(root, ".build"), config.directory));
   assert.ok(
     inside(config.directory, config.workspace) &&
@@ -734,6 +1232,7 @@ async function worker(configPath) {
     comparison: config.comparison,
     repetition: config.repetition,
     execution_order: config.execution_order,
+    provider_lane: config.provider_lane ?? "localGoogleGemma4",
     started_at: new Date().toISOString(),
     prompt_sha256: config.prepared.prompt_sha256,
     provider_stream: "unmodified SDK stream",
@@ -746,6 +1245,7 @@ async function worker(configPath) {
     blocked_tool_calls: [],
     messages: [],
     resource_samples: [],
+    resource_scope: providerResourceScope(config.provider_lane),
     advice: null,
     passed: false,
     agent_completed: false,
@@ -766,22 +1266,44 @@ async function worker(configPath) {
       createAgentSession,
       createEventBus,
     } = await import("@earendil-works/pi-coding-agent");
-    const { getAgentServerStatus } = await import("../dist/agent-server.js");
-    const owned = await getAgentServerStatus({ stateFile: config.state_file });
-    assert.equal(owned.state, "ready");
-    assert.equal(owned.server.host, "127.0.0.1");
-    assert.equal(owned.server.port, Number(new URL(config.base_url).port));
-    assert.equal(owned.server.model.id, config.model.id);
-    observation.owned_server = owned;
-    for (const [path, expected] of [
-      [owned.server.binary, owned.server.binary_sha256],
-      [owned.server.template_file, owned.server.template_sha256],
-    ])
+    let owned, configured;
+    if (gateway) {
+      configured = await loadConfiguredProvider(config, true);
       assert.equal(
-        hash(await readFile(path)),
-        expected,
-        `Runtime file changed: ${path}`,
+        configured.binding.registration_sha256,
+        config.provider_binding.registration_sha256,
+        "Configured model registration changed after freezing",
       );
+      observation.source_binding = {
+        ...configured.binding,
+        upstream_verification: "ROOT-reviewed frozen evidence",
+        upstream_proof_sha256: config.upstream_proof_sha256,
+        upstream_attribution: config.upstream_attribution,
+      };
+      observation.provider_catalog = configured.catalog;
+      observation.configured_auth_status = configured.auth_status;
+    } else {
+      const { getAgentServerStatus } = await import("../dist/agent-server.js");
+      owned = await getAgentServerStatus({ stateFile: config.state_file });
+      assert.equal(owned.state, "ready");
+      assert.equal(owned.server.host, "127.0.0.1");
+      assert.equal(owned.server.port, Number(new URL(config.base_url).port));
+      assert.equal(owned.server.model.id, config.model.id);
+      observation.owned_server = owned;
+      for (const [path, expected] of [
+        [owned.server.binary, owned.server.binary_sha256],
+        [owned.server.template_file, owned.server.template_sha256],
+      ])
+        assert.equal(
+          hash(await readFile(path)),
+          expected,
+          `Runtime file changed: ${path}`,
+        );
+      observation.source_binding = {
+        kind: "localGoogleGemma4",
+        owned_server: serverBinding(observation),
+      };
+    }
     observation.executed_source = await identities();
     const sfManifest = JSON.parse(
       await readFile(join(config.sf_pi_path, "package.json"), "utf8"),
@@ -789,6 +1311,19 @@ async function worker(configPath) {
     const sfPaths = sfManifest.pi.extensions.map((path) =>
       resolve(config.sf_pi_path, path),
     );
+    if (gateway)
+      assert.equal(
+        sfPaths.length,
+        23,
+        "Configured lane requires the complete controlled 23-factory SF manifest",
+      );
+    observation.sf_factory_scope = {
+      source:
+        "All pi.extensions from the supplied controlled SF source manifest",
+      selected_count: sfPaths.length,
+      installed_normal_defaults:
+        "ROOT-reported 22-factory installed selection differs from this controlled 23-factory set; default equivalence is not claimed",
+    };
     observation.sf_factory_sources = await Promise.all(
       sfPaths.map(async (path) => ({
         path,
@@ -799,17 +1334,10 @@ async function worker(configPath) {
       config.comparison === "advice" || config.arm === "candidate";
     const review = config.prepared.kind === "review";
     const actualFactories = [];
-    if (review && installed) {
+    if (installed) {
       const { registerExtension } = await import("../dist/extension.js");
       const { configFromEnv } = await import("../dist/backend.js");
-      const classifierConfig = configFromEnv();
-      classifierConfig.modelId = config.classifier_model;
-      if (config.classifier_model_file)
-        classifierConfig.modelFile = config.classifier_model_file;
-      classifierConfig.device = config.classifier_device;
-      classifierConfig.templateVersion = "v2";
-      if (config.classifier_registry_path)
-        classifierConfig.artifactRegistryPath = config.classifier_registry_path;
+      const classifierConfig = taskClassifierConfig(config, configFromEnv());
       observation.classifier_binding = {
         config: snapshot(classifierConfig),
         scoped_workspace: config.workspace,
@@ -851,7 +1379,7 @@ async function worker(configPath) {
         templateVersion: "v2",
       },
     });
-    await save(join(config.agent_dir, "auth.json"), {});
+    if (!gateway) await save(join(config.agent_dir, "auth.json"), {});
     const inspectPath = async (path, editable) => {
       const absolute = resolve(config.workspace, path);
       assert.ok(
@@ -897,15 +1425,16 @@ async function worker(configPath) {
       noThemes: true,
       noPromptTemplates: true,
       noContextFiles: true,
-      additionalExtensionPaths: [
-        ...sfPaths,
-        ...(installed && !review ? [join(root, "dist/extension.js")] : []),
-      ],
+      additionalExtensionPaths: sfPaths,
       extensionFactories: [
         ...actualFactories,
         (pi) => {
           pi.on("before_provider_request", (event) => {
-            observation.provider_requests.push(snapshot(event.payload));
+            observation.provider_requests.push(
+              gateway
+                ? redactProviderEvidence(event.payload)
+                : snapshot(event.payload),
+            );
           });
           pi.on("after_provider_response", (event) => {
             observation.provider_responses.push({
@@ -965,12 +1494,10 @@ async function worker(configPath) {
                 input,
                 config.classifier_model,
               );
-              const classifierConfig = configFromEnv();
-              classifierConfig.modelId = config.classifier_model;
-              if (config.classifier_model_file)
-                classifierConfig.modelFile = config.classifier_model_file;
-              classifierConfig.templateVersion = "v2";
-              classifierConfig.device = "metal";
+              const classifierConfig = taskClassifierConfig(
+                config,
+                configFromEnv(),
+              );
               const classifier = new Classifier(
                 classifierConfig,
                 new NativeBackend(classifierConfig),
@@ -1038,25 +1565,41 @@ async function worker(configPath) {
       settingsManager,
       resourceLoader: loader,
       sessionManager: SessionManager.inMemory(config.workspace),
-      model: config.model,
+      ...(gateway ? { modelRuntime: configured.runtime } : {}),
+      model: gateway ? configured.model : config.model,
       thinkingLevel: config.thinking_level,
     }));
-    session.modelRuntime.registerProvider(config.model.provider, {
-      baseUrl: config.base_url,
-      api: config.model.api,
-      apiKey: "local-only",
-      models: [config.model],
-    });
+    if (!gateway)
+      session.modelRuntime.registerProvider(config.model.provider, {
+        baseUrl: config.base_url,
+        api: config.model.api,
+        apiKey: "local-only",
+        models: [config.model],
+      });
     await session.bindExtensions({
       mode: "print",
-      onError: (error) => observation.errors.push(snapshot(error)),
+      onError: (error) =>
+        observation.errors.push(
+          gateway
+            ? "Configured provider extension error; private details withheld"
+            : snapshot(error),
+        ),
     });
     assert.deepEqual(observation.errors, []);
     assert.equal(session.model.id, config.model.id);
     assert.equal(session.model.baseUrl, config.base_url);
+    if (gateway)
+      assert.equal(
+        configuredProviderBinding(session.model, config.provider_origin)
+          .registration_sha256,
+        config.provider_binding.registration_sha256,
+        "Bound SDK model must match ROOT-reviewed registration",
+      );
     observation.thinking_level = session.thinkingLevel;
     observation.generation_config = {
-      model: snapshot(session.model),
+      model: gateway
+        ? providerModelProjection(session.model)
+        : snapshot(session.model),
       timeout_ms: config.timeout_ms,
       tool_choice: "automatic",
       provider_stream: "Pi SDK unmodified",
@@ -1094,14 +1637,26 @@ async function worker(configPath) {
         installed,
         "Build the actual loaded-reference tool before candidate inference",
       );
-    observation.credentials = {
-      path: join(config.agent_dir, "auth.json"),
-      entries: Object.keys(
-        JSON.parse(await readFile(join(config.agent_dir, "auth.json"), "utf8")),
-      ).length,
-      stripped_environment_names: config.stripped_environment_names,
-    };
-    assert.equal(observation.credentials.entries, 0);
+    if (gateway)
+      observation.credential_policy = {
+        storage: "Pi ReadOnlyAuthStorage; evaluator does not write auth config",
+        catalog:
+          "InMemoryCodingAgentModelsStore; creation/catalog restoration offline",
+        projection:
+          "Only getProviderAuthStatus metadata; keys, commands, headers and env never recorded",
+        stripped_environment_names: config.stripped_environment_names,
+      };
+    else
+      observation.credentials = {
+        path: join(config.agent_dir, "auth.json"),
+        entries: Object.keys(
+          JSON.parse(
+            await readFile(join(config.agent_dir, "auth.json"), "utf8"),
+          ),
+        ).length,
+        stripped_environment_names: config.stripped_environment_names,
+      };
+    if (!gateway) assert.equal(observation.credentials.entries, 0);
     const sample = async () => {
       const ps = await command(
         [
@@ -1109,7 +1664,7 @@ async function worker(configPath) {
           "-o",
           "pid=,rss=,%cpu=,time=",
           "-p",
-          `${process.pid},${owned.server.pid}`,
+          gateway ? `${process.pid}` : `${process.pid},${owned.server.pid}`,
         ],
         root,
         5000,
@@ -1117,7 +1672,9 @@ async function worker(configPath) {
       observation.resource_samples.push({
         at_ms: performance.now() - totalStarted,
         node: process.memoryUsage(),
-        owned_process_ps: ps.stdout.trim(),
+        ...(gateway
+          ? { client_process_ps: ps.stdout.trim(), remote_server: "unknown" }
+          : { owned_process_ps: ps.stdout.trim() }),
         workspace_bytes: await diskBytes(config.workspace),
       });
     };
@@ -1134,12 +1691,15 @@ async function worker(configPath) {
         ...eventSnapshot(event),
         observed_at_ms: performance.now() - totalStarted,
       };
-      observation.events.push(captured);
+      const safeCaptured = gateway
+        ? redactProviderEvidence(captured)
+        : captured;
+      observation.events.push(safeCaptured);
       // Persist deltas as they arrive so a deadline or crash cannot erase evidence.
       sampling = sampling.then(() =>
         appendFile(
           join(config.directory, "events.jsonl"),
-          JSON.stringify(captured) + "\n",
+          JSON.stringify(safeCaptured) + "\n",
           { mode: 0o600 },
         ),
       );
@@ -1155,7 +1715,9 @@ async function worker(configPath) {
     observation.agent_completed = true;
     observation.final_generation_config = {
       ...observation.generation_config,
-      model: snapshot(session.model),
+      model: gateway
+        ? providerModelProjection(session.model)
+        : snapshot(session.model),
     };
     observation.final_thinking_level = session.thinkingLevel;
     observation.final_settings = snapshot(effectiveSettings());
@@ -1211,7 +1773,11 @@ async function worker(configPath) {
       observation.errors.length === 0 &&
       observation.blocked_tool_calls.length === 0;
   } catch (error) {
-    observation.errors.push(error.stack ?? String(error));
+    observation.errors.push(
+      gateway
+        ? "Configured provider worker failed; private provider/auth error details withheld"
+        : (error.stack ?? String(error)),
+    );
     if (session) observation.messages = snapshot(session.agent.state.messages);
     // Preserve independent acceptance even when the provider times out or errors.
     try {
@@ -1258,9 +1824,9 @@ async function worker(configPath) {
         observation.errors.push(`Transport evidence: ${error}`);
         observation.passed = false;
       });
-    observation.provider_usage = accountProviderUsage(
-      observation.messages,
-      observation.events,
+    observation.provider_usage = accountObservedProviderUsage(
+      observation,
+      config.provider_lane,
     );
     observation.provider_usage.accounting =
       "SDK-reported actual usage when complete; incomplete totals are unknown, with trustworthy completed counters retained as an explicit lower bound. Streaming characters/deltas are not token counts.";
@@ -1290,15 +1856,27 @@ async function worker(configPath) {
     observation.resource_usage_before = beforeResource;
     observation.resource_usage_after = process.resourceUsage();
     observation.evidence_disk_bytes = await diskBytes(config.directory);
-    observation.resource_limits =
-      "RSS sampled once per second; Node peak RSS is process-lifetime rusage. Shared owned-server RSS/CPU is observed, not exclusive GPU memory. Warm prefix state is uncontrolled and execution order is retained. No monetary saving inferred from zero local API prices.";
+    observation.resource_limits = gateway
+      ? "Only local evaluator/client RSS and CPU are sampled. Cloud server RSS, GPU memory and energy are unknown. Actual SDK usage/cache, Jev native receipts and full workflow wall time are retained. Configured cost rates do not establish billed cost or monetary saving. Remote prefix/cache state is uncontrolled."
+      : "RSS sampled once per second; Node peak RSS is process-lifetime rusage. Shared owned-server RSS/CPU is observed, not exclusive GPU memory. Warm prefix state is uncontrolled and execution order is retained. No monetary saving inferred from zero local API prices.";
     await snapshotTask(
       config.workspace,
       join(config.directory, "source-after"),
       config.prepared.kind,
     );
+    if (gateway) {
+      observation.messages = redactProviderEvidence(observation.messages);
+      observation.errors = observation.errors.map((error) =>
+        typeof error === "string" && error.startsWith("Configured provider")
+          ? error
+          : "Configured provider observation error; private details withheld",
+      );
+    }
     await save(join(config.directory, "messages.json"), observation.messages);
-    await save(join(config.directory, "proof.json"), observation);
+    await save(
+      join(config.directory, "proof.json"),
+      gateway ? redactProviderEvidence(observation) : observation,
+    );
     console.log(
       JSON.stringify({
         task: observation.task,
@@ -1394,6 +1972,38 @@ const serverBinding = (run) => {
     ].map((key) => [key, server[key]]),
   );
 };
+export function providerSourceBinding(run) {
+  if ((run.provider_lane ?? "localGoogleGemma4") === "localGoogleGemma4") {
+    const owned = serverBinding(run);
+    return owned ? { kind: "localGoogleGemma4", owned_server: owned } : null;
+  }
+  if (run.provider_lane !== "configuredGateway") return null;
+  const binding = run.source_binding;
+  if (
+    !binding ||
+    binding.kind !== "configuredGateway" ||
+    !sha256Pattern.test(binding.upstream_proof_sha256 ?? "") ||
+    binding.upstream_verification !== "ROOT-reviewed frozen evidence"
+  )
+    return null;
+  try {
+    const observed = configuredProviderBinding(
+      run.generation_config?.model,
+      binding.origin,
+    );
+    if (
+      observed.registration_sha256 !== binding.registration_sha256 ||
+      observed.origin_sha256 !== binding.origin_sha256 ||
+      canonicalJson(observed.registration) !==
+        canonicalJson(binding.registration)
+    )
+      return null;
+    validateUpstreamProof(binding.upstream_attribution, observed);
+    return binding;
+  } catch {
+    return null;
+  }
+}
 const executedBinding = (run) => {
   const source = run.executed_source;
   if (
@@ -1684,9 +2294,15 @@ export function comparisonReport(runs, comparison) {
       observedGeneration(item),
       observedGeneration(candidate),
     );
-    const sameServer = sameObserved(
-      serverBinding(item),
-      serverBinding(candidate),
+    const configuredPair =
+      item.provider_lane === "configuredGateway" ||
+      candidate.provider_lane === "configuredGateway";
+    const sameServer = configuredPair
+      ? null
+      : sameObserved(serverBinding(item), serverBinding(candidate));
+    const sameProviderSource = sameObserved(
+      providerSourceBinding(item),
+      providerSourceBinding(candidate),
     );
     const sameSource = sameObserved(
       executedBinding(item),
@@ -1721,6 +2337,8 @@ export function comparisonReport(runs, comparison) {
       same_settings: sameSettings,
       same_generation_config: sameGeneration,
       same_owned_server_binding: sameServer,
+      same_provider_source_binding: sameProviderSource,
+      provider_lane: item.provider_lane ?? "localGoogleGemma4",
       same_executed_source: sameSource,
       same_sf_factory_sources: sameSfSources,
       protocol_passed:
@@ -1731,7 +2349,7 @@ export function comparisonReport(runs, comparison) {
         sameThinking &&
         sameSettings &&
         sameGeneration &&
-        sameServer &&
+        sameProviderSource &&
         sameSource &&
         sameSfSources,
       baseline_passed: item.passed,
@@ -2189,6 +2807,12 @@ export function reviewImprovementGates(suite, paired) {
   };
 }
 async function main() {
+  assert.ok(
+    ["localGoogleGemma4", "configuredGateway"].includes(
+      values["provider-lane"],
+    ),
+    "Unknown provider lane",
+  );
   assert.ok(["baseline", "candidate", "pair"].includes(values.arm));
   assert.ok(["ordinary", "advice"].includes(values.comparison));
   assert.ok(["repair", "review"].includes(values.workflow));
@@ -2279,10 +2903,76 @@ async function main() {
       "Research classifier registry must be explicitly scoped under .build",
     );
   }
+  const gateway = values["provider-lane"] === "configuredGateway";
+  let providerConfig = {},
+    providerBinding = null,
+    configured = null;
+  if (gateway) {
+    assert.ok(
+      values["provider-models-path"],
+      "--provider-models-path is required for the configured lane",
+    );
+    providerConfig = {
+      provider_origin: configuredOrigin(values["provider-origin"]),
+      provider_models_path: await realpath(
+        resolve(values["provider-models-path"]),
+      ),
+      provider_auth_path: values["provider-auth-path"]
+        ? resolve(values["provider-auth-path"])
+        : null,
+    };
+    configured = await loadConfiguredProvider(providerConfig);
+    providerBinding = configured.binding;
+    if (values["upstream-proof"]) {
+      const proofPath = await realpath(resolve(values["upstream-proof"]));
+      assert.ok(
+        inside(await realpath(resolve(root, ".build")), proofPath),
+        "ROOT upstream proof must be explicitly frozen under .build",
+      );
+      const bytes = await readFile(proofPath);
+      let proof;
+      try {
+        proof = JSON.parse(bytes);
+      } catch {
+        throw new Error("ROOT upstream proof is not valid JSON");
+      }
+      const attribution = validateUpstreamProof(proof, providerBinding);
+      const frozenPath = join(output, "upstream-attribution.freeze.json");
+      await save(frozenPath, bytes.toString("utf8"));
+      providerConfig.upstream_proof_path = frozenPath;
+      providerConfig.upstream_proof_sha256 = hash(bytes);
+      providerConfig.upstream_attribution = attribution;
+      providerBinding = {
+        ...providerBinding,
+        upstream_verification: "ROOT-reviewed frozen evidence",
+        upstream_proof_sha256: hash(bytes),
+        upstream_attribution: attribution,
+      };
+    }
+  }
+  const model = gateway
+    ? providerModelProjection(configured.model)
+    : localGoogleGemma4Model(values["base-url"]);
+  const selectedBaseUrl = model.baseUrl;
   const protocol = {
     schema_version: 1,
     started_at: new Date().toISOString(),
     prepare_only: values["prepare-only"],
+    provider_lane: values["provider-lane"],
+    selected_agent_model: providerModelProjection(model),
+    provider_source_binding: providerBinding,
+    configured_auth_status: configured?.auth_status ?? null,
+    provider_catalog: configured?.catalog ?? null,
+    upstream_verification: gateway
+      ? providerBinding.upstream_verification
+      : "owned local Google model artifacts",
+    resource_scope: providerResourceScope(values["provider-lane"]),
+    sf_factory_policy: {
+      selection:
+        "Entire controlled SF source manifest; all 23 factories remain visible in both arms",
+      installed_normal_defaults:
+        "ROOT-reported installed normal 22-factory selection differs; this evaluator does not claim installed-default equivalence",
+    },
     workflow: values.workflow,
     review_dataset: reviewDataset,
     required_repair_lane: [
@@ -2330,8 +3020,9 @@ async function main() {
         : "Authored local TypeScript repair fixtures, fixed acceptance tests and tsc; not live Salesforce E2E",
     sandbox:
       "Both arms permit only designated local source edits, fixture reads, exact acceptance commands and limited local inspection; all SF tools stay visible but remote/account execution is unauthorized",
-    prefix_state:
-      "Owned Gemma4 server remains ready; native prefix/cache warm state uncontrolled, SDK session/factory state fresh for every arm. Execution order and cache counters recorded.",
+    prefix_state: gateway
+      ? "Configured gateway prefix/cache state is observational and uncontrolled; fresh SDK runtime/session/factories per arm, actual cache counters and order recorded. Cloud RSS/GPU/energy unknown."
+      : "Owned Gemma4 server remains ready; native prefix/cache warm state uncontrolled, SDK session/factory state fresh for every arm. Execution order and cache counters recorded.",
     classifier_state:
       values.workflow === "review"
         ? "Actual scoped Jev extension starts cold per run; any selected native initialization/classification/cleanup costs included. No request cache/output substitution in evaluator."
@@ -2351,7 +3042,10 @@ async function main() {
   if (values["prepare-only"]) {
     await save(join(output, "summary.json"), {
       ...protocol,
-      status: "prepared",
+      status:
+        gateway && !providerConfig.upstream_proof_sha256
+          ? "prepared_pending_upstream_verification"
+          : "prepared",
       passed: true,
       passed_scope:
         "Preparation checks only; zero model calls do not establish workflow acceptance or improvement",
@@ -2372,6 +3066,8 @@ async function main() {
         prepared_tasks: prepared.map((item) => item.id),
         passed: true,
         model_calls: 0,
+        provider_lane: values["provider-lane"],
+        upstream_verification: protocol.upstream_verification,
         output,
       }),
     );
@@ -2382,31 +3078,20 @@ async function main() {
     "ROOT_APPROVED",
     "Root must explicitly clear actual inference before running",
   );
-  const baseUrl = new URL(values["base-url"]);
-  assert.equal(baseUrl.protocol, "http:");
-  assert.equal(baseUrl.hostname, "127.0.0.1");
-  const model = {
-    id: "google/gemma-4-31B-it-qat-q4_0",
-    name: "Local Google Gemma 4 31B Instruct QAT Q4_0",
-    provider: "local-gemma",
-    api: "openai-completions",
-    baseUrl: values["base-url"],
-    reasoning: true,
-    input: ["text"],
-    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-    contextWindow: 32768,
-    maxTokens: 4096,
-    compat: {
-      supportsStore: false,
-      supportsDeveloperRole: false,
-      supportsReasoningEffort: false,
-      supportsStrictMode: false,
-      maxTokensField: "max_tokens",
-      requiresToolResultName: true,
-      thinkingFormat: "chat-template",
-      chatTemplateKwargs: { enable_thinking: { $var: "thinking.enabled" } },
-    },
-  };
+  if (gateway) {
+    assert.ok(
+      providerConfig.upstream_proof_sha256,
+      "ROOT-reviewed exact upstream attribution is required before configured inference",
+    );
+    assert.ok(
+      providerConfig.provider_auth_path,
+      "--provider-auth-path must explicitly select read-only Pi auth configuration",
+    );
+  } else {
+    const baseUrl = new URL(selectedBaseUrl);
+    assert.equal(baseUrl.protocol, "http:");
+    assert.equal(baseUrl.hostname, "127.0.0.1");
+  }
   const expectedReviewBatches =
     values.workflow === "review"
       ? await Promise.all(
@@ -2462,7 +3147,10 @@ async function main() {
           pair_position: arm === first ? "first" : "second",
           timeout_ms: timeoutMs,
           model,
-          base_url: values["base-url"],
+          provider_lane: values["provider-lane"],
+          provider_binding: providerBinding,
+          ...providerConfig,
+          base_url: selectedBaseUrl,
           state_file: resolve(values["state-file"]),
           sf_pi_path: resolve(values["sf-pi-path"]),
           thinking_level: values["thinking-level"],
