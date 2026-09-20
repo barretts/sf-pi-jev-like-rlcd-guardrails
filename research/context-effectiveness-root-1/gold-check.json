@@ -1,0 +1,10 @@
+{
+  "kind": "jev_answer_effectiveness_postfreeze_gold_check",
+  "fixtureSha256": "50705ffe1f622d72a5bb96018006240a8c77ec84975a612cad1495303b174f2a",
+  "shortCasesVerified": 24,
+  "shortFieldsVerified": 56,
+  "longScopesVerified": 24,
+  "totalCasesVerified": 48,
+  "goldChanged": false,
+  "timing": "Checker implemented after inference began; independent recomputation of unchanged authored gold, not a second prospective blind author."
+}
