@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "included_text_files_scanned": 2826,
+  "included_text_bytes_scanned": 290606488,
+  "strong_vendor_token_matches": 0,
+  "unclassified_real_credential_matches": 0,
+  "reviewed_literal_candidate_file": ".build/improvement-experiments/provider-lane-proof/developer-task-coordinator.test.mjs.freeze",
+  "candidate_classification": "Synthetic literals in credential-redaction and provider-projection tests; fake fetch/Response and assertions, no credential-file resolution. Bearer values consist only of human-readable letters/hyphens/spaces and have no recognized real-token prefix. Values deliberately omitted.",
+  "independent_archive_review": {
+    "archives": 7,
+    "entries": 2832,
+    "source_entries": 233,
+    "original_byte_matches": 2832,
+    "safe_regular_paths": true,
+    "manifest_matches": true,
+    "exclusions": 66
+  }
+}
