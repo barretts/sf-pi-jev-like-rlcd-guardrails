@@ -19,7 +19,9 @@ import {
   type Preferences,
   type SettingsScope,
 } from "./preferences.js";
-const JsonSchema = Type.Cyclic(
+// Keep recursive definitions beside each entry so tool prompt templates that
+// render question items without root $defs still expose the complete schema.
+const EntrySchema = Type.Cyclic(
   {
     Json: Type.Union([
       Type.Null(),
@@ -29,15 +31,15 @@ const JsonSchema = Type.Cyclic(
       Type.Array(Type.Ref("Json")),
       Type.Record(Type.String(), Type.Ref("Json")),
     ]),
+    Entry: Type.Union([
+      Type.Null(),
+      Type.String(),
+      Type.Array(Type.Ref("Json")),
+      Type.Record(Type.String(), Type.Ref("Json")),
+    ]),
   },
-  "Json",
+  "Entry",
 );
-const EntrySchema = Type.Union([
-  Type.Null(),
-  Type.String(),
-  Type.Array(JsonSchema),
-  Type.Record(Type.String(), JsonSchema),
-]);
 const common = { id: Type.String({ minLength: 1 }), instructions: EntrySchema };
 export const ToolSchema = Type.Object(
   {

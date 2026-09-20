@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
 import { pathToFileURL } from "node:url";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { realpathSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import {
@@ -16,6 +16,7 @@ export const cliHelp = `Jev local classifier and training workflow
 
   jev doctor [--model-file FILE] [--device auto|cpu|metal]
   jev warmup [--model-file FILE]
+  jev diagnose --input JSON [--output JSON]
   jev eval [--input JSONL] [--split validation|train|test] [--template v2] [--output JSON]
   jev bench [--iterations 3] [--context-sizes 256,1024] [--branch-counts 1,3] [--queued-callers 1,4] [--output JSON]
   jev demo [--host 127.0.0.1] [--port 8000] [--workspace DIRECTORY]
@@ -159,6 +160,23 @@ export async function runCli(
         );
       } finally {
         await backend.dispose();
+      }
+    } else if (command === "diagnose") {
+      const { buildDeveloperRecipeRequest, renderDeveloperRecipeResult } =
+        await import("./recipes.js");
+      if (values.template && values.template !== "v2")
+        throw new Error("Developer diagnosis uses template v2");
+      const input = JSON.parse(
+        await readFile(required(values, "input"), "utf8"),
+      );
+      const settings = config(),
+        request = buildDeveloperRecipeRequest(input, settings.modelId),
+        classifier = new Classifier(settings);
+      try {
+        const result = await classifier.classify(request, controller.signal);
+        await output(renderDeveloperRecipeResult(input, result), values.output);
+      } finally {
+        await classifier.dispose();
       }
     } else if (command === "eval") {
       const { loadQualityRecords, evaluateRecords, writeQualityReport } =
