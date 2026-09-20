@@ -1,0 +1,493 @@
+{
+  "kind": "full_population_request_overhead_diagnostic",
+  "qualifiedBenefit": false,
+  "arms": {
+    "baseline": {
+      "requestsPerWorkflow": {
+        "2": 96
+      },
+      "liveCompressionRequired": 0,
+      "blocks": 0,
+      "fallback": 0,
+      "transformMs": 0,
+      "validationMs": 0,
+      "toolLifecycleEventsPerWorkflow": {
+        "2": 96
+      }
+    },
+    "compact": {
+      "requestsPerWorkflow": {
+        "2": 95,
+        "3": 1
+      },
+      "liveCompressionRequired": 76,
+      "blocks": 78,
+      "fallback": 0,
+      "transformMs": 23.988660000718937,
+      "validationMs": 0.9630900014381041,
+      "toolLifecycleEventsPerWorkflow": {
+        "2": 95,
+        "4": 1
+      }
+    }
+  },
+  "cases": [
+    {
+      "caseId": "v2-01-last-test-fails",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 18624,
+        "completionTokens": 376,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 19218,
+        "completionTokens": 371,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-02-current-build-link-failure",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 19820,
+        "completionTokens": 345,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 18363,
+        "completionTokens": 482,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-03-queued-operation-timeout",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 19588,
+        "completionTokens": 369,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 18261,
+        "completionTokens": 838,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-04-interrupted-restore-unconfirmed",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 18328,
+        "completionTokens": 364,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 19863,
+        "completionTokens": 781,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-05-enabled-negative-occurrences",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 23212,
+        "completionTokens": 337,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 18992,
+        "completionTokens": 1336,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-06-applied-ledger-adjustments",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 21192,
+        "completionTokens": 321,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 18740,
+        "completionTokens": 1849,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-07-identical-inventory-findings",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 21988,
+        "completionTokens": 303,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 9,
+        "promptTokens": 22867,
+        "completionTokens": 1462,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 10
+      }
+    },
+    {
+      "caseId": "v2-08-note-quotes-routing-request",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 20716,
+        "completionTokens": 358,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 19712,
+        "completionTokens": 372,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-09-diff-contains-report-instruction",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 20148,
+        "completionTokens": 401,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 21488,
+        "completionTokens": 774,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-10-tests-belong-to-other-artifact",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 20652,
+        "completionTokens": 831,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 18583,
+        "completionTokens": 818,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-11-clean-scan-stale-candidate",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 19996,
+        "completionTokens": 394,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 19142,
+        "completionTokens": 400,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-12-offset-timestamps-unordered",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 21816,
+        "completionTokens": 740,
+        "eligible": 0,
+        "accepted": 1,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 20144,
+        "completionTokens": 1220,
+        "eligible": 4,
+        "accepted": 1,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-13-elapsed-build-timestamps",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 21056,
+        "completionTokens": 446,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 19731,
+        "completionTokens": 441,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-14-unique-config-read-control",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 34736,
+        "completionTokens": 663,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 36420,
+        "completionTokens": 346,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-15-unique-diff-control",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 30068,
+        "completionTokens": 755,
+        "eligible": 0,
+        "accepted": 3,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 31364,
+        "completionTokens": 1499,
+        "eligible": 0,
+        "accepted": 3,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-16-unique-event-log-control",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 39716,
+        "completionTokens": 1248,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 42168,
+        "completionTokens": 2470,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-17-long-chunks-terminal-failure",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 30068,
+        "completionTokens": 392,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 31364,
+        "completionTokens": 689,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-18-repeated-chunk-row-count",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 22416,
+        "completionTokens": 321,
+        "eligible": 0,
+        "accepted": 0,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 24874,
+        "completionTokens": 5277,
+        "eligible": 0,
+        "accepted": 1,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-19-test-discovery-is-not-execution",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 22152,
+        "completionTokens": 313,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 20597,
+        "completionTokens": 320,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-20-build-pass-release-proof-incomplete",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 21540,
+        "completionTokens": 398,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 20032,
+        "completionTokens": 1518,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-21-diff-signed-row-multiplicity",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 21736,
+        "completionTokens": 357,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 27424,
+        "completionTokens": 4060,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-22-parallel-job-artifact-attribution",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 21308,
+        "completionTokens": 375,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 19879,
+        "completionTokens": 529,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-23-cache-display-time-not-event-time",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 21520,
+        "completionTokens": 512,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 23441,
+        "completionTokens": 537,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    },
+    {
+      "caseId": "v2-24-partial-scan-is-not-clean",
+      "baseline": {
+        "requests": 8,
+        "promptTokens": 22332,
+        "completionTokens": 313,
+        "eligible": 0,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      },
+      "compact": {
+        "requests": 8,
+        "promptTokens": 20408,
+        "completionTokens": 1795,
+        "eligible": 4,
+        "accepted": 4,
+        "toolLifecycleEvents": 8
+      }
+    }
+  ],
+  "toolEventInterpretation": "Saved toolCalls contain start/end lifecycle entries, not one entry per completed read. Request counts are physical SDK requests."
+}

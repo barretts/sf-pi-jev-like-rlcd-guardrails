@@ -1,0 +1,2143 @@
+{
+  "kind": "jev_context_workflow_protocol",
+  "schemaVersion": 1,
+  "preparedAt": "2026-09-20T18:22:47.524Z",
+  "evidenceMode": "real-sdk-workflow",
+  "fixtureSha256": "910f57ee3be2b3c2ee4ceb4c8149355d632ff9d65544a860f0b00190db1edd5b",
+  "registration": {
+    "provider": "llmgw",
+    "id": "grok-4.6",
+    "api": "openai-completions",
+    "baseUrl": "https://eng-ai-model-gateway.sfproxy.devx-preprod.aws-esvc1-useast2.aws.sfdc.cl/v1",
+    "reasoning": false,
+    "contextWindow": 500000,
+    "maxTokens": 500000,
+    "lineageBasis": "User explicitly selected their existing xAI Grok 4.6 model; exact upstream weights are unobserved",
+    "effectiveCompatibility": {
+      "maxTokensField": "max_tokens",
+      "supportsStore": false,
+      "supportsStrictMode": false
+    },
+    "compatibilityBasis": "Installed Pi SDK model.compat flags omit optional store and function.strict fields for this selected-model experiment; gateway acceptance requires separate observed evidence",
+    "sampling": "temperature omitted; provider default is unknown"
+  },
+  "registrationSha256": "5c51b133f8ef98d9021980ec78753eb8a25af8199f0946eef1d5ecc919f9ca43",
+  "sources": [
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/scripts/context-workflow-eval.mjs",
+      "sha256": "5a2aaf1af575a39002355e058720059ce25eb45a6e21ed99d820589020f9b058"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/src/context-compact.ts",
+      "sha256": "eabb6611c8b264e47af2a8ad090c160715d76e3681bc1b73c56683b073599075"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/src/context-extension.ts",
+      "sha256": "9856fc07c90f3983efaef187595e392a75f531d136a234e8590ee193c918ce54"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/src/gateway.ts",
+      "sha256": "990bbbe3d4dfc731551fda4df9077042e74cd69bf86dba4feef59a883742d142"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/dist/context-compact.js",
+      "sha256": "f9b01e42886c5037e8dfe326b4715e1407ce2e4e8c6d2f43f8f943306d365bd7"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/dist/context-extension.js",
+      "sha256": "e8182136d460d0ad6408c9dcc3c0b7b421ed31e368376130872b5ceb5b068493"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/dist/gateway.js",
+      "sha256": "64853c8f08c7419952c78d5436edfe2a662115c40192931854fea8380335e17d"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/package.json",
+      "sha256": "5740f66d0a2d106b8fd02a4bf61dbed5cc0735c138cf37e3079109a346d0cffe"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/package-lock.json",
+      "sha256": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/package.json",
+      "sha256": "f1738e4b42203e5f22bcb513f13fb2fb224f1e98d1f129ff042f87048665a94c"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/sdk.js",
+      "sha256": "6969bd56ba8e1628cd033bb15cb15fe38299f00b5ad84f4f8ef37a33a98681c9"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/agent-session.js",
+      "sha256": "fb8a3981c20c8c0bbd42231b1c99a10335fb3858b659056b341954de9cfa467f"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/extensions/runner.js",
+      "sha256": "0de12ed1275e02595f92476eec3f61ae1f2e54fd2225ced721ddc90af58a5e61"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/model-runtime.js",
+      "sha256": "32cd50599d9e6e001229090e3d0554b60e4addb8ab7b3165635a574feb660b74"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js",
+      "sha256": "6732a1c65c09577d2ffcb716b48e4f4673e57e3e333f10ebfce5132d82e4d7a2"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-ai/dist/api/openai-completions.js",
+      "sha256": "1e2097ced37cf0e21aa5711297eecc77916de8a4ed81a9019bc7d97b22825fa3"
+    }
+  ],
+  "sfSources": [
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-welcome/index.ts",
+      "sha256": "1a87b1f61ca4274a285584517affd0b8a3f3fc2933bee4655f8a055d4ad50559"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-devbar/index.ts",
+      "sha256": "6d4d6f0155887470a0713b029b9654f1f1fcd906148f8648ac0748a40b7ed615"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-ohana-spinner/index.ts",
+      "sha256": "8113c350f70c24f6595c12bac9f14a0b692f3b91f6c5d442d0cd87ff8d73b7ce"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-pi-manager/index.ts",
+      "sha256": "1c222f24ffb83f697991924f116325a10d02eebff1862b23b19ce9f38dc13961"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-llm-gateway/index.ts",
+      "sha256": "96a6e5e3f80748bb4014ab1dd1af1449710b1c6e197665051963d9cbc734af46"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-guardrail/index.ts",
+      "sha256": "b59b391c19f194a57c3fba1cebecb791641d75affd343f1a4943c2e612eb9d39"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-brain/index.ts",
+      "sha256": "75e9ea4c8114c155aed32b1f1576e9a221515fb4615687111446f5c4056455f9"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-apex/index.ts",
+      "sha256": "ac43d8d2459209d5d79a472538d0f22e18f9f4f639ba8c9e9477d9a0f6f21f78"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-soql/index.ts",
+      "sha256": "89ec17df9b2f0168603acaa0cc407ec0b20108e57e97346a075641219091ad15"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-lwc/index.ts",
+      "sha256": "55c041e90394481ce7317ec83cdbecfe1517a61632f9349b2965d505178694bd"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-browser/index.ts",
+      "sha256": "6458b1e2a3a67ee46263fc80259bd5cc218bae1aefdec0f43190415206cf13fe"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-code-analyzer/index.ts",
+      "sha256": "2bee1a5e50452191e3a8fe41c66d8017e96010893c7e0f2dc2ab391cb89eaa72"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-slack/index.ts",
+      "sha256": "5dbc92b1d17db66cfc780382ab90aab069e3f24e5a717b92f70cb9d5d88e0464"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-data360/index.ts",
+      "sha256": "9d179d71b674e5ce6e290a420a9f381301494fc2a2bd31ba872844548fac2647"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-data-explorer/index.ts",
+      "sha256": "93a38795743bad656922c27054144676e0c749407a24fa268b5cc9295d88f3a7"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-docs/index.ts",
+      "sha256": "0c351e9623b45bb4446a0cfe6dc55231db0d166d5d2334ba53cf0b9c7cfd8b5e"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-tldraw/index.ts",
+      "sha256": "d152436a0326362ccaf661cc4beecafaf09c4cb250f4585a595421896086faf1"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-herdr/index.ts",
+      "sha256": "d91c414e7494c8fecf3f4f59dd7db85cf4cce06c1a0073f85a21efc7f0bfae54"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-lsp/index.ts",
+      "sha256": "5818d0ec1f96b0eb444f1d912d5a89e6a0b49caa8bbf5893b1c865791658edc2"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-agentscript/index.ts",
+      "sha256": "4ae3bcd3db3fb6afd9644c0ed629a7d99935ef9682501b2ee2ecddbef4e39e1e"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-skills/index.ts",
+      "sha256": "f3b4ed0b6521e3fe6f6d1158713c6849dd773cf6cff86355ef95fb332c17a06a"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-feedback/index.ts",
+      "sha256": "fe779f51334b157c8606dcefacb4634d01ed457028f1a5e86f3b37d8da4b9018"
+    },
+    {
+      "path": "/Users/bsonntag/code/sf-pi-jev-manager/extensions/sf-flow/index.ts",
+      "sha256": "4d26f6c814d6719195a0c2c0353a473c509682d44ed7bccf1a17a016e7d43b64"
+    }
+  ],
+  "runtime": {
+    "node": "v26.5.1",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "parameters": {
+    "concurrency": 4,
+    "maxTokens": 4096,
+    "maxTurns": 4,
+    "timeoutMs": 180000,
+    "repetitions": 4,
+    "maxResponseBytes": 8388608,
+    "optionalJudges": true,
+    "pacing": {
+      "minRequestIntervalMs": 5000,
+      "rateLimitCooldownMs": 60000,
+      "maxRateLimitCooldownMs": 120000,
+      "maxConsecutive429": 3
+    }
+  },
+  "cases": [
+    {
+      "id": "v2-01-last-test-fails",
+      "family": "test-regression",
+      "originalSha256": "1ca5c8ea9886629e4732a3265cfe8d7edf55d9a245b5b801cebef254f6225214",
+      "expectedSha256": "2bc3c4548ddcb7d0689039fb60176bcc6bcaab41eb7d6e8e477854db20df99bc",
+      "promptSha256": "e83f4e98889e1bd845e42c8f0ed1dbc11cc24bc8d78eaeddebea08339afac435",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5065,
+        "compressedBytes": 1068,
+        "compressedSha256": "bbb4530fa101a248ce074e870eb2950b571f5ea60284fd76021cb0e07fc9d6bd",
+        "localTransformMs": 0.8680840000000032,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-02-current-build-link-failure",
+      "family": "build-regression",
+      "originalSha256": "d705e883e84d4eebbb88aea7437342fab79db6426952274f20db8616b3bef10e",
+      "expectedSha256": "ce8c5cd2cc18a3b9b1e58f6a4d47d86ebc5d3ece471437bd7e103e02660651e2",
+      "promptSha256": "69da2ec2ed86e546d39c4c6e547c8c58bf1e75228229bbe5d31575038b2fd9d6",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5622,
+        "compressedBytes": 1047,
+        "compressedSha256": "f16e068ea960d5cee8cf4fed135e0d426e6b214fd2489e5f9dac2cfd84ad55a5",
+        "localTransformMs": 0.15575000000000117,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-03-queued-operation-timeout",
+      "family": "unknown-outcome",
+      "originalSha256": "07e36a00582da5807797b396d67bf6214bbcd8dd1cbbf714f2ba1407fad61969",
+      "expectedSha256": "1ee063f538380ea77ecb38df7d8a518787a17a3a8d8cc0ce37c0bebe2637d6c3",
+      "promptSha256": "d1fa0d59b134a53351655c360f6c6a35bcd53f5fcfcfe7bd8a95dfc609dde96d",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5715,
+        "compressedBytes": 979,
+        "compressedSha256": "c0be23b44bc8f05d22193658be7aa6ae8f3b7e059697ca5a3ee2c01057d9a900",
+        "localTransformMs": 0.1300420000000031,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-04-interrupted-restore-unconfirmed",
+      "family": "unknown-outcome",
+      "originalSha256": "1f4b9a1dcfa36ab0bb4d8c9a2587b75e1e2d9f0845f5485c1e5cc0c5d296ff69",
+      "expectedSha256": "af6ab29bd6eba21151e33b613adade5254e6d40e5ea8ec5b8e949cfa64313dae",
+      "promptSha256": "566b40c1487837f5fd4c7e808fbc7a97afebcd61accbfe8ea231063b306b5dfb",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5387,
+        "compressedBytes": 1014,
+        "compressedSha256": "c717ae746befa8e8a6339261a53c21c305fd4fe3f920d050566abf2434475236",
+        "localTransformMs": 0.07829200000000114,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-05-enabled-negative-occurrences",
+      "family": "multiplicity-arithmetic",
+      "originalSha256": "8ef13bd81bdadb5923ea2889e5535ea228dee8f3bea144353edc2cdde358c539",
+      "expectedSha256": "9e47dd7e31ec9a84150cb2fed58e73533c20b1bb881e87661b37e2136beabd57",
+      "promptSha256": "90a0b298a5f7af3cb333751b742b99522d852eeee81564a3337fd0a5fdb07e77",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 7602,
+        "compressedBytes": 1224,
+        "compressedSha256": "bd94a5356cbaad8c081bcbc33ad4b051d19fb63f61e4068cb827dc41a0f15725",
+        "localTransformMs": 0.1390829999999994,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-06-applied-ledger-adjustments",
+      "family": "multiplicity-arithmetic",
+      "originalSha256": "aca38ad48535b98c9eb43056f5525bc54a4f0e12993eaa44470920cee465ae27",
+      "expectedSha256": "6f2247dc12647ce829a0f572f6bb0a1202e4c9c27b1f5939fb149cec8672e66d",
+      "promptSha256": "2b42432752b5c9d23c333e4780bd1becc3c09cee3e32014b9a36f019023048d4",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 7542,
+        "compressedBytes": 1096,
+        "compressedSha256": "95184d400400274b905149e8dc7b5c03abf38aa41984dae38b2bbb0cae41210c",
+        "localTransformMs": 0.16229099999999974,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-07-identical-inventory-findings",
+      "family": "multiplicity-count",
+      "originalSha256": "35d42a649b1b56e7e49c70dd111544baad5c367f6991f8737d0e18ca8d8e261a",
+      "expectedSha256": "8c5716e6da9b146b23e70ff40e0e8f9bf71f037a13831cf686988efc4efa4f27",
+      "promptSha256": "3eaaca7765ab127b50b353b2b93b059d40426b68e95acb353c68298f41a632c0",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 7637,
+        "compressedBytes": 1084,
+        "compressedSha256": "2edb23d87fbee40110c3a55289b8d1469278a015b457e71ce2deee7ff99d08f9",
+        "localTransformMs": 0.07058299999999917,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-08-note-quotes-routing-request",
+      "family": "quoted-untrusted-data",
+      "originalSha256": "322c1b3b5f648bdfedd1aaee56bd3bf5a749b2c82ecf20306c24d0991182b016",
+      "expectedSha256": "463e5be99c80c4ce88ef7ffce41d1bebbb19bddbb4b17caf0912e71de0dec02b",
+      "promptSha256": "8cf7aeceeca21dde050fb36313e2fafc77f7bc60230451421c4520486b3f8520",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5576,
+        "compressedBytes": 1137,
+        "compressedSha256": "e3d7799b6cf4680b97fae0100dcf19bdc991b5534738f1dd408324e25f2c18bb",
+        "localTransformMs": 0.05045900000000003,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-09-diff-contains-report-instruction",
+      "family": "quoted-untrusted-data",
+      "originalSha256": "a1955d9306781a3796d70c2b3cf970899692d6f8aa6fecc07b30fa8f64aa923f",
+      "expectedSha256": "0e5c0059fa33def31d7234232a3c8766bdca54c998144903ab45ce903ee856b4",
+      "promptSha256": "7c907ba5f81f4e95fdb4efb2e2d06ee78510503a70a6179d152ca5074503b957",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5861,
+        "compressedBytes": 1313,
+        "compressedSha256": "4c9147fcf914d25765ce80f5aeaa3677c3bf5b9e86c13c0967080b67f0e4c9af",
+        "localTransformMs": 0.05241699999999838,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-10-tests-belong-to-other-artifact",
+      "family": "artifact-attribution",
+      "originalSha256": "f36c02b65e8297591bfbdd3134162d7ab0518bc5cb87974e0a9e6ac690932b5e",
+      "expectedSha256": "b2d6086393d7ecf591886249eb356bde469fe56ba80d420b0d80c164c8c4553f",
+      "promptSha256": "cd36f03390130f7e2050bea3e33aab8e5b3db18ed8ae65637daa87621e52bae9",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 6233,
+        "compressedBytes": 1137,
+        "compressedSha256": "d42eaa2b3267397c71e1e79b17ebb4d8f8e9b3bdc337b18921f687d4c3bfb464",
+        "localTransformMs": 0.0558329999999998,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-11-clean-scan-stale-candidate",
+      "family": "artifact-attribution",
+      "originalSha256": "baa2de07cb21b206a61ea1036d565d87005bcc2ac0148a98d192ac296c2b9c45",
+      "expectedSha256": "d778b7bfc1726392151a26b20450838660b3aa146240418c21f358aca2595e6a",
+      "promptSha256": "477c47610d3050e76cd860da8fe7ac4dff21890b908d01ca04096c66b7d24940",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 6254,
+        "compressedBytes": 1072,
+        "compressedSha256": "7b0cc83388dc7b1f2a8288d3aa0d163615706c66805cba4236180fb64b3a94b8",
+        "localTransformMs": 0.054375000000000284,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-12-offset-timestamps-unordered",
+      "family": "timestamp-order",
+      "originalSha256": "e08399237eb1ef5ed3ef19605f21903f1ebbe3d86051833af2423a4e1c912da0",
+      "expectedSha256": "e13e791e43ad46db7d1189a44b900aecdd8b0a785adc95b8c277833b22e35083",
+      "promptSha256": "0a2030a3ee856ef47d264cff4332976a4f9eff79a016f135d7afb17b3e0c7012",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5421,
+        "compressedBytes": 1063,
+        "compressedSha256": "5194151694a6b960921947cafbf05e5c4c480193baf36c3db60ad5557eabb1fe",
+        "localTransformMs": 0.04745899999999992,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-13-elapsed-build-timestamps",
+      "family": "timestamp-arithmetic",
+      "originalSha256": "c846bb5439254804bcaac2aa802c62b9210ad4720022c0d25651f47c49d3890a",
+      "expectedSha256": "6c2708a0658abb8f355435bb8f293b3f5c65a4a263e30516f42a7b2ea4b2b902",
+      "promptSha256": "6e8c1f082fd602a32badd5cfaf240027d177978bd00ad6ef63cc76540ddbc178",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5800,
+        "compressedBytes": 829,
+        "compressedSha256": "184a8f850c140eae87bd10e5b7e58697196c8d4b4a580b6cae8a2169f369b5b3",
+        "localTransformMs": 0.061042000000000485,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-14-unique-config-read-control",
+      "family": "unique-line-control",
+      "originalSha256": "458ac3a10d0f33c996fd02db54338e8d5e1c8f42e0e224d5dd94752efd4d2cc9",
+      "expectedSha256": "a8fcbbf36453ee667348f154d5d422c582d364f1e4068ae3ae177eb10adb9b8e",
+      "promptSha256": "c1dcb8b8744334ab6f5e6fee953c44213a1be00abb6ddf5a828cdd41d5cdf4e5",
+      "compression": {
+        "format": "identity",
+        "applied": false,
+        "originalBytes": 10497,
+        "compressedBytes": 10497,
+        "compressedSha256": "458ac3a10d0f33c996fd02db54338e8d5e1c8f42e0e224d5dd94752efd4d2cc9",
+        "localTransformMs": 0.09999999999999787,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-15-unique-diff-control",
+      "family": "unique-line-control",
+      "originalSha256": "8d8acf1fa4785d2b266885b897525e2b23ea558b548711130b0630a381b81445",
+      "expectedSha256": "92582c84c71661840080fdb599f6b553c5b0fc581607ecda0541f5de6caaea04",
+      "promptSha256": "daae9642e286e192494da1219e59c01af1d126073f9edf8b56068f0848c19cca",
+      "compression": {
+        "format": "identity",
+        "applied": false,
+        "originalBytes": 6237,
+        "compressedBytes": 6237,
+        "compressedSha256": "8d8acf1fa4785d2b266885b897525e2b23ea558b548711130b0630a381b81445",
+        "localTransformMs": 0.06487500000000068,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-16-unique-event-log-control",
+      "family": "unique-line-control",
+      "originalSha256": "59f450a2b074c3189e2aa007c754cb3919952e18352c19bca317bedbd54ff7dc",
+      "expectedSha256": "c3072abcc7b3d6a982d5ee3987707b81a94d3011f806273653d6785de0320ad9",
+      "promptSha256": "5ba5a5e5493e50b7c2d3e974de8643dd4327d7a6c1a8bd61f53e3318df53f606",
+      "compression": {
+        "format": "identity",
+        "applied": false,
+        "originalBytes": 11843,
+        "compressedBytes": 11843,
+        "compressedSha256": "59f450a2b074c3189e2aa007c754cb3919952e18352c19bca317bedbd54ff7dc",
+        "localTransformMs": 0.107958,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-17-long-chunks-terminal-failure",
+      "family": "repeated-chunk",
+      "originalSha256": "e473ad7b4169d3c25c7aa52a7bf4364a831de84195ac4b7a278894c31ea61164",
+      "expectedSha256": "8bbbf35018c876a3da358b3362a9db9a1cd78e5b44c2be2eba5918b8d9e52b40",
+      "promptSha256": "a1f9cc2cfbd9a8eef9ef60c30e1dacb04114408ebbf679d7a159829d57626c9a",
+      "compression": {
+        "format": "identity",
+        "applied": false,
+        "originalBytes": 18389,
+        "compressedBytes": 18389,
+        "compressedSha256": "e473ad7b4169d3c25c7aa52a7bf4364a831de84195ac4b7a278894c31ea61164",
+        "localTransformMs": 0.16716699999999918,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-18-repeated-chunk-row-count",
+      "family": "repeated-chunk-arithmetic",
+      "originalSha256": "1a90daf69732be5e1adad83825d35f666abd3f4b263c986d53984f6df6c1fc06",
+      "expectedSha256": "984e5c118c0fd0a10e0a1712fdf74583844e201f08053d3f855b23fcb5cfebb5",
+      "promptSha256": "4286693a13da450a76341e196de2bc61cd765e171e256f3251cb006fafb9fe4c",
+      "compression": {
+        "format": "identity",
+        "applied": false,
+        "originalBytes": 6778,
+        "compressedBytes": 6778,
+        "compressedSha256": "1a90daf69732be5e1adad83825d35f666abd3f4b263c986d53984f6df6c1fc06",
+        "localTransformMs": 0.06620900000000063,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-19-test-discovery-is-not-execution",
+      "family": "missing-evidence",
+      "originalSha256": "0c2c4c9a6572de61b21dc6054bafafaadb9fec04b70170516a8d9150ac3e53b4",
+      "expectedSha256": "979df6890c5a7214badfb0a58beb594d6061ed14f6dd185b5f783709475e4180",
+      "promptSha256": "ef94d9934b71c5ff1c608e396df337a209b6325cfb85509f25e2771085fd12e8",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5652,
+        "compressedBytes": 1009,
+        "compressedSha256": "3351d0401d385b18cf1845417ef967f4edfb49cef0ed6b675a7881a37f4b24cf",
+        "localTransformMs": 0.0486249999999977,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-20-build-pass-release-proof-incomplete",
+      "family": "missing-evidence",
+      "originalSha256": "56a0fb1edfb24732d3a986bd4c11cf450ae79e7f6941c386d4bce2f138de74bf",
+      "expectedSha256": "28b4ab212710e68f1ea4e3eec466875fa10368a1d14be6835506482b68eebece",
+      "promptSha256": "3e7fbc93bbf7d4008264d26001813bc37498ea05ee3e2682d566a1b9b209f285",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5566,
+        "compressedBytes": 1127,
+        "compressedSha256": "57ab126c4f0d528457692757997b1248ed3a0485757f74a4ac92673696906d3a",
+        "localTransformMs": 0.04804100000000133,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-21-diff-signed-row-multiplicity",
+      "family": "diff-arithmetic",
+      "originalSha256": "8e860186ccaee797e6a48952e6148819a4877657c7c6cdac5932b687c3bd69f1",
+      "expectedSha256": "96f9f9d23d6afa94c38ceb5c7dcd7f417f2a11f5a505cc568861f8fac9c9e1d0",
+      "promptSha256": "7f554fb82a7575a567acb2074c6651e3a7b0d31e3c67cff403563780e4edb868",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 6224,
+        "compressedBytes": 1192,
+        "compressedSha256": "7a9eb0150ebdc20cc2e300161cf8f5ba26e5e32f03ba2644981398824b6ff052",
+        "localTransformMs": 0.053208000000001476,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-22-parallel-job-artifact-attribution",
+      "family": "artifact-attribution",
+      "originalSha256": "5ebe55bb42d4da1a7ce7ccb52f20b3045f8c20383878acacc6986a912aab204f",
+      "expectedSha256": "effdf0bde018b4c807d24a410e3db330846299a2a44c552dd0e8b52bc8eb5747",
+      "promptSha256": "2dfef440479f9fb9cbe2f0711dfa288914733ee701daf14bd482fc6122cae8f3",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5329,
+        "compressedBytes": 872,
+        "compressedSha256": "f1ed2a0f353683cf9c0def358b59c770e0b1179b15b48eb9d7ce0e892e98f66b",
+        "localTransformMs": 0.0467499999999994,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-23-cache-display-time-not-event-time",
+      "family": "timestamp-order",
+      "originalSha256": "c7690bde1df622c128eb227d5dbf2329726bfc66eeffa10c7471fd12ff2c2880",
+      "expectedSha256": "a69999d8e066d48e8b00f11bba15e89e9894c5eb141787684262a5d4c1358eba",
+      "promptSha256": "038f8e7f573044e3c983e234d7fd60c6a98977dd913fca9d0892fbb22e820fd4",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5845,
+        "compressedBytes": 1014,
+        "compressedSha256": "08ce94276bbf51b297a963e044e640ed2998e272f9eccbe208663a90846a977c",
+        "localTransformMs": 0.05629099999999809,
+        "exactReconstruction": true
+      }
+    },
+    {
+      "id": "v2-24-partial-scan-is-not-clean",
+      "family": "unknown-outcome",
+      "originalSha256": "84e428c736cd748f508cbd874d5b03dd526b6a651d9ffce772bd0254e8637e6c",
+      "expectedSha256": "40293a00fd9654a3468ab51a4c7e2f229dd10ed64b9e982050cf4b88ff419d43",
+      "promptSha256": "2bcb53eda8e0ad270d19ed5246d2d8ffffd2f7551653598e9ae0327a16685c28",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5977,
+        "compressedBytes": 1018,
+        "compressedSha256": "b3455820f690b86718b6e726241e85cf32f8ed27cd1022e72f2c93003e234f48",
+        "localTransformMs": 0.055374999999997954,
+        "exactReconstruction": true
+      }
+    }
+  ],
+  "schedule": [
+    {
+      "pairId": "v2-01-last-test-fails__r1",
+      "caseId": "v2-01-last-test-fails",
+      "family": "test-regression",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-01-last-test-fails__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-01-last-test-fails__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-01-last-test-fails__r2",
+      "caseId": "v2-01-last-test-fails",
+      "family": "test-regression",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-01-last-test-fails__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-01-last-test-fails__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-01-last-test-fails__r3",
+      "caseId": "v2-01-last-test-fails",
+      "family": "test-regression",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-01-last-test-fails__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-01-last-test-fails__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-01-last-test-fails__r4",
+      "caseId": "v2-01-last-test-fails",
+      "family": "test-regression",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-01-last-test-fails__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-01-last-test-fails__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-02-current-build-link-failure__r1",
+      "caseId": "v2-02-current-build-link-failure",
+      "family": "build-regression",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-02-current-build-link-failure__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-02-current-build-link-failure__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-02-current-build-link-failure__r2",
+      "caseId": "v2-02-current-build-link-failure",
+      "family": "build-regression",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-02-current-build-link-failure__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-02-current-build-link-failure__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-02-current-build-link-failure__r3",
+      "caseId": "v2-02-current-build-link-failure",
+      "family": "build-regression",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-02-current-build-link-failure__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-02-current-build-link-failure__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-02-current-build-link-failure__r4",
+      "caseId": "v2-02-current-build-link-failure",
+      "family": "build-regression",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-02-current-build-link-failure__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-02-current-build-link-failure__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-03-queued-operation-timeout__r1",
+      "caseId": "v2-03-queued-operation-timeout",
+      "family": "unknown-outcome",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-03-queued-operation-timeout__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-03-queued-operation-timeout__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-03-queued-operation-timeout__r2",
+      "caseId": "v2-03-queued-operation-timeout",
+      "family": "unknown-outcome",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-03-queued-operation-timeout__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-03-queued-operation-timeout__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-03-queued-operation-timeout__r3",
+      "caseId": "v2-03-queued-operation-timeout",
+      "family": "unknown-outcome",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-03-queued-operation-timeout__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-03-queued-operation-timeout__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-03-queued-operation-timeout__r4",
+      "caseId": "v2-03-queued-operation-timeout",
+      "family": "unknown-outcome",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-03-queued-operation-timeout__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-03-queued-operation-timeout__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-04-interrupted-restore-unconfirmed__r1",
+      "caseId": "v2-04-interrupted-restore-unconfirmed",
+      "family": "unknown-outcome",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-04-interrupted-restore-unconfirmed__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-04-interrupted-restore-unconfirmed__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-04-interrupted-restore-unconfirmed__r2",
+      "caseId": "v2-04-interrupted-restore-unconfirmed",
+      "family": "unknown-outcome",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-04-interrupted-restore-unconfirmed__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-04-interrupted-restore-unconfirmed__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-04-interrupted-restore-unconfirmed__r3",
+      "caseId": "v2-04-interrupted-restore-unconfirmed",
+      "family": "unknown-outcome",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-04-interrupted-restore-unconfirmed__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-04-interrupted-restore-unconfirmed__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-04-interrupted-restore-unconfirmed__r4",
+      "caseId": "v2-04-interrupted-restore-unconfirmed",
+      "family": "unknown-outcome",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-04-interrupted-restore-unconfirmed__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-04-interrupted-restore-unconfirmed__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-05-enabled-negative-occurrences__r1",
+      "caseId": "v2-05-enabled-negative-occurrences",
+      "family": "multiplicity-arithmetic",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-05-enabled-negative-occurrences__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-05-enabled-negative-occurrences__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-05-enabled-negative-occurrences__r2",
+      "caseId": "v2-05-enabled-negative-occurrences",
+      "family": "multiplicity-arithmetic",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-05-enabled-negative-occurrences__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-05-enabled-negative-occurrences__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-05-enabled-negative-occurrences__r3",
+      "caseId": "v2-05-enabled-negative-occurrences",
+      "family": "multiplicity-arithmetic",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-05-enabled-negative-occurrences__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-05-enabled-negative-occurrences__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-05-enabled-negative-occurrences__r4",
+      "caseId": "v2-05-enabled-negative-occurrences",
+      "family": "multiplicity-arithmetic",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-05-enabled-negative-occurrences__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-05-enabled-negative-occurrences__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-06-applied-ledger-adjustments__r1",
+      "caseId": "v2-06-applied-ledger-adjustments",
+      "family": "multiplicity-arithmetic",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-06-applied-ledger-adjustments__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-06-applied-ledger-adjustments__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-06-applied-ledger-adjustments__r2",
+      "caseId": "v2-06-applied-ledger-adjustments",
+      "family": "multiplicity-arithmetic",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-06-applied-ledger-adjustments__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-06-applied-ledger-adjustments__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-06-applied-ledger-adjustments__r3",
+      "caseId": "v2-06-applied-ledger-adjustments",
+      "family": "multiplicity-arithmetic",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-06-applied-ledger-adjustments__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-06-applied-ledger-adjustments__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-06-applied-ledger-adjustments__r4",
+      "caseId": "v2-06-applied-ledger-adjustments",
+      "family": "multiplicity-arithmetic",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-06-applied-ledger-adjustments__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-06-applied-ledger-adjustments__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-07-identical-inventory-findings__r1",
+      "caseId": "v2-07-identical-inventory-findings",
+      "family": "multiplicity-count",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-07-identical-inventory-findings__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-07-identical-inventory-findings__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-07-identical-inventory-findings__r2",
+      "caseId": "v2-07-identical-inventory-findings",
+      "family": "multiplicity-count",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-07-identical-inventory-findings__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-07-identical-inventory-findings__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-07-identical-inventory-findings__r3",
+      "caseId": "v2-07-identical-inventory-findings",
+      "family": "multiplicity-count",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-07-identical-inventory-findings__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-07-identical-inventory-findings__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-07-identical-inventory-findings__r4",
+      "caseId": "v2-07-identical-inventory-findings",
+      "family": "multiplicity-count",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-07-identical-inventory-findings__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-07-identical-inventory-findings__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-08-note-quotes-routing-request__r1",
+      "caseId": "v2-08-note-quotes-routing-request",
+      "family": "quoted-untrusted-data",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-08-note-quotes-routing-request__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-08-note-quotes-routing-request__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-08-note-quotes-routing-request__r2",
+      "caseId": "v2-08-note-quotes-routing-request",
+      "family": "quoted-untrusted-data",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-08-note-quotes-routing-request__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-08-note-quotes-routing-request__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-08-note-quotes-routing-request__r3",
+      "caseId": "v2-08-note-quotes-routing-request",
+      "family": "quoted-untrusted-data",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-08-note-quotes-routing-request__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-08-note-quotes-routing-request__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-08-note-quotes-routing-request__r4",
+      "caseId": "v2-08-note-quotes-routing-request",
+      "family": "quoted-untrusted-data",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-08-note-quotes-routing-request__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-08-note-quotes-routing-request__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-09-diff-contains-report-instruction__r1",
+      "caseId": "v2-09-diff-contains-report-instruction",
+      "family": "quoted-untrusted-data",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-09-diff-contains-report-instruction__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-09-diff-contains-report-instruction__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-09-diff-contains-report-instruction__r2",
+      "caseId": "v2-09-diff-contains-report-instruction",
+      "family": "quoted-untrusted-data",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-09-diff-contains-report-instruction__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-09-diff-contains-report-instruction__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-09-diff-contains-report-instruction__r3",
+      "caseId": "v2-09-diff-contains-report-instruction",
+      "family": "quoted-untrusted-data",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-09-diff-contains-report-instruction__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-09-diff-contains-report-instruction__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-09-diff-contains-report-instruction__r4",
+      "caseId": "v2-09-diff-contains-report-instruction",
+      "family": "quoted-untrusted-data",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-09-diff-contains-report-instruction__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-09-diff-contains-report-instruction__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-10-tests-belong-to-other-artifact__r1",
+      "caseId": "v2-10-tests-belong-to-other-artifact",
+      "family": "artifact-attribution",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-10-tests-belong-to-other-artifact__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-10-tests-belong-to-other-artifact__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-10-tests-belong-to-other-artifact__r2",
+      "caseId": "v2-10-tests-belong-to-other-artifact",
+      "family": "artifact-attribution",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-10-tests-belong-to-other-artifact__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-10-tests-belong-to-other-artifact__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-10-tests-belong-to-other-artifact__r3",
+      "caseId": "v2-10-tests-belong-to-other-artifact",
+      "family": "artifact-attribution",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-10-tests-belong-to-other-artifact__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-10-tests-belong-to-other-artifact__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-10-tests-belong-to-other-artifact__r4",
+      "caseId": "v2-10-tests-belong-to-other-artifact",
+      "family": "artifact-attribution",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-10-tests-belong-to-other-artifact__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-10-tests-belong-to-other-artifact__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-11-clean-scan-stale-candidate__r1",
+      "caseId": "v2-11-clean-scan-stale-candidate",
+      "family": "artifact-attribution",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-11-clean-scan-stale-candidate__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-11-clean-scan-stale-candidate__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-11-clean-scan-stale-candidate__r2",
+      "caseId": "v2-11-clean-scan-stale-candidate",
+      "family": "artifact-attribution",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-11-clean-scan-stale-candidate__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-11-clean-scan-stale-candidate__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-11-clean-scan-stale-candidate__r3",
+      "caseId": "v2-11-clean-scan-stale-candidate",
+      "family": "artifact-attribution",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-11-clean-scan-stale-candidate__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-11-clean-scan-stale-candidate__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-11-clean-scan-stale-candidate__r4",
+      "caseId": "v2-11-clean-scan-stale-candidate",
+      "family": "artifact-attribution",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-11-clean-scan-stale-candidate__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-11-clean-scan-stale-candidate__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-12-offset-timestamps-unordered__r1",
+      "caseId": "v2-12-offset-timestamps-unordered",
+      "family": "timestamp-order",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-12-offset-timestamps-unordered__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-12-offset-timestamps-unordered__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-12-offset-timestamps-unordered__r2",
+      "caseId": "v2-12-offset-timestamps-unordered",
+      "family": "timestamp-order",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-12-offset-timestamps-unordered__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-12-offset-timestamps-unordered__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-12-offset-timestamps-unordered__r3",
+      "caseId": "v2-12-offset-timestamps-unordered",
+      "family": "timestamp-order",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-12-offset-timestamps-unordered__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-12-offset-timestamps-unordered__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-12-offset-timestamps-unordered__r4",
+      "caseId": "v2-12-offset-timestamps-unordered",
+      "family": "timestamp-order",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-12-offset-timestamps-unordered__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-12-offset-timestamps-unordered__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-13-elapsed-build-timestamps__r1",
+      "caseId": "v2-13-elapsed-build-timestamps",
+      "family": "timestamp-arithmetic",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-13-elapsed-build-timestamps__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-13-elapsed-build-timestamps__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-13-elapsed-build-timestamps__r2",
+      "caseId": "v2-13-elapsed-build-timestamps",
+      "family": "timestamp-arithmetic",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-13-elapsed-build-timestamps__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-13-elapsed-build-timestamps__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-13-elapsed-build-timestamps__r3",
+      "caseId": "v2-13-elapsed-build-timestamps",
+      "family": "timestamp-arithmetic",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-13-elapsed-build-timestamps__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-13-elapsed-build-timestamps__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-13-elapsed-build-timestamps__r4",
+      "caseId": "v2-13-elapsed-build-timestamps",
+      "family": "timestamp-arithmetic",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-13-elapsed-build-timestamps__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-13-elapsed-build-timestamps__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-14-unique-config-read-control__r1",
+      "caseId": "v2-14-unique-config-read-control",
+      "family": "unique-line-control",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-14-unique-config-read-control__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-14-unique-config-read-control__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-14-unique-config-read-control__r2",
+      "caseId": "v2-14-unique-config-read-control",
+      "family": "unique-line-control",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-14-unique-config-read-control__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-14-unique-config-read-control__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-14-unique-config-read-control__r3",
+      "caseId": "v2-14-unique-config-read-control",
+      "family": "unique-line-control",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-14-unique-config-read-control__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-14-unique-config-read-control__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-14-unique-config-read-control__r4",
+      "caseId": "v2-14-unique-config-read-control",
+      "family": "unique-line-control",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-14-unique-config-read-control__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-14-unique-config-read-control__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-15-unique-diff-control__r1",
+      "caseId": "v2-15-unique-diff-control",
+      "family": "unique-line-control",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-15-unique-diff-control__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-15-unique-diff-control__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-15-unique-diff-control__r2",
+      "caseId": "v2-15-unique-diff-control",
+      "family": "unique-line-control",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-15-unique-diff-control__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-15-unique-diff-control__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-15-unique-diff-control__r3",
+      "caseId": "v2-15-unique-diff-control",
+      "family": "unique-line-control",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-15-unique-diff-control__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-15-unique-diff-control__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-15-unique-diff-control__r4",
+      "caseId": "v2-15-unique-diff-control",
+      "family": "unique-line-control",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-15-unique-diff-control__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-15-unique-diff-control__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-16-unique-event-log-control__r1",
+      "caseId": "v2-16-unique-event-log-control",
+      "family": "unique-line-control",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-16-unique-event-log-control__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-16-unique-event-log-control__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-16-unique-event-log-control__r2",
+      "caseId": "v2-16-unique-event-log-control",
+      "family": "unique-line-control",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-16-unique-event-log-control__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-16-unique-event-log-control__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-16-unique-event-log-control__r3",
+      "caseId": "v2-16-unique-event-log-control",
+      "family": "unique-line-control",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-16-unique-event-log-control__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-16-unique-event-log-control__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-16-unique-event-log-control__r4",
+      "caseId": "v2-16-unique-event-log-control",
+      "family": "unique-line-control",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-16-unique-event-log-control__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-16-unique-event-log-control__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-17-long-chunks-terminal-failure__r1",
+      "caseId": "v2-17-long-chunks-terminal-failure",
+      "family": "repeated-chunk",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-17-long-chunks-terminal-failure__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-17-long-chunks-terminal-failure__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-17-long-chunks-terminal-failure__r2",
+      "caseId": "v2-17-long-chunks-terminal-failure",
+      "family": "repeated-chunk",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-17-long-chunks-terminal-failure__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-17-long-chunks-terminal-failure__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-17-long-chunks-terminal-failure__r3",
+      "caseId": "v2-17-long-chunks-terminal-failure",
+      "family": "repeated-chunk",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-17-long-chunks-terminal-failure__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-17-long-chunks-terminal-failure__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-17-long-chunks-terminal-failure__r4",
+      "caseId": "v2-17-long-chunks-terminal-failure",
+      "family": "repeated-chunk",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-17-long-chunks-terminal-failure__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-17-long-chunks-terminal-failure__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-18-repeated-chunk-row-count__r1",
+      "caseId": "v2-18-repeated-chunk-row-count",
+      "family": "repeated-chunk-arithmetic",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-18-repeated-chunk-row-count__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-18-repeated-chunk-row-count__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-18-repeated-chunk-row-count__r2",
+      "caseId": "v2-18-repeated-chunk-row-count",
+      "family": "repeated-chunk-arithmetic",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-18-repeated-chunk-row-count__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-18-repeated-chunk-row-count__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-18-repeated-chunk-row-count__r3",
+      "caseId": "v2-18-repeated-chunk-row-count",
+      "family": "repeated-chunk-arithmetic",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-18-repeated-chunk-row-count__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-18-repeated-chunk-row-count__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-18-repeated-chunk-row-count__r4",
+      "caseId": "v2-18-repeated-chunk-row-count",
+      "family": "repeated-chunk-arithmetic",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-18-repeated-chunk-row-count__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-18-repeated-chunk-row-count__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-19-test-discovery-is-not-execution__r1",
+      "caseId": "v2-19-test-discovery-is-not-execution",
+      "family": "missing-evidence",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-19-test-discovery-is-not-execution__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-19-test-discovery-is-not-execution__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-19-test-discovery-is-not-execution__r2",
+      "caseId": "v2-19-test-discovery-is-not-execution",
+      "family": "missing-evidence",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-19-test-discovery-is-not-execution__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-19-test-discovery-is-not-execution__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-19-test-discovery-is-not-execution__r3",
+      "caseId": "v2-19-test-discovery-is-not-execution",
+      "family": "missing-evidence",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-19-test-discovery-is-not-execution__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-19-test-discovery-is-not-execution__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-19-test-discovery-is-not-execution__r4",
+      "caseId": "v2-19-test-discovery-is-not-execution",
+      "family": "missing-evidence",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-19-test-discovery-is-not-execution__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-19-test-discovery-is-not-execution__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-20-build-pass-release-proof-incomplete__r1",
+      "caseId": "v2-20-build-pass-release-proof-incomplete",
+      "family": "missing-evidence",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-20-build-pass-release-proof-incomplete__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-20-build-pass-release-proof-incomplete__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-20-build-pass-release-proof-incomplete__r2",
+      "caseId": "v2-20-build-pass-release-proof-incomplete",
+      "family": "missing-evidence",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-20-build-pass-release-proof-incomplete__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-20-build-pass-release-proof-incomplete__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-20-build-pass-release-proof-incomplete__r3",
+      "caseId": "v2-20-build-pass-release-proof-incomplete",
+      "family": "missing-evidence",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-20-build-pass-release-proof-incomplete__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-20-build-pass-release-proof-incomplete__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-20-build-pass-release-proof-incomplete__r4",
+      "caseId": "v2-20-build-pass-release-proof-incomplete",
+      "family": "missing-evidence",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-20-build-pass-release-proof-incomplete__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-20-build-pass-release-proof-incomplete__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-21-diff-signed-row-multiplicity__r1",
+      "caseId": "v2-21-diff-signed-row-multiplicity",
+      "family": "diff-arithmetic",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-21-diff-signed-row-multiplicity__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-21-diff-signed-row-multiplicity__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-21-diff-signed-row-multiplicity__r2",
+      "caseId": "v2-21-diff-signed-row-multiplicity",
+      "family": "diff-arithmetic",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-21-diff-signed-row-multiplicity__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-21-diff-signed-row-multiplicity__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-21-diff-signed-row-multiplicity__r3",
+      "caseId": "v2-21-diff-signed-row-multiplicity",
+      "family": "diff-arithmetic",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-21-diff-signed-row-multiplicity__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-21-diff-signed-row-multiplicity__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-21-diff-signed-row-multiplicity__r4",
+      "caseId": "v2-21-diff-signed-row-multiplicity",
+      "family": "diff-arithmetic",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-21-diff-signed-row-multiplicity__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-21-diff-signed-row-multiplicity__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-22-parallel-job-artifact-attribution__r1",
+      "caseId": "v2-22-parallel-job-artifact-attribution",
+      "family": "artifact-attribution",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-22-parallel-job-artifact-attribution__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-22-parallel-job-artifact-attribution__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-22-parallel-job-artifact-attribution__r2",
+      "caseId": "v2-22-parallel-job-artifact-attribution",
+      "family": "artifact-attribution",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-22-parallel-job-artifact-attribution__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-22-parallel-job-artifact-attribution__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-22-parallel-job-artifact-attribution__r3",
+      "caseId": "v2-22-parallel-job-artifact-attribution",
+      "family": "artifact-attribution",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-22-parallel-job-artifact-attribution__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-22-parallel-job-artifact-attribution__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-22-parallel-job-artifact-attribution__r4",
+      "caseId": "v2-22-parallel-job-artifact-attribution",
+      "family": "artifact-attribution",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-22-parallel-job-artifact-attribution__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-22-parallel-job-artifact-attribution__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-23-cache-display-time-not-event-time__r1",
+      "caseId": "v2-23-cache-display-time-not-event-time",
+      "family": "timestamp-order",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-23-cache-display-time-not-event-time__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-23-cache-display-time-not-event-time__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-23-cache-display-time-not-event-time__r2",
+      "caseId": "v2-23-cache-display-time-not-event-time",
+      "family": "timestamp-order",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-23-cache-display-time-not-event-time__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-23-cache-display-time-not-event-time__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-23-cache-display-time-not-event-time__r3",
+      "caseId": "v2-23-cache-display-time-not-event-time",
+      "family": "timestamp-order",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-23-cache-display-time-not-event-time__r3__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-23-cache-display-time-not-event-time__r3__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-23-cache-display-time-not-event-time__r4",
+      "caseId": "v2-23-cache-display-time-not-event-time",
+      "family": "timestamp-order",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-23-cache-display-time-not-event-time__r4__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-23-cache-display-time-not-event-time__r4__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-24-partial-scan-is-not-clean__r1",
+      "caseId": "v2-24-partial-scan-is-not-clean",
+      "family": "unknown-outcome",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "v2-24-partial-scan-is-not-clean__r1__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-24-partial-scan-is-not-clean__r1__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-24-partial-scan-is-not-clean__r2",
+      "caseId": "v2-24-partial-scan-is-not-clean",
+      "family": "unknown-outcome",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "v2-24-partial-scan-is-not-clean__r2__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-24-partial-scan-is-not-clean__r2__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-24-partial-scan-is-not-clean__r3",
+      "caseId": "v2-24-partial-scan-is-not-clean",
+      "family": "unknown-outcome",
+      "repetition": 3,
+      "arms": [
+        {
+          "id": "v2-24-partial-scan-is-not-clean__r3__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "v2-24-partial-scan-is-not-clean__r3__baseline",
+          "arm": "baseline"
+        }
+      ]
+    },
+    {
+      "pairId": "v2-24-partial-scan-is-not-clean__r4",
+      "caseId": "v2-24-partial-scan-is-not-clean",
+      "family": "unknown-outcome",
+      "repetition": 4,
+      "arms": [
+        {
+          "id": "v2-24-partial-scan-is-not-clean__r4__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "v2-24-partial-scan-is-not-clean__r4__compact",
+          "arm": "compact"
+        }
+      ]
+    }
+  ],
+  "autonomy": "Actual selected model chooses read tool calls through official Pi SDK provider; no synthetic assistant tool calls are supplied",
+  "contextIntervention": "Actual registerContextCompression hook; disabled baseline vs enabled v2, including trusted system instructions and transient host manifest",
+  "goldPolicy": "Expected objects remain host-side and are never included in provider messages, tool descriptions or judge prompts",
+  "sfScope": "Controlled 23-factory supplied source manifest; installed normal default equivalence is unclaimed",
+  "measurementLimits": [
+    "Machine-authored synthetic validation cases are not human gold or unseen production TEST",
+    "Remote cache state is uncontrolled; cache and uncached prompt counters are reported separately",
+    "Concurrent pair workers can create gateway contention; latency is this controlled workflow observation",
+    "Configured zero SDK prices do not establish billed cost or savings",
+    "Body hashes bind observed bytes; raw response bodies are not retained for independent replay",
+    "Task prompts and provider parameters are frozen; SDK-generated system prompts and hook nonces are recorded in actual requests",
+    "Shared request pacing and rate-limit cooldown wait are separately recorded and remain included in complete workflow elapsed time; paced timing cannot establish provider speed",
+    "HTTP 429 attempts are retained with unknown usage and never silently retried; an opened consecutive-429 circuit leaves remaining scheduled cells unrun"
+  ]
+}

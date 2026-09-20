@@ -16,6 +16,16 @@ export type ContextManagerRoutingMode =
 
 export interface ContextCompressionManagerStatus {
   enabled: boolean;
+  strategy?: "lossless" | "excerpts" | "caveman";
+  targetReduction?: number;
+  targetReached?: boolean;
+  estimatedPromptReductionFraction?: number | null;
+  projectionFallbackReason?: string | null;
+  candidate?: {
+    applied: boolean;
+    wholePayloadOriginalBytes: number | null;
+    wholePayloadProjectedBytes: number | null;
+  } | null;
   contextCalls?: number;
   compressedBlocks?: number;
   originalBytes?: number;
@@ -129,20 +139,45 @@ function compressionStatusLines(
     Number.isSafeInteger(latest.instructionBytes)
       ? latest.bytesSaved! - latest.instructionBytes!
       : undefined;
+  const candidate = status.candidate;
+  const serializedReduction =
+    candidate?.applied &&
+    Number.isSafeInteger(candidate.wholePayloadOriginalBytes) &&
+    Number.isSafeInteger(candidate.wholePayloadProjectedBytes)
+      ? candidate.wholePayloadOriginalBytes! -
+        candidate.wholePayloadProjectedBytes!
+      : undefined;
   return [
     `Compression: ${status.enabled ? "enabled" : "disabled"}`,
+    ...(status.strategy ? [`Strategy: ${status.strategy}.`] : []),
+    ...(typeof status.targetReduction === "number"
+      ? [
+          `Prompt reduction target: ${(status.targetReduction * 100).toFixed(0)}%.`,
+        ]
+      : []),
+    ...(typeof status.estimatedPromptReductionFraction === "number"
+      ? [
+          `Latest estimated prompt reduction: ${(status.estimatedPromptReductionFraction * 100).toFixed(1)}%; target ${status.targetReached ? "reached" : "not reached"}.`,
+        ]
+      : []),
     "Changes apply to the current session.",
     ...(latest
       ? [
           `Latest tool context: ${count(latest.compressedBlocks)} text blocks compressed; ${count(latest.bytesSaved)} B saved.`,
           `Latest tool text bytes: ${count(latest.originalBytes)} original; ${count(latest.compressedBytes)} compressed.`,
-          ...(netReduction === undefined
-            ? []
-            : [
-                netReduction >= 0
-                  ? `Model context reduction including format instructions: ${netReduction} B.`
-                  : `Model context increase including format instructions: ${-netReduction} B.`,
-              ]),
+          ...(serializedReduction !== undefined
+            ? [
+                `Serialized request reduction including tool schemas and instructions: ${serializedReduction} B.`,
+              ]
+            : status.strategy === "excerpts" || status.strategy === "caveman"
+              ? []
+              : netReduction === undefined
+                ? []
+                : [
+                    netReduction >= 0
+                      ? `Model context reduction including format instructions: ${netReduction} B.`
+                      : `Model context increase including format instructions: ${-netReduction} B.`,
+                  ]),
         ]
       : ["No completed context transformation reported yet."]),
     `Context calls: ${count(status.contextCalls)}; cumulative tool context reduction: ${count(status.bytesSaved)} B.`,

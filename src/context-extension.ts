@@ -10,6 +10,13 @@ import {
   compactToolText,
   type CompactToolTextOptions,
 } from "./context-compact.js";
+import {
+  registerTaskContextCompression,
+  type TaskContextCandidate,
+  type TaskContextSummaryInput,
+  type TaskContextSummaryResult,
+} from "./context-projection-extension.js";
+import type { ContextOriginalStatus } from "./context-originals.js";
 
 type ContextMessage = ContextEvent["messages"][number];
 type ToolResultMessage = Extract<ContextMessage, { role: "toolResult" }>;
@@ -37,7 +44,8 @@ export interface ContextCompressionBlock {
   contentIndex: number;
   /** One-based ordinal among toolResult messages, after Pi's LLM conversion too. */
   toolResultOrdinal: number;
-  format: typeof COMPACT_TOOL_TEXT_FORMAT;
+  format:
+    typeof COMPACT_TOOL_TEXT_FORMAT | "jev-tool-excerpts-v1" | "jev-caveman-v1";
   originalSha256: string;
   compressedSha256: string;
   originalBytes: number;
@@ -63,6 +71,15 @@ export interface ContextCompressionReceipt {
 }
 
 export interface ContextCompressionStatus {
+  strategy?: "lossless" | "excerpts" | "caveman";
+  targetReduction?: number;
+  targetReached?: boolean;
+  estimatedOriginalPromptTokens?: number | null;
+  estimatedProjectedPromptTokens?: number | null;
+  estimatedPromptReductionFraction?: number | null;
+  projectionFallbackReason?: string | null;
+  originals?: ContextOriginalStatus;
+  candidate?: TaskContextCandidate | null;
   enabled: boolean;
   readyForCurrentTurn: boolean;
   contextCalls: number;
@@ -85,6 +102,14 @@ export interface ContextCompressionStatus {
 export interface ContextCompressionOptions {
   /** Opt in explicitly after qualifying the model and workload. */
   enabled?: boolean;
+  /** Standalone callers retain lossless compatibility; the Pi install uses excerpts. */
+  strategy?: "lossless" | "excerpts" | "caveman";
+  /** Target reduction of the complete estimated request, including protected text. */
+  targetReduction?: number;
+  /** Optional injected summarizer; the library never discovers credentials. */
+  summarize?: (
+    input: TaskContextSummaryInput,
+  ) => Promise<TaskContextSummaryResult> | TaskContextSummaryResult;
   codecOptions?: CompactToolTextOptions;
   /** Bound work for the entire request in addition to each codec block's bounds. */
   maxContextOriginalBytes?: number;
@@ -99,6 +124,7 @@ export interface ContextCompressionController {
   status(): ContextCompressionStatus;
   /** Enabling during a turn waits for the next before_agent_start instructions. */
   setEnabled(enabled: boolean): void;
+  setStrategy?(strategy: "excerpts" | "caveman"): void;
   resetMetrics(): void;
   /** Identify only this controller's current generated manifest, never a prefix. */
   isContextManifest(message: unknown): boolean;
@@ -144,6 +170,13 @@ export function registerContextCompression(
   pi: ExtensionAPI,
   options: ContextCompressionOptions = {},
 ): ContextCompressionController {
+  if (options.strategy === "excerpts" || options.strategy === "caveman")
+    return registerTaskContextCompression(pi, {
+      ...options,
+      strategy: options.strategy,
+    });
+  if (options.strategy !== undefined && options.strategy !== "lossless")
+    throw new Error("Unknown context compression strategy");
   if (options.enabled !== undefined && typeof options.enabled !== "boolean")
     throw new Error("Context compression enabled must be a boolean");
   const codecOptions = { ...options.codecOptions };

@@ -390,6 +390,7 @@ export function registerExtension(
     action,
   });
   const contextCompression = registerContextCompression(pi, {
+    strategy: "excerpts",
     ...options.contextCompression,
     ...(options.routingDispatcher?.targets.fast?.model.api ===
       "openai-completions" &&
@@ -420,13 +421,21 @@ export function registerExtension(
   });
   pi.registerCommand("jev-context", {
     description:
-      "Tool context compression: status, on, or off for this session",
+      "Task-aware tool context: status, on, off, reset, excerpts, or caveman",
     handler: async (args, ctx) => {
       const command = args.trim() || "status";
       if (command === "on" || command === "off")
         contextCompression.setEnabled(command === "on");
-      else if (command !== "status")
-        throw new Error("Usage: /jev-context [status|on|off]");
+      else if (command === "reset") contextCompression.resetMetrics();
+      else if (command === "excerpts" || command === "caveman") {
+        if (!contextCompression.setStrategy)
+          throw new Error("This host selected the fixed lossless strategy.");
+        contextCompression.setStrategy(command);
+        contextCompression.setEnabled(true);
+      } else if (command !== "status")
+        throw new Error(
+          "Usage: /jev-context [status|on|off|reset|excerpts|caveman]",
+        );
       display(contextCompression.status(), ctx);
     },
   });

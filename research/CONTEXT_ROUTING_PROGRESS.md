@@ -2,12 +2,12 @@
 
 The new context codec, actual Pi context hooks, current-request routing dispatcher,
 operational frozen-Gemma feature driver, classifier adapter and session-only
-Manager controls are implemented. Real TRAIN extraction, two public Pi/Grok
-smokes, a larger rate-limited public validation and an approved SF smoke are
-recorded below. The latest two-pair public smoke improved context delivery, but
-the larger workflows have not qualified. Native routing validation exercised
-only the strong fallback; the subsequent direct head diagnostic failed safety
-and latency. Production quality,
+Manager controls are implemented. Real TRAIN extraction, public Pi/Grok smokes,
+a rate-limited public validation and a completed 192-session SF comparison are
+recorded below. The SF campaign resolved the harness lifecycle and rate-capacity
+failures, but its repetition codec reduced prompt tokens only 0.298% and did not
+qualify. Native routing validation exercised only the strong fallback; the
+subsequent direct head diagnostic failed safety and latency. Production quality,
 speed and billing gains remain unproved. No rejected RFDT model has been promoted.
 
 ## Keep harness and model evidence separate
@@ -189,7 +189,7 @@ uses a 60-second rate-limit cooldown capped at 120 seconds, and opens its circui
 after three consecutive HTTP 429 responses. It does not retry failed requests.
 This is a capacity control, not evidence that a full validation will complete.
 
-## Approved SF smoke still has workflow errors
+## Approved SF smoke and lifecycle correction history
 
 The [second SF smoke safe projection](context-workflow-sf-smoke-root-2/result-projection.json)
 records four scheduled sessions with all 23 controlled SF factories under the
@@ -225,10 +225,74 @@ fell from 9,738 to 8,512 (12.59%), while workflow elapsed increased from 16.70 t
 functional integration. The small performance result fails the declared gates;
 it cannot establish general capacity, speed or billing improvements.
 
+## Full SF comparison completed but repetition compression is insufficient
+
+The [subsequent bounded SF campaign](context-workflow-sf-validation-root-1/result-projection.json)
+saved all 192 scheduled sessions: 96 baseline and 96 compact, with zero unrun
+slots. Baseline completed all 96 workflows and
+returned 88 correct answers. Compaction completed 95 workflows and returned 89
+correct answers; its remaining workflow hit the completion-length limit. There
+were zero extension failures, every shutdown was safe and there were zero HTTP
+429 responses. The campaign made 409 physical requests, including 24 context
+judges; all 24 judges passed preservation checks. A passing preservation judge
+does not override an incorrect answer or incomplete workflow.
+
+Full-population recorded consumption and elapsed sums were:
+
+| Measure                     |      Baseline |       Compact |       Recorded change |
+| --------------------------- | ------------: | ------------: | --------------------: |
+| Prompt tokens               |       554,728 |       553,075 |             −0.29798% |
+| Output tokens               |        11,232 |        30,184 | 2.6873 times baseline |
+| Total tokens                |       565,960 |       583,259 |              +3.0566% |
+| Summed workflow elapsed, ms | 3,821,496.076 | 4,050,171.627 |              +5.9839% |
+
+These arithmetic changes describe the recorded population. All qualified
+comparison ratios remain null, and functional and performance qualification are
+false. The paced elapsed measurements include CPU observer work and uncontrolled
+provider-cache effects. They do not isolate transform time or establish billing
+cost. The full campaign shows that the v2 repetition codec is insufficient for
+the user's current 50% reduction target; the earlier small smokes cannot replace
+this result.
+
+## Task-aware excerpts and retrieval are implemented
+
+The replacement strategy selects exact source excerpts according to the current
+task and retains original tool results for retrieval. Ordinary
+`registerExtension` now defaults to `strategy: "excerpts"` when context reduction
+is enabled. Reduction remains off by default and session-only. Standalone
+`registerContextCompression` with no strategy preserves its lossless default for
+compatibility; historical repetition-codec evidence still describes that path.
+
+`jev_context_read` retrieves retained original text by host-issued `reference`,
+not a filesystem path. Optional `offset` is a one-based line number and `limit`
+defaults to 100 lines, capped at 200. Optional `byteOffset` is a zero-based UTF-8
+boundary for long-line paging. Returned original text is bounded to 16 KiB per
+page; JSON escaping and metadata add response overhead. Use `nextOffset` or
+`nextByteOffset` for continuation.
+
+`targetReduction` defaults to `0.5`. This is a requested 50% reduction target, not
+a measured full-provider-prompt result. Status explicitly labels token counts as
+estimates. The session controls are `/jev-context on`, `off`, `status`, `reset`,
+`excerpts` and `caveman`. Selecting excerpts or caveman enables the selected mode.
+
+Caveman mode accepts an optional injected
+`ContextCompressionOptions.summarize` callback. Its
+`TaskContextSummaryInput` is `{task, reference, excerpt, maxOutputBytes, signal?}`
+and its `TaskContextSummaryResult` is `{text, complete}`. A host may supply the
+Grok summary implementation; there is no automatic credential resolution or
+additional model startup. With no callback, caveman mode falls back to excerpts.
+
+The bounded 12-workflow actual-SF reduction benchmark is pending. No 50% measured
+reduction claim is made for the replacement implementation. The user's current
+acceptance target is a measured 50% reduction in whole-workflow prompt tokens.
+Answer effectiveness is deferred and has not passed a quality evaluation.
+
 ## Remaining work
 
-Run a separately frozen full
-bounded, paced validation that retains every failed and unrun scheduled slot.
+Report the bounded actual-SF excerpt benchmark when its safe evidence is
+released, retaining every failed and unrun scheduled slot. Keep the requested
+50% target separate from measured provider usage, and postpone effectiveness
+claims until their own evaluation is complete.
 For routing, retain the failed head and checker evidence and prepare a better
 encoder/training hypothesis while addressing the production completeness
 checker's zero coverage through actual supplied-source proof. Host labels and

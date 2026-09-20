@@ -144,6 +144,11 @@ it("registers a v2-default tool and cache-only Manager descriptor without creati
     enabled: false,
   });
   expect(controller.contextCompression.status().enabled).toBe(false);
+  expect(controller.contextCompression.status()).toMatchObject({
+    strategy: "excerpts",
+    targetReduction: 0.5,
+  });
+  expect(h.tools.some((tool) => tool.name === "jev_context_read")).toBe(true);
   await h.commands.get("jev-context").handler("on", h.context);
   expect(controller.contextCompression.status().enabled).toBe(true);
   expect(createBackend).not.toHaveBeenCalled();
@@ -152,6 +157,16 @@ it("registers a v2-default tool and cache-only Manager descriptor without creati
   ).rejects.toThrow("Usage: /jev-context");
   await h.commands.get("jev-context").handler("off", h.context);
   expect(controller.contextCompression.status().enabled).toBe(false);
+  await h.commands.get("jev-context").handler("caveman", h.context);
+  expect(controller.contextCompression.status()).toMatchObject({
+    enabled: true,
+    strategy: "caveman",
+  });
+  await h.commands.get("jev-context").handler("excerpts", h.context);
+  expect(controller.contextCompression.status().strategy).toBe("excerpts");
+  await h.commands.get("jev-context").handler("reset", h.context);
+  expect(controller.contextCompression.status().contextCalls).toBe(0);
+  await h.commands.get("jev-context").handler("off", h.context);
   expect(controller.preferences()).toEqual({
     enabled: true,
     routing: false,
@@ -160,7 +175,9 @@ it("registers a v2-default tool and cache-only Manager descriptor without creati
   });
   await h.commands.get("jev").handler("status", h.context);
   expect(createBackend).not.toHaveBeenCalled();
-  const result = await h.tools[0].execute("tool", input);
+  const result = await h.tools
+    .find((tool) => tool.name === "jev_classify")
+    .execute("tool", input);
   expect(result.details.metadata.template_version).toBe("v2");
   expect(JSON.parse(result.content[0].text)).toMatchObject({
     advisory: true,
@@ -657,20 +674,26 @@ it("retains explicit request v1 and disposes then lazily replaces a disabled bac
   });
   expect(
     (
-      await h.tools[0].execute("first", {
-        ...input,
-        options: { template_version: "v1" },
-      })
+      await h.tools
+        .find((tool) => tool.name === "jev_classify")
+        .execute("first", {
+          ...input,
+          options: { template_version: "v1" },
+        })
     ).details.metadata.template_version,
   ).toBe("v1");
   await h.commands.get("jev").handler("disable project", h.context);
   expect(adapters[0].dispose).toHaveBeenCalledOnce();
-  await expect(h.tools[0].execute("disabled", input)).rejects.toThrow(
-    "Jev is disabled",
-  );
+  await expect(
+    h.tools
+      .find((tool) => tool.name === "jev_classify")
+      .execute("disabled", input),
+  ).rejects.toThrow("Jev is disabled");
   await h.commands.get("jev").handler("enable project", h.context);
   expect(createBackend).toHaveBeenCalledOnce();
-  await h.tools[0].execute("next", input);
+  await h.tools
+    .find((tool) => tool.name === "jev_classify")
+    .execute("next", input);
   expect(createBackend).toHaveBeenCalledTimes(2);
   expect(adapters[1]).not.toBe(adapters[0]);
   expect(

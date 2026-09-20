@@ -49,19 +49,16 @@ it("invokes real factory and tool handler with no initialization at registration
   expect(backend.warmup).not.toHaveBeenCalled();
   expect(backend.compile).not.toHaveBeenCalled();
   expect(tools.map((t) => t.name)).toEqual([
+    "jev_context_read",
     "jev_classify",
     "jev_classify_loaded",
   ]);
   expect(commands.some((command) => command.name === "jev")).toBe(true);
   expect(commands.some((command) => command.name === "jev-context")).toBe(true);
   expect(events.some((event) => event.name === "session_shutdown")).toBe(true);
-  const result = await tools[0].execute(
-    "test",
-    input,
-    undefined,
-    undefined,
-    {},
-  );
+  const result = await tools
+    .find((tool) => tool.name === "jev_classify")
+    .execute("test", input, undefined, undefined, {});
   expect(result.details.answers.x.choice).toBe("yes");
   expect(JSON.parse(result.content[0].text).usage.output_tokens).toBe(0);
   await events.find((event) => event.name === "session_shutdown").h();

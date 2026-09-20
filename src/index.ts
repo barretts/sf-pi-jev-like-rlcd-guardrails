@@ -11,6 +11,10 @@ export * from "./tool-result.js";
 export * from "./loaded-requests.js";
 export * from "./context-compression.js";
 export * from "./context-compact.js";
+export * from "./context-projection.js";
+export * from "./context-originals.js";
+export * from "./context-projection-extension.js";
+export { registerExtension } from "./extension.js";
 export * from "./gateway.js";
 export {
   evaluateRoutingEligibility,
