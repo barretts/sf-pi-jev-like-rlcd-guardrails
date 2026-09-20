@@ -48,7 +48,10 @@ it("invokes real factory and tool handler with no initialization at registration
   registerExtension(pi, config, backend);
   expect(backend.warmup).not.toHaveBeenCalled();
   expect(backend.compile).not.toHaveBeenCalled();
-  expect(tools.map((t) => t.name)).toEqual(["jev_classify"]);
+  expect(tools.map((t) => t.name)).toEqual([
+    "jev_classify",
+    "jev_classify_loaded",
+  ]);
   expect(commands[0].name).toBe("jev");
   expect(events[0].name).toBe("session_shutdown");
   const result = await tools[0].execute(

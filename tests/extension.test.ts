@@ -1,8 +1,15 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, expect, it, vi } from "vitest";
-import { createEventBus } from "@earendil-works/pi-coding-agent";
+import {
+  createAgentSession,
+  createEventBus,
+  DefaultResourceLoader,
+  SessionManager,
+  SettingsManager,
+} from "@earendil-works/pi-coding-agent";
+import { createAssistantMessageEventStream } from "../node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-ai/dist/utils/event-stream.js";
 import { configFromEnv, type InferenceAdapter } from "../src/backend.js";
 import { registerExtension, ToolSchema } from "../src/extension.js";
 import { writePreferences } from "../src/preferences.js";
@@ -62,6 +69,12 @@ function harness() {
     on: (name: string, handler: any) =>
       handlers.set(name, [...(handlers.get(name) ?? []), handler]),
     getActiveTools: vi.fn(() => ["read", "jev_classify", "sf_apex"]),
+    getAllTools: vi.fn(() => [
+      {
+        name: "read",
+        sourceInfo: { source: "builtin", path: "<builtin:read>" },
+      },
+    ]),
     setActiveTools: vi.fn(),
     appendEntry: vi.fn(),
     registerEntryRenderer: vi.fn(),
@@ -83,8 +96,10 @@ function harness() {
     commands,
     context,
     async emit(name: string, event: unknown = {}) {
+      const responses: unknown[] = [];
       for (const handler of handlers.get(name) ?? [])
-        await handler(event, context);
+        responses.push(await handler(event, context));
+      return responses.filter((response) => response !== undefined);
     },
   };
 }
@@ -134,11 +149,482 @@ it("registers a v2-default tool and cache-only Manager descriptor without creati
   expect(createBackend).not.toHaveBeenCalled();
   const result = await h.tools[0].execute("tool", input);
   expect(result.details.metadata.template_version).toBe("v2");
+  expect(JSON.parse(result.content[0].text)).toMatchObject({
+    advisory: true,
+    calibrated: false,
+    answers: [{ id: "vehicle", choice: "bicycle" }],
+  });
   expect(createBackend).toHaveBeenCalledOnce();
   expect(
     JSON.parse(JSON.stringify(ToolSchema)).properties.options.properties
       .template_version,
   ).toBeDefined();
+  await h.emit("session_shutdown");
+});
+
+it("classifies an explicitly referenced builtin read and invalidates it at the next session", async () => {
+  const paths = await environment(),
+    h = harness(),
+    backend = adapter();
+  h.context.cwd = paths.cwd;
+  const controller = registerExtension(
+    h.pi,
+    configFromEnv({ JEV_MODEL_ID: "google/gemma-3-1b-it" }),
+    backend,
+    paths,
+  );
+  await h.emit("session_start");
+  const raw = JSON.stringify({
+    records: [
+      { id: "first", request: input },
+      { id: "second", request: input },
+    ],
+  });
+  const readEvent = {
+    type: "tool_result",
+    toolName: "read",
+    toolCallId: "observed-read",
+    input: { path: "review-input.json" },
+    isError: false,
+    content: [{ type: "text", text: raw }],
+  };
+  const changes = (await h.emit("tool_result", readEvent)) as any[];
+  expect(changes[0].content[0]).toEqual(readEvent.content[0]);
+  expect(changes[0].content[1].text).toContain(
+    '"read_tool_call_id":"observed-read"',
+  );
+  expect(backend.warmup).not.toHaveBeenCalled();
+  const tool = h.tools.find(
+    (registered) => registered.name === "jev_classify_loaded",
+  );
+  const result = await tool.execute("classify-read", {
+    read_tool_call_id: "observed-read",
+  });
+  const visible = JSON.parse(result.content[0].text);
+  expect(visible.records.map((record: any) => record.id)).toEqual([
+    "first",
+    "second",
+  ]);
+  expect(visible.usage).toEqual({ input_tokens: 24, output_tokens: 0 });
+  expect(result.details.results).toHaveLength(2);
+  expect(result.details.results[0].response.metadata.template_version).toBe(
+    "v2",
+  );
+  expect(controller.status().loaded_requests).toMatchObject({ entries: 1 });
+  expect(h.pi.setActiveTools).not.toHaveBeenCalled();
+  await h.emit("session_start");
+  await expect(
+    tool.execute("stale", { read_tool_call_id: "observed-read" }),
+  ).rejects.toThrow("absent, evicted, or superseded");
+  await h.emit("session_shutdown");
+});
+
+it("keeps partial native responses in a progress receipt and fails the loaded tool after a later error", async () => {
+  const paths = await environment(),
+    h = harness(),
+    backend = adapter();
+  h.context.cwd = paths.cwd;
+  const evaluate = backend.evaluate;
+  let calls = 0;
+  backend.evaluate = vi.fn(async (...args) => {
+    if (++calls === 2) throw new Error("native failure");
+    return evaluate(...args);
+  });
+  registerExtension(
+    h.pi,
+    configFromEnv({ JEV_MODEL_ID: "google/gemma-3-1b-it" }),
+    backend,
+    paths,
+  );
+  await h.emit("session_start");
+  await h.emit("tool_result", {
+    type: "tool_result",
+    toolName: "read",
+    toolCallId: "read-for-failure",
+    input: { path: "requests.json" },
+    isError: false,
+    content: [
+      {
+        type: "text",
+        text: JSON.stringify({
+          records: [
+            { id: "one", request: input },
+            { id: "two", request: input },
+          ],
+        }),
+      },
+    ],
+  });
+  const update = vi.fn();
+  const tool = h.tools.find(
+    (registered) => registered.name === "jev_classify_loaded",
+  );
+  await expect(
+    tool.execute(
+      "failed",
+      { read_tool_call_id: "read-for-failure" },
+      undefined,
+      update,
+    ),
+  ).rejects.toThrow("native failure");
+  expect(update).toHaveBeenCalledOnce();
+  expect(JSON.parse(update.mock.calls[0][0].content[0].text)).toMatchObject({
+    status: "incomplete",
+    completed_records: 1,
+    total_records: 2,
+  });
+  expect(
+    update.mock.calls[0][0].details.results[0].response.answers.vehicle.choice,
+  ).toBe("bicycle");
+  const actualReceipt = structuredClone(update.mock.calls[0][0].details);
+  update.mock.calls[0][0].details.results.length = 0;
+  const final = (await h.emit("tool_result", {
+    type: "tool_result",
+    toolName: "jev_classify_loaded",
+    toolCallId: "failed",
+    input: { read_tool_call_id: "read-for-failure" },
+    isError: true,
+    content: [{ type: "text", text: "native failure" }],
+    details: {},
+  })) as any[];
+  expect(final[0].details).toEqual(actualReceipt);
+  await h.emit("session_shutdown");
+});
+
+it("persists an incomplete loaded receipt through pi's actual thrown-error tool_result path and consumes it", async () => {
+  const paths = await environment(),
+    backend = adapter();
+  await Promise.all([
+    mkdir(paths.cwd, { recursive: true }),
+    mkdir(paths.agentDir, { recursive: true }),
+  ]);
+  await writeFile(
+    join(paths.cwd, "requests.json"),
+    JSON.stringify({
+      records: [
+        { id: "one", request: input },
+        { id: "two", request: input },
+      ],
+    }),
+  );
+  const evaluate = backend.evaluate;
+  let calls = 0;
+  backend.evaluate = vi.fn(async (...args) => {
+    if (++calls === 2) throw new Error("native failure");
+    return evaluate(...args);
+  });
+  let controller!: ReturnType<typeof registerExtension>;
+  const observedFinalResults: any[] = [];
+  const settingsManager = SettingsManager.inMemory({
+    packages: [],
+    compaction: { enabled: false },
+    retry: { enabled: false },
+  });
+  const loader = new DefaultResourceLoader({
+    ...paths,
+    settingsManager,
+    noExtensions: true,
+    noSkills: true,
+    noThemes: true,
+    noPromptTemplates: true,
+    noContextFiles: true,
+    extensionFactories: [
+      (pi) => {
+        controller = registerExtension(
+          pi,
+          configFromEnv({ JEV_MODEL_ID: "google/gemma-3-1b-it" }),
+          backend,
+          paths,
+        );
+        pi.on("tool_result", (event) => {
+          if (event.toolName === "jev_classify_loaded")
+            observedFinalResults.push(structuredClone(event));
+        });
+      },
+    ],
+  });
+  await loader.reload();
+  expect(loader.getExtensions().errors).toEqual([]);
+  const model: any = {
+    id: "integration-harness",
+    name: "Non-generating test harness",
+    provider: "local-test",
+    api: "openai-completions",
+    baseUrl: "http://127.0.0.1:1",
+    reasoning: false,
+    input: ["text"],
+    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+    contextWindow: 131072,
+    maxTokens: 1024,
+  };
+  const { session } = await createAgentSession({
+    ...paths,
+    model,
+    settingsManager,
+    resourceLoader: loader,
+    sessionManager: SessionManager.create(
+      paths.cwd,
+      join(paths.agentDir, "sessions"),
+    ),
+    tools: ["read", "jev_classify_loaded"],
+  });
+  const updates: any[] = [],
+    executions: any[] = [],
+    extensionErrors: any[] = [];
+  session.extensionRunner.onError((error) => extensionErrors.push(error));
+  const unsubscribe = session.subscribe((event) => {
+    if (event.type === "tool_execution_update") updates.push(event);
+    if (event.type === "tool_execution_end") executions.push(event);
+  });
+  const fetch = vi
+    .spyOn(globalThis, "fetch")
+    .mockRejectedValue(new Error("Unexpected provider request"));
+  try {
+    await session.bindExtensions({ mode: "print" });
+    session.modelRuntime.registerProvider(model.provider, {
+      baseUrl: model.baseUrl,
+      api: model.api,
+      apiKey: "unused-harness",
+      models: [model],
+    });
+    let turns = 0;
+    // Authored dispatch exercises the installed SDK, without a model call.
+    session.agent.streamFunction = (currentModel) => {
+      const turn = ++turns;
+      expect(turn).toBeLessThanOrEqual(3);
+      const reason = turn < 3 ? "toolUse" : "stop";
+      const message: any = {
+        role: "assistant",
+        content:
+          turn === 1
+            ? [
+                {
+                  type: "toolCall",
+                  id: "sdk-read",
+                  name: "read",
+                  arguments: { path: "requests.json" },
+                },
+              ]
+            : turn === 2
+              ? [
+                  {
+                    type: "toolCall",
+                    id: "sdk-loaded-failure",
+                    name: "jev_classify_loaded",
+                    arguments: { read_tool_call_id: "sdk-read" },
+                  },
+                ]
+              : [{ type: "text", text: "The batch was incomplete." }],
+        api: currentModel.api,
+        provider: currentModel.provider,
+        model: currentModel.id,
+        usage: {
+          input: 0,
+          output: 0,
+          cacheRead: 0,
+          cacheWrite: 0,
+          totalTokens: 0,
+          cost: {
+            input: 0,
+            output: 0,
+            cacheRead: 0,
+            cacheWrite: 0,
+            total: 0,
+          },
+        },
+        stopReason: reason,
+        timestamp: Date.now(),
+      };
+      const stream = createAssistantMessageEventStream();
+      stream.push({ type: "done", reason, message });
+      return stream;
+    };
+    await session.prompt("Read requests.json and classify its loaded bundle.", {
+      expandPromptTemplates: false,
+    });
+    expect(turns).toBe(3);
+    expect(fetch).not.toHaveBeenCalled();
+    expect(extensionErrors).toEqual([]);
+    expect(backend.evaluate).toHaveBeenCalledTimes(2);
+    const completed = executions.find(
+      (event) => event.toolName === "jev_classify_loaded",
+    );
+    expect(completed.isError).toBe(true);
+    const final = session.agent.state.messages.findLast(
+      (message) =>
+        message.role === "toolResult" &&
+        message.toolName === "jev_classify_loaded",
+    ) as any;
+    expect(final.isError).toBe(true);
+    expect(final.content[0].text).toContain("native failure");
+    expect(JSON.parse(final.content[1].text)).toMatchObject({
+      status: "incomplete",
+      failure_kind: "classification_failed",
+      completed_records: 1,
+      total_records: 2,
+      source: { read_tool_call_id: "sdk-read", source_path: "requests.json" },
+    });
+    const partialUpdate = updates.find(
+      (event) => event.toolName === "jev_classify_loaded",
+    );
+    expect(final.details).toEqual(partialUpdate.partialResult.details);
+    expect(final.details.results[0].response.answers.vehicle.choice).toBe(
+      "bicycle",
+    );
+    expect(final.details.results[0].response.usage.input_tokens).toBe(12);
+    expect(observedFinalResults[0].details).toEqual(final.details);
+    expect(controller.status().pending_loaded_failure_receipts).toBe(0);
+    const persisted = (
+      await readFile(session.sessionManager.getSessionFile()!, "utf8")
+    )
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line))
+      .find(
+        (entry) =>
+          entry.type === "message" &&
+          entry.message.role === "toolResult" &&
+          entry.message.toolName === "jev_classify_loaded",
+      );
+    expect(persisted.message.isError).toBe(true);
+    expect(persisted.message.details).toEqual(final.details);
+    const duplicate = await session.extensionRunner.emitToolResult({
+      ...observedFinalResults[0],
+      content: [{ type: "text", text: "Unrelated later error" }],
+      details: {},
+    });
+    expect(duplicate).toBeUndefined();
+  } finally {
+    fetch.mockRestore();
+    unsubscribe();
+    await session.extensionRunner.emit({ type: "session_shutdown" });
+    session.dispose();
+  }
+});
+
+async function failingLoadedHarness() {
+  const paths = await environment(),
+    h = harness(),
+    backend = adapter();
+  h.context.cwd = paths.cwd;
+  backend.evaluate = vi.fn(async () => {
+    throw new Error("native failure");
+  });
+  const controller = registerExtension(
+    h.pi,
+    configFromEnv({ JEV_MODEL_ID: "google/gemma-3-1b-it" }),
+    backend,
+    paths,
+  );
+  await h.emit("session_start");
+  await h.emit("tool_result", {
+    type: "tool_result",
+    toolName: "read",
+    toolCallId: "failed-read",
+    input: { path: "requests.json" },
+    isError: false,
+    content: [
+      {
+        type: "text",
+        text: JSON.stringify({ records: [{ id: "one", request: input }] }),
+      },
+    ],
+  });
+  const tool = h.tools.find(
+    (registered) => registered.name === "jev_classify_loaded",
+  );
+  const finalError = (id: string, overrides: Record<string, unknown> = {}) => ({
+    type: "tool_result",
+    toolName: "jev_classify_loaded",
+    toolCallId: id,
+    input: { read_tool_call_id: "failed-read" },
+    isError: true,
+    content: [{ type: "text", text: "native failure" }],
+    details: {},
+    ...overrides,
+  });
+  return { paths, h, backend, controller, tool, finalError };
+}
+
+it.each(["session_start", "session_shutdown", "disable", "template"])(
+  "clears pending failure receipts at %s without attaching them to a later result",
+  async (boundary) => {
+    const { paths, h, controller, tool, finalError } =
+      await failingLoadedHarness();
+    await expect(
+      tool.execute("failure", { read_tool_call_id: "failed-read" }),
+    ).rejects.toThrow("native failure");
+    expect(controller.status().pending_loaded_failure_receipts).toBe(1);
+    if (boundary === "disable")
+      await controller.apply(paths.cwd, "project", { enabled: false });
+    else if (boundary === "template")
+      await controller.apply(paths.cwd, "project", { templateVersion: "v1" });
+    else await h.emit(boundary);
+    expect(controller.status().pending_loaded_failure_receipts).toBe(0);
+    expect(await h.emit("tool_result", finalError("failure"))).toEqual([]);
+    await h.emit("session_shutdown");
+  },
+);
+
+it("bounds unconsumed failure receipts and isolates the matching errored loaded call", async () => {
+  const { h, controller, tool, finalError } = await failingLoadedHarness();
+  for (let index = 0; index < 19; index++)
+    await expect(
+      tool.execute(`failure-${index}`, { read_tool_call_id: "failed-read" }),
+    ).rejects.toThrow("native failure");
+  expect(controller.status().pending_loaded_failure_receipts).toBe(17);
+  expect(await h.emit("tool_result", finalError("failure-0"))).toEqual([]);
+  expect(
+    await h.emit("tool_result", finalError("failure-18", { toolName: "read" })),
+  ).toEqual([]);
+  expect(
+    await h.emit("tool_result", finalError("failure-18", { isError: false })),
+  ).toEqual([]);
+  expect(controller.status().pending_loaded_failure_receipts).toBe(17);
+  const attached = (await h.emit(
+    "tool_result",
+    finalError("failure-18"),
+  )) as any[];
+  expect(attached[0]).toMatchObject({
+    isError: true,
+    details: { total_records: 1, results: [] },
+  });
+  expect(controller.status().pending_loaded_failure_receipts).toBe(16);
+  // Reused execution IDs must lose their old receipt even when resolving the
+  // new reference fails before inference starts.
+  await expect(
+    tool.execute("failure-17", { read_tool_call_id: "missing-read" }),
+  ).rejects.toThrow("absent, evicted, or superseded");
+  expect(await h.emit("tool_result", finalError("failure-17"))).toEqual([]);
+  expect(controller.status().pending_loaded_failure_receipts).toBe(15);
+  await h.emit("session_shutdown");
+});
+
+it("does not retain an older execution's late failure after the session was cleared", async () => {
+  const { h, backend, controller, tool, finalError } =
+    await failingLoadedHarness();
+  let entered!: () => void, release!: () => void;
+  const started = new Promise<void>((resolve) => {
+    entered = resolve;
+  });
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  backend.evaluate = vi.fn(async () => {
+    entered();
+    await pending;
+    throw new Error("late native failure");
+  });
+  const execution = tool.execute("late-failure", {
+    read_tool_call_id: "failed-read",
+  });
+  const rejected = expect(execution).rejects.toThrow();
+  await started;
+  await h.emit("session_start");
+  release();
+  await rejected;
+  expect(controller.status().pending_loaded_failure_receipts).toBe(0);
+  expect(await h.emit("tool_result", finalError("late-failure"))).toEqual([]);
   await h.emit("session_shutdown");
 });
 

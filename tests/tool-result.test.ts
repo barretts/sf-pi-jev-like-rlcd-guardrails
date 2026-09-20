@@ -2,7 +2,9 @@ import { expect, it } from "vitest";
 import { buildResponse, preparePrompt, type Request } from "../src/core.js";
 import {
   compactClassifierToolResult,
+  compactClassifierBatchToolResult,
   serializeClassifierToolResult,
+  serializeClassifierBatchToolResult,
 } from "../src/tool-result.js";
 
 const request: Request = {
@@ -186,6 +188,7 @@ it("preserves usage and actual artifact/template/native provenance while omittin
   expect(compact.usage).toEqual(response.usage);
   expect(compact.provenance).toEqual({
     backend: "llama.cpp",
+    device: "fixture",
     model_revision: "fixture-revision",
     template_version: "v2",
     usage_accounting: "unique_token_prefixes_and_engine_leaf_outputs",
@@ -220,6 +223,7 @@ it("does not invent artifact or template identity when optional provenance is ab
   );
   expect(compact.provenance).toEqual({
     backend: null,
+    device: null,
     model_revision: null,
     template_version: null,
     usage_accounting: null,
@@ -315,4 +319,95 @@ it("rejects accessors before execution and malformed probability or usage values
     },
   ])
     expect(() => compactClassifierToolResult(request, result as any)).toThrow();
+});
+
+it("shares identical batch provenance once while preserving order, per-record answers, raw fields and logical usage", () => {
+  const rawRequest = {
+    ...request,
+    options: { ...request.options, raw_logits: true },
+  };
+  const records = [
+    { id: "10", request: rawRequest, response: actualResponse(rawRequest) },
+    { id: "2", request, response: actualResponse() },
+  ];
+  const original = structuredClone(records);
+  const compact = compactClassifierBatchToolResult(records);
+  expect(compact).toMatchObject({
+    model: request.model,
+    advisory: true,
+    calibrated: false,
+    usage: { input_tokens: 246, output_tokens: 0 },
+  });
+  expect(compact.records.map((record) => record.id)).toEqual(["10", "2"]);
+  expect(compact.provenance).toEqual(
+    compactClassifierToolResult(rawRequest, records[0].response).provenance,
+  );
+  expect(
+    compact.records.every((record) => !Object.hasOwn(record, "provenance")),
+  ).toBe(true);
+  expect(compact.records[0].answers[0]).toHaveProperty("logits");
+  expect(compact.records[0].answers[2]).toHaveProperty("rating.logits");
+  expect(compact.records[1].answers[0]).not.toHaveProperty("logits");
+  expect(compact.records.map((record) => record.usage.input_tokens)).toEqual([
+    123, 123,
+  ]);
+  expect(serializeClassifierBatchToolResult(records)).toBe(
+    JSON.stringify(compact),
+  );
+  compact.records[0].usage.input_tokens = 0;
+  if (compact.records[0].answers[0].type === "choice")
+    compact.records[0].answers[0].probabilities.other = 0;
+  expect(records).toEqual(original);
+});
+
+it("keeps differing device or runtime provenance on each batch record instead of inventing one shared identity", () => {
+  const first = actualResponse();
+  const second = actualResponse();
+  second.metadata!.device = "cpu";
+  second.metadata!.native_build = { commit: "c".repeat(40) };
+  const compact = compactClassifierBatchToolResult([
+    { id: "first", request, response: first },
+    { id: "second", request, response: second },
+  ]);
+  expect(compact).not.toHaveProperty("provenance");
+  expect(compact.records[0].provenance).toMatchObject({
+    device: "fixture",
+    native_commit: "b".repeat(40),
+  });
+  expect(compact.records[1].provenance).toMatchObject({
+    device: "cpu",
+    native_commit: "c".repeat(40),
+  });
+  expect(compact.usage).toEqual({ input_tokens: 246, output_tokens: 0 });
+});
+
+it("rejects empty or duplicate batch IDs, mixed models and accessors before invoking them", () => {
+  const record = { id: "one", request, response: actualResponse() };
+  const otherRequest = { ...request, model: "google/gemma-3-4b-it" };
+  for (const records of [
+    [],
+    [{ ...record, id: " " }],
+    [record, record],
+    [
+      record,
+      {
+        id: "two",
+        request: otherRequest,
+        response: actualResponse(otherRequest),
+      },
+    ],
+  ])
+    expect(() => compactClassifierBatchToolResult(records)).toThrow();
+  let invoked = false;
+  const accessor = Object.defineProperty({ ...record }, "id", {
+    enumerable: true,
+    get() {
+      invoked = true;
+      return "one";
+    },
+  });
+  expect(() => compactClassifierBatchToolResult([accessor])).toThrow(
+    "accessors",
+  );
+  expect(invoked).toBe(false);
 });

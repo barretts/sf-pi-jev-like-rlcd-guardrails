@@ -53,6 +53,13 @@ const distribution = (values) => ({
   maximum: values.length ? Math.max(...values) : null,
 });
 
+export function jsonWireRequest(request) {
+  // Public validation adds absent optional fields as undefined. Hash and send
+  // their JSON wire representation, while rejecting invalid numbers before
+  // JSON serialization could silently turn them into null.
+  return JSON.parse(JSON.stringify(validateRequest(request)));
+}
+
 async function hashFile(file) {
   const hash = createHash("sha256");
   for await (const chunk of createReadStream(file)) hash.update(chunk);
@@ -1000,14 +1007,14 @@ async function main() {
         const order = pairIndex % 2 === 0 ? methods : [...methods].reverse();
         const pairKey = `${repetition}:${record.id}`;
         for (const method of order) {
-          const request = {
+          const request = jsonWireRequest({
             ...structuredClone(record.request),
             model: config.modelId,
             options: {
               ...record.request.options,
               template_version: values.version,
             },
-          };
+          });
           const attempt = {
             method,
             repetition: repetition + 1,
@@ -1090,7 +1097,7 @@ async function main() {
               const labeled = JSON.parse(
                 (await readFile(outputPath, "utf8")).trim(),
               );
-              assert.deepEqual(labeled.request, validateRequest(request));
+              assert.deepEqual(labeled.request, jsonWireRequest(request));
               attempt.actual_generated_targets = labeled.targets;
               attempt.target_provenance = labeled.target_provenance;
               returned = labeled.targets;
@@ -1193,15 +1200,17 @@ async function main() {
               classify: async (request) => {
                 const candidate = selected[responseIndex++];
                 assert.equal(
-                  canonical({
-                    ...candidate.request,
-                    model: config.modelId,
-                    options: {
-                      ...candidate.request.options,
-                      template_version: values.version,
-                    },
-                  }),
-                  canonical(request),
+                  canonical(
+                    jsonWireRequest({
+                      ...candidate.request,
+                      model: config.modelId,
+                      options: {
+                        ...candidate.request.options,
+                        template_version: values.version,
+                      },
+                    }),
+                  ),
+                  canonical(jsonWireRequest(request)),
                   "Scoring replay must match an actual captured request",
                 );
                 return unique.get(candidate.id);

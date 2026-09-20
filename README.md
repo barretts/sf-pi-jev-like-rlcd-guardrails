@@ -95,6 +95,34 @@ Results are JSON text and typed tool details with `model`, `answers`, `usage`, a
 
 Set `ENABLE_OPEN_JEV_ADVANCED_METRICS=1` for diagnostic distributions and execution metrics. `options.raw_logits: true` exposes original selected logits. Always-present metadata records the actual template and available backend/artifact identity. Logical `usage.input_tokens` counts unique token prefixes across the branch prompts; advanced computed-token and forward counts describe actual execution. `branch_prompt_tokens` is the sum of full branch lengths. Do not infer a latency ratio or billed token work from logical usage.
 
+The pi tool's model-visible text is compact: an ordered answer array retains question IDs, exact estimates, available distributions, requested raw fields, usage, provenance, and advisory/uncalibrated status. The complete classifier response remains in tool `details`. Library and HTTP responses retain their existing representation.
+
+An experimental second tool, `jev_classify_loaded`, handles a request bundle already returned by pi's builtin `read`. A bundle has this shape:
+
+```json
+{
+  "records": [
+    {
+      "id": "review-1",
+      "request": {
+        "state": "The relevant test is still running. No result is available.",
+        "questions": [
+          {
+            "id": "verified",
+            "type": "noul",
+            "instructions": "Has the relevant test passed?"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+A successful complete builtin read of a valid bundle receives a `Jev loaded request reference` marker. Supply its explicit `read_tool_call_id` to `jev_classify_loaded`; the tool classifies the observed text from session memory in record order. It does not open a path or accept model selection in the bundle. Partial/truncated reads are rejected, later reads of the same path supersede earlier references, and session changes or disabling clear references. Full actual responses and source identity remain in tool details. A later classification failure preserves completed records in the final error result and saved pi session, with explicit incomplete status. Retention of pending failure receipts is bounded to the classifier's 17-request capacity and is cleared with the session.
+
+This path is under evaluation. Local integration checks establish its argument, lifecycle, and accounting behavior; reliable developer judgments and a complete-workflow speed improvement remain unproven. The frozen corpus, hypotheses, failures, and acceptance conditions are recorded in [EXPERIMENTS.md](./EXPERIMENTS.md).
+
 ## Library
 
 ```ts

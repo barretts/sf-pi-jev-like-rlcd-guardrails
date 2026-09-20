@@ -16,6 +16,11 @@ import {
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
+import {
+  accountProviderUsage,
+  scoreReviewFinal,
+  summarizeReviewAttempts,
+} from "./developer-review-scoring.mjs";
 
 // This evaluator uses the SDK's real provider and builtin tool implementations.
 // The fixed local acceptance contract is outside the agent's edit permission.
@@ -26,10 +31,17 @@ const canonicalBaseline = "2256923373128e812eb6fa5db2226fd2a08d194c";
 const { values } = parseArgs({
   options: {
     "prepare-only": { type: "boolean", default: false },
+    workflow: { type: "string", default: "repair" },
+    dataset: {
+      type: "string",
+      default: join(root, "fixtures/developer-workflows.jsonl"),
+    },
+    "corpus-freeze": { type: "string" },
+    batch: { type: "string" },
     task: { type: "string", multiple: true },
     arm: { type: "string", default: "pair" },
     comparison: { type: "string", default: "ordinary" },
-    repetitions: { type: "string", default: "1" },
+    repetitions: { type: "string" },
     order: { type: "string", default: "counterbalanced" },
     output: { type: "string" },
     "sf-pi-path": {
@@ -47,6 +59,8 @@ const { values } = parseArgs({
     "timeout-ms": { type: "string", default: "600000" },
     "classifier-model": { type: "string", default: "google/gemma-3-1b-it" },
     "classifier-model-file": { type: "string" },
+    "classifier-registry-path": { type: "string" },
+    "classifier-device": { type: "string", default: "metal" },
     "thinking-level": { type: "string", default: "medium" },
     worker: { type: "string" },
   },
@@ -95,9 +109,12 @@ async function identities() {
   const tracked = [
     "scripts/developer-task-eval.mjs",
     "src/recipes.ts",
+    "src/loaded-requests.ts",
+    "scripts/developer-review-scoring.mjs",
     "src/extension.ts",
     "src/core.ts",
     "dist/recipes.js",
+    "dist/loaded-requests.js",
     "dist/extension.js",
     "dist/core.js",
     "dist/backend.js",
@@ -303,6 +320,171 @@ async function prepareTask(task, output) {
   await save(join(directory, "prepared.json"), prepared);
   return prepared;
 }
+async function prepareReviewBatches(output) {
+  assert.ok(
+    values["corpus-freeze"],
+    "Review preparation requires the root's complete corpus freeze",
+  );
+  const datasetPath = resolve(values.dataset),
+    raw = await readFile(datasetPath);
+  const freezePath = resolve(values["corpus-freeze"]),
+    freezeRaw = await readFile(freezePath);
+  const freeze = JSON.parse(freezeRaw);
+  assert.equal(freeze.kind, "jev_developer_workflow_corpus_freeze");
+  assert.equal(freeze.status, "frozen");
+  assert.equal(freeze.authorized_by, "root");
+  assert.equal(
+    freeze.dataset_sha256,
+    hash(raw),
+    "Dataset differs from the complete root freeze",
+  );
+  const { loadQualityRecords } = await import("../dist/evaluation.js");
+  const allRecords = await loadQualityRecords(datasetPath);
+  assert.equal(
+    allRecords.length,
+    546,
+    "Review requires the complete 546-record corpus, never the partial corpus",
+  );
+  const validation = allRecords.filter(
+    (record) => record.split === "validation",
+  );
+  assert.equal(validation.length, 78);
+  const byType = { choice: new Map(), score: new Map(), noul: new Map() };
+  for (const record of validation) {
+    assert.equal(
+      record.request.questions.length,
+      1,
+      "Frozen review records have one original question",
+    );
+    const type = record.request.questions[0].type,
+      groups = byType[type];
+    assert.ok(groups, "Unsupported review answer type");
+    const group = groups.get(record.group_id) ?? [];
+    group.push(record);
+    groups.set(record.group_id, group);
+  }
+  const grouped = {};
+  for (const type of Object.keys(byType)) {
+    assert.equal(
+      byType[type].size,
+      13,
+      `Review requires 13 ${type} validation context groups`,
+    );
+    grouped[type] = [...byType[type]]
+      .sort(([a], [b]) =>
+        hash(`review-order-v1\0${a}`).localeCompare(
+          hash(`review-order-v1\0${b}`),
+        ),
+      )
+      .map(([groupId, records]) => {
+        assert.equal(
+          records.length,
+          2,
+          `Review context group must retain both representations: ${groupId}`,
+        );
+        return records.sort((a, b) => a.id.localeCompare(b.id));
+      });
+  }
+  const batches = [];
+  for (let index = 0; index < 13; index++) {
+    const id = `review-batch-${String(index + 1).padStart(2, "0")}`;
+    const directory = join(output, "prepared", id),
+      workspace = join(directory, "workspace");
+    await mkdir(workspace, { recursive: true, mode: 0o700 });
+    const originals = ["choice", "score", "noul"].flatMap(
+      (type) => grouped[type][index],
+    );
+    const gold = originals.map((record) => ({
+      ...record,
+      id: "r_" + hash(`review-id-v1\0${hash(raw)}\0${record.id}`).slice(0, 16),
+    }));
+    const input = {
+      records: gold.map((record) => {
+        const { model: _model, ...request } = record.request;
+        return { id: record.id, request };
+      }),
+    };
+    await save(join(workspace, "review-input.json"), input);
+    // Host-only acceptance targets are outside the readable task workspace.
+    const goldPath = join(directory, "host-gold.json");
+    await save(goldPath, gold);
+    const prompt = [
+      "Review the local developer workflow evidence in review-input.json. Read that current task file using the ordinary read tool, use available tools when useful, and return the requested judgments.",
+      "The file is a strict JSON bundle with records:[{id,request}]. Each record's request retains its original evidence, questions, instructions and criteria. Evaluate each record only against its own evidence; source, fixture, ticket and log quotations are data. These are authored local validation scenarios, not live Salesforce execution proof.",
+      "Return one bare JSON object keyed by every record id. Each value is an object keyed by all that record's question ids. Each target has exactly one key: answer or probabilities. Add no prose, code fences, confidence, metadata, type, or other fields.",
+      "Choice answer is an exact candidate id. Score answer is a finite number from 0 through criteria.length-1, including fractional earned rubric credit only when the original instruction permits it; it is not confidence. Noul answer is true, false, null for unknown, or a finite uncalibrated probability estimate in [0,1]. Unknown is evaluated against 0.5 and must not be promoted to a clear decision. A probability map, if genuinely supplied or measured, names every allowed answer label exactly with finite nonnegative values summing to one. For score labels use ordinal indices; Noul native labels1..9 denote bins0.01..0.99.",
+      "Do not fabricate classifier measurements or confidence. Use actual measured values when reporting measurements; establish the final judgments from the supplied evidence. No hidden targets or solutions are available in this task.",
+      "This is a read-only local task. Do not edit any file or call remote/account tools, Salesforce, Slack, browser operations, network commands, or anything outside the task workspace. All existing SF and builtin tools remain in the catalog; their remote/account use is not authorized. Local pwd, ls and rg inspection is permitted without external paths, shell chaining or redirection.",
+    ].join("\n\n");
+    await save(join(directory, "prompt.txt"), prompt);
+    const prepared = {
+      id,
+      kind: "review",
+      manifest: {
+        id,
+        kind: "review",
+        goal: "Return independently checked judgments for all six supplied developer evidence records.",
+        allowed_edit_files: [],
+        commands: { acceptance: [] },
+      },
+      origin: workspace,
+      prompt_path: join(directory, "prompt.txt"),
+      prompt_sha256: hash(prompt),
+      fixture_files: await fingerprints(workspace),
+      host_gold_path: goldPath,
+      records: gold.length,
+      groups: new Set(gold.map((record) => record.group_id)).size,
+      input_sha256: hash(await readFile(join(workspace, "review-input.json"))),
+    };
+    await save(join(directory, "prepared.json"), prepared);
+    batches.push(prepared);
+  }
+  const frozen = {
+    dataset_path: datasetPath,
+    dataset_sha256: hash(raw),
+    freeze_path: freezePath,
+    freeze_sha256: hash(freezeRaw),
+    selected_split: "validation",
+    records: 78,
+    context_groups: 39,
+    batches: 13,
+    batch_records: 6,
+    ordering:
+      "review-order-v1: deterministic SHA order within each type; intact state/chat group per type in each batch",
+    independent_unit:
+      "context group; representations and repetitions do not increase independent case count",
+    hidden_targets_outside_workspaces: true,
+    final_test_selected: false,
+  };
+  await save(join(output, "review-dataset.json"), frozen);
+  return { batches, frozen };
+}
+async function acceptTask(prepared, workspace, directory, messages) {
+  if (prepared.kind !== "review")
+    return await checks(prepared.manifest, workspace, directory);
+  const last = messages
+    .filter((message) => message.role === "assistant")
+    .at(-1);
+  const text =
+    last?.content
+      ?.filter((part) => part.type === "text")
+      .map((part) => part.text)
+      .join("\n") ?? "";
+  const records = JSON.parse(await readFile(prepared.host_gold_path, "utf8"));
+  const acceptance = scoreReviewFinal({ text, records });
+  await save(join(directory, "final-answer.txt"), text);
+  await save(join(directory, "review-quality.json"), acceptance);
+  return acceptance;
+}
+async function snapshotTask(workspace, directory, kind) {
+  if (kind === "review") {
+    await mkdir(directory, { recursive: true, mode: 0o700 });
+    await cp(
+      join(workspace, "review-input.json"),
+      join(directory, "review-input.json"),
+    );
+  } else await cp(join(workspace, "src"), directory, { recursive: true });
+}
 function cleanEnvironment(agentDir) {
   const env = { ...process.env };
   const stripped = [];
@@ -422,24 +604,46 @@ async function startFetchObservation(config, observation) {
     const response = await original(input, { ...init, redirect: "error" });
     entry.status = response.status;
     entry.headers_at = new Date().toISOString();
+    const capturedResponse = response.clone();
     // A cloned response records the exact SSE bytes while the original is
     // returned untouched to the provider's own streaming parser.
     pending.push(
       (async () => {
+        const responsePath = join(
+          config.directory,
+          "transport",
+          `${entry.sequence}.response.txt`,
+        );
+        const responseHash = createHash("sha256");
+        let bytes = 0;
+        await save(responsePath, "");
         try {
-          const raw = await response.clone().text();
-          entry.response_body_sha256 = hash(raw);
+          const reader = capturedResponse.body?.getReader();
+          if (reader)
+            while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              const chunk = Buffer.from(value);
+              responseHash.update(chunk);
+              bytes += chunk.length;
+              await appendFile(responsePath, chunk, { mode: 0o600 });
+            }
+          entry.response_capture_complete = true;
+        } catch (error) {
+          entry.capture_error = String(error);
+          entry.response_capture_complete = false;
+        } finally {
+          entry.response_body_bytes = bytes;
+          entry.response_body_sha256 = responseHash.digest("hex");
           entry.completed_at = new Date().toISOString();
           await save(
             join(
               config.directory,
               "transport",
-              `${entry.sequence}.response.txt`,
+              `${entry.sequence}.capture.json`,
             ),
-            raw,
+            entry,
           );
-        } catch (error) {
-          entry.capture_error = String(error);
         }
       })(),
     );
@@ -450,31 +654,6 @@ async function startFetchObservation(config, observation) {
       await Promise.allSettled(pending);
       globalThis.fetch = original;
     },
-  };
-}
-function usageOf(messages) {
-  const totals = {
-    input: 0,
-    output: 0,
-    cacheRead: 0,
-    cacheWrite: 0,
-    totalTokens: 0,
-  };
-  const details = [];
-  for (const message of messages.filter((item) => item.role === "assistant")) {
-    details.push({
-      stop_reason: message.stopReason,
-      usage: message.usage ?? null,
-    });
-    for (const key of Object.keys(totals))
-      totals[key] += Number(message.usage?.[key] ?? 0);
-  }
-  return {
-    totals,
-    messages: details,
-    generated_tokens: totals.output,
-    accounting:
-      "SDK-reported usage; includes thinking where the provider reports it; cache counters are separately retained",
   };
 }
 async function integrity(prepared, workspace) {
@@ -523,6 +702,7 @@ async function worker(configPath) {
     totalStarted = performance.now();
   const observation = {
     task: config.prepared.id,
+    workflow: config.prepared.kind ?? "repair",
     arm: config.arm,
     comparison: config.comparison,
     repetition: config.repetition,
@@ -541,6 +721,7 @@ async function worker(configPath) {
     resource_samples: [],
     advice: null,
     passed: false,
+    agent_completed: false,
   };
   let session,
     unsubscribe,
@@ -589,6 +770,40 @@ async function worker(configPath) {
     );
     const installed =
       config.comparison === "advice" || config.arm === "candidate";
+    const review = config.prepared.kind === "review";
+    const actualFactories = [];
+    if (review && installed) {
+      const { registerExtension } = await import("../dist/extension.js");
+      const { configFromEnv } = await import("../dist/backend.js");
+      const classifierConfig = configFromEnv();
+      classifierConfig.modelId = config.classifier_model;
+      if (config.classifier_model_file)
+        classifierConfig.modelFile = config.classifier_model_file;
+      classifierConfig.device = config.classifier_device;
+      classifierConfig.templateVersion = "v2";
+      if (config.classifier_registry_path)
+        classifierConfig.artifactRegistryPath = config.classifier_registry_path;
+      observation.classifier_binding = {
+        config: snapshot(classifierConfig),
+        scoped_workspace: config.workspace,
+        scoped_agent_dir: config.agent_dir,
+        registry_scope: config.classifier_registry_path
+          ? "explicit disposable research registry; no permanent/default approval"
+          : "existing official model registry",
+        factory:
+          "actual registerExtension with scoped Config; unmodified provider",
+      };
+      if (config.classifier_registry_path)
+        observation.classifier_binding.registry_sha256 = hash(
+          await readFile(config.classifier_registry_path),
+        );
+      actualFactories.push((pi) =>
+        registerExtension(pi, classifierConfig, undefined, {
+          cwd: config.workspace,
+          agentDir: config.agent_dir,
+        }),
+      );
+    }
     const settings = {
       packages: [],
       compaction: { enabled: false },
@@ -657,9 +872,10 @@ async function worker(configPath) {
       noContextFiles: true,
       additionalExtensionPaths: [
         ...sfPaths,
-        ...(installed ? [join(root, "dist/extension.js")] : []),
+        ...(installed && !review ? [join(root, "dist/extension.js")] : []),
       ],
       extensionFactories: [
+        ...actualFactories,
         (pi) => {
           pi.on("before_provider_request", (event) => {
             observation.provider_requests.push(snapshot(event.payload));
@@ -681,7 +897,13 @@ async function worker(configPath) {
                   legalBash(event.input.command),
                   "Only listed local acceptance or inspection commands are authorized",
                 );
-              else if (event.toolName === "jev_classify" && installed) return;
+              else if (
+                ["jev_classify", "jev_classify_loaded"].includes(
+                  event.toolName,
+                ) &&
+                installed
+              )
+                return;
               else
                 throw new Error(
                   "SF remote/account operations are not authorized by this local task",
@@ -694,7 +916,7 @@ async function worker(configPath) {
               return { block: true, reason: String(error) };
             }
           });
-          if (config.arm === "candidate")
+          if (config.arm === "candidate" && !review)
             pi.on("before_agent_start", async () => {
               const start = performance.now();
               const { Classifier, NativeBackend, configFromEnv } =
@@ -821,6 +1043,14 @@ async function worker(configPath) {
       observation.tool_catalog.some((tool) => tool.name === "jev_classify"),
       installed,
     );
+    if (review)
+      assert.equal(
+        observation.tool_catalog.some(
+          (tool) => tool.name === "jev_classify_loaded",
+        ),
+        installed,
+        "Build the actual loaded-reference tool before candidate inference",
+      );
     observation.credentials = {
       path: join(config.agent_dir, "auth.json"),
       entries: Object.keys(
@@ -857,7 +1087,10 @@ async function worker(configPath) {
         );
     }, 1000);
     unsubscribe = session.subscribe((event) => {
-      const captured = eventSnapshot(event);
+      const captured = {
+        ...eventSnapshot(event),
+        observed_at_ms: performance.now() - totalStarted,
+      };
       observation.events.push(captured);
       // Persist deltas as they arrive so a deadline or crash cannot erase evidence.
       sampling = sampling.then(() =>
@@ -876,6 +1109,7 @@ async function worker(configPath) {
       config.timeout_ms,
       () => session.agent.abort(),
     );
+    observation.agent_completed = true;
     observation.agent_elapsed_ms = performance.now() - agentStarted;
     observation.messages = snapshot(session.agent.state.messages);
     const assistants = observation.messages.filter(
@@ -899,10 +1133,11 @@ async function worker(configPath) {
       config.prepared,
       config.workspace,
     );
-    observation.acceptance = await checks(
-      config.prepared.manifest,
+    observation.acceptance = await acceptTask(
+      config.prepared,
       config.workspace,
       join(config.directory, "acceptance"),
+      observation.messages,
     );
     observation.integrity = await integrity(config.prepared, config.workspace);
     observation.passed =
@@ -920,10 +1155,11 @@ async function worker(configPath) {
         config.prepared,
         config.workspace,
       );
-      observation.acceptance = await checks(
-        config.prepared.manifest,
+      observation.acceptance = await acceptTask(
+        config.prepared,
         config.workspace,
         join(config.directory, "acceptance"),
+        observation.messages,
       );
       observation.integrity = await integrity(
         config.prepared,
@@ -958,7 +1194,22 @@ async function worker(configPath) {
         observation.errors.push(`Transport evidence: ${error}`);
         observation.passed = false;
       });
-    observation.provider_usage = usageOf(observation.messages);
+    observation.provider_usage = accountProviderUsage(
+      observation.messages,
+      observation.events,
+    );
+    observation.provider_usage.accounting =
+      "SDK-reported actual usage when complete; incomplete totals are unknown, with trustworthy completed counters retained as an explicit lower bound. Streaming characters/deltas are not token counts.";
+    if (
+      !observation.agent_completed &&
+      observation.fetches.some((entry) => entry.method === "POST")
+    ) {
+      observation.provider_usage.complete = false;
+      observation.provider_usage.generated_tokens = null;
+      observation.provider_usage.totals = null;
+      observation.provider_usage.accounting +=
+        "; incomplete agent run: no exact token saving can be inferred";
+    }
     observation.selected_tools = observation.messages
       .filter((message) => message.role === "assistant")
       .flatMap((message) =>
@@ -966,7 +1217,8 @@ async function worker(configPath) {
       );
     observation.additional_jev_tool_results = observation.messages.filter(
       (message) =>
-        message.role === "toolResult" && message.toolName === "jev_classify",
+        message.role === "toolResult" &&
+        ["jev_classify", "jev_classify_loaded"].includes(message.toolName),
     );
     observation.finished_at = new Date().toISOString();
     observation.total_elapsed_ms = performance.now() - totalStarted;
@@ -975,10 +1227,10 @@ async function worker(configPath) {
     observation.evidence_disk_bytes = await diskBytes(config.directory);
     observation.resource_limits =
       "RSS sampled once per second; Node peak RSS is process-lifetime rusage. Shared owned-server RSS/CPU is observed, not exclusive GPU memory. Warm prefix state is uncontrolled and execution order is retained. No monetary saving inferred from zero local API prices.";
-    await cp(
-      join(config.workspace, "src"),
+    await snapshotTask(
+      config.workspace,
       join(config.directory, "source-after"),
-      { recursive: true },
+      config.prepared.kind,
     );
     await save(join(config.directory, "messages.json"), observation.messages);
     await save(join(config.directory, "proof.json"), observation);
@@ -1011,6 +1263,19 @@ function comparisonReport(runs, comparison) {
       comparison !== "advice" ||
       item.inventory_sha256 === candidate.inventory_sha256;
     const samePrompt = item.prompt_sha256 === candidate.prompt_sha256;
+    const ordinaryTools = (run) =>
+      run.tool_catalog?.filter(
+        (tool) => !["jev_classify", "jev_classify_loaded"].includes(tool.name),
+      );
+    const sameExistingTools =
+      JSON.stringify(ordinaryTools(item)) ===
+      JSON.stringify(ordinaryTools(candidate));
+    const tokenRatio =
+      item.provider_usage.generated_tokens > 0 &&
+      candidate.provider_usage.generated_tokens !== null
+        ? candidate.provider_usage.generated_tokens /
+          item.provider_usage.generated_tokens
+        : null;
     const ratio =
       item.total_elapsed_ms > 0
         ? candidate.total_elapsed_ms / item.total_elapsed_ms
@@ -1021,7 +1286,8 @@ function comparisonReport(runs, comparison) {
       same_raw_user_prompt: samePrompt,
       same_inventory_required: comparison === "advice",
       same_inventory: item.inventory_sha256 === candidate.inventory_sha256,
-      protocol_passed: samePrompt && adviceSameInventory,
+      same_existing_sf_and_builtin_tools: sameExistingTools,
+      protocol_passed: samePrompt && adviceSameInventory && sameExistingTools,
       baseline_passed: item.passed,
       candidate_passed: candidate.passed,
       both_accepted: item.passed && candidate.passed,
@@ -1030,6 +1296,14 @@ function comparisonReport(runs, comparison) {
       candidate_to_baseline_elapsed_ratio: ratio,
       baseline_generated_tokens: item.provider_usage.generated_tokens,
       candidate_generated_tokens: candidate.provider_usage.generated_tokens,
+      baseline_generated_tokens_lower_bound:
+        item.provider_usage.generated_tokens_lower_bound ?? null,
+      candidate_generated_tokens_lower_bound:
+        candidate.provider_usage.generated_tokens_lower_bound ?? null,
+      candidate_to_baseline_generated_token_ratio: tokenRatio,
+      exact_generation_comparison_available:
+        item.provider_usage.complete === true &&
+        candidate.provider_usage.complete === true,
       candidate_extra_jev_ms: candidate.advice?.elapsed_ms ?? 0,
       candidate_extra_jev_usage: candidate.advice?.result?.usage ?? null,
       candidate_extra_jev_metrics: candidate.advice?.result?.metrics ?? null,
@@ -1043,9 +1317,97 @@ function comparisonReport(runs, comparison) {
       "Authored local fixtures; no SF business E2E. Pilot/repeated identical fixtures are development evidence, not a fresh held-out generalization claim. A failed arm has no accepted-repair speedup. Resource estimates retain Jev overhead and provider cache usage separately.",
   };
 }
+async function reviewSuiteSummary(runs, selectedBatches, repetitions) {
+  const arms = {};
+  for (const arm of ["baseline", "candidate"]) {
+    const selected = runs.filter((run) => run.arm === arm);
+    const attempts = selected.flatMap((run) => run.acceptance?.attempts ?? []);
+    const usageComplete =
+      selected.length > 0 &&
+      selected.every((run) => run.provider_usage?.complete === true);
+    const quality = summarizeReviewAttempts(attempts);
+    const totalMs = selected.reduce(
+      (sum, run) => sum + run.total_elapsed_ms,
+      0,
+    );
+    arms[arm] = {
+      runs: selected.length,
+      accepted_batches: selected.filter((run) => run.passed).length,
+      quality,
+      generated_tokens: usageComplete
+        ? selected.reduce(
+            (sum, run) => sum + run.provider_usage.generated_tokens,
+            0,
+          )
+        : null,
+      generated_tokens_lower_bound: selected.reduce(
+        (sum, run) =>
+          sum + Number(run.provider_usage?.generated_tokens_lower_bound ?? 0),
+        0,
+      ),
+      usage_complete: usageComplete,
+      elapsed_all_runs_ms: totalMs,
+      elapsed_all_runs_per_accepted_judgment_ms:
+        quality.accepted_correct_judgments > 0
+          ? totalMs / quality.accepted_correct_judgments
+          : null,
+      elapsed_all_runs_per_completed_clear_decision_ms:
+        quality.completed_clear_decisions > 0
+          ? totalMs / quality.completed_clear_decisions
+          : null,
+      jev_selected_batches: selected.filter((run) =>
+        run.selected_tools?.some((tool) =>
+          ["jev_classify", "jev_classify_loaded"].includes(tool.name),
+        ),
+      ).length,
+      loaded_reference_calls: selected
+        .flatMap((run) => run.selected_tools ?? [])
+        .filter((tool) => tool.name === "jev_classify_loaded").length,
+      generic_jev_calls: selected
+        .flatMap((run) => run.selected_tools ?? [])
+        .filter((tool) => tool.name === "jev_classify").length,
+    };
+  }
+  return {
+    selected_batches: selectedBatches,
+    required_batches: 13,
+    repetitions,
+    required_confirmation_repetitions: 3,
+    coverage_complete: selectedBatches === 13,
+    full_confirmation_complete:
+      selectedBatches === 13 &&
+      repetitions === 3 &&
+      ["baseline", "candidate"].every((arm) => arms[arm].runs === 39),
+    independent_context_groups: selectedBatches * 3,
+    authored_representation_pairs_not_independent: true,
+    arms,
+    interpretation:
+      "Review evidence is separate from every required repair outcome. Pilot/partial/failed/incomplete-usage results cannot establish the predeclared complete-suite speed or generation saving.",
+  };
+}
 async function main() {
   assert.ok(["baseline", "candidate", "pair"].includes(values.arm));
   assert.ok(["ordinary", "advice"].includes(values.comparison));
+  assert.ok(["repair", "review"].includes(values.workflow));
+  if (values.workflow === "review") {
+    assert.equal(
+      values.comparison,
+      "ordinary",
+      "Review measures ordinary Pi versus autonomous Jev tools; no diagnostic advice hook",
+    );
+    assert.ok(
+      !values.task,
+      "Use the fixed first --batch 1 pilot or the complete review suite",
+    );
+    if (values.batch !== undefined)
+      assert.equal(
+        integer(values.batch, "--batch", 13),
+        1,
+        "The pilot is the first frozen mixed batch, never a selected easy subset",
+      );
+  } else
+    assert.ok(values.batch === undefined, "--batch applies to review only");
+  assert.ok(["auto", "cpu", "metal"].includes(values["classifier-device"]));
   assert.ok(
     ["counterbalanced", "baseline-first", "candidate-first"].includes(
       values.order,
@@ -1056,7 +1418,10 @@ async function main() {
       values["thinking-level"],
     ),
   );
-  const repetitions = integer(values.repetitions, "--repetitions"),
+  const repetitions = integer(
+      values.repetitions ?? (values.workflow === "review" ? "3" : "1"),
+      "--repetitions",
+    ),
     timeoutMs = integer(values["timeout-ms"], "--timeout-ms", 3600000);
   const output = resolve(
     values.output ??
@@ -1084,20 +1449,51 @@ async function main() {
   );
   await mkdir(output, { recursive: true, mode: 0o700 });
   const tasks =
-    values.task ??
-    (await readdir(fixtureRoot, { withFileTypes: true }))
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => entry.name)
-      .sort();
-  assert.ok(
-    tasks.length && tasks.every((task) => /^[a-z][a-z0-9-]+$/.test(task)),
-  );
-  const prepared = [];
-  for (const task of tasks) prepared.push(await prepareTask(task, output));
+    values.workflow === "review"
+      ? []
+      : (values.task ??
+        (await readdir(fixtureRoot, { withFileTypes: true }))
+          .filter((entry) => entry.isDirectory())
+          .map((entry) => entry.name)
+          .sort());
+  if (values.workflow !== "review")
+    assert.ok(
+      tasks.length && tasks.every((task) => /^[a-z][a-z0-9-]+$/.test(task)),
+    );
+  let prepared = [],
+    reviewDataset = null;
+  if (values.workflow === "review") {
+    const review = await prepareReviewBatches(output);
+    reviewDataset = review.frozen;
+    prepared = values.batch ? review.batches.slice(0, 1) : review.batches;
+  } else
+    for (const task of tasks) prepared.push(await prepareTask(task, output));
+  let registryPath = null;
+  if (values["classifier-registry-path"]) {
+    registryPath = await realpath(resolve(values["classifier-registry-path"]));
+    assert.ok(
+      inside(await realpath(resolve(root, ".build")), registryPath),
+      "Research classifier registry must be explicitly scoped under .build",
+    );
+  }
   const protocol = {
     schema_version: 1,
     started_at: new Date().toISOString(),
     prepare_only: values["prepare-only"],
+    workflow: values.workflow,
+    review_dataset: reviewDataset,
+    review_confirmation:
+      values.workflow === "review"
+        ? {
+            required_records: 78,
+            required_context_groups: 39,
+            required_batches: 13,
+            required_repetitions: 3,
+            selected_batches: prepared.length,
+            pilot: prepared.length < 13 || repetitions !== 3,
+            frozen_first_batch_pilot: values.batch !== undefined,
+          }
+        : null,
     comparison: values.comparison,
     arms: values.arm,
     repetitions,
@@ -1111,17 +1507,23 @@ async function main() {
     advice_injection_policy:
       "developer-advice-concise-v1; exact model, advisory:true, calibrated:false, diagnosis and description, evidence sufficiency estimate/range, exact evidence proposition/estimate/unknown reference and actual diagnosis probabilities; full answer/metrics/provenance in proof and typed details only",
     candidate_only_change:
-      values.comparison === "ordinary"
-        ? "Jev extension/tool catalog plus grounded before_agent_start advice; ordinary baseline has no Jev"
-        : "Grounded before_agent_start advice; Jev installed and routing/evaluation off in both arms",
+      values.workflow === "review"
+        ? "Normal Jev generic/loaded-reference tool catalog with autonomous selection; ordinary baseline has no Jev. No routing, evaluation or pre-agent diagnostic advice. Successful ordinary read result stays visible/prefilled in both arms."
+        : values.comparison === "ordinary"
+          ? "Jev extension/tool catalog plus grounded before_agent_start advice; ordinary baseline has no Jev"
+          : "Grounded before_agent_start advice; Jev installed and routing/evaluation off in both arms",
     task_scope:
-      "Authored local TypeScript repair fixtures, fixed acceptance tests and tsc; not live Salesforce E2E",
+      values.workflow === "review"
+        ? "Complete frozen authored developer validation evidence review, hidden targets, full uncertainty/fractional rubric semantics; separate from required repair results and live Salesforce E2E"
+        : "Authored local TypeScript repair fixtures, fixed acceptance tests and tsc; not live Salesforce E2E",
     sandbox:
       "Both arms permit only designated local source edits, fixture reads, exact acceptance commands and limited local inspection; all SF tools stay visible but remote/account execution is unauthorized",
     prefix_state:
       "Owned Gemma4 server remains ready; native prefix/cache warm state uncontrolled, SDK session/factory state fresh for every arm. Execution order and cache counters recorded.",
     classifier_state:
-      "Candidate recipe classifier starts cold per run; initialization/classification/disposal all included",
+      values.workflow === "review"
+        ? "Actual scoped Jev extension starts cold per run; any selected native initialization/classification/cleanup costs included. No request cache/output substitution in evaluator."
+        : "Candidate recipe classifier starts cold per run; initialization/classification/disposal all included",
     timeout_ms_per_arm: timeoutMs,
     identities: await identities(),
     prepared: prepared.map((item) => ({
@@ -1143,7 +1545,7 @@ async function main() {
     });
     console.log(
       JSON.stringify({
-        prepared_tasks: tasks,
+        prepared_tasks: prepared.map((item) => item.id),
         passed: true,
         model_calls: 0,
         output,
@@ -1208,9 +1610,11 @@ async function main() {
           recursive: true,
           filter: (path) => !path.split(sep).includes(".compiled"),
         });
-        await cp(join(workspace, "src"), join(directory, "source-before"), {
-          recursive: true,
-        });
+        await snapshotTask(
+          workspace,
+          join(directory, "source-before"),
+          task.kind,
+        );
         const environment = cleanEnvironment(agentDir);
         const config = {
           directory,
@@ -1231,6 +1635,8 @@ async function main() {
           classifier_model_file: values["classifier-model-file"]
             ? resolve(values["classifier-model-file"])
             : null,
+          classifier_registry_path: registryPath,
+          classifier_device: values["classifier-device"],
           stripped_environment_names: environment.stripped_names,
         };
         const configPath = join(directory, "config.json");
@@ -1261,12 +1667,23 @@ async function main() {
             passed: false,
             total_elapsed_ms: invocation.elapsed_ms,
             prompt_sha256: task.prompt_sha256,
-            provider_usage: { generated_tokens: 0 },
+            provider_usage: {
+              generated_tokens: null,
+              complete: false,
+              generated_tokens_lower_bound: 0,
+              accounting: "Missing worker proof; exact work unknown",
+            },
             errors: [`Worker did not persist proof: ${error}`],
           };
         }
         protocol.runs.push(proof);
         protocol.paired = comparisonReport(protocol.runs, values.comparison);
+        if (values.workflow === "review")
+          protocol.review_suite = await reviewSuiteSummary(
+            protocol.runs,
+            prepared.length,
+            repetitions,
+          );
         await save(join(output, "summary.json"), {
           ...protocol,
           finished_at: new Date().toISOString(),

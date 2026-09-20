@@ -11,6 +11,16 @@ import {
   type InferenceAdapter,
 } from "./backend.js";
 import { registerAutomation } from "./automation.js";
+import { validateRequest } from "./core.js";
+import {
+  LoadedRequestCache,
+  LoadedRequestExecutionError,
+  type LoadedRequestReceipt,
+} from "./loaded-requests.js";
+import {
+  compactClassifierBatchToolResult,
+  serializeClassifierToolResult,
+} from "./tool-result.js";
 import { openJevInManager, registerManager } from "./manager.js";
 import {
   readPreferences,
@@ -123,6 +133,12 @@ export const ToolSchema = Type.Object(
   },
   { additionalProperties: false },
 );
+export const LoadedToolSchema = Type.Object(
+  {
+    read_tool_call_id: Type.String({ minLength: 1, maxLength: 256 }),
+  },
+  { additionalProperties: false },
+);
 export function registerExtension(
   pi: ExtensionAPI,
   config: Config = configFromEnv(),
@@ -140,6 +156,21 @@ export function registerExtension(
   let ready = false;
   let stopped = false;
   let retirement: Promise<void> = Promise.resolve();
+  const loadedRequests = new LoadedRequestCache();
+  // Match the classifier's one active request plus sixteen queued requests.
+  // pi turns thrown tool errors into fresh results, so preserve partial work
+  // until its final tool_result event can attach the actual receipt.
+  const pendingLoadedFailures = new Map<
+    string,
+    {
+      receipt: LoadedRequestReceipt;
+      kind: LoadedRequestExecutionError["kind"];
+    }
+  >();
+  const clearLoadedRequests = () => {
+    loadedRequests.clear();
+    pendingLoadedFailures.clear();
+  };
   const status = (): Record<string, unknown> => ({
     ...((backend as { status?: Record<string, unknown> } | undefined)?.status ??
       {}),
@@ -153,6 +184,8 @@ export function registerExtension(
             ?.state ??
           "cold"),
     model: config.modelId,
+    loaded_requests: loadedRequests.status,
+    pending_loaded_failure_receipts: pendingLoadedFailures.size,
     requested_device: config.device,
     configured: !!config.modelFile,
     ready: backend instanceof NativeBackend ? backend.isReady : ready,
@@ -200,15 +233,19 @@ export function registerExtension(
     if (
       !resolved.values.enabled ||
       previous.templateVersion !== resolved.values.templateVersion
-    )
+    ) {
+      clearLoadedRequests();
       await disposeCurrent();
+    }
   };
   // This handler is first so shutdown remains available even on minimal hosts.
   pi.on("session_shutdown", async () => {
     stopped = true;
+    clearLoadedRequests();
     await disposeCurrent();
   });
   pi.on("session_start", async (_event, ctx) => {
+    clearLoadedRequests();
     cwd = ctx.cwd;
     const previous = resolved.values;
     resolved = readPreferences(cwd, options.agentDir);
@@ -232,6 +269,53 @@ export function registerExtension(
   const reports = registerAutomation(pi, {
     preferences: () => resolved.values,
     classify,
+  });
+  pi.on("tool_result", async (event) => {
+    if (event.toolName === "jev_classify_loaded" && event.isError === true) {
+      const failure = pendingLoadedFailures.get(event.toolCallId);
+      if (failure) {
+        pendingLoadedFailures.delete(event.toolCallId);
+        return {
+          content: [
+            ...event.content,
+            {
+              type: "text" as const,
+              text: JSON.stringify({
+                status: "incomplete",
+                failure_kind: failure.kind,
+                source: failure.receipt.source,
+                completed_records: failure.receipt.results.length,
+                total_records: failure.receipt.total_records,
+              }),
+            },
+          ],
+          details: failure.receipt,
+          isError: true,
+        };
+      }
+    }
+    if (!resolved.values.enabled || stopped) return;
+    const readSource = pi
+      .getAllTools?.()
+      .find((tool) => tool.name === "read")?.sourceInfo;
+    const captured = loadedRequests.capture(event, readSource);
+    if (!captured.captured) return;
+    // Gemma's template uses tool-call IDs internally but does not show them.
+    // Preserve the complete read text and expose the explicit source reference.
+    const reference = JSON.stringify({
+      read_tool_call_id: captured.source.read_tool_call_id,
+      records: captured.source.record_ids.length,
+      content_sha256: captured.source.content_sha256,
+    });
+    return {
+      content: [
+        ...event.content,
+        {
+          type: "text" as const,
+          text: `Jev loaded request reference: ${reference}`,
+        },
+      ],
+    };
   });
   const display = (result: unknown, ctx: ExtensionCommandContext) => {
     const content = JSON.stringify(result, null, 2);
@@ -296,11 +380,95 @@ export function registerExtension(
       "Classify explicitly supplied context using ordered choices, rubrics, or truth judgments with a local Gemma model. Confidence and truth scores are uncalibrated. Questions and choice candidates are ordered arrays with IDs. This tool supplies advisory answers and does not authorize other actions.",
     parameters: ToolSchema,
     async execute(_id, params, signal) {
+      const request = validateRequest({ ...params, model: config.modelId });
       const result = await classify(params, signal);
       return {
-        content: [{ type: "text", text: JSON.stringify(result) }],
+        content: [
+          {
+            type: "text",
+            text: serializeClassifierToolResult(request, result),
+          },
+        ],
         details: result,
       };
+    },
+  });
+  pi.registerTool({
+    name: "jev_classify_loaded",
+    label: "Jev Classify Loaded",
+    description:
+      "Classify a JSON request bundle already returned by builtin read. Use the read_tool_call_id shown in Jev's read reference. Bundle format: {records:[{id,request:{state or messages,questions,options?}}]}; requests use the same ordered choice, score, or truth questions as jev_classify. Local Gemma estimates are advisory and uncalibrated. This tool uses the observed read result and authorizes no other actions.",
+    parameters: LoadedToolSchema,
+    async execute(toolCallId, params, signal, onUpdate) {
+      pendingLoadedFailures.delete(toolCallId);
+      const loaded = loadedRequests.resolve(
+        params.read_tool_call_id,
+        config.modelId,
+      );
+      try {
+        const receipt = await loadedRequests.classify(
+          params.read_tool_call_id,
+          config.modelId,
+          classify,
+          signal,
+        );
+        const result = compactClassifierBatchToolResult(
+          loaded.records.map((record, index) => ({
+            id: record.id,
+            request: record.request,
+            response: receipt.results[index].response,
+          })),
+        );
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({ source: receipt.source, ...result }),
+            },
+          ],
+          details: receipt,
+        };
+      } catch (error) {
+        if (error instanceof LoadedRequestExecutionError) {
+          // An older execution must not refill the map after a session or
+          // preference change cleared and aborted its loaded requests.
+          if (
+            !stopped &&
+            resolved.values.enabled &&
+            error.receipt.session_generation ===
+              loadedRequests.status.session_generation
+          ) {
+            pendingLoadedFailures.set(toolCallId, {
+              receipt: structuredClone(error.receipt),
+              kind: error.kind,
+            });
+            if (pendingLoadedFailures.size > 17) {
+              // Prefer discarding an empty overload receipt over completed work.
+              const oldestEmpty = [...pendingLoadedFailures].find(
+                ([, failure]) => failure.receipt.results.length === 0,
+              )?.[0];
+              pendingLoadedFailures.delete(
+                oldestEmpty ?? pendingLoadedFailures.keys().next().value!,
+              );
+            }
+          }
+          onUpdate?.({
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  status: "incomplete",
+                  failure_kind: error.kind,
+                  completed_records: error.receipt.results.length,
+                  total_records: error.receipt.total_records,
+                }),
+              },
+            ],
+            details: error.receipt,
+          });
+        }
+        throw error;
+      }
     },
   });
   pi.registerCommand("jev", {

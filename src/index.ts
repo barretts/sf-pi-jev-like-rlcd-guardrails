@@ -8,3 +8,4 @@ export * from "./agent-server.js";
 export * from "./bench.js";
 export * from "./recipes.js";
 export * from "./tool-result.js";
+export * from "./loaded-requests.js";

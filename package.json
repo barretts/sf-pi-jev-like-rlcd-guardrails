@@ -43,6 +43,7 @@
     "build": "tsc",
     "check": "tsc --noEmit",
     "test": "vitest run",
+    "test:developer-protocol": "node --test tests/developer-*.test.mjs",
     "native:build": "bash scripts/build-native.sh",
     "agent:build": "bash scripts/build-agent-server.sh",
     "test:live-pi": "node scripts/live-pi.mjs",

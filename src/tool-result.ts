@@ -25,17 +25,39 @@ export type ModelVisibleClassifierAnswer = { id: string } & (
 
 export interface ModelVisibleClassifierResult {
   model: string;
+  advisory: true;
   calibrated: false;
   answers: ModelVisibleClassifierAnswer[];
   usage: ClassifierResponse["usage"];
   provenance: {
     backend: string | null;
+    device: string | null;
     model_revision: string | null;
     template_version: TemplateVersion | null;
     usage_accounting: string | null;
     artifact?: unknown;
     native_commit?: string;
   };
+}
+
+export interface ClassifierToolResultRecord {
+  id: string;
+  request: Request;
+  response: ClassifierResponse;
+}
+
+export interface ModelVisibleClassifierBatchResult {
+  model: string;
+  advisory: true;
+  calibrated: false;
+  records: {
+    id: string;
+    answers: ModelVisibleClassifierAnswer[];
+    usage: ClassifierResponse["usage"];
+    provenance?: ModelVisibleClassifierResult["provenance"];
+  }[];
+  usage: ClassifierResponse["usage"];
+  provenance?: ModelVisibleClassifierResult["provenance"];
 }
 
 function probabilities(value: Record<string, number>, labels: string[]) {
@@ -106,6 +128,9 @@ export function compactClassifierToolResult(
   if (metadata) {
     assert(
       typeof metadata.backend === "string" &&
+        (metadata.device === undefined ||
+          metadata.device === null ||
+          typeof metadata.device === "string") &&
         typeof metadata.usage_accounting === "string" &&
         (metadata.model_revision === null ||
           typeof metadata.model_revision === "string"),
@@ -282,11 +307,13 @@ export function compactClassifierToolResult(
   const native = metadata?.native_build;
   return {
     model: result.model,
+    advisory: true,
     calibrated: false,
     answers,
     usage: result.usage,
     provenance: {
       backend: metadata?.backend ?? null,
+      device: (metadata?.device as string | null | undefined) ?? null,
       model_revision: metadata?.model_revision ?? null,
       template_version: metadata?.template_version ?? null,
       usage_accounting: metadata?.usage_accounting ?? null,
@@ -308,4 +335,92 @@ export function serializeClassifierToolResult(
   response: ClassifierResponse,
 ): string {
   return JSON.stringify(compactClassifierToolResult(request, response));
+}
+
+export function compactClassifierBatchToolResult(
+  records: ClassifierToolResultRecord[],
+): ModelVisibleClassifierBatchResult {
+  assert(
+    Array.isArray(records) &&
+      Object.getPrototypeOf(records) === Array.prototype &&
+      records.length > 0 &&
+      Object.getOwnPropertySymbols(records).length === 0,
+    "Expected a nonempty classifier result batch",
+  );
+  const entries = Object.getOwnPropertyDescriptors(records);
+  assert(
+    Object.keys(entries).length === records.length + 1,
+    "Expected a dense classifier result batch",
+  );
+  const ids = new Set<string>();
+  const compacted = Array.from({ length: records.length }, (_, index) => {
+    const entry = entries[String(index)];
+    assert(entry && "value" in entry, "Batch accessors are unsupported");
+    const record = entry.value;
+    assert(
+      record &&
+        typeof record === "object" &&
+        !Array.isArray(record) &&
+        (Object.getPrototypeOf(record) === Object.prototype ||
+          Object.getPrototypeOf(record) === null) &&
+        Object.getOwnPropertySymbols(record).length === 0,
+      "Expected a plain classifier result record",
+    );
+    const fields = Object.getOwnPropertyDescriptors(record);
+    assert(
+      ["id", "request", "response"].every(
+        (key) => fields[key] && "value" in fields[key],
+      ),
+      "Missing batch record fields or unsupported accessors",
+    );
+    const id = fields.id.value;
+    assert(
+      typeof id === "string" && id.trim().length > 0 && !ids.has(id),
+      "Empty or duplicate classifier result record ID",
+    );
+    ids.add(id);
+    return {
+      id,
+      result: compactClassifierToolResult(
+        fields.request.value,
+        fields.response.value,
+      ),
+    };
+  });
+  const first = compacted[0].result;
+  assert(
+    compacted.every(({ result }) => result.model === first.model),
+    "Classifier result batch contains mixed models",
+  );
+  const shared = compacted.every(
+    ({ result }) =>
+      canonical(result.provenance) === canonical(first.provenance),
+  );
+  const inputTokens = compacted.reduce(
+    (sum, { result }) => sum + result.usage.input_tokens,
+    0,
+  );
+  assert(
+    Number.isSafeInteger(inputTokens),
+    "Batch logical token sum exceeds the safe integer range",
+  );
+  return {
+    model: first.model,
+    advisory: true,
+    calibrated: false,
+    records: compacted.map(({ id, result }) => ({
+      id,
+      answers: result.answers,
+      usage: result.usage,
+      ...(!shared ? { provenance: result.provenance } : {}),
+    })),
+    usage: { input_tokens: inputTokens, output_tokens: 0 },
+    ...(shared ? { provenance: first.provenance } : {}),
+  };
+}
+
+export function serializeClassifierBatchToolResult(
+  records: ClassifierToolResultRecord[],
+): string {
+  return JSON.stringify(compactClassifierBatchToolResult(records));
 }
