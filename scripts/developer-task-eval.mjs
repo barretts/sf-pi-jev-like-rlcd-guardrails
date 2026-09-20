@@ -28,7 +28,9 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const script = fileURLToPath(import.meta.url);
 const fixtureRoot = join(root, "fixtures/developer-tasks");
 const canonicalBaseline = "2256923373128e812eb6fa5db2226fd2a08d194c";
+const invokedAsScript = process.argv[1] && resolve(process.argv[1]) === script;
 const { values } = parseArgs({
+  args: invokedAsScript ? process.argv.slice(2) : [],
   options: {
     "prepare-only": { type: "boolean", default: false },
     workflow: { type: "string", default: "repair" },
@@ -472,6 +474,7 @@ async function acceptTask(prepared, workspace, directory, messages) {
       .join("\n") ?? "";
   const records = JSON.parse(await readFile(prepared.host_gold_path, "utf8"));
   const acceptance = scoreReviewFinal({ text, records });
+  acceptance.summary.work = hostScoringWork();
   await save(join(directory, "final-answer.txt"), text);
   await save(join(directory, "review-quality.json"), acceptance);
   return acceptance;
@@ -615,7 +618,21 @@ async function startFetchObservation(config, observation) {
           `${entry.sequence}.response.txt`,
         );
         const responseHash = createHash("sha256");
-        let bytes = 0;
+        let bytes = 0,
+          pendingSse = "";
+        const decoder = new TextDecoder();
+        const observeLine = (line) => {
+          if (!line.startsWith("data:")) return;
+          try {
+            const value = JSON.parse(line.slice(5).trim());
+            if (value.usage && typeof value.usage === "object")
+              entry.server_usage = snapshot(value.usage);
+            if (value.timings && typeof value.timings === "object")
+              entry.server_timings = snapshot(value.timings);
+          } catch {
+            /* Non-JSON SSE sentinels and partial lines remain in raw evidence. */
+          }
+        };
         await save(responsePath, "");
         try {
           const reader = capturedResponse.body?.getReader();
@@ -626,8 +643,14 @@ async function startFetchObservation(config, observation) {
               const chunk = Buffer.from(value);
               responseHash.update(chunk);
               bytes += chunk.length;
+              pendingSse += decoder.decode(value, { stream: true });
+              const lines = pendingSse.split("\n");
+              pendingSse = lines.pop();
+              for (const line of lines) observeLine(line);
               await appendFile(responsePath, chunk, { mode: 0o600 });
             }
+          pendingSse += decoder.decode();
+          if (pendingSse) observeLine(pendingSse);
           entry.response_capture_complete = true;
         } catch (error) {
           entry.capture_error = String(error);
@@ -703,6 +726,10 @@ async function worker(configPath) {
   const observation = {
     task: config.prepared.id,
     workflow: config.prepared.kind ?? "repair",
+    workspace: config.workspace,
+    review_input_sha256: config.prepared.input_sha256 ?? null,
+    previous_arm: config.previous_arm ?? null,
+    pair_position: config.pair_position ?? null,
     arm: config.arm,
     comparison: config.comparison,
     repetition: config.repetition,
@@ -813,7 +840,7 @@ async function worker(configPath) {
       httpIdleTimeoutMs: config.timeout_ms,
     };
     observation.settings = settings;
-    observation.thinking_level = config.thinking_level;
+    observation.settings_intent = snapshot(settings);
     const settingsManager = SettingsManager.inMemory(settings),
       eventBus = createEventBus();
     await save(join(config.agent_dir, "settings.json"), {
@@ -1027,6 +1054,22 @@ async function worker(configPath) {
     assert.deepEqual(observation.errors, []);
     assert.equal(session.model.id, config.model.id);
     assert.equal(session.model.baseUrl, config.base_url);
+    observation.thinking_level = session.thinkingLevel;
+    observation.generation_config = {
+      model: snapshot(session.model),
+      timeout_ms: config.timeout_ms,
+      tool_choice: "automatic",
+      provider_stream: "Pi SDK unmodified",
+    };
+    const effectiveSettings = () => ({
+      global: settingsManager.getGlobalSettings(),
+      project: settingsManager.getProjectSettings(),
+      compaction: settingsManager.getCompactionSettings(),
+      retry: settingsManager.getRetrySettings(),
+      provider_retry: settingsManager.getProviderRetrySettings(),
+      http_idle_timeout_ms: settingsManager.getHttpIdleTimeoutMs(),
+    });
+    observation.settings = snapshot(effectiveSettings());
     observation.startup_ms = performance.now() - startup;
     observation.extension_paths = session.extensionRunner.getExtensionPaths();
     observation.tool_catalog = session.agent.state.tools.map((tool) => ({
@@ -1110,6 +1153,27 @@ async function worker(configPath) {
       () => session.agent.abort(),
     );
     observation.agent_completed = true;
+    observation.final_generation_config = {
+      ...observation.generation_config,
+      model: snapshot(session.model),
+    };
+    observation.final_thinking_level = session.thinkingLevel;
+    observation.final_settings = snapshot(effectiveSettings());
+    assert.deepEqual(
+      observation.final_generation_config,
+      observation.generation_config,
+      "Observed model drift during workflow",
+    );
+    assert.equal(
+      observation.final_thinking_level,
+      observation.thinking_level,
+      "Observed thinking level drift during workflow",
+    );
+    assert.deepEqual(
+      observation.final_settings,
+      observation.settings,
+      "Observed SDK settings drift during workflow",
+    );
     observation.agent_elapsed_ms = performance.now() - agentStarted;
     observation.messages = snapshot(session.agent.state.messages);
     const assistants = observation.messages.filter(
@@ -1220,6 +1284,7 @@ async function worker(configPath) {
         message.role === "toolResult" &&
         ["jev_classify", "jev_classify_loaded"].includes(message.toolName),
     );
+    observation.jev_work = observeJevWork(observation);
     observation.finished_at = new Date().toISOString();
     observation.total_elapsed_ms = performance.now() - totalStarted;
     observation.resource_usage_before = beforeResource;
@@ -1242,14 +1307,344 @@ async function worker(configPath) {
         passed: observation.passed,
         elapsed_ms: observation.total_elapsed_ms,
         generated_tokens: observation.provider_usage.generated_tokens,
-        advice_ms: observation.advice?.elapsed_ms ?? 0,
+        advice_ms: observation.advice?.elapsed_ms ?? null,
+        observed_jev_tool_ms: observation.jev_work.elapsed_ms,
         errors: observation.errors,
       }),
     );
   }
   process.exitCode = observation.passed ? 0 : 1;
 }
-function comparisonReport(runs, comparison) {
+const jevToolNames = new Set(["jev_classify", "jev_classify_loaded"]);
+const finite = (value) => typeof value === "number" && Number.isFinite(value);
+const nonnegative = (value) => finite(value) && value >= 0;
+const object = (value) =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
+const hostScoringWork = () => ({
+  applicable: false,
+  complete_accounting: null,
+  scope:
+    "Host-side final-answer scoring has no measured provider/native work. Actual workflow usage and Jev tool receipts are reported separately; empty host work is not complete measurement.",
+});
+const observedGeneration = (run) => {
+  const config = run.generation_config;
+  return object(config?.model) &&
+    ["id", "provider", "api", "baseUrl"].every(
+      (key) => typeof config.model[key] === "string" && config.model[key],
+    ) &&
+    Number.isSafeInteger(config.timeout_ms) &&
+    config.timeout_ms > 0 &&
+    config.tool_choice === "automatic" &&
+    config.provider_stream === "Pi SDK unmodified"
+    ? config
+    : null;
+};
+const observedSettings = (run) =>
+  object(run.settings) &&
+  typeof run.settings.compaction?.enabled === "boolean" &&
+  typeof run.settings.retry?.enabled === "boolean"
+    ? run.settings
+    : null;
+const sameObserved = (left, right) =>
+  object(left) &&
+  object(right) &&
+  JSON.stringify(left) === JSON.stringify(right);
+const completeProviderUsage = (run) =>
+  run.provider_usage?.complete === true &&
+  nonnegative(run.provider_usage.generated_tokens) &&
+  ["input", "output", "cacheRead", "cacheWrite", "totalTokens"].every((key) =>
+    nonnegative(run.provider_usage.totals?.[key]),
+  ) &&
+  run.provider_usage.totals.output === run.provider_usage.generated_tokens;
+const serverBinding = (run) => {
+  const server =
+    run.owned_server?.state === "ready" ? run.owned_server.server : null;
+  if (
+    !object(server?.model) ||
+    !server.model.id ||
+    !server.model.sha256 ||
+    !server.model.file ||
+    !server.binary ||
+    !server.binary_sha256 ||
+    !server.template_file ||
+    !server.template_sha256 ||
+    !server.native_revision ||
+    !nonnegative(server.context_size) ||
+    server.parallel !== 1 ||
+    !server.device ||
+    !server.actual_device ||
+    !server.host ||
+    !server.port
+  )
+    return null;
+  return Object.fromEntries(
+    [
+      "model",
+      "binary",
+      "binary_sha256",
+      "template_file",
+      "template_sha256",
+      "native_revision",
+      "context_size",
+      "parallel",
+      "device",
+      "actual_device",
+      "host",
+      "port",
+    ].map((key) => [key, server[key]]),
+  );
+};
+const executedBinding = (run) => {
+  const source = run.executed_source;
+  if (
+    !source?.executed_head ||
+    !source.canonical_baseline_commit ||
+    !Array.isArray(source.files) ||
+    !source.files.length ||
+    source.files.some(
+      (entry) => !entry.file || (!entry.sha256 && entry.absent !== true),
+    )
+  )
+    return null;
+  return {
+    executed_head: source.executed_head,
+    canonical_baseline_commit: source.canonical_baseline_commit,
+    files: source.files,
+  };
+};
+const median = (values) => {
+  const sorted = values.filter(finite).sort((a, b) => a - b);
+  if (!sorted.length) return null;
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+};
+
+/** Actual tool receipts and event intervals; never infer free Jev from advice being off. */
+export function observeJevWork(run) {
+  const calls = new Map();
+  const ensure = (id, name) => {
+    if (!id || !jevToolNames.has(name)) return null;
+    if (!calls.has(id))
+      calls.set(id, {
+        tool_call_id: id,
+        name,
+        start_ms: null,
+        end_ms: null,
+        is_error: null,
+        receipt: null,
+      });
+    return calls.get(id);
+  };
+  const receipt = (call, details) => {
+    if (!call || !details || typeof details !== "object") return;
+    const count = (value) =>
+      Array.isArray(value?.results)
+        ? value.results.length
+        : value?.usage
+          ? 1
+          : -1;
+    if (count(details) >= count(call.receipt)) call.receipt = details;
+  };
+  for (const selected of run.selected_tools ?? [])
+    ensure(
+      selected.id ?? selected.toolCallId,
+      selected.name ?? selected.toolName,
+    );
+  for (const event of run.events ?? []) {
+    if (
+      typeof event.type !== "string" ||
+      !event.type.startsWith("tool_execution_")
+    )
+      continue;
+    const call = ensure(event.toolCallId, event.toolName);
+    if (!call) continue;
+    if (
+      event.type === "tool_execution_start" &&
+      nonnegative(event.observed_at_ms)
+    )
+      call.start_ms = event.observed_at_ms;
+    if (event.type === "tool_execution_update")
+      receipt(call, event.partialResult?.details);
+    if (event.type === "tool_execution_end") {
+      if (nonnegative(event.observed_at_ms)) call.end_ms = event.observed_at_ms;
+      call.is_error = event.isError === true;
+      receipt(call, event.result?.details);
+    }
+  }
+  for (const message of [
+    ...(run.messages ?? []),
+    ...(run.additional_jev_tool_results ?? []),
+  ]) {
+    if (message.role !== "toolResult") continue;
+    const call = ensure(message.toolCallId, message.toolName);
+    receipt(call, message.details);
+    if (call && call.is_error === null && typeof message.isError === "boolean")
+      call.is_error = message.isError;
+  }
+  const responses = [];
+  for (const call of calls.values()) {
+    const details = call.receipt;
+    const entries =
+      call.name === "jev_classify_loaded"
+        ? (details?.results ?? [])
+        : details?.usage
+          ? [{ response: details }]
+          : [];
+    call.responses = entries.map((entry) => ({
+      tool_call_id: call.tool_call_id,
+      record_id: entry.id ?? null,
+      request_sha256: entry.request_sha256 ?? null,
+      response: entry.response,
+    }));
+    responses.push(...call.responses);
+    call.expected_responses =
+      call.name === "jev_classify_loaded"
+        ? (details?.total_records ?? null)
+        : 1;
+    call.receipt_complete =
+      call.is_error === false &&
+      Number.isSafeInteger(call.expected_responses) &&
+      call.expected_responses > 0 &&
+      call.responses.length === call.expected_responses;
+    call.complete_interval =
+      nonnegative(call.start_ms) &&
+      nonnegative(call.end_ms) &&
+      call.end_ms >= call.start_ms;
+    call.elapsed_ms = call.complete_interval
+      ? call.end_ms - call.start_ms
+      : null;
+    call.source = details?.source ?? null;
+    delete call.receipt;
+  }
+  const advice = run.advice;
+  if (advice?.result)
+    responses.push({
+      tool_call_id: null,
+      record_id: null,
+      request_sha256: advice.request_sha256 ?? null,
+      response: advice.result,
+      source: "before_agent_start advice",
+    });
+  const actualCalls = [...calls.values()];
+  const observedNoCalls =
+    run.agent_completed === true && actualCalls.length === 0 && !advice;
+  const intervalsComplete =
+    actualCalls.every((call) => call.complete_interval) &&
+    (!advice || nonnegative(advice.elapsed_ms)) &&
+    (actualCalls.length > 0 ||
+      observedNoCalls ||
+      nonnegative(advice?.elapsed_ms));
+  const intervals = actualCalls
+    .filter((call) => call.complete_interval)
+    .map((call) => [call.start_ms, call.end_ms])
+    .sort((a, b) => a[0] - b[0]);
+  let intervalUnion = 0,
+    end = -Infinity;
+  for (const [start, finish] of intervals) {
+    intervalUnion += Math.max(0, finish - Math.max(start, end));
+    end = Math.max(end, finish);
+  }
+  const usageLowerBound = { input_tokens: 0, output_tokens: 0 };
+  const validUsage = (response) =>
+    nonnegative(response?.usage?.input_tokens) &&
+    nonnegative(response?.usage?.output_tokens);
+  for (const { response } of responses)
+    if (validUsage(response)) {
+      usageLowerBound.input_tokens += response.usage.input_tokens;
+      usageLowerBound.output_tokens += response.usage.output_tokens;
+    }
+  const receiptsComplete =
+    actualCalls.every((call) => call.receipt_complete) &&
+    (!advice || !!advice.result) &&
+    (actualCalls.length > 0 || observedNoCalls || !!advice?.result);
+  const usageComplete =
+    receiptsComplete && responses.every(({ response }) => validUsage(response));
+  const metricNames = [
+    ...new Set(
+      responses.flatMap(({ response }) => Object.keys(response?.metrics ?? {})),
+    ),
+  ];
+  const metricObservations = Object.fromEntries(
+    metricNames.map((key) => {
+      const values = responses.map(({ response }) => response?.metrics?.[key]);
+      const measured = values.filter(finite);
+      return [
+        key,
+        {
+          total:
+            usageComplete && measured.length === responses.length
+              ? measured.reduce((a, b) => a + b, 0)
+              : null,
+          completed_response_lower_bound: measured.length
+            ? measured.reduce((a, b) => a + b, 0)
+            : null,
+          measured_responses: measured.length,
+          complete: usageComplete && measured.length === responses.length,
+        },
+      ];
+    }),
+  );
+  const metricsComplete =
+    usageComplete &&
+    responses.every(({ response }) => response?.metrics && response?.metadata);
+  const readMarkers = (run.messages ?? [])
+    .filter(
+      (message) => message.role === "toolResult" && message.toolName === "read",
+    )
+    .flatMap((message) =>
+      (message.content ?? [])
+        .filter((part) => part.type === "text")
+        .flatMap((part) =>
+          part.text
+            .split("\n")
+            .filter((line) => line.startsWith("Jev loaded request reference:")),
+        ),
+    );
+  return {
+    loaded_reference_markers: {
+      observed_count: readMarkers.length,
+      observed_text_bytes: readMarkers.reduce(
+        (sum, line) => sum + Buffer.byteLength(line),
+        0,
+      ),
+      scope:
+        "Visible marker text only; actual prefill/generation is charged in provider counters, never estimated from bytes.",
+    },
+    elapsed_ms: intervalsComplete
+      ? intervalUnion + (advice?.elapsed_ms ?? 0)
+      : null,
+    observed_interval_lower_bound_ms:
+      intervalUnion + (nonnegative(advice?.elapsed_ms) ? advice.elapsed_ms : 0),
+    intervals_complete: intervalsComplete,
+    observed_no_calls: observedNoCalls,
+    usage: usageComplete ? usageLowerBound : null,
+    usage_lower_bound: usageLowerBound,
+    usage_complete: usageComplete,
+    metrics: metricsComplete ? metricObservations : null,
+    metrics_lower_bound: metricObservations,
+    metrics_complete: metricsComplete,
+    calls: actualCalls,
+    responses,
+    provenance: responses.map(
+      ({ tool_call_id, record_id, request_sha256, response }) => ({
+        tool_call_id,
+        record_id,
+        request_sha256,
+        model: response?.model ?? null,
+        metadata: response?.metadata ?? null,
+      }),
+    ),
+    initialization_included_in_tool_intervals:
+      actualCalls.length > 0 && intervalsComplete,
+    native_cleanup_ms: null,
+    scope:
+      "Observed advice and selected tool wall intervals include initialization, classification, rendering and any closed error interval. Full native receipts retain completed usage/metrics/provenance, including partial failures. Native cleanup is not isolated; it remains included in end-to-end workflow elapsed time. Missing observations are unknown. No-call zero requires an actually completed observed agent run.",
+  };
+}
+
+export function comparisonReport(runs, comparison) {
   const pairs = [];
   for (const item of runs.filter((run) => run.arm === "baseline")) {
     const candidate = runs.find(
@@ -1262,103 +1657,408 @@ function comparisonReport(runs, comparison) {
     const adviceSameInventory =
       comparison !== "advice" ||
       item.inventory_sha256 === candidate.inventory_sha256;
-    const samePrompt = item.prompt_sha256 === candidate.prompt_sha256;
+    const samePrompt =
+      !!item.prompt_sha256 && item.prompt_sha256 === candidate.prompt_sha256;
     const ordinaryTools = (run) =>
-      run.tool_catalog?.filter(
-        (tool) => !["jev_classify", "jev_classify_loaded"].includes(tool.name),
-      );
+      run.tool_catalog?.filter((tool) => !jevToolNames.has(tool.name));
     const sameExistingTools =
+      Array.isArray(item.tool_catalog) &&
+      Array.isArray(candidate.tool_catalog) &&
       JSON.stringify(ordinaryTools(item)) ===
-      JSON.stringify(ordinaryTools(candidate));
+        JSON.stringify(ordinaryTools(candidate));
+    const sameReviewInput =
+      item.workflow !== "review" && candidate.workflow !== "review"
+        ? true
+        : !!item.review_input_sha256 &&
+          item.review_input_sha256 === candidate.review_input_sha256;
+    const exactUsage =
+      completeProviderUsage(item) && completeProviderUsage(candidate);
+    const sameThinking =
+      typeof item.thinking_level === "string" &&
+      item.thinking_level === candidate.thinking_level;
+    const sameSettings = sameObserved(
+      observedSettings(item),
+      observedSettings(candidate),
+    );
+    const sameGeneration = sameObserved(
+      observedGeneration(item),
+      observedGeneration(candidate),
+    );
+    const sameServer = sameObserved(
+      serverBinding(item),
+      serverBinding(candidate),
+    );
+    const sameSource = sameObserved(
+      executedBinding(item),
+      executedBinding(candidate),
+    );
+    const sameSfSources =
+      Array.isArray(item.sf_factory_sources) &&
+      item.sf_factory_sources.length > 0 &&
+      Array.isArray(candidate.sf_factory_sources) &&
+      item.sf_factory_sources.every((entry) => entry.path && entry.sha256) &&
+      JSON.stringify(item.sf_factory_sources) ===
+        JSON.stringify(candidate.sf_factory_sources);
     const tokenRatio =
-      item.provider_usage.generated_tokens > 0 &&
-      candidate.provider_usage.generated_tokens !== null
+      exactUsage && item.provider_usage.generated_tokens > 0
         ? candidate.provider_usage.generated_tokens /
           item.provider_usage.generated_tokens
         : null;
     const ratio =
-      item.total_elapsed_ms > 0
+      item.total_elapsed_ms > 0 && nonnegative(candidate.total_elapsed_ms)
         ? candidate.total_elapsed_ms / item.total_elapsed_ms
         : null;
+    const jevWork = observeJevWork(candidate);
     pairs.push({
       task: item.task,
       repetition: item.repetition,
       same_raw_user_prompt: samePrompt,
+      same_review_input: sameReviewInput,
       same_inventory_required: comparison === "advice",
       same_inventory: item.inventory_sha256 === candidate.inventory_sha256,
       same_existing_sf_and_builtin_tools: sameExistingTools,
-      protocol_passed: samePrompt && adviceSameInventory && sameExistingTools,
+      same_thinking_level: sameThinking,
+      same_settings: sameSettings,
+      same_generation_config: sameGeneration,
+      same_owned_server_binding: sameServer,
+      same_executed_source: sameSource,
+      same_sf_factory_sources: sameSfSources,
+      protocol_passed:
+        samePrompt &&
+        sameReviewInput &&
+        adviceSameInventory &&
+        sameExistingTools &&
+        sameThinking &&
+        sameSettings &&
+        sameGeneration &&
+        sameServer &&
+        sameSource &&
+        sameSfSources,
       baseline_passed: item.passed,
       candidate_passed: candidate.passed,
-      both_accepted: item.passed && candidate.passed,
+      both_accepted: item.passed === true && candidate.passed === true,
       baseline_ms: item.total_elapsed_ms,
       candidate_ms: candidate.total_elapsed_ms,
       candidate_to_baseline_elapsed_ratio: ratio,
-      baseline_generated_tokens: item.provider_usage.generated_tokens,
-      candidate_generated_tokens: candidate.provider_usage.generated_tokens,
+      baseline_generated_tokens: exactUsage
+        ? item.provider_usage.generated_tokens
+        : null,
+      candidate_generated_tokens: exactUsage
+        ? candidate.provider_usage.generated_tokens
+        : null,
       baseline_generated_tokens_lower_bound:
-        item.provider_usage.generated_tokens_lower_bound ?? null,
+        item.provider_usage?.generated_tokens_lower_bound ?? null,
       candidate_generated_tokens_lower_bound:
-        candidate.provider_usage.generated_tokens_lower_bound ?? null,
+        candidate.provider_usage?.generated_tokens_lower_bound ?? null,
       candidate_to_baseline_generated_token_ratio: tokenRatio,
-      exact_generation_comparison_available:
-        item.provider_usage.complete === true &&
-        candidate.provider_usage.complete === true,
-      candidate_extra_jev_ms: candidate.advice?.elapsed_ms ?? 0,
-      candidate_extra_jev_usage: candidate.advice?.result?.usage ?? null,
-      candidate_extra_jev_metrics: candidate.advice?.result?.metrics ?? null,
+      exact_generation_comparison_available: exactUsage,
+      candidate_extra_jev_ms: jevWork.elapsed_ms,
+      candidate_extra_jev_usage: jevWork.usage,
+      candidate_extra_jev_metrics: jevWork.metrics,
+      candidate_jev_work: jevWork,
+      baseline_actual_provider_posts: (item.fetches ?? []).filter(
+        (entry) => entry.method === "POST",
+      ).length,
+      candidate_actual_provider_posts: (candidate.fetches ?? []).filter(
+        (entry) => entry.method === "POST",
+      ).length,
+      actual_provider_post_scope:
+        "Observed calls; turn-count difference is not isolated causal attribution to Jev. All replay/argument/result/marker prefill costs remain in actual provider usage and workflow elapsed.",
       order: [item.execution_order, candidate.execution_order],
+      first_arm:
+        item.execution_order < candidate.execution_order
+          ? "baseline"
+          : "candidate",
+      provider_prompt_scope:
+        "Matched raw user prompt/input; SDK system prompt includes each isolated cwd and candidate has the added Jev catalog. Whole provider prompts differ and are retained verbatim.",
     });
   }
   return {
     pairs,
     accepted_pairs: pairs.filter((pair) => pair.both_accepted).length,
+    cache_observations: [...runs]
+      .sort((a, b) => a.execution_order - b.execution_order)
+      .map((run, index, ordered) => ({
+        task: run.task,
+        repetition: run.repetition,
+        arm: run.arm,
+        execution_order: run.execution_order,
+        pair_position:
+          pairs.find(
+            (pair) =>
+              pair.task === run.task && pair.repetition === run.repetition,
+          )?.first_arm === run.arm
+            ? "first"
+            : "second",
+        previous_arm: run.previous_arm ?? ordered[index - 1]?.arm ?? null,
+        workspace: run.workspace ?? null,
+        cache_read_tokens:
+          run.provider_usage?.complete === true
+            ? (run.provider_usage.totals?.cacheRead ?? null)
+            : null,
+        cache_write_tokens:
+          run.provider_usage?.complete === true
+            ? (run.provider_usage.totals?.cacheWrite ?? null)
+            : null,
+        reported_cache_lower_bound: {
+          read:
+            run.provider_usage?.reported_usage_lower_bound?.cacheRead ?? null,
+          write:
+            run.provider_usage?.reported_usage_lower_bound?.cacheWrite ?? null,
+        },
+        server_posts: (run.fetches ?? [])
+          .filter((entry) => entry.method === "POST")
+          .map((entry) => ({
+            sequence: entry.sequence,
+            capture_complete: entry.response_capture_complete ?? false,
+            usage: entry.server_usage ?? null,
+            timings: entry.server_timings ?? null,
+          })),
+      })),
     limitations:
-      "Authored local fixtures; no SF business E2E. Pilot/repeated identical fixtures are development evidence, not a fresh held-out generalization claim. A failed arm has no accepted-repair speedup. Resource estimates retain Jev overhead and provider cache usage separately.",
+      "Authored local workflows; no SF business E2E. Failed arms have no accepted-result speedup. Ready server startup is excluded equally and server prefixes are observational/uncontrolled; first/second position, previous arm and actual cache counters are retained. No cold-model, GPU-memory, energy or monetary gain is established by this evaluator. Review and the four required repair outcomes remain separate.",
   };
 }
-async function reviewSuiteSummary(runs, selectedBatches, repetitions) {
+
+/** Score every predeclared slot, using host gold to retain omissions as failures. */
+export function reviewSuiteSummary(runs, expectedBatches, repetitions) {
+  assert.ok(Array.isArray(expectedBatches) && expectedBatches.length);
+  const expectedBatchIds = new Set(expectedBatches.map((batch) => batch.id));
+  assert.equal(expectedBatchIds.size, expectedBatches.length);
+  const expectedGroups = new Map();
+  for (const batch of expectedBatches)
+    for (const record of batch.records) {
+      const group = expectedGroups.get(record.group_id) ?? {
+        group_id: record.group_id,
+        record_ids: [],
+      };
+      group.record_ids.push(record.id);
+      expectedGroups.set(record.group_id, group);
+    }
   const arms = {};
   for (const arm of ["baseline", "candidate"]) {
     const selected = runs.filter((run) => run.arm === arm);
-    const attempts = selected.flatMap((run) => run.acceptance?.attempts ?? []);
-    const usageComplete =
-      selected.length > 0 &&
-      selected.every((run) => run.provider_usage?.complete === true);
-    const quality = summarizeReviewAttempts(attempts);
-    const totalMs = selected.reduce(
-      (sum, run) => sum + run.total_elapsed_ms,
-      0,
+    const unexpectedRuns = selected.filter(
+      (run) =>
+        !expectedBatchIds.has(run.task) ||
+        !Number.isSafeInteger(run.repetition) ||
+        run.repetition < 1 ||
+        run.repetition > repetitions,
     );
+    const slots = [],
+      attempts = [];
+    for (const batch of expectedBatches)
+      for (let repetition = 1; repetition <= repetitions; repetition++) {
+        const candidates = selected.filter(
+          (run) => run.task === batch.id && run.repetition === repetition,
+        );
+        const run = candidates.length === 1 ? candidates[0] : null;
+        const missing = scoreReviewFinal({
+          text: "",
+          records: batch.records,
+        }).attempts;
+        const observed = run?.acceptance?.attempts;
+        const expectedIds = new Set(batch.records.map((record) => record.id));
+        const exactIds =
+          Array.isArray(observed) &&
+          observed.length === batch.records.length &&
+          observed.every((attempt) => expectedIds.has(attempt.record_id)) &&
+          new Set(observed.map((attempt) => attempt.record_id)).size ===
+            expectedIds.size;
+        const row = {
+          batch: batch.id,
+          repetition,
+          run,
+          persisted:
+            !!run &&
+            run.worker_proof_present !== false &&
+            Array.isArray(observed),
+          complete:
+            candidates.length === 1 &&
+            run?.worker_proof_present !== false &&
+            exactIds,
+          attempts: [],
+        };
+        for (let index = 0; index < batch.records.length; index++) {
+          const record = batch.records[index],
+            matched = Array.isArray(observed)
+              ? observed.filter((attempt) => attempt.record_id === record.id)
+              : [];
+          const usable =
+            row.persisted &&
+            matched.length === 1 &&
+            matched[0].group_id === record.group_id &&
+            matched[0].answers?.length === record.request.questions.length &&
+            matched[0].answers.every(
+              (answer, answerIndex) =>
+                answer.question_id ===
+                  record.request.questions[answerIndex].id &&
+                answer.type === record.request.questions[answerIndex].type,
+            );
+          const attempt = {
+            ...(usable ? matched[0] : missing[index]),
+            batch_id: batch.id,
+            repetition,
+            coordinator_observed: usable,
+          };
+          if (!usable) row.complete = false;
+          row.attempts.push(attempt);
+          attempts.push(attempt);
+        }
+        slots.push(row);
+      }
+    const coverageGroups = [...expectedGroups.values()].map((group) => {
+      const representations = group.record_ids.map((record_id) => ({
+        record_id,
+        repetitions: Array.from({ length: repetitions }, (_, index) => {
+          const attempt = attempts.find(
+            (value) =>
+              value.record_id === record_id && value.repetition === index + 1,
+          );
+          return {
+            repetition: index + 1,
+            observed: attempt?.coordinator_observed === true,
+            correct_judgment: attempt?.correct_judgment === true,
+          };
+        }),
+      }));
+      const observations = representations.flatMap(
+        (representation) => representation.repetitions,
+      );
+      return {
+        ...group,
+        expected_repetitions: repetitions,
+        representations,
+        observed_judgments: observations.filter((row) => row.observed).length,
+        complete:
+          group.record_ids.length === 2 &&
+          observations.every((row) => row.observed),
+        correct_judgment_rate:
+          observations.filter((row) => row.correct_judgment).length /
+          observations.length,
+      };
+    });
+    const expectedJudgments =
+      expectedBatches.reduce((sum, batch) => sum + batch.records.length, 0) *
+      repetitions;
+    const coverage = {
+      complete:
+        unexpectedRuns.length === 0 &&
+        slots.every((slot) => slot.complete) &&
+        attempts.length === expectedJudgments &&
+        coverageGroups.every((group) => group.complete),
+      expected_judgments: expectedJudgments,
+      observed_judgments: attempts.filter(
+        (attempt) => attempt.coordinator_observed,
+      ).length,
+      scored_judgments: attempts.length,
+      expected_runs: expectedBatches.length * repetitions,
+      observed_runs: selected.length,
+      missing_worker_proofs: slots.filter((slot) => !slot.persisted).length,
+      invalid_run_slots: slots
+        .filter((slot) => !slot.complete)
+        .map((slot) => ({ batch: slot.batch, repetition: slot.repetition })),
+      unexpected_run_slots: unexpectedRuns.map((run) => ({
+        batch: run.task,
+        repetition: run.repetition,
+      })),
+      unique_groups: coverageGroups.length,
+      groups: coverageGroups,
+    };
+    const quality = summarizeReviewAttempts(attempts);
+    quality.work = hostScoringWork();
+    const usageComplete =
+      coverage.complete &&
+      slots.every((slot) => completeProviderUsage(slot.run));
+    const elapsedComplete =
+      coverage.complete &&
+      slots.every((slot) => nonnegative(slot.run?.total_elapsed_ms));
+    const totalMs = elapsedComplete
+      ? slots.reduce((sum, slot) => sum + slot.run.total_elapsed_ms, 0)
+      : null;
+    const jevWorks = slots.map((slot) => observeJevWork(slot.run ?? {}));
     arms[arm] = {
       runs: selected.length,
-      accepted_batches: selected.filter((run) => run.passed).length,
+      accepted_batches: slots.filter(
+        (slot) => slot.complete && slot.run?.passed === true,
+      ).length,
+      functional_workflows_passed:
+        coverage.complete && slots.every((slot) => slot.run?.passed === true),
+      coverage,
       quality,
+      group_quality: {
+        groups: coverageGroups.length,
+        complete_groups: coverageGroups.filter((group) => group.complete)
+          .length,
+        mean_correct_judgment_rate:
+          coverageGroups.reduce(
+            (sum, group) => sum + group.correct_judgment_rate,
+            0,
+          ) / coverageGroups.length,
+        scope:
+          "Context groups are the authored scenario unit. State/chat variants and repetitions are paired coverage, not additional independent scenarios.",
+      },
       generated_tokens: usageComplete
-        ? selected.reduce(
-            (sum, run) => sum + run.provider_usage.generated_tokens,
+        ? slots.reduce(
+            (sum, slot) => sum + slot.run.provider_usage.generated_tokens,
             0,
           )
         : null,
       generated_tokens_lower_bound: selected.reduce(
         (sum, run) =>
-          sum + Number(run.provider_usage?.generated_tokens_lower_bound ?? 0),
+          sum +
+          (nonnegative(run.provider_usage?.generated_tokens_lower_bound)
+            ? run.provider_usage.generated_tokens_lower_bound
+            : 0),
         0,
       ),
       usage_complete: usageComplete,
+      elapsed_complete: elapsedComplete,
       elapsed_all_runs_ms: totalMs,
+      observed_elapsed_lower_bound_ms: selected.reduce(
+        (sum, run) =>
+          sum + (nonnegative(run.total_elapsed_ms) ? run.total_elapsed_ms : 0),
+        0,
+      ),
       elapsed_all_runs_per_accepted_judgment_ms:
-        quality.accepted_correct_judgments > 0
+        totalMs !== null && quality.accepted_correct_judgments > 0
           ? totalMs / quality.accepted_correct_judgments
           : null,
       elapsed_all_runs_per_completed_clear_decision_ms:
-        quality.completed_clear_decisions > 0
+        totalMs !== null && quality.completed_clear_decisions > 0
           ? totalMs / quality.completed_clear_decisions
           : null,
+      timing_unit:
+        "One six-record mixed batch workflow per repetition; 13 batches x3 repetitions in full confirmation. Group timing is not separately identifiable.",
+      jev_work: {
+        usage_complete:
+          coverage.complete && jevWorks.every((work) => work.usage_complete),
+        intervals_complete:
+          coverage.complete &&
+          jevWorks.every((work) => work.intervals_complete),
+        usage:
+          coverage.complete && jevWorks.every((work) => work.usage_complete)
+            ? {
+                input_tokens: jevWorks.reduce(
+                  (sum, work) => sum + work.usage.input_tokens,
+                  0,
+                ),
+                output_tokens: jevWorks.reduce(
+                  (sum, work) => sum + work.usage.output_tokens,
+                  0,
+                ),
+              }
+            : null,
+        elapsed_ms:
+          coverage.complete && jevWorks.every((work) => work.intervals_complete)
+            ? jevWorks.reduce((sum, work) => sum + work.elapsed_ms, 0)
+            : null,
+        native_cleanup_ms: null,
+        scope:
+          "Actual selected tool intervals/receipts; cleanup included only in full workflow elapsed. Process sampling excludes Jev native child RSS and cannot prove GPU/energy savings.",
+      },
       jev_selected_batches: selected.filter((run) =>
-        run.selected_tools?.some((tool) =>
-          ["jev_classify", "jev_classify_loaded"].includes(tool.name),
-        ),
+        run.selected_tools?.some((tool) => jevToolNames.has(tool.name)),
       ).length,
       loaded_reference_calls: selected
         .flatMap((run) => run.selected_tools ?? [])
@@ -1368,21 +2068,124 @@ async function reviewSuiteSummary(runs, selectedBatches, repetitions) {
         .filter((tool) => tool.name === "jev_classify").length,
     };
   }
+  const fullSelection =
+    expectedBatches.length === 13 &&
+    expectedGroups.size === 39 &&
+    expectedBatches.reduce((sum, batch) => sum + batch.records.length, 0) ===
+      78;
+  const coverageComplete =
+    fullSelection &&
+    ["baseline", "candidate"].every((arm) => arms[arm].coverage.complete);
   return {
-    selected_batches: selectedBatches,
+    selected_batches: expectedBatches.length,
     required_batches: 13,
     repetitions,
     required_confirmation_repetitions: 3,
-    coverage_complete: selectedBatches === 13,
+    coverage_complete: coverageComplete,
     full_confirmation_complete:
-      selectedBatches === 13 &&
+      coverageComplete &&
       repetitions === 3 &&
-      ["baseline", "candidate"].every((arm) => arms[arm].runs === 39),
-    independent_context_groups: selectedBatches * 3,
+      ["baseline", "candidate"].every(
+        (arm) =>
+          arms[arm].coverage.expected_runs === 39 &&
+          arms[arm].coverage.scored_judgments === 234 &&
+          arms[arm].coverage.observed_judgments === 234,
+      ),
+    independent_context_groups: expectedGroups.size,
+    expected_context_groups: 39,
     authored_representation_pairs_not_independent: true,
+    timing_unit:
+      "13 mixed batch workflows x3 repetitions per arm; 39 context groups are quality clusters, not 39 independent workflow timings.",
     arms,
     interpretation:
-      "Review evidence is separate from every required repair outcome. Pilot/partial/failed/incomplete-usage results cannot establish the predeclared complete-suite speed or generation saving.",
+      "Review evidence is separate from every required repair outcome. Pilot/partial/failed/incomplete-usage results cannot establish complete-suite speed or generation saving. summary.passed is functional acceptance only; improvement has separate gates.",
+  };
+}
+
+/** Predeclared full-workflow gain thresholds, with omissions/unknown work fail-closed. */
+export function reviewImprovementGates(suite, paired) {
+  const arms = [suite.arms.baseline, suite.arms.candidate];
+  const coveragePassed = suite.full_confirmation_complete === true;
+  const qualityPassed =
+    arms.every((arm) => arm.quality.gates.passed === true) &&
+    suite.arms.candidate.quality.correct_judgment_rate >=
+      suite.arms.baseline.quality.correct_judgment_rate &&
+    suite.arms.candidate.group_quality.mean_correct_judgment_rate >=
+      suite.arms.baseline.group_quality.mean_correct_judgment_rate;
+  const functionalPassed = arms.every(
+    (arm) => arm.functional_workflows_passed === true,
+  );
+  const protocolPassed =
+    paired.pairs.length === 39 &&
+    paired.pairs.every(
+      (pair) => pair.protocol_passed === true && pair.both_accepted === true,
+    );
+  const providerUsageComplete = arms.every(
+    (arm) => arm.usage_complete === true,
+  );
+  const jevUsageComplete =
+    suite.arms.candidate.jev_work.usage_complete === true &&
+    suite.arms.candidate.jev_work.intervals_complete === true;
+  const elapsedComplete =
+    arms.every((arm) => arm.elapsed_complete === true) &&
+    paired.pairs.every((pair) =>
+      finite(pair.candidate_to_baseline_elapsed_ratio),
+    );
+  const resourceEligible =
+    coveragePassed &&
+    qualityPassed &&
+    functionalPassed &&
+    protocolPassed &&
+    providerUsageComplete &&
+    jevUsageComplete &&
+    elapsedComplete;
+  const elapsedRatio = elapsedComplete
+    ? median(
+        paired.pairs.map((pair) => pair.candidate_to_baseline_elapsed_ratio),
+      )
+    : null;
+  const totalElapsedRatio =
+    elapsedComplete && suite.arms.baseline.elapsed_all_runs_ms > 0
+      ? suite.arms.candidate.elapsed_all_runs_ms /
+        suite.arms.baseline.elapsed_all_runs_ms
+      : null;
+  const generationRatio =
+    providerUsageComplete && suite.arms.baseline.generated_tokens > 0
+      ? suite.arms.candidate.generated_tokens /
+        suite.arms.baseline.generated_tokens
+      : null;
+  const noElapsedRegression =
+    elapsedRatio !== null &&
+    totalElapsedRatio !== null &&
+    elapsedRatio <= 1 &&
+    totalElapsedRatio <= 1;
+  const elapsedGain =
+    resourceEligible && elapsedRatio <= 0.8 && totalElapsedRatio <= 1;
+  const generativeGain =
+    resourceEligible &&
+    generationRatio !== null &&
+    generationRatio <= 0.7 &&
+    noElapsedRegression;
+  return {
+    coverage_passed: coveragePassed,
+    quality_passed: qualityPassed,
+    functional_workflows_passed: functionalPassed,
+    protocol_passed: protocolPassed,
+    provider_usage_complete: providerUsageComplete,
+    jev_usage_complete: jevUsageComplete,
+    elapsed_complete: elapsedComplete,
+    resource_claim_eligible: resourceEligible,
+    median_elapsed_gain_threshold: 0.2,
+    total_generated_token_gain_threshold: 0.3,
+    median_paired_elapsed_ratio: elapsedRatio,
+    total_elapsed_ratio: totalElapsedRatio,
+    total_generated_token_ratio: generationRatio,
+    no_elapsed_regression: noElapsedRegression,
+    elapsed_gain_passed: elapsedGain,
+    generative_gain_passed: generativeGain,
+    passed: elapsedGain || generativeGain,
+    scope:
+      "Latency and actual generated-work gain only on the full frozen review workflow. Ready-server prefix/cache conditions remain observational. This does not establish cold-model, complete memory/energy, monetary or repair-workflow gains.",
   };
 }
 async function main() {
@@ -1482,6 +2285,12 @@ async function main() {
     prepare_only: values["prepare-only"],
     workflow: values.workflow,
     review_dataset: reviewDataset,
+    required_repair_lane: [
+      "nullable-contact",
+      "abortable-refresh",
+      "exclusive-window",
+      "latest-request",
+    ],
     review_confirmation:
       values.workflow === "review"
         ? {
@@ -1500,7 +2309,10 @@ async function main() {
     order: values.order,
     actual_provider_stream: "Pi SDK unmodified",
     tool_choice: "automatic",
-    same_settings: true,
+    same_settings: null,
+    same_settings_intent: true,
+    settings_scope:
+      "Shared requested policy; actual parity is verified from worker SDK observations, never inferred from intent",
     retries: 0,
     compaction: false,
     thinking_level: values["thinking-level"],
@@ -1539,7 +2351,19 @@ async function main() {
   if (values["prepare-only"]) {
     await save(join(output, "summary.json"), {
       ...protocol,
+      status: "prepared",
       passed: true,
+      passed_scope:
+        "Preparation checks only; zero model calls do not establish workflow acceptance or improvement",
+      functional_acceptance: null,
+      review_gain_gates:
+        values.workflow === "review"
+          ? {
+              resource_claim_eligible: false,
+              passed: false,
+              reason: "Preparation only; no actual review judgments or usage",
+            }
+          : null,
       model_calls: 0,
       provider_calls: 0,
     });
@@ -1583,6 +2407,15 @@ async function main() {
       chatTemplateKwargs: { enable_thinking: { $var: "thinking.enabled" } },
     },
   };
+  const expectedReviewBatches =
+    values.workflow === "review"
+      ? await Promise.all(
+          prepared.map(async (batch) => ({
+            id: batch.id,
+            records: JSON.parse(await readFile(batch.host_gold_path, "utf8")),
+          })),
+        )
+      : null;
   let executionOrder = 0;
   for (let repetition = 1; repetition <= repetitions; repetition++)
     for (let taskIndex = 0; taskIndex < prepared.length; taskIndex++) {
@@ -1625,6 +2458,8 @@ async function main() {
           comparison: values.comparison,
           repetition,
           execution_order: ++executionOrder,
+          previous_arm: protocol.runs.at(-1)?.arm ?? null,
+          pair_position: arm === first ? "first" : "second",
           timeout_ms: timeoutMs,
           model,
           base_url: values["base-url"],
@@ -1657,9 +2492,16 @@ async function main() {
           proof = JSON.parse(
             await readFile(join(directory, "proof.json"), "utf8"),
           );
+          proof.worker_proof_present = true;
         } catch (error) {
           proof = {
             task: task.id,
+            workflow: task.kind ?? "repair",
+            workspace,
+            review_input_sha256: task.input_sha256 ?? null,
+            previous_arm: config.previous_arm,
+            pair_position: config.pair_position,
+            worker_proof_present: false,
             arm,
             comparison: values.comparison,
             repetition,
@@ -1675,18 +2517,44 @@ async function main() {
             },
             errors: [`Worker did not persist proof: ${error}`],
           };
+          if (task.kind === "review") {
+            const records = expectedReviewBatches.find(
+              (batch) => batch.id === task.id,
+            ).records;
+            proof.acceptance = scoreReviewFinal({ text: "", records });
+            proof.acceptance.summary.work = hostScoringWork();
+            proof.acceptance.failure_scope =
+              "Missing worker proof; all six expected host-gold judgments retained as failures";
+          }
         }
         protocol.runs.push(proof);
         protocol.paired = comparisonReport(protocol.runs, values.comparison);
+        protocol.same_settings =
+          protocol.paired.pairs.length === prepared.length * repetitions
+            ? protocol.paired.pairs.every((pair) => pair.same_settings)
+            : null;
         if (values.workflow === "review")
           protocol.review_suite = await reviewSuiteSummary(
             protocol.runs,
-            prepared.length,
+            expectedReviewBatches,
             repetitions,
+          );
+        if (values.workflow === "review")
+          protocol.review_gain_gates = reviewImprovementGates(
+            protocol.review_suite,
+            protocol.paired,
           );
         await save(join(output, "summary.json"), {
           ...protocol,
           finished_at: new Date().toISOString(),
+          passed_scope:
+            "Functional workflow acceptance only; review quality, coverage and improvement gates are separate",
+          evaluation_complete:
+            protocol.runs.length ===
+            prepared.length * repetitions * (values.arm === "pair" ? 2 : 1),
+          functional_acceptance:
+            protocol.runs.every((run) => run.passed) &&
+            protocol.paired.pairs.every((pair) => pair.protocol_passed),
           passed:
             protocol.runs.every((run) => run.passed) &&
             protocol.paired.pairs.every((pair) => pair.protocol_passed),
@@ -1711,10 +2579,12 @@ async function main() {
       : 1;
 }
 
-try {
-  if (values.worker) await worker(resolve(values.worker));
-  else await main();
-} catch (error) {
-  console.error(error.stack ?? String(error));
-  process.exitCode = 1;
+if (invokedAsScript) {
+  try {
+    if (values.worker) await worker(resolve(values.worker));
+    else await main();
+  } catch (error) {
+    console.error(error.stack ?? String(error));
+    process.exitCode = 1;
+  }
 }

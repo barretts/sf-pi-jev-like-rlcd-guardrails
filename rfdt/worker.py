@@ -14,6 +14,7 @@ import hashlib
 import importlib.metadata
 import json
 import math
+import os
 import platform
 import random
 import sys
@@ -35,6 +36,80 @@ LORA = {
 ACCUMULATION = 8
 LEARNING_RATE = 1e-4
 SEED = 42
+FREE_CACHE_LIMIT_BYTES = 256 * 1024 * 1024
+PROGRESS_ROW_INTERVAL = 25
+
+
+class MemoryProgress:
+    """Bound free MLX buffers and retain only scalar progress observations."""
+
+    def __init__(self, path: Path | None = None) -> None:
+        import mlx.core as mx
+
+        self.mx = mx
+        self.previous_cache_limit = int(mx.set_cache_limit(FREE_CACHE_LIMIT_BYTES))
+        mx.reset_peak_memory()
+        self.started = time.monotonic()
+        self.path = path
+        self.phase = "startup"
+        self.max_active = 0
+        self.max_cache = 0
+        self.peak = 0
+        self.handle = None
+        if path is not None:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            self.handle = os.fdopen(descriptor, "w")
+
+    def __enter__(self) -> MemoryProgress:
+        self.emit("worker_start", phase="startup", free_cache_limit_bytes=FREE_CACHE_LIMIT_BYTES)
+        return self
+
+    def __exit__(self, error_type: Any, error: Any, traceback: Any) -> None:
+        try:
+            if error_type is not None:
+                self.emit("worker_error", phase=self.phase, error_type=error_type.__name__)
+        finally:
+            if self.handle is not None:
+                self.handle.close()
+
+    def sample(self) -> dict[str, int]:
+        active = int(self.mx.get_active_memory())
+        cache = int(self.mx.get_cache_memory())
+        peak = int(self.mx.get_peak_memory())
+        self.max_active = max(self.max_active, active)
+        self.max_cache = max(self.max_cache, cache)
+        self.peak = max(self.peak, peak)
+        return {"active_memory_bytes": active, "cache_memory_bytes": cache, "peak_memory_bytes": peak}
+
+    def clear(self) -> None:
+        self.sample()
+        self.mx.clear_cache()
+        self.sample()
+
+    def emit(self, event: str, **fields: Any) -> None:
+        self.phase = fields.get("phase", self.phase)
+        record = {"event": event, "elapsed_seconds": time.monotonic() - self.started, **fields, **self.sample()}
+        line = json.dumps(record, allow_nan=False)
+        if self.handle is not None:
+            self.handle.write(line + "\n")
+            self.handle.flush()
+        print(line, file=sys.stderr, flush=True)
+
+    def summary(self) -> dict[str, Any]:
+        self.sample()
+        return {
+            "free_cache_limit_bytes": FREE_CACHE_LIMIT_BYTES,
+            "previous_free_cache_limit_bytes": self.previous_cache_limit,
+            "clear_after_evaluation_row": True,
+            "clear_after_training_microbatch": True,
+            "clear_after_optimizer_update": True,
+            "max_observed_active_memory_bytes": self.max_active,
+            "max_observed_cache_memory_bytes": self.max_cache,
+            "peak_memory_bytes": self.peak,
+            "peak_scope": "since_worker_observer_start",
+            "progress_file": str(self.path) if self.path is not None else None,
+        }
 
 
 def sha256(path: Path) -> str:
@@ -292,14 +367,11 @@ def row_arrays(row: dict[str, Any]) -> tuple[Any, Any, Any]:
     )
 
 
-def evaluate_rows(model: Any, rows: list[dict[str, Any]]) -> dict[str, Any]:
+def evaluate_row(model: Any, row: dict[str, Any]) -> tuple[list[float], float]:
     import mlx.core as mx
 
-    model.eval()
-    predictions = []
-    correct = 0
-    total_loss = 0.0
-    for row in rows:
+    tokens = allowed = targets = logits = probabilities = loss = None
+    try:
         tokens, allowed, targets = row_arrays(row)
         logits = mx.take(final_logits(model, tokens)[0], allowed).astype(mx.float32)
         probabilities = mx.softmax(logits)
@@ -309,15 +381,48 @@ def evaluate_rows(model: Any, rows: list[dict[str, Any]]) -> dict[str, Any]:
         scalar_loss = float(loss.item())
         if not math.isfinite(scalar_loss) or any(not math.isfinite(value) for value in values):
             raise ValueError(f"{row['id']}: model produced nonfinite values")
+        return values, scalar_loss
+    finally:
+        # Release this frame's row arrays before the caller clears free buffers.
+        del tokens, allowed, targets, logits, probabilities, loss
+
+
+def evaluate_rows(model: Any, rows: list[dict[str, Any]], progress: MemoryProgress | None = None, phase: str = "evaluation") -> dict[str, Any]:
+    import mlx.core as mx
+
+    if progress is not None:
+        progress.emit("phase_begin", phase=phase, rows_total=len(rows))
+    model.eval()
+    predictions = []
+    correct = 0
+    total_loss = 0.0
+    for index, row in enumerate(rows, 1):
+        try:
+            values, scalar_loss = evaluate_row(model, row)
+        finally:
+            progress.clear() if progress is not None else mx.clear_cache()
         prediction = max(range(len(values)), key=values.__getitem__)
         target = max(range(len(values)), key=row["target_probabilities"].__getitem__)
         correct += prediction == target
         total_loss += scalar_loss
         predictions.append({"id": row["id"], "group": row["group"], "split": row["split"], "probabilities": values, "selected_index": prediction, "loss": scalar_loss})
+        if progress is not None and (index % PROGRESS_ROW_INTERVAL == 0 or index == len(rows)):
+            progress.emit("evaluation_progress", phase=phase, rows_completed=index, rows_total=len(rows))
+    if progress is not None:
+        progress.emit("phase_end", phase=phase, rows_completed=len(rows), rows_total=len(rows))
     return {"rows": len(rows), "mean_loss": total_loss / len(rows), "selected_label_accuracy": correct / len(rows), "predictions": predictions}
 
 
 def train(args: argparse.Namespace) -> dict[str, Any]:
+    output = Path(args.output).expanduser().resolve()
+    adapter = output / "adapter"
+    if adapter.exists():
+        raise ValueError("The output adapter directory already exists; use a new run directory")
+    with MemoryProgress(output / "worker-progress.jsonl") as progress:
+        return train_with_progress(args, output, adapter, progress)
+
+
+def train_with_progress(args: argparse.Namespace, output: Path, adapter: Path, progress: MemoryProgress) -> dict[str, Any]:
     import mlx.core as mx
     import mlx.nn as nn
     import mlx.optimizers as optimizers
@@ -325,10 +430,6 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
     from mlx_lm.tuner.utils import linear_to_lora_layers
 
     identity = provenance()
-    output = Path(args.output).expanduser().resolve()
-    adapter = output / "adapter"
-    if adapter.exists():
-        raise ValueError("The output adapter directory already exists; use a new run directory")
     model_dir = resolve_model(args.model, fetch=True)
     rows = read_rows(Path(args.data), "train")
     validation = read_rows(Path(args.validation_data), "validation") if args.validation_data else []
@@ -341,6 +442,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
     parity = verify_prompt_parity(tokenizer, rows + validation)
     random.seed(SEED)
     mx.random.seed(SEED)
+    progress.emit("phase_begin", phase="model_load")
     model, _, _ = load_model(model_dir)
     model.freeze()
     linear_to_lora_layers(model, 26, LORA)
@@ -349,7 +451,8 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError("Expected exactly query/value LoRA parameters in all 26 Gemma layers")
     mx.eval(trainable)
     initial_parameters = {name: mx.array(value) for name, value in trainable.items()}
-    initial_report = evaluate_rows(model, rows)
+    progress.emit("phase_end", phase="model_load")
+    initial_report = evaluate_rows(model, rows, progress, "initial_evaluation")
     optimizer = optimizers.Adam(learning_rate=LEARNING_RATE)
     loss_and_grad = nn.value_and_grad(model, selected_loss)
     adapter.mkdir(parents=True)
@@ -358,6 +461,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
     cursor = 0
     started = time.monotonic()
     model.train()
+    progress.emit("phase_begin", phase="optimization", steps_total=args.steps)
     for step in range(args.steps):
         accumulated = None
         losses = []
@@ -374,16 +478,21 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
             losses.append(scalar)
             accumulated = gradients if accumulated is None else tree_map(lambda total, current: total + current, accumulated, gradients)
             mx.eval(accumulated)
+            del loss, gradients
+            progress.clear()
         gradients = tree_map(lambda gradient: gradient / ACCUMULATION, accumulated)
         if any(not bool(mx.all(mx.isfinite(gradient)).item()) for _, gradient in tree_flatten(gradients)):
             raise ValueError(f"Nonfinite gradient at optimizer step {step + 1}")
         optimizer.update(model, gradients)
         mx.eval(model.parameters(), optimizer.state)
+        del gradients, accumulated
+        progress.clear()
         history.append({"step": step + 1, "loss": sum(losses) / len(losses)})
-        print(json.dumps({"event": "training_step", **history[-1]}), file=sys.stderr, flush=True)
+        progress.emit("training_step", phase="optimization", steps_total=args.steps, **history[-1])
+    progress.emit("phase_end", phase="optimization", steps_completed=args.steps, steps_total=args.steps)
     changed = any(bool(mx.any(value != initial_parameters[name]).item()) for name, value in tree_flatten(model.trainable_parameters()))
-    final_report = evaluate_rows(model, rows)
-    validation_report = evaluate_rows(model, validation) if validation else None
+    final_report = evaluate_rows(model, rows, progress, "final_evaluation")
+    validation_report = evaluate_rows(model, validation, progress, "validation_evaluation") if validation else None
     weights = dict(tree_flatten(model.trainable_parameters()))
     mx.save_safetensors(str(adapter / "adapters.safetensors"), weights)
     write_json(adapter / "adapter_config.json", {"fine_tune_type": "lora", "num_layers": 26, "lora_parameters": LORA})
@@ -407,28 +516,38 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         "duration_seconds": time.monotonic() - started,
         "history": history,
         "validation": validation_report,
+        "memory": progress.summary(),
     }
     write_json(adapter / "rfdt-manifest.json", manifest)
     # Release model/optimizer state before constructing a fresh checkpoint load.
     expected_predictions = final_report["predictions"]
-    del model, optimizer, loss_and_grad, weights, trainable, initial_parameters, gradients, accumulated
+    del model, optimizer, loss_and_grad, weights, trainable, initial_parameters
     import gc
 
     gc.collect()
-    mx.clear_cache()
+    progress.clear()
+    progress.emit("phase_begin", phase="adapter_reload")
     reloaded, _, _ = load_model(model_dir, adapter)
-    reload_report = evaluate_rows(reloaded, rows)
+    progress.emit("phase_end", phase="adapter_reload")
+    reload_report = evaluate_rows(reloaded, rows, progress, "reload_evaluation")
     delta = max(abs(before - after) for expected, actual in zip(expected_predictions, reload_report["predictions"]) for before, after in zip(expected["probabilities"], actual["probabilities"]))
     manifest["reload_max_probability_delta"] = delta
     manifest["reload_verified"] = delta <= 1e-5
+    manifest["memory"] = progress.summary()
     write_json(adapter / "rfdt-manifest.json", manifest)
     write_json(output / "training-report.json", manifest)
     if not changed or not manifest["reload_verified"]:
         raise ValueError("Training did not change adapters or checkpoint reload failed equivalence")
+    progress.emit("worker_complete", phase="complete", steps_completed=args.steps, adapter_changed=changed, reload_verified=manifest["reload_verified"])
     return {"ok": True, **manifest}
 
 
 def evaluate(args: argparse.Namespace) -> dict[str, Any]:
+    with MemoryProgress() as progress:
+        return evaluate_with_progress(args, progress)
+
+
+def evaluate_with_progress(args: argparse.Namespace, progress: MemoryProgress) -> dict[str, Any]:
     identity = provenance()
     rows = read_rows(Path(args.data), args.split)
     adapter = Path(args.adapter).expanduser().resolve() if args.adapter else None
@@ -436,8 +555,11 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
         validate_adapter(adapter, rows[0]["template_version"])
     model_dir = resolve_model(args.model, fetch=True)
     parity = verify_prompt_parity(load_tokenizer(model_dir), rows)
+    progress.emit("phase_begin", phase="model_load")
     model, _, _ = load_model(model_dir, adapter)
-    return {"ok": True, "provenance": identity, "prompt_parity": parity, "adapter_dir": str(adapter) if adapter else None, **evaluate_rows(model, rows)}
+    progress.emit("phase_end", phase="model_load")
+    report = evaluate_rows(model, rows, progress)
+    return {"ok": True, "provenance": identity, "prompt_parity": parity, "adapter_dir": str(adapter) if adapter else None, **report, "memory": progress.summary()}
 
 
 def project_text_tokenizer(model_dir: Path, output: Path, vocab_size: int) -> dict[str, Any]:
@@ -595,6 +717,13 @@ def fusion_training_rows(adapter: Path, manifest: dict[str, Any], data: str | No
 
 
 def fuse(args: argparse.Namespace) -> dict[str, Any]:
+    # Fusion keeps progress on stderr so observing it cannot create the fresh
+    # output directory before the existing output guard and model saver.
+    with MemoryProgress() as progress:
+        return fuse_with_progress(args, progress)
+
+
+def fuse_with_progress(args: argparse.Namespace, progress: MemoryProgress) -> dict[str, Any]:
     import mlx.core as mx
     from mlx.utils import tree_map, tree_unflatten
     from mlx_lm.tuner.utils import load_adapters
@@ -609,6 +738,7 @@ def fuse(args: argparse.Namespace) -> dict[str, Any]:
     output = Path(args.output).expanduser().resolve()
     if output.exists():
         raise ValueError("The fusion output already exists; use a new directory")
+    progress.emit("phase_begin", phase="fusion")
     model, tokenizer, config = load_model(model_dir)
     # Expand the base before adding LoRA deltas so BF16 rounding cannot erase
     # small trained updates. llama.cpp performs the final explicit F16 conversion.
@@ -619,6 +749,8 @@ def fuse(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError("Expected 52 query/value LoRA modules to fuse")
     model.update_modules(tree_unflatten(linears))
     save(output, model_dir, model, tokenizer, config, donate_model=False)
+    progress.clear()
+    progress.emit("phase_end", phase="fusion")
     projection = project_text_tokenizer(model_dir, output, config["vocab_size"])
     export_tokenizer = load_tokenizer(output)
     if any(type(token) is not int or not 0 <= token < config["vocab_size"] for token in export_tokenizer.get_vocab().values()):
@@ -626,7 +758,7 @@ def fuse(args: argparse.Namespace) -> dict[str, Any]:
     export_parity = verify_prompt_parity(export_tokenizer, rows)
     projection["prompt_parity"] = {"source": source_parity, "export": export_parity, "training_data_file": str(data_path), "training_data_sha256": sha256(data_path)}
     files = {file.name: sha256(file) for file in sorted(output.iterdir()) if file.is_file()}
-    result = {"ok": True, "fused": True, "fusion_dtype": "float32", "output_dir": str(output), "format": "safetensors", "gguf_exported": False, "provenance": identity, "template_version": manifest["template_version"], "adapter_sha256": manifest["adapter_sha256"], "tokenizer_projection": projection, "files": files}
+    result = {"ok": True, "fused": True, "fusion_dtype": "float32", "output_dir": str(output), "format": "safetensors", "gguf_exported": False, "provenance": identity, "template_version": manifest["template_version"], "adapter_sha256": manifest["adapter_sha256"], "tokenizer_projection": projection, "files": files, "memory": progress.summary()}
     write_json(output / "rfdt-fused-manifest.json", result)
     return result
 
@@ -678,8 +810,16 @@ def fetch(args: argparse.Namespace) -> dict[str, Any]:
     return {"ok": True, "model_dir": str(path), **identity, "gemma_terms_accepted": True}
 
 
-def self_test(_: argparse.Namespace) -> dict[str, Any]:
+def self_test(args: argparse.Namespace) -> dict[str, Any]:
     """Weights-free math/gradient fixture; never evidence about the real checkpoint."""
+    import mlx.core as mx
+
+    mx.set_default_device(mx.cpu)
+    with MemoryProgress() as progress:
+        return self_test_with_progress(args, progress)
+
+
+def self_test_with_progress(_: argparse.Namespace, progress: MemoryProgress) -> dict[str, Any]:
     import mlx.core as mx
     import mlx.nn as nn
     import mlx.optimizers as optimizers
@@ -705,6 +845,7 @@ def self_test(_: argparse.Namespace) -> dict[str, Any]:
     value_and_grad = nn.value_and_grad(model, selected_loss)
     before, gradients = value_and_grad(model, tokens, allowed, targets)
     mx.eval(before, gradients)
+    progress.clear()
     leaves = dict(tree_flatten(gradients))
     first_layer = [gradient for name, gradient in leaves.items() if "layers.0." in name]
     if not first_layer or not any(bool(mx.any(gradient != 0).item()) for gradient in first_layer):
@@ -714,12 +855,16 @@ def self_test(_: argparse.Namespace) -> dict[str, Any]:
         _, gradients = value_and_grad(model, tokens, allowed, targets)
         optimizer.update(model, gradients)
         mx.eval(model.parameters(), optimizer.state)
+        progress.clear()
     after = selected_loss(model, tokens, allowed, targets)
     mx.eval(after)
     if float(after.item()) >= float(before.item()):
         raise ValueError("Tiny Gemma selected-answer loss did not decrease")
     changed = any(bool(mx.any(parameter != initial_adapters[name]).item()) for name, parameter in tree_flatten(model.trainable_parameters()))
     expected = mx.softmax(mx.take(final_logits(model, tokens)[0], allowed).astype(mx.float32))
+    fixture_row = {"id": "tiny-full-context", "group": "tiny-full-context", "split": "train", "prompt_token_ids": tokens.tolist()[0], "allowed_token_ids": allowed.tolist(), "target_probabilities": targets.tolist()}
+    row_report = evaluate_rows(model, [fixture_row], progress, "fixture_evaluation")
+    row_delta = max(abs(before - after) for before, after in zip(expected.tolist(), row_report["predictions"][0]["probabilities"]))
     with tempfile.TemporaryDirectory(prefix="jev-rfdt-fixture-") as temporary:
         adapter = Path(temporary)
         mx.save_safetensors(str(adapter / "adapters.safetensors"), dict(tree_flatten(model.trainable_parameters())))
@@ -735,9 +880,9 @@ def self_test(_: argparse.Namespace) -> dict[str, Any]:
         reloaded.update_modules(tree_unflatten(linears))
         fused = mx.softmax(mx.take(final_logits(reloaded, tokens)[0], allowed).astype(mx.float32))
         fusion_delta = float(mx.max(mx.abs(expected - fused)).item())
-    if not changed or reload_delta > 1e-5 or fusion_delta > 1e-5 or len(linears) != 12:
+    if not changed or reload_delta > 1e-5 or fusion_delta > 1e-5 or row_delta > 1e-6 or len(linears) != 12:
         raise ValueError("Tiny Gemma adapter change/reload/fusion equivalence failed")
-    return {"ok": True, "fixture": "random_tiny_gemma3_no_checkpoint_weights", "device": "cpu", "dependencies": identity, "full_context_gradient_verified": True, "initial_loss": float(before.item()), "final_loss": float(after.item()), "trainable_leaves": len(leaves), "adapter_changed": changed, "reload_verified": True, "reload_max_probability_delta": reload_delta, "fusion_verified": True, "fusion_max_probability_delta": fusion_delta, "fusion_dtype": "float32"}
+    return {"ok": True, "fixture": "random_tiny_gemma3_no_checkpoint_weights", "device": "cpu", "dependencies": identity, "full_context_gradient_verified": True, "initial_loss": float(before.item()), "final_loss": float(after.item()), "trainable_leaves": len(leaves), "adapter_changed": changed, "reload_verified": True, "reload_max_probability_delta": reload_delta, "fusion_verified": True, "fusion_max_probability_delta": fusion_delta, "fusion_dtype": "float32", "evaluation_max_probability_delta": row_delta, "selected_probabilities": expected.tolist(), "memory": progress.summary()}
 
 
 def parser() -> argparse.ArgumentParser:
