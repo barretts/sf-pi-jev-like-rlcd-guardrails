@@ -1,0 +1,1361 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Prequalification native routing-head validation; no automatic production promotion",
+  "fixtureSha256": "fc91537d87cb7c0173e3fc06941336519fbab4c84fd3d8039d1111b836c8d3cf",
+  "fixtureProtocolSha256": "33920e4ac1e94988f8611ed54b76df94f389af79530c57c746d116d0b24ca638",
+  "wrapperSha256": "f2cc4741d7ed6615fc9337f57aa5b2cdc646c29a25a860ec9bae71ec1818a958",
+  "headSha256": "6c97fd783d2fd94d631717825923b462e319152bfe30044916be2011c803e84e",
+  "trainingPlanSha256": "9a9faabd4e550f8db17fe4cec3fb45479fb04b1d1c19e2f5130ded45a24f763e",
+  "qualificationPolicySha256": "9728b875d55808835bf9b298e5505f54ef3652969fbb9c6f513335e05b5a5368",
+  "qualificationPolicy": {
+    "schemaVersion": 1,
+    "purpose": "Prospective native validation qualification policy; never a production qualification result",
+    "fixtureSha256": "fc91537d87cb7c0173e3fc06941336519fbab4c84fd3d8039d1111b836c8d3cf",
+    "headSha256": "6c97fd783d2fd94d631717825923b462e319152bfe30044916be2011c803e84e",
+    "sourceWorkerSha256": "f3519bc5f33f86ffed0caf994549ad8b578db77fb84964e6f5906212522c5ead",
+    "productionQualified": false,
+    "minimumEasyIndependentGroups": 20,
+    "minimumStrongIndependentGroups": 40,
+    "easyFastCoverageMinimum": 0.6,
+    "unsafeFastMaximum": 0,
+    "warmOperationalP95MaximumMs": 100,
+    "fullPopulationRequired": true,
+    "errorsMaximum": 0,
+    "unrunMaximum": 0,
+    "completenessFromActualContextOnly": true,
+    "classifierInputsExcludeHostLabelsAndExpectedAnswers": true,
+    "schedule": "One cold full population plus two serial warm full populations; no feature replay",
+    "noTuningAfterValidation": true,
+    "familyMinimum": 12,
+    "independenceLimit": "Machine-authored validation frozen before fitting; same author also authored TRAIN; conceptual families may overlap; exact prompt/prior pairs do not overlap",
+    "promotion": "Separate root decision and exact result identity required; this policy does not approve an artifact"
+  },
+  "sourceSha256": {
+    "runner": "4da46a64e8b86f4d3a14862b7da20f5d3f106fd9d5f0170fdebe94ae7384df31",
+    "conversation_runner": "4faec9f736528674205ded594594e557018902cd8778036a4ef7ba97a733187b",
+    "classifier_source": "8cde8212c7d5126b706f0b207befcefcb61444c8eb0f4c0bd0af250266b9b1d2",
+    "classifier_runtime": "7dde5fdac84f96315c6d9f990882b218c4868a12ef319a504d620b01ff874975",
+    "runtime_source": "92cc5a850089ff3566a4b65ebf62cbb6b871ebbefdb8a1a4fbf98fa46cc239ee",
+    "runtime": "60012ebc3f636c73649ad67ee01600c9064ff82a4babbbbd0e999477744c6514",
+    "head_source": "81e332082fabd45bac9aa6d7c831e3e5386cc0fc63682aafbc1e89a586a8b9b9",
+    "head_runtime": "09e0eaa13b07452eac0f0cf851630f0c88aa53c540afb49948481dc888a5d3ba",
+    "guards_source": "bf5f2e188c1512fe11a30c37703c0deb51672deac9baaac7ba3304d8f75c1a4e",
+    "guards_runtime": "02d71f5cc5268b5236b284722f75c1689c07581f167de474c91458823d5a12fc",
+    "completeness_source": "af851770ebf21137cf98223846a81c435675116b969fb37ef3037fd9c4020a2d",
+    "completeness_runtime": "0e1c4a84bd978d215caaecc0800784905e4c152815a82bc98f60c6fb476734ef",
+    "evaluator_source": "3a446b92f2f378d0154ae265017d2d15caa47a6c7b762c519976b0bbeaba7d44",
+    "evaluator_runtime": "fd6ddf124eab9f0a7b02f460c1c711117cc949a6893527c899d3c39984940a93",
+    "package_lock": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f",
+    "worker": "f3519bc5f33f86ffed0caf994549ad8b578db77fb84964e6f5906212522c5ead",
+    "python": "2e0ccaeff53d8335112e0654cca683b6e4acbaa3bdba86fa86660cd07f9e0b20"
+  },
+  "sourceIdentity": "f3fbdf93320d71f4053434468a272fcca35010d0a02310ce354dcf6e53f7c21f",
+  "nodeVersion": "v26.5.1",
+  "counts": {
+    "easy": 20,
+    "hard": 20,
+    "unknown": 20
+  },
+  "requiredFamilies": [
+    "basic_arithmetic",
+    "concurrency",
+    "merge_semantics",
+    "missing_numeric_input",
+    "missing_options",
+    "missing_policy_or_context",
+    "missing_prior_result",
+    "read_fields",
+    "security_policy",
+    "shallow_copy",
+    "simple_transform",
+    "transaction_consistency"
+  ],
+  "independentValidation": true,
+  "independenceBasis": "Machine-authored validation frozen before fitting; same author also authored TRAIN; conceptual families may overlap; exact prompt/prior pairs do not overlap",
+  "schedule": [
+    {
+      "caseId": "e_shallow_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_shallow_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_shallow_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_shallow_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_shallow_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_arithmetic_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_arithmetic_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_arithmetic_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_arithmetic_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_arithmetic_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_read_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_read_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_read_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_read_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_read_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_transform_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_transform_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_transform_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_transform_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_transform_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_concurrency_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_concurrency_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_concurrency_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_concurrency_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_concurrency_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_security_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_security_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_security_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_security_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_security_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_merge_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_merge_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_merge_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_merge_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_merge_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_transaction_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_transaction_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_transaction_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_transaction_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "h_transaction_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_numeric_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_numeric_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_numeric_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_numeric_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_numeric_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_prior_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_prior_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_prior_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_prior_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_prior_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_options_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_options_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_options_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_options_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_options_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_context_01",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_context_02",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_context_03",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_context_04",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "u_context_05",
+      "pass": 0,
+      "phase": "cold"
+    },
+    {
+      "caseId": "e_transform_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_transform_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_transform_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_concurrency_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_concurrency_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_concurrency_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_concurrency_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_concurrency_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_security_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_security_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_security_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_security_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_security_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_merge_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_merge_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_merge_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_merge_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_merge_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_transaction_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_transaction_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_transaction_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_transaction_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_transaction_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_numeric_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_numeric_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_numeric_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_numeric_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_numeric_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_prior_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_prior_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_prior_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_prior_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_prior_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_options_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_options_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_options_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_options_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_options_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_context_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_context_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_context_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_context_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_context_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_shallow_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_shallow_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_shallow_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_shallow_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_shallow_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_arithmetic_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_arithmetic_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_arithmetic_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_arithmetic_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_arithmetic_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_read_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_read_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_read_03",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_read_04",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_read_05",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_transform_01",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_transform_02",
+      "pass": 1,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_merge_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_transaction_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_transaction_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_transaction_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_transaction_04",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_transaction_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_numeric_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_numeric_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_numeric_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_numeric_04",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_numeric_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_prior_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_prior_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_prior_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_prior_04",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_prior_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_options_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_options_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_options_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_options_04",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_options_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_context_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_context_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_context_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_context_04",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "u_context_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_shallow_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_shallow_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_shallow_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_shallow_04",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_shallow_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_arithmetic_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_arithmetic_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_arithmetic_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_arithmetic_04",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_arithmetic_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_read_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_read_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_read_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_read_04",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_read_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_transform_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_transform_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_transform_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_transform_04",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "e_transform_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_concurrency_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_concurrency_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_concurrency_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_concurrency_04",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_concurrency_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_security_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_security_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_security_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_security_04",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_security_05",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_merge_01",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_merge_02",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_merge_03",
+      "pass": 2,
+      "phase": "warm"
+    },
+    {
+      "caseId": "h_merge_04",
+      "pass": 2,
+      "phase": "warm"
+    }
+  ],
+  "cases": [
+    {
+      "id": "e_shallow_01",
+      "family": "shallow_copy",
+      "label": "easy",
+      "contextSha256": "2d1d67e366427c03d107616de504551b5be4582f4b0fea650e984d98dcc5b36a"
+    },
+    {
+      "id": "e_shallow_02",
+      "family": "shallow_copy",
+      "label": "easy",
+      "contextSha256": "81e2520014bd9eb2a52ff4ed28c69b3d5b5c5e50a90f44b123e146e67754e986"
+    },
+    {
+      "id": "e_shallow_03",
+      "family": "shallow_copy",
+      "label": "easy",
+      "contextSha256": "e4aa1f8d75f1aba25ebf74c2a74590e9f5466945a0500953b7c48e5d6a6a7195"
+    },
+    {
+      "id": "e_shallow_04",
+      "family": "shallow_copy",
+      "label": "easy",
+      "contextSha256": "aa244a8b9493b1d66f10657cd4944319b7474903c63eda98b9480fc8b6a2f516"
+    },
+    {
+      "id": "e_shallow_05",
+      "family": "shallow_copy",
+      "label": "easy",
+      "contextSha256": "150750b3d5dd32a2eab8563cf00af199bd30829b32d78bef81257cb19ad46a53"
+    },
+    {
+      "id": "e_arithmetic_01",
+      "family": "basic_arithmetic",
+      "label": "easy",
+      "contextSha256": "d20d60066cc538e398ed3c99a62011cddb5306ff565a3679f59d408836160bd1"
+    },
+    {
+      "id": "e_arithmetic_02",
+      "family": "basic_arithmetic",
+      "label": "easy",
+      "contextSha256": "7946fb838552819e8816fde761a1e3b7801973d2a29cfba6b348a35ab272f524"
+    },
+    {
+      "id": "e_arithmetic_03",
+      "family": "basic_arithmetic",
+      "label": "easy",
+      "contextSha256": "f56e2c1534c86eee6b1c0ffb6708d1001498d4431fd47ed2dd863c0ab66aba4b"
+    },
+    {
+      "id": "e_arithmetic_04",
+      "family": "basic_arithmetic",
+      "label": "easy",
+      "contextSha256": "666e57fd21bbd482db1f9b4fb4a8b0e07f69844fba5de5f0bf24b5cca1ce04b4"
+    },
+    {
+      "id": "e_arithmetic_05",
+      "family": "basic_arithmetic",
+      "label": "easy",
+      "contextSha256": "aed25d24bc9396e12d73ee5cc996dc8443e23875bbe34987289d3c58a27d665f"
+    },
+    {
+      "id": "e_read_01",
+      "family": "read_fields",
+      "label": "easy",
+      "contextSha256": "e82c787cd4ae0de99aedd130b18f425fd7a4686f57cd5c37900b0727daf100c8"
+    },
+    {
+      "id": "e_read_02",
+      "family": "read_fields",
+      "label": "easy",
+      "contextSha256": "36b314fb9b81d95d17a66d95774e45d239ad9ce98e4d0a11993f8ec7fec92ecf"
+    },
+    {
+      "id": "e_read_03",
+      "family": "read_fields",
+      "label": "easy",
+      "contextSha256": "92f20aab795ee6521d05032f4559a109fea9ac433a182aeef83c86269281352b"
+    },
+    {
+      "id": "e_read_04",
+      "family": "read_fields",
+      "label": "easy",
+      "contextSha256": "010cd9bafbb6201c8ba558664232e18a4d17e4d203cdfe990c36814ae7ba163e"
+    },
+    {
+      "id": "e_read_05",
+      "family": "read_fields",
+      "label": "easy",
+      "contextSha256": "f75c634fe83e8d30af2b08ace03118ab55e5b10a669a93010261caef626006aa"
+    },
+    {
+      "id": "e_transform_01",
+      "family": "simple_transform",
+      "label": "easy",
+      "contextSha256": "9adfd722643de43b745af9dd827af6204bdfd1f9b54534b13b9b26662a546612"
+    },
+    {
+      "id": "e_transform_02",
+      "family": "simple_transform",
+      "label": "easy",
+      "contextSha256": "c91a780b3499b0ce577cf353a296f79bd7769071cf4e5c64ddd147d9b797e451"
+    },
+    {
+      "id": "e_transform_03",
+      "family": "simple_transform",
+      "label": "easy",
+      "contextSha256": "ade940e48bdf09820057793cf44779b5e4c32d2436c3ebaf269481883c427909"
+    },
+    {
+      "id": "e_transform_04",
+      "family": "simple_transform",
+      "label": "easy",
+      "contextSha256": "ea9997fa6963795d2bb8646af8f224b1607a9521cb538c89e2ccce0291014ea2"
+    },
+    {
+      "id": "e_transform_05",
+      "family": "simple_transform",
+      "label": "easy",
+      "contextSha256": "f43813b743034bb5899518f3193d09e863edb3aca90f57aa48753ce65484e6a1"
+    },
+    {
+      "id": "h_concurrency_01",
+      "family": "concurrency",
+      "label": "hard",
+      "contextSha256": "68218435ba405230f0709413d3b4bd57a4424b568ec7c4aa662f9a4578b87f97"
+    },
+    {
+      "id": "h_concurrency_02",
+      "family": "concurrency",
+      "label": "hard",
+      "contextSha256": "63e37977818cf10b7dbbb75ee3da380055556aea4cc6ee128038d085468bc120"
+    },
+    {
+      "id": "h_concurrency_03",
+      "family": "concurrency",
+      "label": "hard",
+      "contextSha256": "e77200248f5497a4ce4c4aa9453b5dd728b7c5e89c5129ecf7dd28080a112785"
+    },
+    {
+      "id": "h_concurrency_04",
+      "family": "concurrency",
+      "label": "hard",
+      "contextSha256": "9a85c4a0d797186ae972bcb4dceceba961947a71127294b245cdbc4c0185ee82"
+    },
+    {
+      "id": "h_concurrency_05",
+      "family": "concurrency",
+      "label": "hard",
+      "contextSha256": "4227f22c4182c1da9e0c9fcabac45f4c96379d786e92307538f7d74317448629"
+    },
+    {
+      "id": "h_security_01",
+      "family": "security_policy",
+      "label": "hard",
+      "contextSha256": "8195ac315c7dc98f3e64bfe8b7a72aa5b9d1d078b23059926bc1b5ffe75f3fb7"
+    },
+    {
+      "id": "h_security_02",
+      "family": "security_policy",
+      "label": "hard",
+      "contextSha256": "04c98586491ba0626aaacd7df0a9c40a1b340c2ff51a120c6c824fa7f145a124"
+    },
+    {
+      "id": "h_security_03",
+      "family": "security_policy",
+      "label": "hard",
+      "contextSha256": "7f94f094656de3a3a0dd6254a40192ee4720768a9034b05e38b16668f6136a39"
+    },
+    {
+      "id": "h_security_04",
+      "family": "security_policy",
+      "label": "hard",
+      "contextSha256": "462fc5474be1643a694f8d6cde563279f14d80a20544502742855835dddeb848"
+    },
+    {
+      "id": "h_security_05",
+      "family": "security_policy",
+      "label": "hard",
+      "contextSha256": "8c3fa58fa5b28f0bbf97ac3554a11779e30e3c82215eeadfc06b2f14fdc248be"
+    },
+    {
+      "id": "h_merge_01",
+      "family": "merge_semantics",
+      "label": "hard",
+      "contextSha256": "a213cc3f3baec4941a32ea0e00fe062ae49a874e9c3f5d0ed9119b957ece6ef4"
+    },
+    {
+      "id": "h_merge_02",
+      "family": "merge_semantics",
+      "label": "hard",
+      "contextSha256": "1fe8661ad589a9a2aaecf675fcbd3141fa30fe2c1ab6374aa4eace4c6459e3e7"
+    },
+    {
+      "id": "h_merge_03",
+      "family": "merge_semantics",
+      "label": "hard",
+      "contextSha256": "cf9c7c37516fef6ccce27be911e778282b42d1a0846c45e2f51f86bc64bd5e94"
+    },
+    {
+      "id": "h_merge_04",
+      "family": "merge_semantics",
+      "label": "hard",
+      "contextSha256": "09fd20839e93c2bc77376889770b9e43fc9e7c129cc06a1be5b42fc9656c70e5"
+    },
+    {
+      "id": "h_merge_05",
+      "family": "merge_semantics",
+      "label": "hard",
+      "contextSha256": "bca96088d67f6eea5edf4891d5e4b70aeeaec01856df7506f30181f6a683c896"
+    },
+    {
+      "id": "h_transaction_01",
+      "family": "transaction_consistency",
+      "label": "hard",
+      "contextSha256": "f4c88d6d04cf7a863de0a8c7fbcbe33f64264a927b43e04daf44c9c1fee95fff"
+    },
+    {
+      "id": "h_transaction_02",
+      "family": "transaction_consistency",
+      "label": "hard",
+      "contextSha256": "0de69fe4898e91bd5a13540c2d4beb06cf08c49d42f5b9ca24f89472f9225b42"
+    },
+    {
+      "id": "h_transaction_03",
+      "family": "transaction_consistency",
+      "label": "hard",
+      "contextSha256": "5e6cfd2135273332ae5392ec448d507189f81a6d0f4dfddcdf54e0d26a96e0d6"
+    },
+    {
+      "id": "h_transaction_04",
+      "family": "transaction_consistency",
+      "label": "hard",
+      "contextSha256": "a25bab872cb87e1fd4ce1ae3f95d2f3a274a7e3b94230fcc8857aeecfb78ac77"
+    },
+    {
+      "id": "h_transaction_05",
+      "family": "transaction_consistency",
+      "label": "hard",
+      "contextSha256": "db0a41c33f7edf4e7929532947eaf7a36e0fbe876feba6bc49bec56f64f37107"
+    },
+    {
+      "id": "u_numeric_01",
+      "family": "missing_numeric_input",
+      "label": "unknown",
+      "contextSha256": "97978c4dda3fe72428d56893105991cb9d87411c05eabba55dc4421f642d51ab"
+    },
+    {
+      "id": "u_numeric_02",
+      "family": "missing_numeric_input",
+      "label": "unknown",
+      "contextSha256": "b240f12144dc398552767d74cb9eb9e9e6fb09ce46f32f8ca5ed9944af931e6c"
+    },
+    {
+      "id": "u_numeric_03",
+      "family": "missing_numeric_input",
+      "label": "unknown",
+      "contextSha256": "f09cec1658c7e16d4c2e31b5a50b0fea0299030a5962de7b606c45baee2f7475"
+    },
+    {
+      "id": "u_numeric_04",
+      "family": "missing_numeric_input",
+      "label": "unknown",
+      "contextSha256": "7082da69cb703f957cc663bdea0ca021a88e04456b614ac38eb3794713901e33"
+    },
+    {
+      "id": "u_numeric_05",
+      "family": "missing_numeric_input",
+      "label": "unknown",
+      "contextSha256": "95127d20b51a0112763a7421a5569cad0dc722250480bf2514574c930bb47aba"
+    },
+    {
+      "id": "u_prior_01",
+      "family": "missing_prior_result",
+      "label": "unknown",
+      "contextSha256": "9ffaabc474b57f25b063441eab194d94fbe1a77943b31429407befd6b192f58e"
+    },
+    {
+      "id": "u_prior_02",
+      "family": "missing_prior_result",
+      "label": "unknown",
+      "contextSha256": "71f05cec2318cec78c809131749c6192743f4f5083d1dd0fab2ff82dee137cd9"
+    },
+    {
+      "id": "u_prior_03",
+      "family": "missing_prior_result",
+      "label": "unknown",
+      "contextSha256": "ac69de845f6f74cf0011359c6f65ec7df8d66a018b78a55834bb4feaa34de124"
+    },
+    {
+      "id": "u_prior_04",
+      "family": "missing_prior_result",
+      "label": "unknown",
+      "contextSha256": "a96ffdca4eb9e298ceb92578174420a0e09f902a20c1230dee1e7b602f279d50"
+    },
+    {
+      "id": "u_prior_05",
+      "family": "missing_prior_result",
+      "label": "unknown",
+      "contextSha256": "373eeb69874d719b92df0a40be01f7f10066cf2107f52533865981efa481d019"
+    },
+    {
+      "id": "u_options_01",
+      "family": "missing_options",
+      "label": "unknown",
+      "contextSha256": "2a0b5c3f39dfd6999525b374989b283daaf2b575d4277072f6e317f7a2843352"
+    },
+    {
+      "id": "u_options_02",
+      "family": "missing_options",
+      "label": "unknown",
+      "contextSha256": "38d4cbe939e7525e47eddf051e647994c80b5eee3f8f75768cf811bc09cafee5"
+    },
+    {
+      "id": "u_options_03",
+      "family": "missing_options",
+      "label": "unknown",
+      "contextSha256": "d384b5c954651568a16b40fc566ea63d74d2ab5fbcdd528ea0257a968fa5087c"
+    },
+    {
+      "id": "u_options_04",
+      "family": "missing_options",
+      "label": "unknown",
+      "contextSha256": "61106fcf95477ce10da8b5e121a68b52ac58f65c30a0cff67bb2d49f56ed8f83"
+    },
+    {
+      "id": "u_options_05",
+      "family": "missing_options",
+      "label": "unknown",
+      "contextSha256": "25803300a85c90565219c2927cef520e8d49377d05b548abdb6e8a85134e8c95"
+    },
+    {
+      "id": "u_context_01",
+      "family": "missing_policy_or_context",
+      "label": "unknown",
+      "contextSha256": "e19c7959c30caf17a03d985ca7f5c8f81e5fbfd9afc070c03d8e063a124fd0a8"
+    },
+    {
+      "id": "u_context_02",
+      "family": "missing_policy_or_context",
+      "label": "unknown",
+      "contextSha256": "f18c7ae348acb5291184ae5c60cbfd768350f68c1e0f49723340352267fc7c91"
+    },
+    {
+      "id": "u_context_03",
+      "family": "missing_policy_or_context",
+      "label": "unknown",
+      "contextSha256": "07e6062bc70d59c37cf4f8f8f55fc4a175e284fea0c4f31db76d5c4860b48164"
+    },
+    {
+      "id": "u_context_04",
+      "family": "missing_policy_or_context",
+      "label": "unknown",
+      "contextSha256": "8332303bda5870489a4e57c6704e09116cbeecc21fef065348b05c8b495de55f"
+    },
+    {
+      "id": "u_context_05",
+      "family": "missing_policy_or_context",
+      "label": "unknown",
+      "contextSha256": "ecb2c74d61562668272899ad0b817e3e3aab9a5e0d5926fbb1a51b052607adba"
+    }
+  ],
+  "settings": {
+    "warmRepetitions": 2,
+    "timeoutMs": 320000,
+    "cleanupTimeoutMs": 10000,
+    "parallelClassifications": 1,
+    "featureCacheReplay": false,
+    "rawHeadDiagnostics": false
+  },
+  "labAssumption": "ONLY inside this evaluation, the matching artifact pins are treated as qualified to ask the production eligibility guard. This laboratory assumption is not quality evidence, completeness proof, or a production qualification manifest.",
+  "productionCompletenessUnmodified": true,
+  "rawHeadAvailability": "Scores are observed from the actual production runtime when it encodes; explicitly unavailable when the production verifier rejects. No forced completeness or uncensored diagnostic pass.",
+  "timingBoundaries": {
+    "cold": "Entire first full population, including lazy worker startup and first actual feature calls; excluded from warm qualification p95",
+    "warm": "Every case repeated through actual context extraction, production completeness, runtime and head, binding and eligibility guard; no feature replay",
+    "wallElapsedMs": "Host monotonic time through classification and eligibility, including queuing/verification/startup if present",
+    "runtimeOperationalElapsedMs": "Driver-provided time including actual operational work, separate from feature-only time"
+  },
+  "plannedClassificationAttempts": 180,
+  "fullPiWorkflow": false,
+  "networkAllowed": false,
+  "trainingUsedDuringEvaluation": false,
+  "productionQualified": false
+}

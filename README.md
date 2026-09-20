@@ -1,6 +1,6 @@
 # Simple Jev for TypeScript and pi
 
-A local TypeScript classifier library, the `jev_classify` pi extension, an HTTP API and browser playground, and an RFDT training/export workflow. Classification reads selected next-token logits from a local llama.cpp process. It does not generate or parse a JSON completion.
+A local TypeScript classifier library, the `jev_classify` pi extension, experimental session context compression and model routing, an HTTP API and browser playground, and an RFDT training/export workflow. Classification reads selected next-token logits from a local llama.cpp process. It does not generate or parse a JSON completion.
 
 The default classifier uses **Google Gemma 3 1B Instruct**; a reviewed **Gemma 3 4B Instruct** candidate is also available for explicit evaluation. The local agent and teacher use the official **Google Gemma 4 31B Instruct QAT Q4_0** artifact. Qwen and Chinese-lineage models, including derivatives, merges, distills, teachers, tests, and fallback models, are excluded. Artifacts must match reviewed registry entries, roles, revisions, byte sizes, and SHA-256 checksums. Missing or incorrect weights produce an error.
 
@@ -60,6 +60,31 @@ Defaults are enabled, **routing off**, **evaluation off**, and template **v2**. 
 Routing discovers Salesforce capability families from active tools and includes `mixed` and `general`. It adds advisory context. It never changes active tools, permissions, Guardrail authority, or retry behavior. Evaluation runs once per persisted user/final-assistant pair after the run settles and scores coverage, evidence, and clarity from zero to two. It creates no new assistant turn. These estimates are uncalibrated.
 
 The Manager contract is a general external-extension contribution seam; Jev imports no sf-pi implementation modules. External rows own their settings and enable/disable callback and stay out of bundled disabled-file lists and bulk toggles. The sf-pi change is developed in a separate worktree against baseline `4f901db9c3f5076ea0305dea33ad6e8856e467da`. The baseline-bound patch and setup instructions are retained under `integrations/`. The original sf-pi checkout is preserved; no public sf-pi push is required.
+
+### Session context compression and current-request routing
+
+The installed extension also registers `/jev-context status`, `/jev-context on`, and `/jev-context off`. Compression is **disabled by default** and these controls apply to the current session. Enabling it during a turn takes effect after the next turn prepares its format instructions. It does not write global or project settings or select a model.
+
+When enabled for a supported provider, the extension replaces sufficiently repetitive completed-tool text with an exactly reversible representation in the model's request context. Original tool results stay in memory and persisted session history. Message order, occurrence counts, line endings, errors, and non-text content are preserved. A separate caller-owned manifest identifies the transformed blocks; quoted instructions or format-like text inside a tool result do not authorize compression. Bounds, unsupported providers, or a failed final request check fall back to original text. The current provider support is OpenAI completions and the owned routing dispatcher when its targets use that API.
+
+With the external Manager contract installed, `Jev Context Compression` exposes the same session toggle and cached status. Open it with `/sf-pi open jev-context settings project`. The `project` argument chooses a Manager view; the page's controls still apply only to this session. Status distinguishes latest and cumulative tool-context byte reductions and includes instruction overhead when reporting the net request change. Byte reduction does not establish token, latency, or billing savings.
+
+The separate model dispatcher is available when a host explicitly supplies `routingDispatcher` options to `registerExtension` from `dist/extension.js`. The ordinary install does not discover or qualify a routing artifact automatically. A host must bind approved target registrations, the exact classifier artifact and qualification hashes, classification, and the supplementary eligibility guard. Both the dispatcher and context compression start with opt-in defaults; unqualified routing cannot select the fast target.
+
+For a configured dispatcher, these commands are available:
+
+| Command                                    | Purpose                                                                     |
+| ------------------------------------------ | --------------------------------------------------------------------------- |
+| `/jev-routing status`                      | Inspect cached mode, target availability, qualification, and latest request |
+| `/jev-routing use`                         | Select the `jev-routing/current-request` dispatcher for subsequent prompts  |
+| `/jev-routing off` / `/jev-routing strong` | Use the configured strong target without classification                     |
+| `/jev-routing shadow`                      | Observe a qualified routing decision while executing the strong target      |
+| `/jev-routing auto`                        | Dispatch eligible requests using the qualified classifier and safety guard  |
+| `/jev-routing fast`                        | Request fast routing when qualified and eligible; retain strong fallback    |
+
+Routing selects the target inside the active provider stream for the same prompt. This addresses Pi's model capture before `before_agent_start`; changing the model in that later hook cannot route the current prompt. The dispatcher preserves cancellation, tool schemas, and attribution to the executing target. Automatic and fast modes require a complete result matching the qualified classifier artifact and an eligible input. Missing facts, uncertain or failed classification, unsupported input, and unavailable targets require fallback or an explicit error. An explicit fast preference does not bypass those checks. Host target attestations permit Google Gemma, the user's selected xAI Grok, and an attested OpenAI registration; prompt text cannot supply a model or lineage claim.
+
+When configured, `Jev Model Routing` provides session controls, qualification availability, the latest selected target, and fallback/cancellation status in Manager. `/sf-pi open jev-routing settings project` opens its page. Its fast and automatic actions explain unavailable qualification or targets instead of silently enabling them. The existing `/jev routing on|off` remains advisory Salesforce capability routing; it does not activate this model dispatcher.
 
 ## Tool input and answers
 
@@ -123,7 +148,27 @@ A successful complete builtin read of a valid bundle receives a `Jev loaded requ
 
 This path is under evaluation. Local integration checks establish its argument, lifecycle, and accounting behavior; reliable developer judgments and a complete-workflow speed improvement remain unproven. The frozen corpus, hypotheses, failures, and acceptance conditions are recorded in [EXPERIMENTS.md](./EXPERIMENTS.md).
 
-An experimental [context-compression pilot](./research/context-compression-pilot.md) separately measures a lossless representation of repeated completed-tool lines. It uses the existing Grok 4.6 gateway model in both comparison arms, preserves originals and occurrence counts, and does not install a Pi context hook. The six fixed samples retain correct answers with about 60% fewer prompt tokens, while observed answer latency increases. Local Gemma training and native quality results remain separate evidence.
+The earlier [context-compression pilot](./research/context-compression-pilot.md) measured a lossless representation of repeated completed-tool lines with the existing Grok 4.6 gateway model in both comparison arms. That experiment predates the new Pi hook. Its six fixed samples retained correct answers with about 60% fewer prompt tokens, while observed answer latency increased by about 57%. Provider caching also prevents inferring billing savings from those prompt counts.
+
+The new `scripts/context-workflow-eval.mjs` prepares frozen paired workflows using the actual Pi SDK, a builtin read tool, the opt-in compression hook, and fixed Grok 4.6 task execution. Optional Grok judgments provide a separate check; literal expected answers remain host-only. Preparation does not resolve credentials:
+
+```sh
+node scripts/context-workflow-eval.mjs \
+  --fixture fixtures/context-compression-v2-validation.json \
+  --output .build/context-workflow-eval
+```
+
+Executing a prepared run requires `--run` and an explicit `--api-key-file` pointing to an existing local credential file. The [first live four-session smoke](./research/context-workflow-smoke-root-1/result-projection.json) received HTTP 400 before any tool execution in both arms. It remains a gateway transport/harness failure, with unknown token usage and no answer-quality finding. Subsequent fixes kept the Grok task model fixed while correcting SDK compatibility and simplifying the compression instructions.
+
+The [third public smoke](./research/context-workflow-public-smoke-root-3/result.json) completed all four sessions correctly, and its separate Grok judge passed. Across the two paired repetitions, baseline prompt tokens totaled 5,262 versus 3,646 with compression, a 30.71% reduction. Total tokens were 5,502 versus 4,129; summed workflow times were 13.6855 s versus 12.0309 s. This establishes working tool dispatch, context transformation, original preservation, and correct answers for that one synthetic case. Two pairs do not establish general speed, cost, or developer benefit.
+
+The [full public validation](./research/context-workflow-public-validation-root-1/result.json) scheduled 192 sessions: 24 cases, four repetitions, and two arms. Gateway throttling produced 169 errors; the remaining 23 completions were correct. The evaluator retained the failed slots and left full-population token and latency comparisons unknown. The run was not qualified; those 23 successful completions cannot stand in for the 192-session comparison.
+
+A paced sf-pi follow-up used the controlled 23-factory source setup and had no HTTP 429 responses. Its four final answers were correct and the compressed requests passed the live wire checks, but two sessions also reported extension errors. Only two of four workflows completed without an error, so the run did not qualify. A correct final answer does not override an extension failure. The [next smoke](./research/context-workflow-sf-smoke-root-3/result-projection.json) confirmed corrected acceptance accounting and located both failures in `sf-slack` session startup. The harness omitted `session_shutdown` before disposal, leaving a stale listener; the [lifecycle review](./research/sf-context-session-cleanup-review.md) explains the correction. The original failures remain preserved. This setup does not establish equivalence to an installed sf-pi default session.
+
+The [corrected SF smoke](./research/context-workflow-sf-smoke-root-4/result-projection.json) completed all four workflows correctly, passed its Grok judge, and recorded clean shutdowns with all 23 factories loaded. No extension or rate-limit errors occurred. Prompt tokens fell 12.59%, while aggregate workflow elapsed was 1.75 times baseline. This confirms the lifecycle correction and functional context path, but fails the declared performance gates on this small case. The larger paced comparison remains necessary.
+
+Counterbalanced order, failed and unrun slots, provider usage and cache counts, original-text preservation, and local transform time remain explicit in evaluator results. These Grok-controlled harness tests are separate from changes to local Gemma training. [EXPERIMENTS.md](./EXPERIMENTS.md) records the runs, remaining failures, and acceptance gates.
 
 The developer workflow evaluator also has a `configuredGateway` lane for the existing Pi `llmgw/gpt-5.6-sol` registration. Set `JEV_REVIEWED_PROVIDER_ORIGIN` to the exact gateway origin pinned in the evaluator, then prepare the frozen review suite:
 
@@ -216,9 +261,25 @@ Gates: choice accuracy ≥0.90, clear Noul accuracy ≥0.95, Noul Brier ≤0.10,
 
 The real 64-step Gemma 3 1B RFDT student passed every validation gate, then failed its single held-out score gate: normalized score MAE was 0.1139 against the 0.10 maximum. Held-out choice accuracy was 0.95 and clear Noul accuracy was 1.00, with zero execution errors. That exported student remains unapproved; the default remains the reviewed official Gemma 3 1B artifact. The official base models also failed the full authored quality gates, so callers should evaluate answer quality for their use case before depending on the classifier's judgments.
 
+The later R7 student completed 512 training steps, changed its adapter, passed adapter reload checks, and exported a native GGUF. Its native validation still failed: legacy routing was 17/20, developer routing 22/26, clear developer Noul judgments 8/20, and diagnosis routing 48/56. All 194 scheduled validation records executed without inference errors. Training loss falling from about 6.70 to 0.0846 demonstrates fitting, not reliable judgments. R7 was rejected, with no promotion or new final-test attempt.
+
 ## RFDT
 
 TypeScript owns validation, canonical prompts, native tokenizer/answer-boundary capture, grouped splits, local-teacher labeling/cache, provenance, export, and promotion. A pinned Python/MLX helper performs selected-last-position soft cross-entropy LoRA optimization on Google Gemma 3. It saves/reloads adapters, fuses safetensors, and invokes the pinned llama.cpp converter for F16 GGUF. It does not train on generated prose.
+
+The new routing experiment uses a different training method. It leaves the pinned official Google Gemma 3 1B weights unchanged, extracts 1,152-dimensional last-token decoder features once, and fits a small binary routing head from the cached features on the CPU. The [first fit](./research/routing-head-round-1/evidence-manifest.json) covered all 240 machine-authored training examples and took about 146.8 ms for head fitting, with zero model-feature calls during that fitting phase. Feature extraction and model startup are separate work. This is fitting evidence only; the head is not qualified by its training diagnostics.
+
+Two production-path validation corpora each completed all 180 scheduled decisions, but the completeness checker selected strong for every case before requesting features. Both runs therefore had zero feature calls and zero easy-case fast coverage. They failed the routing usefulness gate and did not measure the head's quality. The [first validation and independent audit](./research/routing-head-validation-round-1-audit.md) preserve that distinction.
+
+The [direct head diagnostic](./research/routing-head-raw-validation-v2/archive-manifest.json) subsequently completed 180 real encoder calls on the unchanged head. It explicitly forced encoder eligibility only for laboratory measurement; production completeness and routing were not bypassed. Each pass selected fast for 19/20 easy cases but also 35/40 strong-required cases, failing the declared safety policy. Warm operational p95 was approximately 260.82 ms, above the 100 ms target. The score distributions overlap enough that even an optimistic scalar cutoff allowing zero unsafe decisions would retain only 2/20 easy cases. No threshold was changed or applied. The head remains unapproved; fitting success has not yielded a useful, safe production classifier.
+
+| Work                          | What changes                                                    | What the result establishes                                                            |
+| ----------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Frozen-feature routing head   | Small fast/strong classifier; official Gemma weights stay fixed | A completed CPU fit on cached training features                                        |
+| RFDT student                  | LoRA adapter affects classifier answer logits                   | Training, reload, export, and separately scored native quality                         |
+| Fixed Grok 4.6 workflow tests | Harness and context representation; task model stays fixed      | Transport, lifecycle, correctness, and resource comparisons for the recorded workflows |
+
+The routing head does not reuse the rejected R7 adapter. Grok test or judge results do not improve Gemma's weights or count as successful RFDT training. [EXPERIMENTS.md](./EXPERIMENTS.md) records these separate evidence lanes and their acceptance gates.
 
 ```sh
 bash scripts/build-rfdt.sh

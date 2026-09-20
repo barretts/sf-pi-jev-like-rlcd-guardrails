@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "archiveSourcePath": "source-snapshot",
+  "sources": [
+    {
+      "path": "scripts/context-workflow-eval.mjs",
+      "bytes": 83531,
+      "sha256": "5a2aaf1af575a39002355e058720059ce25eb45a6e21ed99d820589020f9b058"
+    },
+    {
+      "path": "src/context-compact.ts",
+      "bytes": 13219,
+      "sha256": "eabb6611c8b264e47af2a8ad090c160715d76e3681bc1b73c56683b073599075"
+    },
+    {
+      "path": "src/context-extension.ts",
+      "bytes": 25053,
+      "sha256": "9856fc07c90f3983efaef187595e392a75f531d136a234e8590ee193c918ce54"
+    },
+    {
+      "path": "src/gateway.ts",
+      "bytes": 16449,
+      "sha256": "990bbbe3d4dfc731551fda4df9077042e74cd69bf86dba4feef59a883742d142"
+    },
+    {
+      "path": "dist/context-compact.js",
+      "bytes": 11823,
+      "sha256": "f9b01e42886c5037e8dfe326b4715e1407ce2e4e8c6d2f43f8f943306d365bd7"
+    },
+    {
+      "path": "dist/context-extension.js",
+      "bytes": 23662,
+      "sha256": "e8182136d460d0ad6408c9dcc3c0b7b421ed31e368376130872b5ceb5b068493"
+    },
+    {
+      "path": "dist/gateway.js",
+      "bytes": 16040,
+      "sha256": "64853c8f08c7419952c78d5436edfe2a662115c40192931854fea8380335e17d"
+    },
+    {
+      "path": "package.json",
+      "bytes": 2665,
+      "sha256": "5740f66d0a2d106b8fd02a4bf61dbed5cc0735c138cf37e3079109a346d0cffe"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 167256,
+      "sha256": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f"
+    },
+    {
+      "path": "node_modules/@earendil-works/pi-coding-agent/package.json",
+      "bytes": 4145,
+      "sha256": "f1738e4b42203e5f22bcb513f13fb2fb224f1e98d1f129ff042f87048665a94c"
+    },
+    {
+      "path": "node_modules/@earendil-works/pi-coding-agent/dist/core/sdk.js",
+      "bytes": 12703,
+      "sha256": "6969bd56ba8e1628cd033bb15cb15fe38299f00b5ad84f4f8ef37a33a98681c9"
+    },
+    {
+      "path": "node_modules/@earendil-works/pi-coding-agent/dist/core/agent-session.js",
+      "bytes": 125310,
+      "sha256": "fb8a3981c20c8c0bbd42231b1c99a10335fb3858b659056b341954de9cfa467f"
+    },
+    {
+      "path": "node_modules/@earendil-works/pi-coding-agent/dist/core/extensions/runner.js",
+      "bytes": 40140,
+      "sha256": "0de12ed1275e02595f92476eec3f61ae1f2e54fd2225ced721ddc90af58a5e61"
+    },
+    {
+      "path": "node_modules/@earendil-works/pi-coding-agent/dist/core/model-runtime.js",
+      "bytes": 27319,
+      "sha256": "32cd50599d9e6e001229090e3d0554b60e4addb8ab7b3165635a574feb660b74"
+    },
+    {
+      "path": "node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js",
+      "bytes": 22932,
+      "sha256": "6732a1c65c09577d2ffcb716b48e4f4673e57e3e333f10ebfce5132d82e4d7a2"
+    },
+    {
+      "path": "node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-ai/dist/api/openai-completions.js",
+      "bytes": 64241,
+      "sha256": "1e2097ced37cf0e21aa5711297eecc77916de8a4ed81a9019bc7d97b22825fa3"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Consumed-validation optimistic separation diagnostic; no head or threshold change",
+  "resultSha256": "b2a5eab21f0e1a9e383e27d2f3b32899b7794b875978baaeb0362d0908899947",
+  "populationCases": 60,
+  "scheduledPassUsed": "cold",
+  "rawStrongScoreRanges": {
+    "easy": [
+      8.764534313133887e-11,
+      0.11231130249288027
+    ],
+    "strongRequired": [
+      1.3952709634968598e-08,
+      0.9826824388025571
+    ]
+  },
+  "maximumStrictCutoffForZeroUnsafe": 1.3952709634968598e-08,
+  "easyScoresBelowCutoff": 2,
+  "scope": "Ignores additional uncertainty margin and confidence requirements; optimistic bound only, not a prospective threshold or qualification",
+  "productionQualified": false,
+  "appliedToRuntime": false
+}

@@ -183,6 +183,40 @@ The independent host attester's diagnosis inventory was corrected in a separate 
 
 ## Fixed-Grok context compression control
 
+The successor canonical tuple codec and actual Pi provider-request guard now
+have real fixed-Grok workflow evidence. A four-session isolated Pi smoke with
+concise instructions returned all correct answers and passed its context judge:
+input tokens decreased 30.71%, total tokens decreased 24.95%, and aggregate
+workflow time decreased 12.09%. Those observations come from only two paired
+repetitions of an invented integration case; output tokens increased 101.25%.
+They do not qualify a general developer-workflow or billing improvement. The
+older smoke's negative latency result remains preserved.
+
+The full 24-case, four-repetition public-context campaign failed service
+capacity: 169 of 192 workflows encountered HTTP 429. All 23 completed workflows
+were correct, but failed slots remain in the scheduled denominator, and full
+performance ratios are unknown. A separately frozen harness revision adds shared
+request pacing, bounded cooldowns and a circuit breaker without hidden retries.
+The user approved the bounded Pi and 23 SF extensions' instructions, test schema
+and generated traces for the configured Grok endpoint. That SF smoke reached
+the model and preserved the compressed provider context, but two workflows had
+extension errors; it is retained as negative integration evidence.
+
+Separately, frozen official Gemma features supported a valid 240-example
+TypeScript head fit in 146.82 ms. Production validation on two 60-case corpora,
+each with one initial and two warm passes, made zero feature calls because the
+completeness checker rejected all requests. This locates a harness coverage
+failure and initially left the head's fresh accuracy unmeasured. The subsequent
+direct head laboratory diagnostic completed 180 actual encoder calls, explicitly
+forcing only the encoder eligibility flag. Each pass sent 19/20 easy and 35/40
+strong-required cases to fast, failing safety; warm operational p95 was 260.82 ms.
+Even an optimistic scalar cutoff with zero unsafe decisions would retain only
+2/20 easy cases. No threshold was applied or artifact promoted. This identifies
+both head generalization and operational speed failures independently of the
+completeness checker's zero coverage. The prior RFDT R7 quality rejection
+remains unchanged. Full evidence and current limits are recorded in
+[the progress dossier](research/CONTEXT_ROUTING_PROGRESS.md).
+
 The experimental lossless codec preserves adjacent identical completed-tool lines with explicit occurrence counts. It retains every distinct line, order, error, unknown outcome and newline; independently trusted hashes and bounded decoding protect reconstruction. It is a separate model-visible representation with no installed Pi context hook. Fifteen codec regressions, 17 isolated gateway/protocol regressions, TypeScript build and targeted formatting checks passed.
 
 Six fixed synthetic extraction tasks used the existing `llmgw/grok-4.6` model in both arms and for separate preservation requests. The completed comparison answered 6/6 correctly in both arms, passed all six judges and exact round trips, and retained all 18 calls without errors. Prompt tokens fell from 13,858 to 5,557 (59.90%), but completion tokens rose from 3,376 to 6,195 and aggregate client task time rose from 20.864 to 32.760 seconds (57.01%). Remote prompt caching was observed; uncached prompts were 290 original versus 437 compressed. No billing or speed gain is established.

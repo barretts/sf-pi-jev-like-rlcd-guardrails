@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "name": "evidence.tar.gz",
+  "bytes": 153460,
+  "sha256": "65df8a942f2ef260c6cacd30906fad3186a279694ac35f370fdf6915b813bc95",
+  "sourceMembersVerified": 16,
+  "rawPromptsExcluded": true,
+  "interpretation": "4 of4 completed correct workflows and1passingGrokjudge; all23SFfactoriesloaded,session_shutdown completed,0extensionerrors,0HTTP429; livecompression validates. Functionalacceptancepasses; smallsample promptreduction12.59%,workflowratio1.74998 failsperformancegates; productionimprovementunproved. Capturedprovidercontexts remainlocal."
+}

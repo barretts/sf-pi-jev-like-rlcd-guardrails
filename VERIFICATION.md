@@ -151,6 +151,57 @@ Artifact registry updates now also hold an exclusive per-registry lock through r
 
 ## Verification and delivery boundaries
 
+The context/routing development checkpoint on 2026-09-20 passed the local
+TypeScript check and build, **813 Vitest tests across 38 files**, and **161 Node
+protocol tests**. An offline fresh package consumer passed library and extension
+imports, public declarations, installed CLI/server entry points, and actionable
+missing-model behavior. The package contained 141 files and no model weights.
+These checks establish source and distribution behavior; live acceptance is
+recorded separately in [the context/routing progress dossier](research/CONTEXT_ROUTING_PROGRESS.md).
+No new hosted CI result is claimed for this checkpoint.
+
+The new frozen-Gemma routing head completed all 240 TRAIN feature extractions
+and a stationary TypeScript logistic fit. Its independent 1,249-check audit
+found no arithmetic or provenance discrepancy. Both subsequent production
+validation campaigns completed their 180 scheduled classifications, but the
+completeness checker rejected every request before any model call. Both therefore
+failed usefulness, and neither measures the head's accuracy. Their retained
+negative evidence is in [round 1](research/routing-head-validation-round-1/archive-manifest.json)
+and [source-blind V2](research/routing-head-validation-v2/archive-manifest.json).
+CPU fallback timing from these campaigns is not Gemma inference timing.
+
+The separate direct head diagnostic then completed **180 actual feature calls**,
+with no errors or unrun cells and confirmed runtime disposal. It forced encoder
+eligibility only for laboratory measurement. Each of the three passes routed
+19/20 easy cases and 35/40 strong-required cases to fast, failing the declared
+safety policy. Warm operational p95 was 260.82 ms, exceeding the 100 ms target.
+An optimistic score-cutoff diagnostic could retain only 2/20 easy cases while
+excluding every strong-required case. No cutoff or head was changed. The head
+is unapproved; no downstream answer generation or production qualification
+occurred. Exact evidence is retained in
+[the direct diagnostic archive](research/routing-head-raw-validation-v2/archive-manifest.json).
+
+The real Pi/Grok context smoke with concise instructions completed all four
+sessions and the context judge with correct literal answers. Input tokens fell
+from 5,262 to 3,646, while generated output increased from 240 to 483 tokens.
+The two paired repetitions are too small to establish general speed or billing
+gains. The subsequent 192-session campaign recorded 23 correct completed
+sessions and 169 HTTP 429 failures. Its full-population performance comparisons
+remain unknown, and it is not qualified. Both successful and failed runs retain
+their exact executed source archives. The approved 23-extension SF smoke then
+reached the model without throttling and preserved the compressed wire context,
+but two of four workflows reported SF extension errors. Correct final answers
+from those errored workflows do not satisfy integration acceptance.
+
+After the harness gained bounded `session_shutdown` emission before disposal,
+the next real SF smoke passed **4/4 workflows and its Grok judge**, with all 23
+factories loaded, clean shutdowns, preserved original history and zero extension
+or HTTP 429 errors. Prompt usage decreased 12.59%, while aggregate workflow time
+increased to 1.75 times baseline. This proves the lifecycle correction and
+functional path, but does not pass the performance gates. Its safe projection
+and exact source archive are retained in
+[SF smoke 4](research/context-workflow-sf-smoke-root-4/archive-manifest.json).
+
 An independent fresh private GitHub clone of checkpoint `7a8f823e0375419030b08d81de81efdc580d77e6` passed **200 tests across 19 files**, including the final RFDT approval, distribution, concurrency, and subprocess-cleanup fixes. TypeScript check and formatting passed. The current v1 compatibility checker passed 72 whole-Plan and 432 answer/usage comparisons. A fresh Node26 CI-style install with dependency scripts and audit disabled passed compilation and CLI tests. The repeated fresh package consumer passed library/extension imports, public TypeScript declarations, both installed bin symlinks, and actionable missing-model doctor behavior. The checkpoint package contained 61 files, 159,942 compressed bytes and 799,670 unpacked bytes, including the Manager patch and notices, with no weights, native vendor binaries, fetched templates, logs, or private run data. Its SHA-256 was `24d7d3c980d1f45165f0a28bf1bc0b430fe5061aeac085fc0b5be16199871d26`. Subsequent source/documentation changes alter that archive identity.
 
 [Hosted check run 35490473201](https://github.com/barretts/simple-jev-ts/actions/runs/35490473201) completed successfully for that exact checkpoint on **Node 22 and 26**, including compilation, the full tests, build, compatibility, formatting, and fresh package consumers. This proves the source/package CI lane; real GPU, autonomous provider, RFDT, and held-out evidence remain separately attributed. Subsequent commits require their own hosted CI result.

@@ -1,0 +1,170 @@
+{
+  "kind": "jev_context_workflow_protocol",
+  "schemaVersion": 1,
+  "preparedAt": "2026-09-20T17:19:09.611Z",
+  "evidenceMode": "real-sdk-workflow",
+  "fixtureSha256": "d8cabf84c5aeaea4a3cad62ab7e59cdfbae3b61a55d689ccaee25455028c2208",
+  "registration": {
+    "provider": "llmgw",
+    "id": "grok-4.6",
+    "api": "openai-completions",
+    "baseUrl": "https://eng-ai-model-gateway.sfproxy.devx-preprod.aws-esvc1-useast2.aws.sfdc.cl/v1",
+    "reasoning": false,
+    "contextWindow": 500000,
+    "maxTokens": 500000,
+    "lineageBasis": "User explicitly selected their existing xAI Grok 4.6 model; exact upstream weights are unobserved",
+    "effectiveCompatibility": {
+      "maxTokensField": "max_tokens",
+      "supportsStore": false,
+      "supportsStrictMode": false
+    },
+    "compatibilityBasis": "Installed Pi SDK model.compat flags omit optional store and function.strict fields for this selected-model experiment; gateway acceptance requires separate observed evidence",
+    "sampling": "temperature omitted; provider default is unknown"
+  },
+  "registrationSha256": "5c51b133f8ef98d9021980ec78753eb8a25af8199f0946eef1d5ecc919f9ca43",
+  "sources": [
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/scripts/context-workflow-eval.mjs",
+      "sha256": "2f7d463b139519b19ca0f2bb3eef13a1427c17f945cd0c54d8f5071f40c6f0ad"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/src/context-compact.ts",
+      "sha256": "7f695767f51f36e9fd8f108bc8c79fcd700b55f2d77b82b4fe4ef958355b5248"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/src/context-extension.ts",
+      "sha256": "6c0bdc98095d729d828b2f4eefa12e57dca79fca63e5840c9264c815d49a41c3"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/src/gateway.ts",
+      "sha256": "990bbbe3d4dfc731551fda4df9077042e74cd69bf86dba4feef59a883742d142"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/dist/context-compact.js",
+      "sha256": "65cae3c131a8b2a604584477eb68ad3cb862b24cce335aa33d91964d235de61d"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/dist/context-extension.js",
+      "sha256": "4ce3161300080b70242d61d8246a7f63901343f3294883b335738a3bc4779495"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/dist/gateway.js",
+      "sha256": "64853c8f08c7419952c78d5436edfe2a662115c40192931854fea8380335e17d"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/package.json",
+      "sha256": "e8b586d5c1ba508a2179db97ac17f3893804e198b339cb5bc195a6c8171a6f77"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/package-lock.json",
+      "sha256": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/package.json",
+      "sha256": "f1738e4b42203e5f22bcb513f13fb2fb224f1e98d1f129ff042f87048665a94c"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/sdk.js",
+      "sha256": "6969bd56ba8e1628cd033bb15cb15fe38299f00b5ad84f4f8ef37a33a98681c9"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/agent-session.js",
+      "sha256": "fb8a3981c20c8c0bbd42231b1c99a10335fb3858b659056b341954de9cfa467f"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/extensions/runner.js",
+      "sha256": "0de12ed1275e02595f92476eec3f61ae1f2e54fd2225ced721ddc90af58a5e61"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/dist/core/model-runtime.js",
+      "sha256": "32cd50599d9e6e001229090e3d0554b60e4addb8ab7b3165635a574feb660b74"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js",
+      "sha256": "6732a1c65c09577d2ffcb716b48e4f4673e57e3e333f10ebfce5132d82e4d7a2"
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts/node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-ai/dist/api/openai-completions.js",
+      "sha256": "1e2097ced37cf0e21aa5711297eecc77916de8a4ed81a9019bc7d97b22825fa3"
+    }
+  ],
+  "sfSources": [],
+  "runtime": {
+    "node": "v26.5.1",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "parameters": {
+    "concurrency": 1,
+    "maxTokens": 4096,
+    "maxTurns": 4,
+    "timeoutMs": 180000,
+    "repetitions": 2,
+    "maxResponseBytes": 8388608,
+    "optionalJudges": true
+  },
+  "cases": [
+    {
+      "id": "root-final-unit-failure",
+      "family": "integration-smoke",
+      "originalSha256": "38f809dbe6efd62f9418f602ab164296b387a70a3f2bab290bb35b66d0e41ccf",
+      "expectedSha256": "3fdfe02a4f61c43d0b9f6a0eb9bb2d22644c4121ddd3a9290a33d3a1eba5b3c6",
+      "promptSha256": "58dad67a91c5e2070b5b00add6895298ff716701a8500c3143b303294e4c6852",
+      "compression": {
+        "format": "jev-tool-text-v2",
+        "applied": true,
+        "originalBytes": 5810,
+        "compressedBytes": 105,
+        "compressedSha256": "8472cc93bf775f0ced2cdf6fbaeb1ff1a4056f8b8f0eb0832a723171d173442b",
+        "localTransformMs": 1.079540999999999,
+        "exactReconstruction": true
+      }
+    }
+  ],
+  "schedule": [
+    {
+      "pairId": "root-final-unit-failure__r1",
+      "caseId": "root-final-unit-failure",
+      "family": "integration-smoke",
+      "repetition": 1,
+      "arms": [
+        {
+          "id": "root-final-unit-failure__r1__baseline",
+          "arm": "baseline"
+        },
+        {
+          "id": "root-final-unit-failure__r1__compact",
+          "arm": "compact"
+        }
+      ]
+    },
+    {
+      "pairId": "root-final-unit-failure__r2",
+      "caseId": "root-final-unit-failure",
+      "family": "integration-smoke",
+      "repetition": 2,
+      "arms": [
+        {
+          "id": "root-final-unit-failure__r2__compact",
+          "arm": "compact"
+        },
+        {
+          "id": "root-final-unit-failure__r2__baseline",
+          "arm": "baseline"
+        }
+      ]
+    }
+  ],
+  "autonomy": "Actual selected model chooses read tool calls through official Pi SDK provider; no synthetic assistant tool calls are supplied",
+  "contextIntervention": "Actual registerContextCompression hook; disabled baseline vs enabled v2, including trusted system instructions and transient host manifest",
+  "goldPolicy": "Expected objects remain host-side and are never included in provider messages, tool descriptions or judge prompts",
+  "sfScope": "Pi SDK only; SF integration untested in this run",
+  "measurementLimits": [
+    "Machine-authored synthetic validation cases are not human gold or unseen production TEST",
+    "Remote cache state is uncontrolled; cache and uncached prompt counters are reported separately",
+    "Concurrent pair workers can create gateway contention; latency is this controlled workflow observation",
+    "Configured zero SDK prices do not establish billed cost or savings",
+    "Body hashes bind observed bytes; raw response bodies are not retained for independent replay",
+    "Task prompts and provider parameters are frozen; SDK-generated system prompts and hook nonces are recorded in actual requests"
+  ]
+}

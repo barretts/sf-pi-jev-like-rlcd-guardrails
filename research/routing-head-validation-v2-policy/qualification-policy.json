@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Prospective native VAL2 qualification policy after strict presentation-contract harness fix; same unchanged TRAIN head; no production approval",
+  "fixtureSha256": "e60a1b49b2f73d104a8a9c6221b5fda335b326b5f1bfdbb49ef8328da8b3752d",
+  "headSha256": "6c97fd783d2fd94d631717825923b462e319152bfe30044916be2011c803e84e",
+  "sourceWorkerSha256": "f3519bc5f33f86ffed0caf994549ad8b578db77fb84964e6f5906212522c5ead",
+  "productionQualified": false,
+  "minimumEasyIndependentGroups": 20,
+  "minimumStrongIndependentGroups": 40,
+  "easyFastCoverageMinimum": 0.6,
+  "unsafeFastMaximum": 0,
+  "warmOperationalP95MaximumMs": 100,
+  "fullPopulationRequired": true,
+  "errorsMaximum": 0,
+  "unrunMaximum": 0,
+  "completenessFromActualContextOnly": true,
+  "classifierInputsExcludeHostLabelsAndExpectedAnswers": true,
+  "schedule": "One cold full population plus two serial warm full populations; no feature replay",
+  "noTuningAfterValidation": true,
+  "familyMinimum": 12,
+  "independenceLimit": "Fresh fork with no repository/model/head/TRAIN/VAL1/prediction exposure; machine-authored60 literal tasks with independently checked gold; oldharness rejection aggregate disclosed; no human-reviewed production or final unseen test claim",
+  "promotion": "Separate root decision and exact result identity required; this policy does not approve an artifact"
+}

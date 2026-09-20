@@ -139,6 +139,19 @@ it("registers a v2-default tool and cache-only Manager descriptor without creati
   h.pi.events.emit(MANAGER_DISCOVERY_EVENT, request);
   expect(createBackend).not.toHaveBeenCalled();
   expect(request.extensions[0]).toMatchObject({ id: "jev", enabled: true });
+  expect(request.extensions[1]).toMatchObject({
+    id: "jev-context",
+    enabled: false,
+  });
+  expect(controller.contextCompression.status().enabled).toBe(false);
+  await h.commands.get("jev-context").handler("on", h.context);
+  expect(controller.contextCompression.status().enabled).toBe(true);
+  expect(createBackend).not.toHaveBeenCalled();
+  await expect(
+    h.commands.get("jev-context").handler("on global", h.context),
+  ).rejects.toThrow("Usage: /jev-context");
+  await h.commands.get("jev-context").handler("off", h.context);
+  expect(controller.contextCompression.status().enabled).toBe(false);
   expect(controller.preferences()).toEqual({
     enabled: true,
     routing: false,

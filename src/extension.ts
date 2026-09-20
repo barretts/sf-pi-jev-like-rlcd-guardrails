@@ -23,6 +23,20 @@ import {
 } from "./tool-result.js";
 import { openJevInManager, registerManager } from "./manager.js";
 import {
+  registerContextCompression,
+  type ContextCompressionOptions,
+} from "./context-extension.js";
+import { registerContextManager } from "./context-manager.js";
+import {
+  registerRoutingDispatcher,
+  ROUTING_DISPATCHER_API,
+  ROUTING_DISPATCHER_MODEL,
+  ROUTING_DISPATCHER_PROVIDER,
+  type RegisterRoutingDispatcherOptions,
+  type RoutingContext,
+  type RoutingMode,
+} from "./routing-extension.js";
+import {
   readPreferences,
   writePreferences,
   DEFAULT_PREFERENCES,
@@ -147,6 +161,8 @@ export function registerExtension(
     cwd?: string;
     agentDir?: string;
     createBackend?: (config: Config) => InferenceAdapter;
+    contextCompression?: ContextCompressionOptions;
+    routingDispatcher?: RegisterRoutingDispatcherOptions;
   } = {},
 ) {
   let cwd = options.cwd ?? process.cwd();
@@ -373,6 +389,98 @@ export function registerExtension(
     apply,
     action,
   });
+  const contextCompression = registerContextCompression(pi, {
+    ...options.contextCompression,
+    ...(options.routingDispatcher?.targets.fast?.model.api ===
+      "openai-completions" &&
+    options.routingDispatcher.targets.strong?.model.api === "openai-completions"
+      ? {
+          additionalSupportedModelApis: [ROUTING_DISPATCHER_API],
+          allowedOpenAiTargetModelIds: [
+            ...new Set([
+              options.routingDispatcher.targets.fast.model.id,
+              options.routingDispatcher.targets.strong.model.id,
+            ]),
+          ],
+        }
+      : {}),
+  });
+  const contextManagerActions = registerContextManager(pi, {
+    compression: {
+      status: () => {
+        const current = contextCompression.status();
+        return {
+          ...current,
+          lastFallback: current.lastFallback ?? undefined,
+          lastContext: current.lastContext ?? undefined,
+        };
+      },
+      setEnabled: (enabled) => contextCompression.setEnabled(enabled),
+    },
+  });
+  pi.registerCommand("jev-context", {
+    description:
+      "Tool context compression: status, on, or off for this session",
+    handler: async (args, ctx) => {
+      const command = args.trim() || "status";
+      if (command === "on" || command === "off")
+        contextCompression.setEnabled(command === "on");
+      else if (command !== "status")
+        throw new Error("Usage: /jev-context [status|on|off]");
+      display(contextCompression.status(), ctx);
+    },
+  });
+  const classifierContext = (context: RoutingContext): RoutingContext =>
+    contextCompression.isContextManifest(context.messages.at(-1))
+      ? { ...context, messages: context.messages.slice(0, -1) }
+      : context;
+  const routingOptions = options.routingDispatcher;
+  const routingReady = routingOptions
+    ? registerRoutingDispatcher(pi, {
+        ...routingOptions,
+        classify: routingOptions.classify
+          ? (context, requestOptions) =>
+              routingOptions.classify!(
+                classifierContext(context),
+                requestOptions,
+              )
+          : undefined,
+        evaluateEligibility: routingOptions.evaluateEligibility
+          ? (context, input) =>
+              routingOptions.evaluateEligibility!(
+                classifierContext(context),
+                input,
+              )
+          : undefined,
+      }).then((controller) => {
+        registerContextManager(pi, { routing: controller });
+        pi.registerCommand("jev-routing", {
+          description:
+            "Current-request dispatcher: status, use, off, shadow, auto, fast, strong",
+          handler: async (args, ctx) => {
+            const command = args.trim() || "status";
+            if (command === "use") {
+              const model = ctx.modelRegistry.find(
+                ROUTING_DISPATCHER_PROVIDER,
+                ROUTING_DISPATCHER_MODEL,
+              );
+              if (!model || !(await pi.setModel(model)))
+                throw new Error("Jev routing dispatcher is unavailable.");
+            } else if (
+              ["off", "shadow", "auto", "fast", "strong"].includes(command)
+            ) {
+              controller.setMode(command as RoutingMode);
+            } else if (command !== "status") {
+              throw new Error(
+                "Usage: /jev-routing [status|use|off|shadow|auto|fast|strong]",
+              );
+            }
+            display(controller.status(), ctx);
+          },
+        });
+        return controller;
+      })
+    : Promise.resolve(undefined);
   pi.registerTool({
     name: "jev_classify",
     label: "Jev Classify",
@@ -525,6 +633,9 @@ export function registerExtension(
     status,
     apply,
     managerActions,
+    contextManagerActions,
+    contextCompression,
+    routingReady,
     preferences: () => ({ ...resolved.values }),
     get classifier() {
       return classifier;
@@ -532,6 +643,6 @@ export function registerExtension(
     dispose: disposeCurrent,
   };
 }
-export default function extension(pi: ExtensionAPI) {
-  registerExtension(pi);
+export default async function extension(pi: ExtensionAPI) {
+  await registerExtension(pi).routingReady;
 }

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "scope": "Fresh literal synthetic prompts only; no captured Pi/SF requests or local project context",
+  "endpoint": "https://eng-ai-model-gateway.sfproxy.devx-preprod.aws-esvc1-useast2.aws.sfdc.cl/v1/chat/completions",
+  "variants": [
+    {
+      "id": "stream_without_tools",
+      "body": {
+        "model": "grok-4.6",
+        "messages": [
+          {
+            "role": "user",
+            "content": "This is a synthetic protocol test. Return only {\"ok\":true}. Do not call a tool."
+          }
+        ],
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "max_tokens": 128
+      }
+    },
+    {
+      "id": "tools_without_store_or_strict",
+      "body": {
+        "model": "grok-4.6",
+        "messages": [
+          {
+            "role": "user",
+            "content": "This is a synthetic protocol test. Return only {\"ok\":true}. Do not call a tool."
+          }
+        ],
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "max_tokens": 128,
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "synthetic_marker",
+              "description": "Synthetic protocol test marker.",
+              "parameters": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "tools_with_store_false",
+      "body": {
+        "model": "grok-4.6",
+        "messages": [
+          {
+            "role": "user",
+            "content": "This is a synthetic protocol test. Return only {\"ok\":true}. Do not call a tool."
+          }
+        ],
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "max_tokens": 128,
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "synthetic_marker",
+              "description": "Synthetic protocol test marker.",
+              "parameters": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            }
+          }
+        ],
+        "store": false
+      }
+    },
+    {
+      "id": "tools_with_strict_false",
+      "body": {
+        "model": "grok-4.6",
+        "messages": [
+          {
+            "role": "user",
+            "content": "This is a synthetic protocol test. Return only {\"ok\":true}. Do not call a tool."
+          }
+        ],
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "max_tokens": 128,
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "synthetic_marker",
+              "description": "Synthetic protocol test marker.",
+              "parameters": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "strict": false
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
