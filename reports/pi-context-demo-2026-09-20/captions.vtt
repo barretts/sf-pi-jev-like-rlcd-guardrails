@@ -1,0 +1,46 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.622
+This is a real Pi terminal recording with sf-pi and Jev. The eight log files are generated test data.
+
+00:00:05.622 --> 00:00:07.625
+All 23 sf-pi extensions have loaded. The startup catalog has 43 registered tools; the normal active tools remain available.
+
+00:00:07.625 --> 00:00:13.333
+Enable exact excerpts with /jev-context excerpts. Jev now shows its status above the prompt. The target is 50% fewer serialized request bytes.
+
+00:00:13.333 --> 00:00:14.930
+Pi is asked to read eight full logs, in order, and report the latest owner, build, region, and rollout state.
+
+00:00:14.930 --> 00:00:23.849
+Early checks keep the originals: the first has no completed tool text; the next two cannot reach 50% because instructions and tool schemas remain protected.
+
+00:00:23.849 --> 00:00:30.849
+Jev starts applying exact excerpts. The first applied request is 57.1% smaller in bytes; later reductions vary. Full originals remain retained.
+
+00:00:30.849 --> 00:00:46.881
+Later requests also pass the 50% byte check. Only completed tool text is reduced; instructions and tool definitions remain protected.
+
+00:00:46.881 --> 00:00:58.207
+Pi asks jev_context_read for omitted detail. It retrieves the last log in four pages before giving its answer.
+
+00:00:58.207 --> 00:01:06.209
+The final answer matches the fixture: Mira, build-642, us-west, paused. This answer used excerpts plus retrieval of original text.
+
+00:01:06.209 --> 00:01:15.715
+/jev-context log shows every check and application, the request byte reduction, tool-text sizes, and clearly labeled token estimates.
+
+00:01:15.715 --> 00:01:21.272
+Now test one specific retained line. Pi is asked to retrieve line 420 of log-08.txt with jev_context_read, without reading the filesystem.
+
+00:01:21.272 --> 00:01:24.537
+The tool retrieves the original line using its host-issued reference. The returned source hash matches the original file.
+
+00:01:24.537 --> 00:01:32.538
+Recovered exactly: ORION-7E4C-RECOVERED. Keeping original text makes omitted details available after compression.
+
+00:01:32.538 --> 00:01:42.042
+The activity log records both turns. All 15 gateway responses returned HTTP 200; all tool calls succeeded in this bounded test.
+
+00:01:42.042 --> 00:01:45.917
+Pi exits normally. This demonstrates visible checks, validated request byte reduction, and original-text retrieval. Token, cost, and production quality gains need separate measurement.

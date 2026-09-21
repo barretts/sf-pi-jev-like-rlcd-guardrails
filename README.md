@@ -88,6 +88,10 @@ navigation. Hiding the log leaves the compression setting in effect. Activity
 uses Pi's UI APIs only; it adds no model messages, tool schemas, or saved session
 entries.
 
+A [captioned recording of a real Pi/sf-pi session](./reports/pi-context-demo-2026-09-20/README.md)
+shows these checks, applied excerpts, and original-text retrieval on generated logs.
+The report includes the video, a synchronized caption textarea, and verification evidence.
+
 The ordinary `registerExtension` path selects task-aware exact excerpts when reduction is enabled. Selected excerpts retain the source text verbatim; full original tool results remain in memory and persisted session history for retrieval. The request view omits other text, so excerpt delivery alone does not establish answer correctness. The default `targetReduction` is `0.5`, a requested reduction target. Status labels token counts as estimates; actual provider usage needs separate measurement. The current acceptance target is a measured **50% reduction in whole-workflow prompt tokens**. A [completed bounded answer-effectiveness evaluation](./research/context-effectiveness-root-1/RESULTS.md) recorded 86/96 accepted excerpt answers versus 84/96 with full context, with one paired regression. Production answer quality remains unqualified.
 
 The `jev_context_read` tool retrieves retained original text using a host-issued `reference` handle. Its optional `offset` is a one-based line number; `limit` defaults to 100 lines and is capped at 200. An optional `byteOffset` is a zero-based UTF-8 boundary for paging a long line. Each page contains at most 16 KiB of original text; JSON escaping and metadata add response overhead. Use `nextOffset` or `nextByteOffset` to continue. References are handles, not filesystem paths.

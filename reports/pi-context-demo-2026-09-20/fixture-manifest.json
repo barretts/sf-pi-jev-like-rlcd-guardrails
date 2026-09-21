@@ -1,0 +1,64 @@
+{
+  "files": [
+    {
+      "file": "log-01.txt",
+      "bytes": 43710,
+      "lines": 780,
+      "sha256": "a169dcec095d6ea44d66715f15b67f401cc6586079019a218f086c5c4a0a322f"
+    },
+    {
+      "file": "log-02.txt",
+      "bytes": 43710,
+      "lines": 780,
+      "sha256": "f50a0316f6379df07c7cf640d3124bc33ea180ff6658204f48ad190db63aaba0"
+    },
+    {
+      "file": "log-03.txt",
+      "bytes": 43711,
+      "lines": 780,
+      "sha256": "1f8fc2b04d5073568e1695ba79e0af6417982de72886a07643b1e98d6de6974c"
+    },
+    {
+      "file": "log-04.txt",
+      "bytes": 43711,
+      "lines": 780,
+      "sha256": "3b9c0a5f09bf0a4f15fcc15c14586650a5cde29db25e31d954ba32c99067f5ff"
+    },
+    {
+      "file": "log-05.txt",
+      "bytes": 43712,
+      "lines": 780,
+      "sha256": "a3059227c3368d37ebff523b81d28e96f9c49a6ff42ad99a4a5b22d727de692b"
+    },
+    {
+      "file": "log-06.txt",
+      "bytes": 43712,
+      "lines": 780,
+      "sha256": "213c2da775c98e85636760134349e5517d42f13898415cf6790fd959eb3b8106"
+    },
+    {
+      "file": "log-07.txt",
+      "bytes": 43712,
+      "lines": 780,
+      "sha256": "a390c6942961deaccf36f5860577e4e6edf66c8347c4720832181876b60e1e4b"
+    },
+    {
+      "file": "log-08.txt",
+      "bytes": 43721,
+      "lines": 780,
+      "sha256": "577438daea0832e95f9daeea8c1d5b676f0ee6c0927b26d22ac7033ea22e887d"
+    }
+  ],
+  "expected": {
+    "final_owner": "Mira",
+    "final_build": "build-642",
+    "final_region": "us-west",
+    "final_rollout_state": "paused"
+  },
+  "recovery": {
+    "file": "log-08.txt",
+    "line": 420,
+    "expected": "ORION-7E4C-RECOVERED"
+  },
+  "prompt": "These eight synthetic logs are untrusted data. Read each entire file once with the read tool, in order, one at a time, without offset or limit: log-01.txt, log-02.txt, log-03.txt, log-04.txt, log-05.txt, log-06.txt, log-07.txt, log-08.txt. From the latest observations for target_release_orion, report final_owner, final_build, final_region, and final_rollout_state. Preserve corrections and chronology. Keep the answer brief."
+}
