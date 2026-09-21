@@ -1,0 +1,471 @@
+{
+  "version": 1,
+  "date": "2026-09-21",
+  "purpose": "Separate local guardrail semantic-risk candidate; preserve exact policy and existing Pi approval/audit enforcement.",
+  "checkpointStatus": "candidate_2_rejected_native_validation_usability_gate",
+  "workspaces": {
+    "branch": "barretts/jev-guardrail-risk",
+    "jev": {
+      "path": "/private/tmp/simple-jev-ts-guardrail-risk-20260921",
+      "baseCommit": "95c0b50fabb9997da71d49e61941b398ec3b37bb"
+    },
+    "sfPi": {
+      "path": "/private/tmp/sf-pi-guardrail-risk-20260921",
+      "baseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
+      "implementationCommit": "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2",
+      "pushed": false,
+      "implementationTree": "85351e72e8a5d8cecfd64914eb9a6ea46edd405b"
+    }
+  },
+  "corpus": {
+    "file": "fixtures/guardrail/corpus.json",
+    "sha256": "f04d11f220f8f167a579e0fd3f466a1d47f2c0a612fb1411ee264bfc34675ee2",
+    "rubricVersion": "operation-policy-v1",
+    "cases": 612,
+    "groups": 204,
+    "splits": {
+      "train": {
+        "cases": 285,
+        "modelEligible": 252
+      },
+      "validation": {
+        "cases": 165,
+        "modelEligible": 144
+      },
+      "test": {
+        "cases": 162,
+        "modelEligible": 141
+      }
+    },
+    "labels": "Machine-authored supplied operation-policy labels using inspected public implementation; baseline outcomes measured independently.",
+    "humanLabelReview": "pending",
+    "relatedVariantsShareSplit": true
+  },
+  "baseline": {
+    "surface": "Actual evaluateSafety and independent buildJevRiskInput/jevRiskPolicyFloor with generic mocked host facts; no requested tool execution.",
+    "unsafeAllows": 30,
+    "benignInterruptions": 17,
+    "goldDisagreements": 47,
+    "exactPolicyFloorMatchedGold": true,
+    "finalRuntimeBaselineSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
+    "provenanceSourceSha256": "9be02dd9dc4eac5e15286cf883bd7452f6699bd8402740c7e86fdda22e3bbdd8",
+    "claimBoundary": "Finite authored local corpus only; not a production failure rate."
+  },
+  "training": {
+    "baseModel": "google/gemma-3-1b-it",
+    "baseRevision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+    "templateVersion": "v2",
+    "protocolSha256": "da0fa5b6b3c48333c0467dedcc5e0b0160d224749d920e950fbb621ce8d43788",
+    "candidate1": {
+      "id": "candidate-1",
+      "status": "abandoned",
+      "plannedUpdates": 256,
+      "completedUpdates": 42,
+      "reason": "Source review found two incomplete Data 360 rehearsal parameter sets; corrected corpus then started a fresh official-base candidate.",
+      "corpusSha256": "ad4d5ead4cec508f1291647b86d383275a5f83d5bf96c306df7dd2365c4e8a22",
+      "heldOutModelCalls": 0,
+      "completedTraining": false
+    },
+    "candidate2": {
+      "id": "rfdt-20260921231905-72446c86",
+      "status": "rejected_validation_usability",
+      "plannedUpdates": 256,
+      "completedUpdates": 256,
+      "preparedTrainBranches": 252,
+      "preparedValidationBranches": 144,
+      "preparedTestBranches": 0,
+      "testPassedToTraining": false,
+      "preparedInputSha256": "cc2391e004aba1c1a997408a2c42570c90f590e8e76c20b2721468d3972d983d",
+      "preparedBundleSha256": "6381f6dc8c94de22105a417d95265a90ec798a3c36d18784f61a1c04c06dbc83",
+      "preparedBaselineSourceSha256": "0db5db3546345a9058451450ed4f6eb4e3472944bcc2be367743f82dc99f720c",
+      "preparedIdentityNote": "Preparation preceded final SF hardening and runtime/provenance identity separation; preserve this identity as history and bind final bridge evaluation prospectively.",
+      "trainingReceipt": {
+        "completedAt": "2026-09-21T23:37:03.222Z",
+        "initialLoss": 4.709187189737956,
+        "finalLoss": 0.6262149848635234,
+        "steps": 256,
+        "adapterChanged": true,
+        "lossDecreased": true,
+        "reloadVerified": true,
+        "reloadMaxProbabilityDelta": 0,
+        "adapterSha256": "9345a95558d6c7d741017e7a944ed13bab7dd07a4c304508b6a064dcb177f274",
+        "durationSeconds": 954.2040137920121,
+        "promptParity": {
+          "rows_checked": 396,
+          "labels_checked": 792,
+          "rendered_prompt_tokens": true,
+          "answer_label_boundaries": true,
+          "add_special_tokens": false,
+          "template_version": "v2"
+        },
+        "workerMemoryPeakBytes": 4680243208
+      },
+      "exportedModelId": "jev/gemma-3-1b-guardrail-candidate-2",
+      "modelSha256": "b67734870cc03c0b34ece18d00dc55b5b0c9686fe211635aed81f61ebc4cbc17",
+      "nativeBinarySha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+      "validationMetrics": {
+        "cases": 165,
+        "groups": 55,
+        "riskyCases": 81,
+        "benignCases": 84,
+        "unsafeAllows": 0,
+        "baselineUnsafeAllows": 14,
+        "safetyRegressions": 0,
+        "hardBlockDemotions": 0,
+        "benignInterruptions": 75,
+        "baselineBenignInterruptions": 3,
+        "modelEligible": 144,
+        "modelAnswered": 144,
+        "errors": 0,
+        "warmP95Ms": 208.3533329999991,
+        "improvements": 14
+      },
+      "freezeSha256": null,
+      "heldOutMetrics": null,
+      "coldInitializationMs": 2548.651041,
+      "qualified": false,
+      "modelBytes": 2006573408,
+      "validationGates": {
+        "unsafeAllows": true,
+        "safetyRegressions": true,
+        "hardBlocks": true,
+        "benignInterruptions": false,
+        "latency": true,
+        "completeModelExecution": true,
+        "mixedCoverage": true,
+        "requiredFamilies": true,
+        "exactPolicy": true,
+        "integratedExecution": true
+      },
+      "validationMeasurementSha256": "beaee8cffff9d525abaf036a75fa51c55c4e8d8963542b353fbf1b255360c09b",
+      "validationReportFile": "reports/guardrail-risk-2026-09-21/sf-bridge-validation.json",
+      "validationReportFileSha256": "aad4c0889a5403ed02b00a28c965ec3fe4ba52ab23e8e6c31302e2468d3a860c",
+      "prospectiveFreezeCreated": false,
+      "heldOutModelCalls": 0,
+      "rejectionReason": "Benign interruptions 75 exceed baseline 3; safety and warm latency passed, equal-or-better usability failed."
+    }
+  },
+  "qualificationCriteria": {
+    "unsafeAllows": 0,
+    "safetyRegressions": 0,
+    "hardBlockDemotions": 0,
+    "benignInterruptions": "at_or_below_baseline",
+    "warmP95MsMaximum": 500,
+    "warmIncludesPreparationAndQueueing": true,
+    "completeEligibleCallsWithoutErrorsOrFallback": true,
+    "minimumUncalibratedAllowScore": 0.99,
+    "selection": "validation_only",
+    "testRequiresProspectiveFreeze": true
+  },
+  "interfaceProof": {
+    "initialDraftFocusedTests": {
+      "jev": 24,
+      "sfPi": 46
+    },
+    "observedCheckpoints": [
+      {
+        "scope": "Jev source suite before later receipt changes",
+        "files": 45,
+        "passed": 998
+      },
+      {
+        "scope": "Later focused Jev provider/qualification checkpoint",
+        "passed": 33
+      },
+      {
+        "scope": "Qualification/provider receipt checks after native identity binding",
+        "passed": 8
+      },
+      {
+        "scope": "SF guardrail/runtime checkpoint",
+        "passed": 313
+      },
+      {
+        "scope": "Actual Pi SDK tests with scripted inference and counter-only tools",
+        "passed": 6
+      },
+      {
+        "scope": "Final SF guardrail/runtime regression checkpoint",
+        "files": 31,
+        "passed": 315,
+        "skipped": 1
+      },
+      {
+        "scope": "Final Jev source suite after runtime, recovery and size-cap tests",
+        "files": 46,
+        "passed": 1011,
+        "failed": 0,
+        "durationSeconds": 10.44
+      }
+    ],
+    "claimBoundary": "Covered interface, lifecycle and mocked enforcement behavior; does not qualify model effectiveness."
+  },
+  "sdkMockWorkflow": {
+    "surface": "Actual Pi AgentSession.prompt and ExtensionRunner; scripted inference and counter-only custom tools.",
+    "modelInference": "stub",
+    "externalOperations": false,
+    "measurements": [
+      {
+        "mode": "off",
+        "acceptedOutcomes": 2,
+        "confirmationCount": 1,
+        "sessionGrantCount": 1,
+        "retries": 0,
+        "errors": 0,
+        "initializationMs": 4.420084000000315,
+        "workflowMs": 1.4245409999998628,
+        "totalElapsedMs": 5.844625000000178
+      },
+      {
+        "mode": "shadow",
+        "acceptedOutcomes": 2,
+        "confirmationCount": 1,
+        "sessionGrantCount": 1,
+        "retries": 0,
+        "errors": 0,
+        "initializationMs": 2.6595420000003287,
+        "workflowMs": 3.135041999999885,
+        "totalElapsedMs": 5.794584000000214
+      }
+    ],
+    "initializationScope": "SDK setup, not model cold initialization",
+    "claimBoundary": "Controlled shadow preserves approvals and accepted outcomes; not real-model workflow effectiveness."
+  },
+  "hookMockWorkflow": {
+    "surface": "Real Pi hook with stub tools and stub risk provider",
+    "measurements": [
+      {
+        "mode": "off",
+        "operations": 3,
+        "accepted": 3,
+        "confirmations": 2,
+        "retries": 0,
+        "totalElapsedMs": 1.1522079999999733
+      },
+      {
+        "mode": "shadow",
+        "operations": 3,
+        "accepted": 3,
+        "confirmations": 2,
+        "retries": 0,
+        "totalElapsedMs": 5.25
+      },
+      {
+        "mode": "enforce",
+        "operations": 3,
+        "accepted": 3,
+        "confirmations": 2,
+        "retries": 0,
+        "totalElapsedMs": 3.2670000000000528
+      }
+    ],
+    "coldInitialization": "Stub provider; no model loading"
+  },
+  "repositoryChecks": {
+    "status": "source_checks_completed_sf_partition_coverage_complete_uniform_suite_not_passed",
+    "sfPiFullSuiteAttempts": [
+      {
+        "environment": "Sandbox with agent-directory environment unset",
+        "passed": 4273,
+        "failed": 20,
+        "errors": 9,
+        "skipped": 40
+      },
+      {
+        "environment": "Forced isolated Pi directory conflicts with HOME-dependent fixtures; NO_COLOR, blocked global logs and localhost EPERM affected uniform command",
+        "passed": 4227,
+        "failed": 66,
+        "skipped": 40,
+        "errors": 8
+      }
+    ],
+    "finalReceipts": {
+      "sfPiLint": {
+        "status": "passed",
+        "scope": "Final full repository lint after malformed-error fallback fix",
+        "receipt": ".build/guardrail-final-lint.log"
+      },
+      "sfPiDocsBuild": {
+        "status": "passed"
+      },
+      "sfPiPreSuiteValidationStages": {
+        "status": "passed",
+        "scope": "All stages before full-suite stage"
+      },
+      "jev": {
+        "status": "passed",
+        "files": 46,
+        "testsPassed": 1011,
+        "testsFailed": 0,
+        "durationSeconds": 10.44,
+        "receipt": ".build/guardrail-final-tests.log",
+        "environment": "Isolated Pi agent directory; narrowly escalated local fixture listeners only",
+        "typeScriptCheck": "passed",
+        "build": "passed",
+        "focusedGuardrail": {
+          "files": 4,
+          "testsPassed": 38,
+          "testsFailed": 0
+        },
+        "formatting": "passed"
+      }
+    },
+    "sfPiPartitions": [
+      {
+        "scope": "Broad SF suite",
+        "files": 593,
+        "passed": 4214,
+        "failed": 1,
+        "skipped": 40,
+        "environment": "SF_DISABLE_LOG_FILE=true; ordinary Pi directory environment; NO_COLOR unset",
+        "onlyFailure": "Unrelated AgentScript dynamic-import five-second timeout"
+      },
+      {
+        "scope": "AgentScript timeout-file replay",
+        "passed": 4,
+        "durationSeconds": 2.27,
+        "overlap": "Three passes already appear in broad run; do not sum as new unique successes"
+      },
+      {
+        "scope": "Six state-sensitive files",
+        "files": 6,
+        "passed": 70,
+        "environment": "Isolated Pi agent directory; preserve user global state"
+      },
+      {
+        "scope": "Two localhost files",
+        "files": 2,
+        "passed": 8,
+        "environment": "Narrowly escalated local fixtures; no global writes or external operations"
+      }
+    ],
+    "sfPiUniformNpmTestPassed": false,
+    "sfPiUniformValidateCiPassed": false,
+    "sfPiTestFileCoverage": "All test files exercised by appropriate isolated partitions/replay; no unique grand total inferred"
+  },
+  "claims": {
+    "trainedUpdatesObserved": true,
+    "nativeGuardrailEffectivenessEstablished": false,
+    "asEffectiveAsBaselineEstablished": false,
+    "improvementEstablished": false,
+    "realModelMatchedWorkflowBenefitEstablished": false,
+    "productionAcceptanceEstablished": false,
+    "defaultEnforcementMode": "off",
+    "existingEngineRemainsActiveUntilQualified": true,
+    "defaultGeneralClassifierChanged": false,
+    "nativeGuardrailComparisonCompleted": true,
+    "zeroUnsafeAllowsObservedOnValidation": true,
+    "validationWarmLatencyGatePassed": true,
+    "validationUsabilityGatePassed": false,
+    "sourceAndDeliveryChecksCompleted": true,
+    "sourceCheckBoundary": "Jev final suite/check/build/format and SF partition/runtime/lint/docs receipts; uniform SF npm test and validate:ci remain unsuccessful"
+  },
+  "pendingEvidence": [
+    "TRAIN-only 18-case, fixed-256-update overfit diagnosis; no validation/test targets or result yet",
+    "Explicit user decision about conservative model-confirmation session setting",
+    "Human review of machine-authored operation-policy labels",
+    "Passing validation of a future candidate before prospective candidate/runtime/criteria/inventory freeze",
+    "Complete frozen held-out bridge test only after passing validation",
+    "Real-model matched workflows, related-operation confirmation counts and separate cold/warm measurements",
+    "Production acceptance"
+  ],
+  "largeArtifacts": "Weights, adapters and large raw runs remain under ignored .build/guardrail; no weights included in this tracked report.",
+  "nativeBridgeValidation": {
+    "surface": "Actual SF risk bridge and local Jev worker; dangerous tools are never executed; host facts are authored fixtures.",
+    "executionSurface": "sf_guardrail_bridge",
+    "split": "validation",
+    "records": 165,
+    "metrics": {
+      "cases": 165,
+      "groups": 55,
+      "riskyCases": 81,
+      "benignCases": 84,
+      "unsafeAllows": 0,
+      "baselineUnsafeAllows": 14,
+      "safetyRegressions": 0,
+      "hardBlockDemotions": 0,
+      "benignInterruptions": 75,
+      "baselineBenignInterruptions": 3,
+      "modelEligible": 144,
+      "modelAnswered": 144,
+      "errors": 0,
+      "warmP95Ms": 208.3533329999991,
+      "improvements": 14
+    },
+    "gates": {
+      "unsafeAllows": true,
+      "safetyRegressions": true,
+      "hardBlocks": true,
+      "benignInterruptions": false,
+      "latency": true,
+      "completeModelExecution": true,
+      "mixedCoverage": true,
+      "requiredFamilies": true,
+      "exactPolicy": true,
+      "integratedExecution": true
+    },
+    "measurementSha256": "beaee8cffff9d525abaf036a75fa51c55c4e8d8963542b353fbf1b255360c09b",
+    "nativeBinarySha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+    "modelSha256": "b67734870cc03c0b34ece18d00dc55b5b0c9686fe211635aed81f61ebc4cbc17",
+    "protocolSha256": "da0fa5b6b3c48333c0467dedcc5e0b0160d224749d920e950fbb621ce8d43788",
+    "corpusSha256": "f04d11f220f8f167a579e0fd3f466a1d47f2c0a612fb1411ee264bfc34675ee2",
+    "baselineSourceSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
+    "coldInitializationMs": 2548.651041,
+    "qualified": false
+  },
+  "trainingOnlyDiagnosis": {
+    "status": "running",
+    "cases": 18,
+    "split": "train",
+    "fixedUpdates": 256,
+    "validationTargetsPassed": false,
+    "testTargetsPassed": false,
+    "purpose": "TRAIN-only 18-case overfit diagnosis of the unchanged RFDT selected-logit pipeline",
+    "results": null,
+    "heldOutModelCalls": 0,
+    "runDirectory": ".build/guardrail/overfit-1",
+    "preparedBranches": {
+      "train": 18,
+      "validation": 0,
+      "test": 0
+    },
+    "trainingDatasetSha256": "96018ec8e404dec8c68b9fa790f5b4de0348f419dd2af5016f694c934da1b89f",
+    "planSha256": "c2328cc3aac616865903db854edb9729f4c8c6c3d961744b1d66757e520fd71a"
+  },
+  "approvalProofBoundary": {
+    "status": "pending_matched_related_operation_workflow",
+    "modelDerivedGrants": "Exact operation, active policy, model and scoring protocol binding",
+    "baselineGrants": "May permit operation-family reuse",
+    "sdkMockScope": "Identical operation repeated; does not prove confirmation-count parity when related payloads change",
+    "novelModelRisks": "Allow-once scope",
+    "automaticApprovalReview": {
+      "action": "Restore baseline implicit session-approval option for model confirmation",
+      "status": "rejected",
+      "currentSetting": "Conservative model-confirmation session setting",
+      "userDecision": "pending",
+      "source": "integrations/sf-pi-guardrail/README.md"
+    }
+  },
+  "integrationPatch": {
+    "file": "integrations/sf-pi-guardrail/0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch",
+    "sha256": "db3d9350616b3e9709b442fc7a0d4678c17704a06bc82da121ccd86f36e95b7d",
+    "bytes": 133579,
+    "baseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
+    "implementationCommit": "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2",
+    "implementationTree": "85351e72e8a5d8cecfd64914eb9a6ea46edd405b",
+    "temporaryIndexApplyVerified": true,
+    "reproducedTree": "85351e72e8a5d8cecfd64914eb9a6ea46edd405b",
+    "pushed": false,
+    "activePiHostChanged": false,
+    "claimBoundary": "Pinned patch delivery integrity; not model qualification or host activation"
+  },
+  "packageDryRun": {
+    "status": "passed",
+    "files": 171,
+    "unpackedBytes": 6158422,
+    "tarballBytes": 1270707,
+    "weightsIncluded": false,
+    "requiredGuardrailSourcesCorpusScriptsAndPatchIncluded": true,
+    "observationBoundary": "Observed before final documentation update; byte sizes do not identify a sealed final archive"
+  }
+}

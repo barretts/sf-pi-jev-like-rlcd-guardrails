@@ -6,6 +6,8 @@ import {
   type InferenceAdapter,
 } from "../src/backend.js";
 import { registerExtension, ToolSchema } from "../src/extension.js";
+import { createEventBus } from "@earendil-works/pi-coding-agent";
+import { GUARDRAIL_PROVIDER_EVENT } from "../src/guardrail.js";
 import { createServer } from "../src/server.js";
 import { preparePrompt } from "../src/core.js";
 const config = configFromEnv({ JEV_MODEL_ID: "gemma" });
@@ -37,15 +39,19 @@ function fake(): InferenceAdapter {
 }
 it("invokes real factory and tool handler with no initialization at registration", async () => {
   const backend = fake(),
+    riskBackend = vi.fn(fake),
     tools: any[] = [],
     commands: any[] = [],
     events: any[] = [],
     pi: any = {
+      events: createEventBus(),
       registerTool: (t: any) => tools.push(t),
       registerCommand: (name: string, c: any) => commands.push({ name, ...c }),
       on: (name: string, h: any) => events.push({ name, h }),
     };
-  registerExtension(pi, config, backend);
+  const extension = registerExtension(pi, config, backend, {
+    guardrailRisk: { env: {}, createBackend: riskBackend },
+  });
   expect(backend.warmup).not.toHaveBeenCalled();
   expect(backend.compile).not.toHaveBeenCalled();
   expect(tools.map((t) => t.name)).toEqual([
@@ -55,14 +61,34 @@ it("invokes real factory and tool handler with no initialization at registration
   ]);
   expect(commands.some((command) => command.name === "jev")).toBe(true);
   expect(commands.some((command) => command.name === "jev-context")).toBe(true);
+  expect(commands.some((command) => command.name === "jev-risk")).toBe(true);
   expect(events.some((event) => event.name === "session_shutdown")).toBe(true);
+  const discovery = { version: 1, providers: [] as any[] };
+  pi.events.emit(GUARDRAIL_PROVIDER_EVENT, discovery);
+  expect(discovery.providers).toHaveLength(1);
+  expect(discovery.providers[0]).toBe(extension.guardrailRisk.provider);
+  await commands
+    .find((command) => command.name === "jev-risk")
+    .handler("status", {
+      ui: { notify: vi.fn() },
+    });
+  expect(extension.guardrailRisk.status()).toMatchObject({
+    state: "cold",
+    qualified: false,
+    modelSha256: null,
+  });
+  expect(riskBackend).not.toHaveBeenCalled();
   const result = await tools
     .find((tool) => tool.name === "jev_classify")
     .execute("test", input, undefined, undefined, {});
   expect(result.details.answers.x.choice).toBe("yes");
   expect(JSON.parse(result.content[0].text).usage.output_tokens).toBe(0);
-  await events.find((event) => event.name === "session_shutdown").h();
+  for (const event of events.filter(
+    (event) => event.name === "session_shutdown",
+  ))
+    await event.h();
   expect(backend.dispose).toHaveBeenCalledOnce();
+  expect(riskBackend).not.toHaveBeenCalled();
 });
 it("exposes a serializable tool schema", () =>
   expect(JSON.parse(JSON.stringify(ToolSchema)).properties.questions.type).toBe(

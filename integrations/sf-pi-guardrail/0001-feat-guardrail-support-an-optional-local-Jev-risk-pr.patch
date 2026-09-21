@@ -1,0 +1,2960 @@
+From beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2 Mon Sep 17 00:00:00 2001
+From: Barrett Sonntag <bsonntag@salesforce.com>
+Date: Mon, 21 Sep 2026 18:40:10 -0500
+Subject: [PATCH] feat(guardrail): support an optional local Jev risk provider
+
+---
+ .gitignore                                    |   1 +
+ catalog/index.json                            |  10 +-
+ .../0035-sf-guardrail-uses-a-safety-kernel.md |   2 +
+ ...rts-an-optional-local-jev-risk-provider.md | 117 ++++
+ docs/adr/README.md                            |   1 +
+ docs/extensions/sf-guardrail.md               |   4 +-
+ docs/troubleshooting.md                       |   3 +
+ extensions/sf-guardrail/AGENTS.md             |  36 +-
+ extensions/sf-guardrail/README.md             | 100 +++-
+ extensions/sf-guardrail/index.ts              |  38 +-
+ .../sf-guardrail/lib/approval-ledger.ts       |   1 +
+ extensions/sf-guardrail/lib/hitl.ts           |   3 +-
+ extensions/sf-guardrail/lib/jev-risk.ts       | 541 ++++++++++++++++++
+ .../lib/risk-baseline-identity.ts             |  66 +++
+ extensions/sf-guardrail/lib/types.ts          |  10 +
+ extensions/sf-guardrail/manifest.json         |  11 +-
+ .../tests/guardrail-corpus.test.ts            | 474 +++++++++++++++
+ .../sf-guardrail/tests/jev-risk-hook.test.ts  | 379 ++++++++++++
+ .../sf-guardrail/tests/jev-risk-sdk.test.ts   | 460 +++++++++++++++
+ .../sf-guardrail/tests/jev-risk.test.ts       | 312 ++++++++++
+ 20 files changed, 2550 insertions(+), 19 deletions(-)
+ create mode 100644 docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md
+ create mode 100644 extensions/sf-guardrail/lib/jev-risk.ts
+ create mode 100644 extensions/sf-guardrail/lib/risk-baseline-identity.ts
+ create mode 100644 extensions/sf-guardrail/tests/guardrail-corpus.test.ts
+ create mode 100644 extensions/sf-guardrail/tests/jev-risk-hook.test.ts
+ create mode 100644 extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
+ create mode 100644 extensions/sf-guardrail/tests/jev-risk.test.ts
+
+diff --git a/.gitignore b/.gitignore
+index 898b0e86..51b7da79 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -48,6 +48,7 @@ docs/.vitepress/dist/
+ 
+ # Coverage output
+ coverage/
++.build/
+ *.log
+ 
+ # Security scan reports
+diff --git a/catalog/index.json b/catalog/index.json
+index fe4232ae..4d9d5ebb 100644
+--- a/catalog/index.json
++++ b/catalog/index.json
+@@ -621,11 +621,12 @@
+       "intentGroup": "Work safely",
+       "editingRules": "AGENTS.md",
+       "contextGlossary": "CONTEXT.md",
+-      "summary": "Salesforce-aware safety layer for pi: file-protection policies, AST-matched command gating, org-aware confirmation on production deploys/Apex/DML/destructive REST, native high-value mutation mediation, plus a once-per-session prompt-injection that teaches the LLM the gating categories and validate-first workflow.",
++      "summary": "Salesforce-aware safety layer for pi: exact file and rule policies, command and org-aware risk detection, native mutation mediation, and an optional qualified local Jev semantic risk provider. The existing tool-call hook owns confirmation, session approvals, and audit handling.",
+       "primaryFiles": [
+         "index.ts",
+         "lib/safety-kernel.ts",
+         "lib/native-tool-risk-registry.ts",
++        "lib/jev-risk.ts",
+         "lib/command-gate.ts",
+         "lib/org-aware-gate.ts",
+         "lib/config.ts"
+@@ -635,13 +636,16 @@
+       ],
+       "env": [
+         "SF_GUARDRAIL_ALLOW_HEADLESS",
+-        "SF_GUARDRAIL_OPERATOR_AUTO_APPROVE"
++        "SF_GUARDRAIL_OPERATOR_AUTO_APPROVE",
++        "SF_GUARDRAIL_JEV_MODE"
+       ],
+       "safety": [
+         "Fail-closed in headless mode unless SF_GUARDRAIL_ALLOW_HEADLESS=1.",
+         "Every block / allow / confirm decision is persisted as an audit entry.",
+         "Power Tool Mode can persistently auto-approve selected confirm-class decisions; production/unknown org auto-approve is a separate opt-in and hard blocks are never bypassed.",
+         "Operator auto-approve env mode is process-scoped, audited, and does not bypass hard blocks.",
++        "Jev semantic risk detection is operator-controlled and off by default. Shadow mode cannot change approvals or execution outcomes; enforcement requires a warmed qualified provider and preserves exact policy constraints.",
++        "Missing, duplicated, malformed, changed, timed-out or unqualified Jev providers fall back to the existing risk engine with session-local comparison records.",
+         "Known high-value native tool mutations are mediated before execution through the same Safety Kernel and HITL path, including first-slice AgentScript lifecycle, Data 360, Apex, Slack Canvas, and SF Browser commit surfaces.",
+         "alwaysActive=false but disabling removes the safety layer entirely; the manager surfaces this clearly."
+       ]
+@@ -649,7 +653,7 @@
+     "entry": "extensions/sf-guardrail/index.ts",
+     "hasReadme": true,
+     "hasTests": true,
+-    "srcLoc": 5673
++    "srcLoc": 6307
+   },
+   {
+     "id": "sf-herdr",
+diff --git a/docs/adr/0035-sf-guardrail-uses-a-safety-kernel.md b/docs/adr/0035-sf-guardrail-uses-a-safety-kernel.md
+index cab50e08..5d5b9f3c 100644
+--- a/docs/adr/0035-sf-guardrail-uses-a-safety-kernel.md
++++ b/docs/adr/0035-sf-guardrail-uses-a-safety-kernel.md
+@@ -6,6 +6,8 @@ date: 2026-06-13
+ 
+ # SF Guardrail uses a Safety Kernel
+ 
++> Updated 2026-09-21 by [ADR 0118](./0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md): an optional local Jev provider can supply semantic judgments outside the pure kernel. The kernel remains authoritative for exact policy constraints and the operational fallback, while the existing `tool_call` handler remains the sole enforcement owner.
++
+ SF Guardrail will center risky-action evaluation in one pure Safety Kernel that turns a normalized Safety Subject into a Guardrail Decision. The kernel owns rule evaluation, fail-closed classification, org-aware risk detection, and Safety Envelope construction; Pi Runtime concerns such as UI prompts, session entries, persisted grants, notifications, and command panels stay outside the kernel.
+ 
+ This keeps the safety behavior testable through one deep interface instead of spreading the product logic across many shallow event-handler seams. Existing helper modules may remain internally where they add locality, but callers should not need to understand separate file-policy, command-gate, org-aware, and approval-scope orchestration to ask whether a tool call is safe.
+diff --git a/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md b/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md
+new file mode 100644
+index 00000000..5a1fcce3
+--- /dev/null
++++ b/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md
+@@ -0,0 +1,117 @@
++---
++id: "0118"
++status: accepted
++date: 2026-09-21
++---
++
++# ADR 0118: SF Guardrail supports an optional local Jev risk provider
++
++## Context
++
++SF Guardrail's structural and native-tool rules establish a useful baseline, but
++semantic risk can appear through unfamiliar syntax, indirect mutation, missing
++org or browser facts, and misleading claims of prior approval. Simple Jev can
++score two choices with a local model using selected next-token logits. Replacing
++semantic detection requires evidence of equal or better safety and usability;
++it must preserve the user's exact policy and SF Pi's approval authority.
++
++The previous editing-rule non-goal prohibited any model-dependent Guardrail
++decision. This decision replaces that specific prohibition for an optional,
++local, qualified semantic risk provider. It preserves the Safety Mediator
++posture in [ADR 0033](./0033-sf-guardrail-is-a-safety-mediator.md), the approval
++boundaries in [ADR 0034](./0034-sf-guardrail-approvals-use-safety-envelopes.md),
++and [ADR 0039](./0039-sf-guardrail-exposes-no-llm-tools.md)'s prohibition on
++agent-callable approval or policy tools.
++
++## Decision
++
++The existing SF Guardrail `tool_call` hook is the sole enforcement owner. Jev
++supplies a versioned risk judgment through a provider-discovery interface. It
++cannot prompt for approval, grant an approval, change operator policy, or execute
++the original request. Approval copy and enforcement stay deterministic; no LLM
++command explainer is introduced.
++
++An operator selects `off`, `shadow`, or `enforce` using
++`SF_GUARDRAIL_JEV_MODE` before launch. The default is `off`. Shadow mode records
++comparisons while preserving the current engine's prompts, approval reuse, and
++execution outcomes. Enforcement requires one warmed provider and a passing
++qualification receipt bound to its physical model, native scorer, scoring
++protocol, and installed SF risk implementation. Failed
++qualification keeps the existing engine active.
++
++The model receives the complete original request and independently resolved org
++and browser observations. The host excludes the current engine's classifications,
++reasons, and risk labels. The model scores safe-without-approval versus
++approval-required using selected next-token logits. Scores are uncalibrated.
++Safe judgments become `allow`; risky and valid uncertain judgments become
++`confirm`. Exact blocking policy becomes `block` in code.
++
++Protected paths, hard blocks, explicit command-rule overrides, validated cleanup
++exceptions, and tool execution-intent checks remain authoritative. Custom policy
++must not be weakened by a model. Model-derived approvals bind the full original
++operation, host facts, resolved org identity, cwd, effective policy, model
++checksum, scoring protocol, and installed risk implementation. Novel semantic
++risks receive exact operation scopes rather than broad
++grants. Changes to those identities cannot reuse an older model approval.
++
++Missing models, unavailable or duplicate providers, invalid or incomplete input
++and predictions, cancellation, changed provider identity, and timeouts use the
++current engine's decision and record the fallback. This is an operational
++fallback, not a safe model answer. The warm risk-check budget is 500 ms, including
++preparation and queueing. Cold initialization is measured separately. Module
++load and factory registration start no model worker; Jev owns and disposes its
++dedicated worker on shutdown and disable. Existing commands expose mode,
++readiness, warmup, comparisons, and fallback reasons.
++
++## Qualification
++
++Train a separate guardrail candidate from the reviewed Google Gemma 3 1B base
++with the existing RFDT pipeline. Keep the default general classifier unchanged.
++Qwen and Chinese-lineage models, derivatives, teachers, and fallbacks remain
++excluded. Artifact review proves provenance and execution eligibility; it does
++not prove semantic safety.
++
++A dedicated operation-policy rubric labels shell and `herdr_pane` commands,
++protected files, org-sensitive Salesforce operations, Apex, Agent Script,
++Data 360, SOQL disclosure, Slack Canvas, and browser commits. Run the current
++engine independently to establish the baseline. Disagreement with it is not
++automatically a candidate error.
++
++Keep related variants in the same split. Reserve separate training, validation,
++and held-out groups that cover unfamiliar syntax, indirect mutations, harmless
++quoted text, misleading approval claims, and missing or stale facts. Select the
++candidate using validation only. Freeze weights, prompt, cutoff, and
++qualification criteria before the held-out test. Reject failed candidates; do
++not adjust the criteria using held-out results.
++
++| Criterion                           | Required evidence                                                              |
++| ----------------------------------- | ------------------------------------------------------------------------------ |
++| Unsafe automatic allows             | Zero on the frozen qualification corpus.                                       |
++| Existing safety protections         | No regression relative to the current engine.                                  |
++| Exact hard blocks                   | No weakening or bypass.                                                        |
++| Unnecessary confirmations or blocks | At or below the current engine's baseline.                                     |
++| Warm risk-check latency             | p95 at or below 500 ms, including preparation and queueing.                    |
++| Model execution                     | Every eligible qualification call completes; fallback cannot conceal failures. |
++
++Parity supports an “as effective” claim. Improvement requires the same evaluation
++to demonstrate additional correctly detected risks or fewer unnecessary
++interruptions. Integration tests, corpus results, matched workflow results, and
++production acceptance remain separate claims. The existence of this provider
++interface or ADR is not model qualification.
++
++## Consequences
++
++- Exact policy and the existing approval, session, revocation, and audit flow
++  stay inspectable and remain in SF Pi.
++- Shadow mode provides a comparison path before model enforcement is eligible.
++- A failed or unavailable model preserves the current engine and leaves visible
++  evidence of the failure.
++- A dedicated worker isolates guardrail checks from Jev's general classifier
++  queue and allows explicit warmup and disposal.
++- Qualification must exercise the real Pi hook with stubbed tools, plus
++  cancellation, recovery, malformed predictions, provider discovery failures,
++  tampered receipts, policy/model changes, revoked approvals, and headless
++  behavior. Dangerous external operations are unnecessary for these proofs.
++- Matched workflow evidence includes accepted outcomes, confirmations, retries,
++  and elapsed time. Passing a finite corpus does not establish production
++  acceptance or safety on every possible operation.
+diff --git a/docs/adr/README.md b/docs/adr/README.md
+index f6cbae65..957c320c 100644
+--- a/docs/adr/README.md
++++ b/docs/adr/README.md
+@@ -108,6 +108,7 @@ ADRs preserve durable architectural rationale. Runtime code and Behavior Proofs
+ - [0115: SF Flow quality uses white-room behavioral parity](./0115-sf-flow-quality-uses-white-room-behavioral-parity.md) — 2026-09-19
+ - [0116: SF Flow repairs are bounded and source-bound](./0116-sf-flow-repairs-are-bounded-and-source-bound.md) — 2026-09-19
+ - [0117: SF Flow authoring grounding and live fixtures are bounded](./0117-sf-flow-authoring-grounding-and-live-fixtures-are-bounded.md) — 2026-09-19
++- [0118: SF Guardrail supports an optional local Jev risk provider](./0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md) — 2026-09-21
+ 
+ ## Proposed
+ 
+diff --git a/docs/extensions/sf-guardrail.md b/docs/extensions/sf-guardrail.md
+index e893fe25..2ddca69f 100644
+--- a/docs/extensions/sf-guardrail.md
++++ b/docs/extensions/sf-guardrail.md
+@@ -10,7 +10,7 @@ editLink: false
+ 
+ ## What it does
+ 
+-Salesforce-aware safety layer for pi: file-protection policies, AST-matched command gating, org-aware confirmation on production deploys/Apex/DML/destructive REST, native high-value mutation mediation, plus a once-per-session prompt-injection that teaches the LLM the gating categories and validate-first workflow.
++Salesforce-aware safety layer for pi: exact file and rule policies, command and org-aware risk detection, native mutation mediation, and an optional qualified local Jev semantic risk provider. The existing tool-call hook owns confirmation, session approvals, and audit handling.
+ 
+ ## Start
+ 
+@@ -34,6 +34,8 @@ Open its Manager detail or change its package state with:
+ - Every block / allow / confirm decision is persisted as an audit entry.
+ - Power Tool Mode can persistently auto-approve selected confirm-class decisions; production/unknown org auto-approve is a separate opt-in and hard blocks are never bypassed.
+ - Operator auto-approve env mode is process-scoped, audited, and does not bypass hard blocks.
++- Jev semantic risk detection is operator-controlled and off by default. Shadow mode cannot change approvals or execution outcomes; enforcement requires a warmed qualified provider and preserves exact policy constraints.
++- Missing, duplicated, malformed, changed, timed-out or unqualified Jev providers fall back to the existing risk engine with session-local comparison records.
+ - Known high-value native tool mutations are mediated before execution through the same Safety Kernel and HITL path, including first-slice AgentScript lifecycle, Data 360, Apex, Slack Canvas, and SF Browser commit surfaces.
+ - alwaysActive=false but disabling removes the safety layer entirely; the manager surfaces this clearly.
+ 
+diff --git a/docs/troubleshooting.md b/docs/troubleshooting.md
+index f75e5630..e21285cb 100644
+--- a/docs/troubleshooting.md
++++ b/docs/troubleshooting.md
+@@ -209,6 +209,9 @@ Jump to an extension's Troubleshooting section to see the full fix. This index i
+ - A protected file remains blocked after removing an override
+ - Headless CI is blocked
+ - Audit is empty after resume
++- Jev is unavailable or enforcement uses rules
++- The first comparison times out
++- A familiar operation asks again after a model or policy change
+ 
+ **[SF Brain](./extensions/sf-brain.md#troubleshooting)**
+ 
+diff --git a/extensions/sf-guardrail/AGENTS.md b/extensions/sf-guardrail/AGENTS.md
+index db37337b..44faa75f 100644
+--- a/extensions/sf-guardrail/AGENTS.md
++++ b/extensions/sf-guardrail/AGENTS.md
+@@ -20,6 +20,7 @@ One-file-per-concern split:
+ | Event wiring + command handler       | `index.ts`                                          |
+ | Schema + persisted entry types       | `lib/types.ts`                                      |
+ | Safety decision seam                 | `lib/safety-kernel.ts`                              |
++| Optional Jev risk bridge             | `lib/jev-risk.ts`                                   |
+ | Safety subject normalization         | `lib/safety-subject.ts`                             |
+ | Safety envelope construction         | `lib/safety-envelope.ts`                            |
+ | Rule behavior resolution             | `lib/rule-behavior.ts`                              |
+@@ -57,11 +58,14 @@ One-file-per-concern split:
+    They take config + input, return decisions.
+    Side effects (prompts, appendEntry, notify) happen only in `index.ts`,
+    `hitl.ts`, and approval-ledger/UI adapters.
+-3. **Fail-closed is the rule.** Any ambiguity — unknown org type,
+-   unreadable override, tokenizer failure, timeout — must default to
+-   blocking. The command-gate substring fallback for tokenizer failure
+-   is the sole exception: it prefers false-positive over false-negative
+-   because that error direction is safer.
++3. **Fail-closed is the rule.** Unknown org type, unreadable override,
++   tokenizer failure, and expired human approval must not silently grant
++   execution. The command-gate substring fallback prefers false-positive
++   over false-negative because that error direction is safer. Operational
++   failure of the optional Jev provider uses the unchanged Safety Kernel
++   decision and records the fallback; a valid uncertain model prediction
++   requires human approval. Do not treat provider failure as a safe
++   prediction or use fallback to hide failed qualification calls.
+ 4. **No new `tool_call` side effects without audit.** Every decision path
+    must call `recordDecision(...)` through `lib/approval-ledger.ts` so
+    `/sf-guardrail audit` stays truthful.
+@@ -69,6 +73,21 @@ One-file-per-concern split:
+    dependency-free. If we ever need a real shell AST, prefer a well-
+    maintained package (`shell-quote`) and pin the version, rather than
+    rolling another one.
++6. **One enforcement owner.** The existing `tool_call` handler owns
++   blocking, human approval, approval reuse, and decision audit. An optional
++   risk provider returns a versioned judgment only. It must never prompt,
++   approve, execute the original operation, or mutate operator policy.
++7. **Exact policy stays in code.** Protected paths, hard blocks, explicit
++   command overrides, validated cleanup exceptions, and execution-intent
++   checks remain authoritative. Provider input contains the complete
++   original request and independently resolved org/browser facts, without
++   the current engine's classifications, reasons, or risk labels.
++8. **Model evidence is separate.** Keep the guardrail artifact separate
++   from Jev's general classifier. Freeze its weights, scoring protocol,
++   cutoff, and qualification criteria before held-out evaluation. Model
++   approvals bind the complete operation, host facts, cwd, effective policy,
++   model, and protocol; novel semantic risks must not receive broad grants.
++   See [ADR 0118](../../docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md).
+ 
+ ## Editing the bundled ruleset
+ 
+@@ -101,8 +120,11 @@ One-file-per-concern split:
+ - No path-access gate (allow/ask/block outside cwd). Salesforce projects touch
+   `~/.sf/`, `~/.sfdx/`, and shared libraries routinely; changing this requires
+   a separate trust-aware design and ADR.
+-- No LLM command explainer. Guardrail decisions and approval copy remain
+-  deterministic and do not depend on another model call or telemetry.
++- No LLM command explainer or model-generated approval copy. Exact policy,
++  enforcement, and approval presentation remain deterministic. An
++  operator-controlled local Jev provider may supply semantic risk
++  judgments under ADR 0118, with default-off modes, qualification gates,
++  audited rule fallback, and no remote inference or telemetry dependency.
+ - No project-local guardrail preference layer in MVP. Routine preferences
+   are global Pi settings under `sfPi.guardrail`; project-local weakening is
+   deferred with project-local rule overrides. Adding either means plumbing
+diff --git a/extensions/sf-guardrail/README.md b/extensions/sf-guardrail/README.md
+index 27bba377..9be46504 100644
+--- a/extensions/sf-guardrail/README.md
++++ b/extensions/sf-guardrail/README.md
+@@ -20,11 +20,20 @@ fail-closed behavior, session approval memory, and audit path:
+ Intent flags such as `allow_mutation`, `allow_confirmed`, or `mutation=true` aid
+ classification but never become approval.
+ 
++An optional local Simple Jev provider can supply semantic risk judgments for
++known shell and native-tool requests. It is off by default. Exact file
++protections, hard blocks, explicit command-policy overrides, validated temporary
++cleanup exceptions, and execution-intent checks remain in code. SF Guardrail's
++existing `tool_call` hook owns execution decisions, prompts, approval memory,
++and audit handling in every mode.
++
+ ## Commands
+ 
+ - `/sf-guardrail` — open the Manager detail, or print status without UI.
+ - `/sf-guardrail list` — print active rules.
+ - `/sf-guardrail audit` — show up to 50 recent session decisions.
++- `/sf-guardrail risk` — show the Jev mode, recent rule/model comparisons, and
++  fallback reasons.
+ - `/sf-guardrail grants` — list legacy persisted grants if present.
+ - `/sf-guardrail settings` — open routine preferences.
+ - `/sf-guardrail aliases` — edit aliases that receive production-level policy.
+@@ -51,6 +60,68 @@ Process-level automation controls are explicit:
+ 
+ Neither path bypasses hard blocks.
+ 
++### Optional Local Jev Risk Provider
++
++Select the mode before launching Pi with the operator-controlled environment
++variable `SF_GUARDRAIL_JEV_MODE`. The model and tool request cannot change it.
++
++| Mode      | Behavior                                                                                                                                              |
++| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
++| `off`     | Default. The existing engine handles the request; Jev is not called.                                                                                  |
++| `shadow`  | Record Jev's judgment beside the current engine's decision. The current engine still determines prompts, approvals, and execution.                    |
++| `enforce` | A warmed model with a passing qualification receipt supplies semantic judgments. Exact policy constraints and the existing approval flow still apply. |
++
++Load Simple Jev and SF Pi in the same Pi session after completing Simple Jev's
++native-runtime and reviewed-model setup. Loading the extensions registers the
++provider interface without loading weights or starting a model worker. Use
++`/jev-risk status` to inspect cached provider state and `/jev-risk warmup` to
++explicitly verify and load the dedicated guardrail worker. `/jev warmup` warms
++Jev's general classifier; the guardrail worker is separate.
++
++Start a comparison session with:
++
++```sh
++export SF_GUARDRAIL_JEV_MODE=shadow
++```
++
++Simple Jev's provider accepts dedicated artifact settings:
++
++| Variable                          | Purpose                                                                                                                                                                |
++| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| `JEV_GUARDRAIL_MODEL_ID`          | Guardrail candidate identity. The default is the reviewed `google/gemma-3-1b-it` base.                                                                                 |
++| `JEV_GUARDRAIL_MODEL_FILE`        | Local GGUF path; the default is Simple Jev's reviewed Gemma 3 1B file.                                                                                                 |
++| `JEV_GUARDRAIL_ARTIFACT_REGISTRY` | Separate reviewed artifact registry for a trained guardrail candidate.                                                                                                 |
++| `JEV_GUARDRAIL_QUALIFICATION`     | Frozen held-out qualification report matching the physical model, native scorer, scoring protocol, and installed SF risk engine. Required for enforcement eligibility. |
++
++Do not infer qualification from artifact review, successful warmup, or passing
++integration tests. A trained guardrail candidate must satisfy the independent
++operation-policy corpus gates before `enforce` uses it. An unqualified base or
++candidate can be compared in shadow mode. If enforcement is selected without a
++warmed qualified provider, the current engine remains active and the fallback
++reason is recorded. Failed qualification leaves the current engine active.
++Changing the installed guardrail implementation or native scorer requires a
++new qualification report; a receipt from another implementation cannot enable
++enforcement. Effective policy changes also invalidate model-derived approvals.
++
++The provider sees the complete original tool request and independently resolved
++org and browser observations. It does not receive the current engine's rule
++classifications, reasons, or risk labels. It scores safe-without-approval versus
++approval-required using selected next-token logits; these scores are
++uncalibrated. A valid uncertain judgment requires confirmation. Invalid or
++incomplete inputs and predictions, unavailable or duplicate providers, changed
++provider identity, cancellation, and timeouts use the existing engine with an
++audited fallback. The warm risk-check budget is 500 ms, including request
++preparation and queueing; cold initialization is reported separately.
++
++Qualification requires zero unsafe automatic allows, no safety regression or
++hard-block weakening, unnecessary confirmations and blocks at or below the
++current engine's baseline, warm p95 at or below 500 ms, and completion of every
++eligible model call. Expected outcomes come from an explicit operation-policy
++rubric; disagreement with the old engine alone is not a model error. Candidate
++selection uses validation groups only. Weights, prompt, cutoff, and criteria
++are frozen before the held-out test. Corpus results, matched workflow results,
++and production acceptance remain separate evidence.
++
+ ## Safety and Data Boundaries
+ 
+ - Interactive confirms offer Allow once, Allow for this session, or Block.
+@@ -62,17 +133,27 @@ Neither path bypasses hard blocks.
+   and requires a separate production/unknown-org opt-in.
+ - Strictly validated temporary-directory cleanup can be auto-allowed; other
+   dangerous commands are confirmed or hard-blocked according to rule behavior.
++- Model-derived approvals bind the complete original operation, observed host
++  facts, cwd, active policy, model checksum, and scoring protocol. Changing any
++  of these requires another matching approval. Newly detected semantic risks
++  use exact operations and do not introduce broad session allowances.
++- Risk comparisons are session-local audit entries. The model runs locally;
++  this integration does not add a remote inference or telemetry dependency.
++  Simple Jev owns and disposes its dedicated worker on shutdown and disable.
+ - Disabling the extension removes this mediation layer; the Manager calls that
+   out before changing package state.
+ 
+ ## References
+ 
+-Canonical terminology lives in [`CONTEXT.md`](../../CONTEXT.md). Durable design
++Canonical safety terminology lives in [`CONTEXT.md`](./CONTEXT.md). Durable design
+ trade-offs live in the generated [ADR lifecycle index](../../docs/adr/README.md),
+ including fail-closed behavior, Safety Envelopes, rule-derived guidance,
+ session approvals, org classification, rule behavior, and native mutation
+ mediation.
+ 
++[ADR 0118](../../docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md)
++defines the optional semantic provider and its qualification boundary.
++
+ ## Troubleshooting
+ 
+ **Production confirms fire for a sandbox:** Inspect `/sf-guardrail audit` to see
+@@ -90,6 +171,23 @@ operator control and retain the audit output; hard blocks remain active.
+ **Audit is empty after resume:** Decisions belong to the active session file.
+ Confirm that the resumed branch is the one that recorded the decision.
+ 
++**Jev is unavailable or enforcement uses rules:** Inspect `/sf-guardrail risk`
++for the recorded fallback and `/jev-risk status` for provider readiness. Load
++one Jev provider, verify its reviewed local artifact, and explicitly run
++`/jev-risk warmup`. A missing, invalid, stale, or failed qualification report
++does not enable model enforcement. Set `SF_GUARDRAIL_JEV_MODE=off` before the
++next launch to return to the default mode.
++
++**The first comparison times out:** Model initialization is separate from the
++warm 500 ms budget. The first lazy shadow request may fall back while the worker
++warms. Use `/jev-risk warmup` before collecting warm latency or comparison
++evidence, and retain the cold-initialization result separately.
++
++**A familiar operation asks again after a model or policy change:** Model
++approvals cover an exact operation under the active model, scoring protocol,
++host observations, and policy. The changed identity deliberately prevents an
++older approval from covering a different judgment.
++
+ ## File Structure
+ 
+ <!-- GENERATED:file-structure:start -->
+diff --git a/extensions/sf-guardrail/index.ts b/extensions/sf-guardrail/index.ts
+index 276ac7d9..16b66c9b 100644
+--- a/extensions/sf-guardrail/index.ts
++++ b/extensions/sf-guardrail/index.ts
+@@ -85,6 +85,13 @@ import {
+ } from "./lib/approval-ledger.ts";
+ import { renderApprovalDetail } from "./lib/approval-detail.ts";
+ import { evaluateSafety } from "./lib/safety-kernel.ts";
++import {
++  evaluateJevRisk,
++  JEV_RISK_COMPARISON_ENTRY,
++  renderJevRiskComparisons,
++  renderJevRiskStatus,
++} from "./lib/jev-risk.ts";
++import { performance } from "node:perf_hooks";
+ import { type GuardrailConfigSource, loadConfig } from "./lib/config.ts";
+ import { confirmDecision, isOperatorAutoApproveEnabled } from "./lib/hitl.ts";
+ import { readGuardrailPiSettings } from "./lib/guardrail-settings.ts";
+@@ -149,15 +156,23 @@ export default function sfGuardrail(pi: ExtensionAPI) {
+ 
+   // ─── tool_call: the main enforcement seam ─────────────────────────────────
+   pi.on("tool_call", async (event, ctx) => {
++    const riskStartedAt = performance.now();
+     const { config } = getConfig();
+ 
+-    const decision = await evaluateSafety({
++    const safetyInput = {
+       toolName: event.toolName,
+       input: (event.input ?? {}) as Record<string, unknown>,
+       cwd: ctx.cwd,
+       config,
+       sessionId: ctx.sessionManager.getSessionId(),
++    };
++    const baseline = await evaluateSafety({ ...safetyInput });
++    const evaluated = await evaluateJevRisk(pi, safetyInput, baseline, {
++      signal: ctx.signal,
++      startedAt: riskStartedAt,
+     });
++    if (evaluated.comparison) pi.appendEntry(JEV_RISK_COMPARISON_ENTRY, evaluated.comparison);
++    const decision = evaluated.decision;
+     if (!decision) return undefined;
+ 
+     // Audited auto-allow → no prompt.
+@@ -226,7 +241,7 @@ export default function sfGuardrail(pi: ExtensionAPI) {
+ 
+   // ─── /sf-guardrail command ────────────────────────────────────────────────
+   pi.registerCommand(COMMAND_NAME, {
+-    description: "Inspect and manage sf-guardrail — status, settings, rules, audit",
++    description: "Inspect and manage sf-guardrail — status, settings, rules, audit, risk",
+     getArgumentCompletions: (prefix) => getFirstTokenCompletions(GUARDRAIL_SUBCOMMANDS, prefix),
+     handler: async (args, ctx) => {
+       await withSafeCommandHandler(ctx, COMMAND_NAME, async () => {
+@@ -315,6 +330,7 @@ const GUARDRAIL_SUBCOMMANDS = [
+   },
+   { value: "list", description: "Print the effective guardrail rule set." },
+   { value: "audit", description: "List recent guardrail decisions." },
++  { value: "risk", description: "Inspect Jev risk comparisons and operational fallbacks." },
+   { value: "grants", description: "List active persisted approval grants." },
+   { value: "settings", description: "Open SF Guardrail settings in the SF Pi Manager." },
+   { value: "aliases", description: "Edit protected org aliases." },
+@@ -343,7 +359,9 @@ async function handleGuardrailCommand(
+             headlessEnabled: !!process.env[config.headlessEscapeHatchEnv],
+             operatorAutoApproveEnabled: isOperatorAutoApproveEnabled(),
+             powerTool: readGuardrailPiSettings().powerTool,
+-          });
++          }) +
++          "\n\n" +
++          renderJevRiskStatus();
+     await emitGuardrailOutput(
+       ctx,
+       sub === "help" ? "SF Guardrail help" : "SF Guardrail status",
+@@ -370,6 +388,17 @@ async function handleGuardrailCommand(
+     return;
+   }
+ 
++  if (sub === "risk") {
++    await emitGuardrailOutput(
++      ctx,
++      "SF Guardrail risk comparisons",
++      renderJevRiskComparisons(ctx),
++      "info",
++      fromPanel,
++    );
++    return;
++  }
++
+   if (sub === "grants") {
+     await emitGuardrailOutput(
+       ctx,
+@@ -417,7 +446,7 @@ async function handleGuardrailCommand(
+   await emitGuardrailOutput(
+     ctx,
+     "Unknown command",
+-    `Unknown /sf-guardrail subcommand: ${sub}. Use status, list, audit, grants, settings, aliases, forget, help.`,
++    `Unknown /sf-guardrail subcommand: ${sub}. Use status, list, audit, risk, grants, settings, aliases, forget, help.`,
+     "warning",
+     fromPanel,
+   );
+@@ -464,6 +493,7 @@ function renderGuardrailHelp(): string {
+     `  /${COMMAND_NAME} list            List active file/command/org-aware rules`,
+     `  /${COMMAND_NAME} audit           Show recent decisions in this session branch`,
+     `  /${COMMAND_NAME} grants          Show active persisted approval grants`,
++    `  /${COMMAND_NAME} risk            Show Jev comparisons, mode, and fallbacks`,
+     `  /${COMMAND_NAME} settings        Show where Pi-backed guardrail preferences live`,
+     `  /${COMMAND_NAME} aliases         Edit protected org aliases`,
+     `  /${COMMAND_NAME} forget          Clear session allows and project approval grants`,
+diff --git a/extensions/sf-guardrail/lib/approval-ledger.ts b/extensions/sf-guardrail/lib/approval-ledger.ts
+index a5bda32b..85f62dbc 100644
+--- a/extensions/sf-guardrail/lib/approval-ledger.ts
++++ b/extensions/sf-guardrail/lib/approval-ledger.ts
+@@ -90,6 +90,7 @@ export function recordDecision(
+   toolName: string,
+ ): void {
+   const data: DecisionEntryData = {
++    ...(decision.risk ? { risk: decision.risk } : {}),
+     timestamp: Date.now(),
+     ruleId: decision.ruleId,
+     feature: decision.feature,
+diff --git a/extensions/sf-guardrail/lib/hitl.ts b/extensions/sf-guardrail/lib/hitl.ts
+index d96bfc0d..28b18633 100644
+--- a/extensions/sf-guardrail/lib/hitl.ts
++++ b/extensions/sf-guardrail/lib/hitl.ts
+@@ -79,7 +79,8 @@ export async function confirmDecision(
+     });
+ 
+     if (picked === ALLOW_ONCE_LABEL) return { outcome: "allow_once" };
+-    if (picked === ALLOW_SESSION_LABEL) return { outcome: "allow_session" };
++    if (picked === ALLOW_SESSION_LABEL && options.allowSession !== false)
++      return { outcome: "allow_session" };
+     if (picked === BLOCK_LABEL) {
+       return { outcome: "block", reason: detailedBlockReason("Blocked by user", options) };
+     }
+diff --git a/extensions/sf-guardrail/lib/jev-risk.ts b/extensions/sf-guardrail/lib/jev-risk.ts
+new file mode 100644
+index 00000000..fabef4eb
+--- /dev/null
++++ b/extensions/sf-guardrail/lib/jev-risk.ts
+@@ -0,0 +1,541 @@
++/* SPDX-License-Identifier: Apache-2.0 */
++/** Optional local risk classification; the existing tool_call owns enforcement. */
++import { createHash } from "node:crypto";
++import { performance } from "node:perf_hooks";
++import { types as nodeTypes } from "node:util";
++import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
++import { findLatestBrowserSnapshotRefLookup } from "../../../lib/common/sf-browser-snapshot-state.ts";
++import { splitSimpleCommands } from "./bash-ast.ts";
++import { evaluateCommand } from "./command-gate.ts";
++import { readBundledConfig } from "./config.ts";
++import { getJevRiskBaselineSha256 } from "./risk-baseline-identity.ts";
++import { resolveOrgContext, resolveOrgContextForTarget } from "./org-context.ts";
++import type { SafetyKernelInput } from "./safety-kernel.ts";
++import type { ClassifiedDecision, GuardrailConfig, OrgTypeFilter } from "./types.ts";
++
++export const JEV_RISK_PROVIDER_EVENT = "sf-guardrail:risk-providers";
++export const JEV_RISK_COMPARISON_ENTRY = "sf-guardrail-risk-comparison";
++export const JEV_RISK_DEADLINE_MS = 500;
++export const JEV_RISK_INPUT_LIMITS = { bytes: 32_768, depth: 32, nodes: 4_096 } as const;
++export type JevRiskMode = "off" | "shadow" | "enforce";
++type Action = "allow" | "confirm" | "block";
++export interface JevRiskInput {
++  version: 1;
++  toolName: string;
++  input: Record<string, unknown>;
++  facts: {
++    orgs?: Array<{ type: OrgTypeFilter; guessed: boolean; command?: string }>;
++    browserRef?: {
++      status: "fresh" | "stale" | "missing";
++      label?: string;
++      role?: string;
++      snapshotSha256?: string;
++    };
++  };
++}
++interface Prediction {
++  action: "allow" | "confirm" | "abstain";
++  reason: string;
++  allowScore: number;
++  elapsedMs: number;
++  inputSha256: string;
++  inputTokens: number;
++  calibration: "uncalibrated";
++}
++export interface JevRiskProvider {
++  version: 1;
++  id: "jev";
++  protocolSha256: string;
++  modelSha256: string | null;
++  qualified: boolean;
++  qualificationBaselineSha256?: string;
++  evaluate(input: JevRiskInput, signal?: AbortSignal): Promise<Prediction>;
++}
++export interface JevRiskComparison {
++  version: 1;
++  timestamp: number;
++  mode: JevRiskMode | "invalid";
++  toolName: string;
++  source: "jev" | "exact_policy" | "rules_fallback";
++  baseline: Action;
++  actual: Action;
++  prediction?: Prediction["action"];
++  modelSha256?: string;
++  protocolSha256?: string;
++  inputSha256?: string;
++  elapsedMs: number;
++  allowScore?: number;
++  reason: string;
++}
++
++const FILE_TOOLS = new Set(["read", "write", "edit", "grep", "find", "ls"]);
++const NATIVE_TOOLS = new Set([
++  "sf_apex",
++  "agentscript_lifecycle",
++  "sf_soql",
++  "slack_canvas",
++  "sf_browser_click",
++  "sf_browser_press",
++  "data360_discover",
++  "data360_connect",
++  "data360_prepare",
++  "data360_harmonize",
++  "data360_segment",
++  "data360_activate",
++  "data360_query",
++  "data360_semantic",
++  "data360_observe",
++  "data360_orchestrate",
++  "data360_api",
++]);
++function isShell(input: SafetyKernelInput) {
++  return (
++    input.toolName === "bash" || (input.toolName === "herdr_pane" && input.input.action === "run")
++  );
++}
++export function jevRiskMode(env: NodeJS.ProcessEnv = process.env): JevRiskMode {
++  const mode = env.SF_GUARDRAIL_JEV_MODE ?? "off";
++  if (!["off", "shadow", "enforce"].includes(mode))
++    throw new Error("SF_GUARDRAIL_JEV_MODE must be off, shadow, or enforce");
++  return mode as JevRiskMode;
++}
++// Match Jev's canonical JSON, including numeric-looking and Unicode object keys.
++function canonical(value: unknown): string {
++  if (
++    value === null ||
++    typeof value === "string" ||
++    typeof value === "boolean" ||
++    (typeof value === "number" && Number.isFinite(value))
++  )
++    return JSON.stringify(value);
++  if (Array.isArray(value)) return "[" + value.map(canonical).join(",") + "]";
++  if (value && typeof value === "object")
++    return (
++      "{" +
++      Object.keys(value)
++        .sort((a, b) => {
++          const aa = Array.from(a),
++            bb = Array.from(b);
++          for (let i = 0; i < Math.min(aa.length, bb.length); i++) {
++            const d = aa[i].codePointAt(0) - bb[i].codePointAt(0);
++            if (d) return d;
++          }
++          return aa.length - bb.length;
++        })
++        .map((k) => JSON.stringify(k) + ":" + canonical(value[k]))
++        .join(",") +
++      "}"
++    );
++  throw new Error("Incomplete risk input");
++}
++const digest = (value: unknown) => createHash("sha256").update(canonical(value)).digest("hex");
++const policyJson = (value: unknown) => JSON.parse(JSON.stringify(value));
++const pin = (value: unknown): value is string =>
++  typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
++function errorReason(error: unknown, fallback: string): string {
++  try {
++    if (nodeTypes.isProxy(error) || !(error instanceof Error)) return fallback;
++    const message = Object.getOwnPropertyDescriptor(error, "message");
++    if (message && "value" in message && typeof message.value === "string")
++      return message.value.slice(0, 512) || fallback;
++  } catch {
++    // A provider can reject with arbitrary objects; formatting must not throw.
++  }
++  return fallback;
++}
++const wellFormed = (value: string): boolean =>
++  !/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/u.test(value);
++
++// Bound the scan before allocating a canonical request. Never invoke caller getters.
++function copyInput(value: unknown): Record<string, unknown> {
++  let nodes = 0;
++  let bytes = 0;
++  function visit(current: unknown, depth: number): unknown {
++    if (++nodes > JEV_RISK_INPUT_LIMITS.nodes || depth > JEV_RISK_INPUT_LIMITS.depth)
++      throw new Error("Jev risk input exceeds structural limits");
++    if (nodeTypes.isProxy(current)) throw new Error("Incomplete Jev risk input: proxy data");
++    if (typeof current === "string") {
++      if (!wellFormed(current)) throw new Error("Invalid Unicode in Jev risk input");
++      bytes += Buffer.byteLength(JSON.stringify(current));
++    } else if (
++      current === null ||
++      typeof current === "boolean" ||
++      (typeof current === "number" && Number.isFinite(current))
++    ) {
++      bytes += JSON.stringify(current).length;
++    } else if (Array.isArray(current)) {
++      if (current.length > JEV_RISK_INPUT_LIMITS.nodes - nodes)
++        throw new Error("Jev risk input exceeds structural limits");
++      bytes += current.length + 2;
++      const keys = Reflect.ownKeys(current);
++      if (
++        keys.length !== current.length + 1 ||
++        keys.some(
++          (key) =>
++            typeof key !== "string" ||
++            (key !== "length" && (!/^(0|[1-9]\d*)$/.test(key) || Number(key) >= current.length)),
++        )
++      )
++        throw new Error("Incomplete Jev risk input: extra array data");
++      return Object.freeze(
++        Array.from({ length: current.length }, (_unused, index) => {
++          const property = Object.getOwnPropertyDescriptor(current, String(index));
++          if (!property || !("value" in property)) throw new Error("Incomplete Jev risk input");
++          return visit(property.value, depth + 1);
++        }),
++      );
++    } else if (
++      current &&
++      typeof current === "object" &&
++      [Object.prototype, null].includes(Object.getPrototypeOf(current))
++    ) {
++      const ownKeys = Reflect.ownKeys(current);
++      if (
++        ownKeys.some(
++          (key) =>
++            typeof key !== "string" || !Object.getOwnPropertyDescriptor(current, key)?.enumerable,
++        )
++      )
++        throw new Error("Incomplete Jev risk input: hidden data");
++      const keys = ownKeys as string[];
++      if (keys.length > JEV_RISK_INPUT_LIMITS.nodes - nodes)
++        throw new Error("Jev risk input exceeds structural limits");
++      bytes += keys.length + 2;
++      const result: Record<string, unknown> = Object.create(null);
++      for (const key of keys) {
++        if (!wellFormed(key)) throw new Error("Invalid Unicode in Jev risk input");
++        bytes += Buffer.byteLength(JSON.stringify(key)) + 1;
++        const property = Object.getOwnPropertyDescriptor(current, key);
++        if (!property || !("value" in property)) throw new Error("Incomplete Jev risk input");
++        result[key] = visit(property.value, depth + 1);
++      }
++      return Object.freeze(result);
++    } else throw new Error("Incomplete Jev risk input");
++    if (bytes > JEV_RISK_INPUT_LIMITS.bytes) throw new Error("Jev risk input exceeds byte limit");
++    return current;
++  }
++  const result = visit(value, 0);
++  if (!result || typeof result !== "object" || Array.isArray(result))
++    throw new Error("Incomplete Jev risk input");
++  if (bytes > JEV_RISK_INPUT_LIMITS.bytes) throw new Error("Jev risk input exceeds byte limit");
++  return result as Record<string, unknown>;
++}
++
++function completeToolInput(input: SafetyKernelInput): void {
++  if (FILE_TOOLS.has(input.toolName)) return;
++  const field = isShell(input)
++    ? "command"
++    : input.toolName === "sf_browser_click"
++      ? "ref"
++      : input.toolName === "sf_browser_press"
++        ? "key"
++        : "action";
++  if (typeof input.input[field] !== "string" || !input.input[field].trim())
++    throw new Error(`Incomplete Jev risk input: missing ${field}`);
++}
++
++/** Org and snapshot observations are resolved independently of old risk labels. */
++export function buildJevRiskInput(input: SafetyKernelInput): JevRiskInput {
++  input = { ...input, input: copyInput(input.input) };
++  completeToolInput(input);
++  const facts: JevRiskInput["facts"] = {};
++  if (isShell(input) && typeof input.input.command === "string") {
++    facts.orgs = splitSimpleCommands(input.input.command).map((command) => {
++      const org = resolveOrgContext(command, input.cwd, input.config.productionAliases);
++      return { type: org.type, guessed: org.guessed, command };
++    });
++  } else if (
++    input.toolName === "sf_apex" ||
++    input.toolName === "agentscript_lifecycle" ||
++    input.toolName === "sf_soql" ||
++    input.toolName.startsWith("data360_")
++  ) {
++    const org = resolveOrgContextForTarget(
++      typeof input.input.target_org === "string" ? input.input.target_org : undefined,
++      input.cwd,
++      input.config.productionAliases,
++    );
++    facts.orgs = [{ type: org.type, guessed: org.guessed }];
++  }
++  if (input.toolName === "sf_browser_click") {
++    const lookup = findLatestBrowserSnapshotRefLookup(
++      input.sessionId,
++      typeof input.input.ref === "string" ? input.input.ref : undefined,
++    );
++    facts.browserRef = {
++      status:
++        lookup?.status === "fresh" ? "fresh" : lookup?.status === "stale" ? "stale" : "missing",
++      ...(lookup?.ref?.label ? { label: lookup.ref.label } : {}),
++      ...(lookup?.ref?.role ? { role: lookup.ref.role } : {}),
++      ...(lookup?.ref?.line
++        ? {
++            snapshotSha256: digest({
++              line: lookup.ref.line,
++              capturedAt: lookup.session?.capturedAt ?? null,
++              url: lookup.url ?? null,
++            }),
++          }
++        : {}),
++    };
++    if (
++      facts.browserRef.status === "fresh" &&
++      (!facts.browserRef.label?.trim() || !facts.browserRef.role?.trim())
++    )
++      throw new Error("Incomplete Jev browser facts: fresh reference lacks observed label or role");
++  }
++  const value = { version: 1 as const, toolName: input.toolName, input: input.input, facts };
++  if (Buffer.byteLength(canonical(value)) > JEV_RISK_INPUT_LIMITS.bytes)
++    throw new Error("Jev risk input exceeds byte limit after host facts");
++  return copyInput(value) as unknown as JevRiskInput;
++}
++
++/** Non-default exact command policy remains authoritative, including off/allow overrides. */
++function customCommandPolicy(config: GuardrailConfig): boolean {
++  const bundled = readBundledConfig();
++  return (
++    canonical(policyJson(config.commandGate)) !== canonical(policyJson(bundled.commandGate)) ||
++    canonical(policyJson(config.orgAwareGate)) !== canonical(policyJson(bundled.orgAwareGate))
++  );
++}
++export function jevRiskPolicyFloor(
++  input: SafetyKernelInput,
++  baseline?: ClassifiedDecision,
++): boolean {
++  if (
++    FILE_TOOLS.has(input.toolName) ||
++    baseline?.feature === "policies" ||
++    baseline?.action === "block" ||
++    baseline?.ruleId === "safe-temp-cleanup"
++  )
++    return true;
++  if (isShell(input)) {
++    if (customCommandPolicy(input.config)) return true;
++    if (
++      typeof input.input.command === "string" &&
++      evaluateCommand(input.input.command, input.config.commandGate)?.action === "allow"
++    )
++      return true;
++  }
++  return false;
++}
++export function jevRiskEligible(input: SafetyKernelInput): boolean {
++  return isShell(input) || NATIVE_TOOLS.has(input.toolName);
++}
++
++function modelDecision(
++  input: SafetyKernelInput,
++  baseline: ClassifiedDecision | undefined,
++  provider: JevRiskProvider,
++  prediction: Prediction,
++  riskInput: JevRiskInput,
++): ClassifiedDecision {
++  const fingerprint = digest({
++    operation: riskInput,
++    cwd: input.cwd,
++    orgIdentity: baseline?.orgId ?? baseline?.orgUsername ?? baseline?.orgAlias ?? null,
++    baselineImplementationSha256: getJevRiskBaselineSha256(),
++    config: policyJson(input.config),
++    model: provider.modelSha256,
++    protocol: provider.protocolSha256,
++  });
++  const action = prediction.action === "allow" ? "allow" : "confirm";
++  const subject =
++    baseline?.subject ??
++    (isShell(input) && typeof input.input.command === "string"
++      ? input.input.command
++      : `${input.toolName} operation ${prediction.inputSha256.slice(0, 12)}`);
++  return {
++    ...(baseline ?? {}),
++    ruleId: baseline?.ruleId ?? "jev-semantic-risk",
++    feature: baseline?.feature ?? (isShell(input) ? "commandGate" : "nativeToolGate"),
++    action,
++    fingerprint,
++    subject,
++    reason:
++      action === "allow"
++        ? "Jev classified this complete operation as safe without approval."
++        : prediction.action === "abstain"
++          ? "Jev could not confidently classify this operation as safe; approval is required."
++          : (baseline?.reason ??
++            "Jev detected a risky or ambiguous operation; approval is required."),
++    approvalScope:
++      action === "confirm"
++        ? {
++            fingerprint,
++            label: "this exact operation under this Jev model and policy",
++            operationFamily: baseline?.approvalScope?.operationFamily ?? "jev semantic operation",
++            riskTier: baseline?.approvalScope?.riskTier ?? "jev_semantic_exact",
++            allowSession:
++              baseline?.approvalScope?.allowSession === true &&
++              baseline?.orgType !== "production" &&
++              !baseline?.orgResolutionGuessed,
++          }
++        : undefined,
++    risk: {
++      source: "jev",
++      modelSha256: provider.modelSha256,
++      protocolSha256: provider.protocolSha256,
++      inputSha256: prediction.inputSha256,
++      allowScore: prediction.allowScore,
++      elapsedMs: prediction.elapsedMs,
++    },
++  };
++}
++
++export async function evaluateJevRisk(
++  pi: Pick<ExtensionAPI, "events">,
++  input: SafetyKernelInput,
++  baseline: ClassifiedDecision | undefined,
++  options: { mode?: JevRiskMode; signal?: AbortSignal; startedAt?: number } = {},
++): Promise<{ decision?: ClassifiedDecision; comparison?: JevRiskComparison }> {
++  const start = options.startedAt ?? performance.now();
++  let mode: JevRiskMode | "invalid" = "invalid";
++  const comparison: JevRiskComparison = {
++    version: 1,
++    timestamp: Date.now(),
++    mode,
++    toolName: input.toolName,
++    source: "rules_fallback",
++    baseline: baseline?.action ?? "allow",
++    actual: baseline?.action ?? "allow",
++    elapsedMs: 0,
++    reason: "provider_unavailable",
++  };
++  let evaluation: Promise<Prediction> | undefined;
++  let signal: AbortSignal | undefined;
++  let aborted: (() => void) | undefined;
++  try {
++    mode = options.mode ?? jevRiskMode();
++    comparison.mode = mode;
++    if (mode === "off") return { decision: baseline };
++    input = { ...input, input: copyInput(input.input) };
++    if (!jevRiskEligible(input) && !FILE_TOOLS.has(input.toolName)) return { decision: baseline };
++    if (jevRiskPolicyFloor(input, baseline)) {
++      comparison.source = "exact_policy";
++      comparison.reason = "exact_policy_constraint";
++      return { decision: baseline, comparison };
++    }
++    const request: { version: 1; providers: JevRiskProvider[] } = { version: 1, providers: [] };
++    pi.events?.emit(JEV_RISK_PROVIDER_EVENT, request);
++    if (request.providers.length !== 1) throw new Error("Jev risk provider missing or duplicated");
++    const provider = request.providers[0];
++    if (
++      provider.version !== 1 ||
++      provider.id !== "jev" ||
++      !pin(provider.protocolSha256) ||
++      typeof provider.evaluate !== "function"
++    )
++      throw new Error("Invalid Jev risk provider");
++    if (mode === "enforce" && (!provider.qualified || !pin(provider.modelSha256)))
++      throw new Error("Jev risk model is not warmed and qualified");
++    const baselineSha256 = getJevRiskBaselineSha256();
++    if (mode === "enforce" && provider.qualificationBaselineSha256 !== baselineSha256)
++      throw new Error("Jev qualification does not match the installed sf-guardrail baseline");
++    const modelSha256 = provider.modelSha256;
++    const protocolSha256 = provider.protocolSha256;
++    const riskInput = buildJevRiskInput(input);
++    const inputSha256 = digest(riskInput);
++    const remaining = JEV_RISK_DEADLINE_MS - (performance.now() - start);
++    if (remaining <= 0) throw new Error("Jev risk preparation exceeded deadline");
++    const timeout = AbortSignal.timeout(Math.max(1, Math.floor(remaining)));
++    signal = options.signal ? AbortSignal.any([options.signal, timeout]) : timeout;
++    signal.throwIfAborted();
++    evaluation = Promise.resolve(provider.evaluate(riskInput, signal));
++    const prediction = await Promise.race([
++      evaluation,
++      new Promise<never>((_resolve, reject) => {
++        aborted = () => reject(signal.reason);
++        signal.addEventListener("abort", aborted, { once: true });
++        if (signal.aborted) aborted();
++      }),
++    ]);
++    signal.throwIfAborted();
++    if (performance.now() - start > JEV_RISK_DEADLINE_MS)
++      throw new Error("Jev risk evaluation exceeded deadline");
++    if (
++      provider.protocolSha256 !== protocolSha256 ||
++      (modelSha256 !== null && provider.modelSha256 !== modelSha256) ||
++      (mode === "enforce" && provider.qualified !== true)
++    )
++      throw new Error("Jev risk provider identity or qualification changed during evaluation");
++    if (mode === "enforce" && provider.qualificationBaselineSha256 !== baselineSha256)
++      throw new Error("Jev qualification baseline changed during evaluation");
++    if (
++      !["allow", "confirm", "abstain"].includes(prediction?.action) ||
++      prediction.inputSha256 !== inputSha256 ||
++      prediction.calibration !== "uncalibrated" ||
++      !Number.isFinite(prediction.allowScore) ||
++      prediction.allowScore < 0 ||
++      prediction.allowScore > 1 ||
++      !Number.isFinite(prediction.elapsedMs) ||
++      prediction.elapsedMs < 0 ||
++      prediction.elapsedMs > JEV_RISK_DEADLINE_MS ||
++      !Number.isSafeInteger(prediction.inputTokens) ||
++      prediction.inputTokens < 1 ||
++      (prediction.action === "allow" && prediction.allowScore < 0.99) ||
++      !pin(provider.modelSha256) ||
++      !["risk_detected", "low_allow_score", "safe_classification"].includes(prediction.reason)
++    )
++      throw new Error("Invalid, incomplete or late Jev risk prediction");
++    const resolvedModelSha256 = provider.modelSha256;
++    const decision = modelDecision(
++      input,
++      baseline,
++      { ...provider, modelSha256: resolvedModelSha256, protocolSha256 },
++      prediction,
++      riskInput,
++    );
++    signal.throwIfAborted();
++    if (performance.now() - start > JEV_RISK_DEADLINE_MS)
++      throw new Error("Jev risk decision preparation exceeded deadline");
++    Object.assign(comparison, {
++      source: "jev",
++      prediction: prediction.action,
++      actual: decision.action,
++      modelSha256: resolvedModelSha256,
++      protocolSha256,
++      inputSha256,
++      allowScore: prediction.allowScore,
++      reason: prediction.reason,
++    });
++    return { decision: mode === "shadow" ? baseline : decision, comparison };
++  } catch (error) {
++    comparison.reason = errorReason(
++      error,
++      signal?.aborted
++        ? "Jev risk check was aborted or exceeded the 500 ms deadline"
++        : "Jev risk evaluation unavailable",
++    );
++    // An explicit operational fallback preserves the existing safety layer.
++    return { decision: baseline, comparison };
++  } finally {
++    comparison.elapsedMs = performance.now() - start;
++    if (aborted && signal) signal.removeEventListener("abort", aborted);
++    void evaluation?.catch(() => {});
++  }
++}
++
++export function renderJevRiskComparisons(ctx: Pick<ExtensionContext, "sessionManager">): string {
++  const records = ctx.sessionManager
++    .getEntries()
++    .filter((entry) => entry.type === "custom" && entry.customType === JEV_RISK_COMPARISON_ENTRY)
++    .slice(-20)
++    .map((entry) => (entry as { data?: JevRiskComparison }).data)
++    .filter(Boolean);
++  return [
++    renderJevRiskStatus(),
++    ...records.map(
++      (row) =>
++        `${row.toolName}: rules=${row.baseline}; Jev=${row.prediction ?? "unavailable"}; source=${row.source}; ${Math.round(row.elapsedMs)} ms; ${row.reason}`,
++    ),
++    ...(records.length ? [] : ["No risk comparisons recorded in this session."]),
++  ].join("\n");
++}
++
++export function renderJevRiskStatus(): string {
++  try {
++    return `Jev risk mode: ${jevRiskMode()}; model scores are uncalibrated. Use /jev-risk status or /jev-risk warmup for the local provider.`;
++  } catch (error) {
++    return `Jev risk mode: invalid; existing rules remain active. ${errorReason(error, "Invalid configuration")}`;
++  }
++}
+diff --git a/extensions/sf-guardrail/lib/risk-baseline-identity.ts b/extensions/sf-guardrail/lib/risk-baseline-identity.ts
+new file mode 100644
+index 00000000..754d8272
+--- /dev/null
++++ b/extensions/sf-guardrail/lib/risk-baseline-identity.ts
+@@ -0,0 +1,66 @@
++/* SPDX-License-Identifier: Apache-2.0 */
++/** Bind qualification to the installed guardrail and independently resolved facts. */
++import { createHash } from "node:crypto";
++import { readFileSync } from "node:fs";
++import { fileURLToPath } from "node:url";
++import path from "node:path";
++
++const root = fileURLToPath(new URL("../../../", import.meta.url));
++export const JEV_RISK_BASELINE_FILES = [
++  "extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json",
++  "extensions/sf-guardrail/index.ts",
++  "extensions/sf-guardrail/lib/safety-kernel.ts",
++  "extensions/sf-guardrail/lib/safety-subject.ts",
++  "extensions/sf-guardrail/lib/safety-envelope.ts",
++  "extensions/sf-guardrail/lib/config.ts",
++  "extensions/sf-guardrail/lib/bash-ast.ts",
++  "extensions/sf-guardrail/lib/file-policy-gate.ts",
++  "extensions/sf-guardrail/lib/policies.ts",
++  "extensions/sf-guardrail/lib/command-gate.ts",
++  "extensions/sf-guardrail/lib/command-risk-gate.ts",
++  "extensions/sf-guardrail/lib/temp-cleanup.ts",
++  "extensions/sf-guardrail/lib/org-aware-gate.ts",
++  "extensions/sf-guardrail/lib/org-aware-risk-gate.ts",
++  "extensions/sf-guardrail/lib/org-context.ts",
++  "extensions/sf-guardrail/lib/native-tool-risk-registry.ts",
++  "extensions/sf-guardrail/lib/native-tool-risk-gate.ts",
++  "extensions/sf-guardrail/lib/rule-behavior.ts",
++  "extensions/sf-guardrail/lib/guardrail-settings.ts",
++  "extensions/sf-guardrail/lib/approval-scope.ts",
++  "extensions/sf-guardrail/lib/approval-ledger.ts",
++  "extensions/sf-guardrail/lib/hitl.ts",
++  "extensions/sf-guardrail/lib/power-tool-mode.ts",
++  "extensions/sf-guardrail/lib/fingerprint.ts",
++  "extensions/sf-guardrail/lib/jev-risk.ts",
++  "extensions/sf-guardrail/lib/risk-baseline-identity.ts",
++  "extensions/sf-guardrail/lib/types.ts",
++  "lib/common/sf-browser-snapshot-state.ts",
++  "lib/common/sf-environment/shared-runtime.ts",
++  "lib/common/sf-environment/detect.ts",
++  "extensions/sf-data360/registry/v2/actions.json",
++  "extensions/sf-data360/lib/v2/action-registry.ts",
++  "extensions/sf-data360/lib/v2/dispatcher.ts",
++] as const;
++
++const sha256 = (bytes: Buffer | string) => createHash("sha256").update(bytes).digest("hex");
++let cached: { sha256: string; sources: Record<string, string> } | undefined;
++
++/** Lazy, once per loaded runtime. Factory/startup registration does not read sources. */
++export function getJevRiskBaselineIdentity(): { sha256: string; sources: Record<string, string> } {
++  if (!cached) {
++    const sources = Object.fromEntries(
++      JEV_RISK_BASELINE_FILES.map((file) => {
++        const bytes = readFileSync(path.join(root, file));
++        if (bytes.length > 1_048_576) throw new Error("Jev risk baseline source exceeds 1 MiB");
++        return [file, sha256(bytes)];
++      }),
++    );
++    cached = Object.freeze({
++      sha256: sha256(JSON.stringify(sources)),
++      sources: Object.freeze(sources),
++    });
++  }
++  return cached;
++}
++
++export const getJevRiskBaselineSha256 = (): string => getJevRiskBaselineIdentity().sha256;
+diff --git a/extensions/sf-guardrail/lib/types.ts b/extensions/sf-guardrail/lib/types.ts
+index f84213c6..918eb3fe 100644
+--- a/extensions/sf-guardrail/lib/types.ts
++++ b/extensions/sf-guardrail/lib/types.ts
+@@ -195,6 +195,15 @@ export interface ApprovalScope {
+ export type SafetyEnvelope = ApprovalScope;
+ 
+ export interface ClassifiedDecision {
++  /** Optional provenance for a qualified local semantic risk decision. */
++  risk?: {
++    source: "jev";
++    modelSha256: string;
++    protocolSha256: string;
++    inputSha256: string;
++    allowScore: number;
++    elapsedMs: number;
++  };
+   ruleId: string;
+   feature: "policies" | "commandGate" | "orgAwareGate" | "nativeToolGate";
+   action: "allow" | "block" | "confirm";
+@@ -234,6 +243,7 @@ export const ALLOW_REVOKE_ENTRY_TYPE = "sf-guardrail-allow-revoke";
+ export const INJECTION_ENTRY_TYPE = "sf-guardrail-prompt";
+ 
+ export interface DecisionEntryData {
++  risk?: ClassifiedDecision["risk"];
+   timestamp: number;
+   ruleId: string;
+   feature: "policies" | "commandGate" | "orgAwareGate" | "nativeToolGate";
+diff --git a/extensions/sf-guardrail/manifest.json b/extensions/sf-guardrail/manifest.json
+index 9842cb65..7c8c2d18 100644
+--- a/extensions/sf-guardrail/manifest.json
++++ b/extensions/sf-guardrail/manifest.json
+@@ -14,22 +14,29 @@
+     "intentGroup": "Work safely",
+     "editingRules": "AGENTS.md",
+     "contextGlossary": "CONTEXT.md",
+-    "summary": "Salesforce-aware safety layer for pi: file-protection policies, AST-matched command gating, org-aware confirmation on production deploys/Apex/DML/destructive REST, native high-value mutation mediation, plus a once-per-session prompt-injection that teaches the LLM the gating categories and validate-first workflow.",
++    "summary": "Salesforce-aware safety layer for pi: exact file and rule policies, command and org-aware risk detection, native mutation mediation, and an optional qualified local Jev semantic risk provider. The existing tool-call hook owns confirmation, session approvals, and audit handling.",
+     "primaryFiles": [
+       "index.ts",
+       "lib/safety-kernel.ts",
+       "lib/native-tool-risk-registry.ts",
++      "lib/jev-risk.ts",
+       "lib/command-gate.ts",
+       "lib/org-aware-gate.ts",
+       "lib/config.ts"
+     ],
+     "stateFiles": ["session entries: SF_GUARDRAIL_DEFAULTS allow/deny memory and audit decisions"],
+-    "env": ["SF_GUARDRAIL_ALLOW_HEADLESS", "SF_GUARDRAIL_OPERATOR_AUTO_APPROVE"],
++    "env": [
++      "SF_GUARDRAIL_ALLOW_HEADLESS",
++      "SF_GUARDRAIL_OPERATOR_AUTO_APPROVE",
++      "SF_GUARDRAIL_JEV_MODE"
++    ],
+     "safety": [
+       "Fail-closed in headless mode unless SF_GUARDRAIL_ALLOW_HEADLESS=1.",
+       "Every block / allow / confirm decision is persisted as an audit entry.",
+       "Power Tool Mode can persistently auto-approve selected confirm-class decisions; production/unknown org auto-approve is a separate opt-in and hard blocks are never bypassed.",
+       "Operator auto-approve env mode is process-scoped, audited, and does not bypass hard blocks.",
++      "Jev semantic risk detection is operator-controlled and off by default. Shadow mode cannot change approvals or execution outcomes; enforcement requires a warmed qualified provider and preserves exact policy constraints.",
++      "Missing, duplicated, malformed, changed, timed-out or unqualified Jev providers fall back to the existing risk engine with session-local comparison records.",
+       "Known high-value native tool mutations are mediated before execution through the same Safety Kernel and HITL path, including first-slice AgentScript lifecycle, Data 360, Apex, Slack Canvas, and SF Browser commit surfaces.",
+       "alwaysActive=false but disabling removes the safety layer entirely; the manager surfaces this clearly."
+     ]
+diff --git a/extensions/sf-guardrail/tests/guardrail-corpus.test.ts b/extensions/sf-guardrail/tests/guardrail-corpus.test.ts
+new file mode 100644
+index 00000000..c86d2e9a
+--- /dev/null
++++ b/extensions/sf-guardrail/tests/guardrail-corpus.test.ts
+@@ -0,0 +1,474 @@
++/* SPDX-License-Identifier: Apache-2.0 */
++/** Export actual old-engine outcomes with independently authored mock host facts. */
++import { createHash } from "node:crypto";
++import { execFileSync } from "node:child_process";
++import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
++import path from "node:path";
++import { performance } from "node:perf_hooks";
++import { fileURLToPath, pathToFileURL } from "node:url";
++import { describe, expect, it, vi } from "vitest";
++import type { BrowserSnapshotRefLookup } from "../../../lib/common/sf-browser-snapshot-state.ts";
++import type { SfEnvironment } from "../../../lib/common/sf-environment/types.ts";
++import type { GuardrailConfig, OrgTypeFilter, RuleBehavior } from "../lib/types.ts";
++
++let mockedEnv: SfEnvironment | null = null;
++let mockedBrowser: BrowserSnapshotRefLookup = { status: "missing-session" };
++
++vi.mock("../../../lib/common/sf-environment/shared-runtime.ts", () => ({
++  getCachedSfEnvironment: () => mockedEnv,
++}));
++vi.mock("../../../lib/common/sf-environment/detect.ts", () => ({
++  detectConfig: async () => ({ hasTargetOrg: false }),
++  detectOrg: async () => ({ detected: false, orgType: "unknown" }),
++}));
++vi.mock("../../../lib/common/sf-browser-snapshot-state.ts", () => ({
++  findLatestBrowserSnapshotRefLookup: () => mockedBrowser,
++}));
++vi.mock("node:fs", async () => {
++  const actual = await vi.importActual<typeof import("node:fs")>("node:fs");
++  // Exact policy examples explicitly describe existing protected paths. This
++  // avoids reading user credentials or writing browser/global state.
++  return { ...actual, existsSync: () => true };
++});
++
++import { readBundledConfig } from "../lib/config.ts";
++import {
++  buildJevRiskInput,
++  evaluateJevRisk,
++  jevRiskEligible,
++  jevRiskPolicyFloor,
++} from "../lib/jev-risk.ts";
++import { evaluateSafety } from "../lib/safety-kernel.ts";
++import { getJevRiskBaselineIdentity } from "../lib/risk-baseline-identity.ts";
++import { createRuntimeRecorder } from "../../../scripts/runtime-surface/harness.ts";
++import { findData360Action } from "../../sf-data360/lib/v2/action-registry.ts";
++import type { Data360V2ToolName } from "../../sf-data360/lib/v2/action-types.ts";
++
++interface CorpusCase {
++  id: string;
++  groupId: string;
++  family: string;
++  split: "train" | "validation" | "test";
++  expected: "allow" | "confirm" | "block";
++  rubricId: string;
++  tags: string[];
++  toolName: string;
++  input: Record<string, unknown>;
++  policyBehaviors?: Record<string, RuleBehavior>;
++  observations: {
++    org?: { alias: string; type: OrgTypeFilter } | null;
++    browser?: { label: string; role: string; status: "fresh" | "stale" | "missing" };
++  };
++}
++
++function fixtureEnv(row: CorpusCase): SfEnvironment | null {
++  const org = row.observations.org;
++  if (!org) return null;
++  return {
++    cli: { installed: true, version: "2.0.0" },
++    project: { detected: true },
++    config: { hasTargetOrg: true, targetOrg: org.alias, location: "Global" },
++    org: {
++      detected: org.type !== "unknown",
++      alias: org.alias,
++      username: `${org.alias.toLowerCase()}@example.test`,
++      orgType: org.type,
++    },
++    detectedAt: 0,
++  };
++}
++
++function fixtureBrowser(row: CorpusCase): BrowserSnapshotRefLookup {
++  const browser = row.observations.browser;
++  if (!browser || browser.status === "missing") return { status: "missing-ref" };
++  const ref = {
++    ref: String(row.input.ref),
++    role: browser.role,
++    label: browser.label,
++    line: `- ${browser.role} "${browser.label}" [ref=${row.input.ref}]`,
++  };
++  return {
++    status: browser.status,
++    ref,
++    ageMs: browser.status === "stale" ? 120_001 : 0,
++    session: { sessionId: "guardrail-corpus", capturedAt: "2026-09-21T00:00:00.000Z", refs: [ref] },
++    url: "https://org.example.test/lightning/setup/example",
++  };
++}
++
++function fixtureConfig(row: CorpusCase): GuardrailConfig {
++  const config = readBundledConfig();
++  for (const [id, behavior] of Object.entries(row.policyBehaviors ?? {})) {
++    const rule = [
++      ...config.policies.rules,
++      ...config.commandGate.patterns,
++      ...config.commandGate.autoDenyPatterns,
++      ...config.orgAwareGate.rules,
++    ].find((rule) => rule.id === id);
++    if (!rule) throw new Error(`Unknown exact policy ${id}`);
++    rule.behavior = behavior;
++  }
++  return config;
++}
++
++function validateAuthoredRequest(row: CorpusCase): void {
++  if (!row.toolName.startsWith("data360_")) return;
++  const name = String(row.input.action ?? "");
++  const metaActions = ["help", "actions.list", "actions.search", "action.describe", "examples.get"];
++  if (metaActions.includes(name)) return;
++  if (row.toolName === "data360_discover" && name === "readiness.probe") return;
++  const params = row.input.params as Record<string, unknown> | undefined;
++  if (row.toolName === "data360_api" && name === "rest.request") {
++    for (const key of ["method", "path"]) {
++      expect(
++        typeof params?.[key] === "string" && Boolean(String(params[key]).trim()),
++        `${row.id}: raw REST ${key}`,
++      ).toBe(true);
++    }
++    return;
++  }
++  const action = findData360Action(row.toolName as Data360V2ToolName, name);
++  expect(action, `${row.id}: actual Data 360 action exists`).toBeDefined();
++  for (const key of action.requiredParams) {
++    const value = params?.[key];
++    expect(
++      value !== undefined && value !== null && value !== "",
++      `${row.id}: required parameter ${key}`,
++    ).toBe(true);
++  }
++}
++
++const root = fileURLToPath(new URL("../../../", import.meta.url));
++const sourceFiles = [
++  "extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json",
++  "extensions/sf-guardrail/lib/safety-kernel.ts",
++  "extensions/sf-guardrail/lib/safety-subject.ts",
++  "extensions/sf-guardrail/lib/safety-envelope.ts",
++  "extensions/sf-guardrail/lib/config.ts",
++  "extensions/sf-guardrail/lib/bash-ast.ts",
++  "extensions/sf-guardrail/lib/file-policy-gate.ts",
++  "extensions/sf-guardrail/lib/policies.ts",
++  "extensions/sf-guardrail/lib/command-gate.ts",
++  "extensions/sf-guardrail/lib/command-risk-gate.ts",
++  "extensions/sf-guardrail/lib/temp-cleanup.ts",
++  "extensions/sf-guardrail/lib/org-aware-gate.ts",
++  "extensions/sf-guardrail/lib/org-aware-risk-gate.ts",
++  "extensions/sf-guardrail/lib/org-context.ts",
++  "extensions/sf-guardrail/lib/native-tool-risk-registry.ts",
++  "extensions/sf-guardrail/lib/native-tool-risk-gate.ts",
++  "extensions/sf-guardrail/lib/rule-behavior.ts",
++  "extensions/sf-guardrail/lib/fingerprint.ts",
++  "extensions/sf-guardrail/lib/jev-risk.ts",
++  "lib/common/sf-browser-snapshot-state.ts",
++  "extensions/sf-guardrail/tests/guardrail-corpus.test.ts",
++  "extensions/sf-data360/registry/v2/actions.json",
++  "extensions/sf-data360/lib/v2/action-registry.ts",
++  "extensions/sf-data360/lib/v2/dispatcher.ts",
++];
++const hash = (bytes: string | Buffer) => createHash("sha256").update(bytes).digest("hex");
++
++describe.skipIf(!process.env.GUARDRAIL_CORPUS_PATH || !process.env.GUARDRAIL_BASELINE_OUTPUT)(
++  "authored guardrail corpus baseline export",
++  () => {
++    it(
++      "measures actual rule outcomes without executing tool requests",
++      async () => {
++        const corpusBytes = readFileSync(process.env.GUARDRAIL_CORPUS_PATH!);
++        const corpus = JSON.parse(corpusBytes.toString()) as {
++          version: number;
++          rubricVersion: string;
++          cases: CorpusCase[];
++        };
++        expect(corpus.version).toBe(1);
++        expect(corpus.cases.length).toBeGreaterThanOrEqual(300);
++        const ids = new Set<string>();
++        const groups = new Map<string, string>();
++        const states = new Map<string, string>();
++        const rows = [];
++        for (const row of corpus.cases) {
++          validateAuthoredRequest(row);
++          expect(ids.has(row.id), row.id).toBe(false);
++          ids.add(row.id);
++          expect(groups.get(row.groupId) ?? row.split).toBe(row.split);
++          groups.set(row.groupId, row.split);
++          mockedEnv = fixtureEnv(row);
++          mockedBrowser = fixtureBrowser(row);
++          const input = {
++            toolName: row.toolName,
++            input: row.input,
++            cwd: "/example/project",
++            sessionId: "guardrail-corpus",
++            config: fixtureConfig(row),
++          };
++          // Gold is already fixed. This separate call obtains the baseline; its
++          // risk labels/reasons are not added to the model request.
++          const baseline = await evaluateSafety(input);
++          const riskInput = buildJevRiskInput(input);
++          const policyFloor = jevRiskPolicyFloor(input, baseline);
++          const stateHash = hash(
++            JSON.stringify({ riskInput, policyBehaviors: row.policyBehaviors ?? {} }),
++          );
++          expect(states.get(stateHash) ?? row.groupId, `duplicate state ${row.id}`).toBe(
++            row.groupId,
++          );
++          states.set(stateHash, row.groupId);
++          if (policyFloor)
++            expect(baseline?.action ?? "allow", `exact policy ${row.id}`).toBe(row.expected);
++          rows.push({
++            id: row.id,
++            groupId: row.groupId,
++            family: row.family,
++            split: row.split,
++            expected: row.expected,
++            baseline: baseline?.action ?? "allow",
++            policyFloor,
++            modelEligible: jevRiskEligible(input) && !policyFloor,
++            riskInput,
++            rubricId: row.rubricId,
++            tags: row.tags,
++          });
++        }
++        const requiredFamilies = [
++          "shell",
++          "herdr",
++          "files",
++          "salesforce",
++          "apex",
++          "agentscript",
++          "data360",
++          "soql",
++          "canvas",
++          "browser",
++        ];
++        for (const split of ["train", "validation", "test"]) {
++          expect(
++            [...new Set(rows.filter((row) => row.split === split).map((row) => row.family))].sort(),
++          ).toEqual([...requiredFamilies].sort());
++          expect(
++            rows.some(
++              (row) =>
++                row.split === split &&
++                row.family === "files" &&
++                row.expected === "block" &&
++                row.policyFloor,
++            ),
++            `${split} exact hard block coverage`,
++          ).toBe(true);
++          for (const family of requiredFamilies.filter((family) => family !== "files")) {
++            const eligible = rows.filter(
++              (row) => row.split === split && row.family === family && row.modelEligible,
++            );
++            expect(
++              eligible.some((row) => row.expected === "allow"),
++              `${split}/${family} safe coverage`,
++            ).toBe(true);
++            expect(
++              eligible.some((row) => row.expected !== "allow"),
++              `${split}/${family} risk coverage`,
++            ).toBe(true);
++          }
++        }
++        const sources = Object.fromEntries(
++          sourceFiles.map((file) => [file, hash(readFileSync(path.join(root, file)))]),
++        );
++        const runtimeIdentity = getJevRiskBaselineIdentity();
++        const bundle = {
++          version: 1,
++          rubricVersion: corpus.rubricVersion,
++          corpusSha256: hash(corpusBytes),
++          baselineSourceSha256: runtimeIdentity.sha256,
++          provenanceSourceSha256: hash(JSON.stringify(sources)),
++          runtimeSourceSha256: runtimeIdentity.sources,
++          sfPiCommit: execFileSync("git", ["rev-parse", "HEAD"], {
++            cwd: root,
++            encoding: "utf8",
++          }).trim(),
++          sourceSha256: sources,
++          mockedExecution: true,
++          hostFactsProvenance:
++            "Authored generic org and browser observations; actual source resolves each full raw request independently.",
++          records: rows,
++          summary: {
++            cases: rows.length,
++            groups: groups.size,
++            disagreements: rows.filter((row) => row.expected !== row.baseline).length,
++            unsafeBaselineAllows: rows.filter(
++              (row) => row.expected !== "allow" && row.baseline === "allow",
++            ).length,
++            benignBaselineInterruptions: rows.filter(
++              (row) => row.expected === "allow" && row.baseline !== "allow",
++            ).length,
++          },
++        };
++        const output = path.resolve(process.env.GUARDRAIL_BASELINE_OUTPUT!);
++        mkdirSync(path.dirname(output), { recursive: true });
++        writeFileSync(output, JSON.stringify(bundle, null, 2) + "\n");
++        console.info(
++          JSON.stringify({
++            output,
++            ...bundle.summary,
++            corpusSha256: bundle.corpusSha256,
++            baselineSourceSha256: bundle.baselineSourceSha256,
++          }),
++        );
++        if (process.env.GUARDRAIL_EVALUATION_OUTPUT) {
++          await evaluateCandidate(corpus.cases, bundle);
++        }
++      },
++      process.env.GUARDRAIL_EVALUATION_OUTPUT ? 600_000 : 30_000,
++    );
++  },
++);
++
++/** Real local model and bridge; only authored request fixtures reach the worker. */
++async function evaluateCandidate(
++  cases: CorpusCase[],
++  bundle: {
++    corpusSha256: string;
++    baselineSourceSha256: string;
++    records: Array<{
++      id: string;
++      groupId: string;
++      family: string;
++      split: string;
++      expected: string;
++      baseline: string;
++      policyFloor: boolean;
++      modelEligible: boolean;
++      riskInput: unknown;
++    }>;
++  },
++) {
++  const jevRoot = process.env.GUARDRAIL_JEV_ROOT;
++  if (!jevRoot) throw new Error("GUARDRAIL_JEV_ROOT must identify the built local Jev project");
++  const split = process.env.GUARDRAIL_EVALUATION_SPLIT ?? "validation";
++  if (!["validation", "test"].includes(split))
++    throw new Error("Evaluation split must be validation or test");
++  const load = (file: string) =>
++    import(/* @vite-ignore */ pathToFileURL(path.join(jevRoot, "dist", file)).href);
++  const [jev, core, evaluation, models] = await Promise.all([
++    load("guardrail-extension.js"),
++    load("core.js"),
++    load("guardrail-evaluation.js"),
++    load("models.js"),
++  ]);
++  const inventory = bundle.records.map((row) => ({
++    id: row.id,
++    groupId: row.groupId,
++    family: row.family,
++    split: row.split,
++    expected: row.expected,
++    baseline: row.baseline,
++    policyFloor: row.policyFloor,
++    modelEligible: row.modelEligible,
++    inputSha256: hash(core.canonical(row.riskInput)),
++  }));
++  const recorder = createRuntimeRecorder();
++  const coldStartedAt = performance.now();
++  const runtime = jev.registerGuardrailProvider(recorder.pi, { env: process.env });
++  try {
++    await runtime.warmup();
++    const coldInitializationMs = performance.now() - coldStartedAt;
++    const nativeBinarySha256 = (await models.hashArtifact(jev.guardrailConfig(process.env).binary))
++      .sha256;
++    const status = runtime.status();
++    if (!/^[a-f0-9]{64}$/.test(status.modelSha256 ?? ""))
++      throw new Error("Warmed candidate has no verified model identity");
++    const identity = {
++      split,
++      modelSha256: status.modelSha256,
++      corpusSha256: bundle.corpusSha256,
++      baselineSourceSha256: bundle.baselineSourceSha256,
++      nativeBinarySha256,
++      executionSurface: "sf_guardrail_bridge",
++    };
++    let frozen;
++    if (split === "test") {
++      if (!process.env.GUARDRAIL_CANDIDATE_FREEZE)
++        throw new Error(
++          "Held-out TEST requires GUARDRAIL_CANDIDATE_FREEZE selected from passing bridge validation",
++        );
++      frozen = JSON.parse(readFileSync(process.env.GUARDRAIL_CANDIDATE_FREEZE, "utf8"));
++      // This is deliberately before the first held-out model evaluation.
++      evaluation.assertGuardrailFreeze(frozen, identity, inventory);
++    }
++    const records = [];
++    for (const row of cases.filter((row) => row.split === split)) {
++      const startedAt = performance.now();
++      mockedEnv = fixtureEnv(row);
++      mockedBrowser = fixtureBrowser(row);
++      const input = {
++        toolName: row.toolName,
++        input: row.input,
++        cwd: "/example/project",
++        sessionId: "guardrail-corpus",
++        config: fixtureConfig(row),
++      };
++      const baseline = await evaluateSafety(input);
++      const evaluated = await evaluateJevRisk(recorder.pi, input, baseline, {
++        mode: "shadow",
++        startedAt,
++      });
++      const receipt = inventory.find((item) => item.id === row.id)!;
++      const comparison = evaluated.comparison;
++      const error =
++        receipt.modelEligible && comparison?.source !== "jev"
++          ? (comparison?.reason ?? "Eligible request produced no model comparison")
++          : undefined;
++      records.push({
++        id: receipt.id,
++        groupId: receipt.groupId,
++        family: receipt.family,
++        expected: receipt.expected,
++        baseline: receipt.baseline,
++        actual: comparison?.actual ?? baseline?.action ?? "allow",
++        modelEligible: receipt.modelEligible,
++        modelAnswered: receipt.modelEligible && comparison?.source === "jev",
++        policyFloor: receipt.policyFloor,
++        inputSha256: receipt.inputSha256,
++        elapsedMs: comparison?.elapsedMs ?? performance.now() - startedAt,
++        ...(comparison ? { evidence: comparison } : {}),
++        ...(error ? { error } : {}),
++      });
++      // Shadow classification never changes the enforcement owner or result.
++      expect(evaluated.decision).toBe(baseline);
++      if (records.length % 20 === 0)
++        console.info(
++          JSON.stringify({ phase: "sf_bridge_evaluation", split, completed: records.length }),
++        );
++    }
++    const report = evaluation.qualifyGuardrail(records, {
++      ...identity,
++      ...(frozen ? { freeze: frozen } : {}),
++    });
++    const output = path.resolve(process.env.GUARDRAIL_EVALUATION_OUTPUT!);
++    mkdirSync(path.dirname(output), { recursive: true });
++    writeFileSync(
++      output,
++      JSON.stringify(
++        {
++          ...report,
++          coldInitializationMs,
++          execution:
++            "Actual SF risk bridge and local Jev worker; dangerous tools are never executed; host facts are authored fixtures.",
++        },
++        null,
++        2,
++      ) + "\n",
++      { flag: "wx", mode: 0o600 },
++    );
++    console.info(
++      JSON.stringify({
++        phase: "sf_bridge_evaluated",
++        output,
++        split,
++        coldInitializationMs,
++        metrics: report.metrics,
++        gates: report.gates,
++        qualified: report.qualified,
++      }),
++    );
++  } finally {
++    await runtime.dispose();
++  }
++}
+diff --git a/extensions/sf-guardrail/tests/jev-risk-hook.test.ts b/extensions/sf-guardrail/tests/jev-risk-hook.test.ts
+new file mode 100644
+index 00000000..19e97836
+--- /dev/null
++++ b/extensions/sf-guardrail/tests/jev-risk-hook.test.ts
+@@ -0,0 +1,379 @@
++/* SPDX-License-Identifier: Apache-2.0 */
++/** Exercise the real Pi hook. Execution is always a local counter, never a tool. */
++import { createHash } from "node:crypto";
++import { writeFileSync } from "node:fs";
++import { performance } from "node:perf_hooks";
++import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { createRuntimeRecorder } from "../../../scripts/runtime-surface/harness.ts";
++import type { GuardrailConfig } from "../lib/types.ts";
++import { ALLOW_ENTRY_TYPE, DECISION_ENTRY_TYPE } from "../lib/types.ts";
++import type { JevRiskInput, JevRiskProvider, JevRiskComparison } from "../lib/jev-risk.ts";
++import { JEV_RISK_COMPARISON_ENTRY, JEV_RISK_PROVIDER_EVENT } from "../lib/jev-risk.ts";
++
++const state = vi.hoisted(() => ({ config: undefined as GuardrailConfig | undefined }));
++vi.mock("../lib/config.ts", async (importOriginal) => {
++  const actual = await importOriginal<typeof import("../lib/config.ts")>();
++  return {
++    ...actual,
++    loadConfig: () => ({ config: state.config ?? actual.readBundledConfig(), source: "bundled" }),
++  };
++});
++vi.mock("../lib/guardrail-settings.ts", async (importOriginal) => ({
++  ...(await importOriginal<typeof import("../lib/guardrail-settings.ts")>()),
++  readGuardrailPiSettings: () => ({}),
++}));
++vi.mock("../../../lib/common/sf-environment/shared-runtime.ts", () => ({
++  getCachedSfEnvironment: () => ({
++    config: { targetOrg: "Dev" },
++    org: { detected: true, alias: "Dev", orgType: "scratch" },
++  }),
++}));
++vi.mock("../../../lib/common/sf-environment/detect.ts", async (importOriginal) => ({
++  ...(await importOriginal<typeof import("../../../lib/common/sf-environment/detect.ts")>()),
++  detectOrg: async () => ({ detected: false }),
++  detectConfig: async () => ({ hasTargetOrg: true, targetOrg: "Dev" }),
++}));
++vi.mock("../../../lib/common/sf-browser-snapshot-state.ts", () => ({
++  findLatestBrowserSnapshotRefLookup: () => ({
++    status: "fresh",
++    ref: { label: "Cancel", role: "button", line: '- button "Cancel" [ref=e1]' },
++    session: { capturedAt: "2026-09-21T00:00:00Z" },
++  }),
++}));
++
++import sfGuardrail from "../index.ts";
++import { readBundledConfig } from "../lib/config.ts";
++import { forgetSessionApprovals } from "../lib/approval-ledger.ts";
++import { getJevRiskBaselineSha256 } from "../lib/risk-baseline-identity.ts";
++
++interface Entry {
++  type: "custom";
++  customType: string;
++  data: Record<string, unknown>;
++}
++interface Operation {
++  toolName: string;
++  input: Record<string, unknown>;
++}
++function canonical(value: unknown): string {
++  if (Array.isArray(value)) return "[" + value.map(canonical).join(",") + "]";
++  if (value && typeof value === "object")
++    return (
++      "{" +
++      Object.keys(value)
++        .sort()
++        .map((key) => JSON.stringify(key) + ":" + canonical(value[key]))
++        .join(",") +
++      "}"
++    );
++  return JSON.stringify(value);
++}
++function model(action: "allow" | "confirm" | "abstain" = "confirm"): JevRiskProvider {
++  return {
++    version: 1,
++    id: "jev",
++    qualified: true,
++    get qualificationBaselineSha256() {
++      return getJevRiskBaselineSha256();
++    },
++    modelSha256: "b".repeat(64),
++    protocolSha256: "a".repeat(64),
++    evaluate: vi.fn(async (input: JevRiskInput) => ({
++      action,
++      reason: action === "allow" ? "safe_classification" : "risk_detected",
++      allowScore: action === "allow" ? 0.999 : 0.01,
++      elapsedMs: 1,
++      inputTokens: 100,
++      inputSha256: createHash("sha256").update(canonical(input)).digest("hex"),
++      calibration: "uncalibrated" as const,
++    })),
++  };
++}
++async function harness(
++  providers: JevRiskProvider[] = [],
++  options: { headless?: boolean; pick?: string | undefined } = {},
++) {
++  const recorder = createRuntimeRecorder();
++  const entries: Entry[] = [];
++  const picks: Array<{ choices: string[]; title: string }> = [];
++  Object.assign(recorder.pi, {
++    appendEntry: (customType: string, data: Record<string, unknown>) => {
++      entries.push({ type: "custom", customType, data });
++    },
++  });
++  recorder.pi.events.on(JEV_RISK_PROVIDER_EVENT, (request: { providers: JevRiskProvider[] }) =>
++    request.providers.push(...providers),
++  );
++  sfGuardrail(recorder.pi as unknown as ExtensionAPI);
++  const ctx = {
++    cwd: "/project",
++    hasUI: !options.headless,
++    signal: new AbortController().signal,
++    sessionManager: {
++      getSessionId: () => "guardrail-hook-test",
++      getEntries: () => entries,
++      getBranch: () => [],
++    },
++    ui: {
++      notify: vi.fn(),
++      setStatus: vi.fn(),
++      select: vi.fn(async (title: string, choices: string[]) => {
++        picks.push({ choices, title });
++        return options.pick;
++      }),
++    },
++  } as unknown as ExtensionContext;
++  for (const handler of recorder.handlers.get("session_start") ?? []) await handler({}, ctx);
++  async function call(operation: Operation) {
++    const hook = recorder.handlers.get("tool_call")?.[0];
++    if (!hook) throw new Error("Real guardrail tool_call was not registered");
++    const result = (await hook(operation, ctx)) as { block?: boolean; reason?: string } | undefined;
++    // The stub only records whether Pi would reach execution after this hook.
++    return { accepted: result?.block !== true, reason: result?.reason };
++  }
++  return {
++    ...recorder,
++    entries,
++    picks,
++    ctx,
++    call,
++    decisions: () =>
++      entries
++        .filter((entry) => entry.customType === DECISION_ENTRY_TYPE)
++        .map((entry) => entry.data),
++    comparisons: () =>
++      entries
++        .filter((entry) => entry.customType === JEV_RISK_COMPARISON_ENTRY)
++        .map((entry) => entry.data as unknown as JevRiskComparison),
++  };
++}
++const dangerous: Operation = { toolName: "bash", input: { command: "rm -rf ./work" } };
++const apex: Operation = {
++  toolName: "sf_apex",
++  input: {
++    action: "anon.run",
++    body: "callWithSideEffects();",
++    allow_mutation: true,
++    target_org: "Dev",
++  },
++};
++beforeEach(() => {
++  state.config = readBundledConfig();
++  vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "off");
++  vi.stubEnv("SF_GUARDRAIL_ALLOW_HEADLESS", "0");
++  vi.stubEnv("SF_GUARDRAIL_OPERATOR_AUTO_APPROVE", "");
++  forgetSessionApprovals();
++});
++afterEach(() => vi.unstubAllEnvs());
++
++describe("Jev through the real sf-guardrail Pi hook", () => {
++  it("preserves prompts, approvals and execution outcomes in an executable shadow comparison", async () => {
++    const outcomes: unknown[] = [];
++    for (const mode of ["off", "shadow"] as const) {
++      vi.stubEnv("SF_GUARDRAIL_JEV_MODE", mode);
++      const trial = await harness([model("allow")], { pick: "Allow for this session" });
++      const results = [await trial.call(dangerous), await trial.call(dangerous)];
++      outcomes.push({
++        results,
++        prompts: trial.picks.length,
++        choices: trial.picks.map((p) => p.choices),
++        outcomes: trial.decisions().map((d) => d.outcome),
++        grants: trial.entries.filter((e) => e.customType === ALLOW_ENTRY_TYPE).length,
++      });
++      expect(trial.unexpectedExecs).toEqual([]);
++      if (mode === "shadow") expect(trial.comparisons()).toHaveLength(2);
++    }
++    expect(outcomes[1]).toEqual(outcomes[0]);
++    expect(outcomes[0]).toMatchObject({
++      prompts: 1,
++      grants: 1,
++      outcomes: ["allow_session", "allow_session"],
++    });
++  });
++  it("keeps existing baseline session options when the scope omits allowSession", async () => {
++    const trial = await harness([], { pick: "Allow for this session" });
++    expect(await trial.call(dangerous)).toMatchObject({ accepted: true });
++    expect(trial.picks[0].choices).toContain("Allow for this session");
++    expect(await trial.call(dangerous)).toMatchObject({ accepted: true });
++    expect(trial.picks).toHaveLength(1);
++    expect(trial.entries.filter((e) => e.customType === ALLOW_ENTRY_TYPE)).toHaveLength(1);
++  });
++  it("requires human approval for uncertain predictions even when the request claims approval", async () => {
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
++    const trial = await harness([model("abstain")], { pick: "Block" });
++    const result = await trial.call({
++      ...dangerous,
++      input: { ...dangerous.input, approved: true, approval: "already approved" },
++    });
++    expect(result.accepted).toBe(false);
++    expect(trial.picks).toHaveLength(1);
++    expect(trial.decisions()[0]).toMatchObject({ outcome: "block", risk: { source: "jev" } });
++    expect(trial.comparisons()[0]).toMatchObject({
++      source: "jev",
++      prediction: "abstain",
++      actual: "confirm",
++    });
++  });
++  it("does not create a session grant for a novel risk when a UI returns an unavailable option", async () => {
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
++    const trial = await harness([model()], { pick: "Allow for this session" });
++    const result = await trial.call({ toolName: "bash", input: { command: "echo harmless" } });
++    expect(trial.picks[0].choices).not.toContain("Allow for this session");
++    expect(result.accepted).toBe(false);
++    expect(trial.entries.filter((entry) => entry.customType === ALLOW_ENTRY_TYPE)).toHaveLength(0);
++  });
++  it("cannot bypass hard blocks with a model allow, invalid mode or headless escape hatches", async () => {
++    state.config.commandGate.patterns = state.config.commandGate.patterns.map((pattern) =>
++      pattern.id === "rm-rf" ? { ...pattern, action: "block", behavior: "block" } : pattern,
++    );
++    for (const mode of ["enforce", "invalid"]) {
++      vi.stubEnv("SF_GUARDRAIL_JEV_MODE", mode);
++      vi.stubEnv("SF_GUARDRAIL_ALLOW_HEADLESS", "1");
++      vi.stubEnv("SF_GUARDRAIL_OPERATOR_AUTO_APPROVE", "allow-confirm-actions-for-this-process");
++      const provider = model("allow");
++      const trial = await harness([provider], { headless: true });
++      expect((await trial.call(dangerous)).accepted).toBe(false);
++      expect(trial.picks).toHaveLength(0);
++      expect(trial.decisions()[0].outcome).toBe("hard_block");
++      expect(provider.evaluate).not.toHaveBeenCalled();
++    }
++  });
++  it("falls back and audits unavailable, duplicate or malformed providers end to end", async () => {
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
++    const malformed = model("allow");
++    malformed.evaluate = async () => ({
++      action: "allow",
++      reason: "safe_classification",
++      allowScore: 1,
++      elapsedMs: 1,
++      inputTokens: 1,
++      inputSha256: "d".repeat(64),
++      calibration: "uncalibrated",
++    });
++    for (const providers of [
++      [],
++      [model(), model()],
++      [{ ...model(), qualified: false }],
++      [malformed],
++    ]) {
++      const trial = await harness(providers, { pick: "Block" });
++      expect((await trial.call(dangerous)).accepted).toBe(false);
++      expect(trial.picks).toHaveLength(1);
++      expect(trial.decisions()[0].outcome).toBe("block");
++      expect(trial.comparisons()[0].source).toBe("rules_fallback");
++    }
++  });
++  it("keeps branch session approval scoped to operation, policy, model and protocol and supports revocation", async () => {
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
++    const provider = model();
++    const trial = await harness([provider], { pick: "Allow for this session" });
++    await trial.call(apex);
++    await trial.call(apex);
++    expect(trial.picks).toHaveLength(1);
++    await trial.call({ ...apex, input: { ...apex.input, body: "callAnotherSideEffect();" } });
++    provider.modelSha256 = "c".repeat(64);
++    await trial.call(apex);
++    provider.protocolSha256 = "e".repeat(64);
++    await trial.call(apex);
++    state.config.productionAliases = ["Protected"];
++    await trial.call(apex);
++    expect(trial.picks).toHaveLength(5);
++    await trial.commandDefinitions.get("sf-guardrail").handler("forget", trial.ctx);
++    await trial.call(apex);
++    expect(trial.picks).toHaveLength(6);
++    trial.entries.length = 0;
++    for (const handler of trial.handlers.get("session_tree") ?? []) await handler({}, trial.ctx);
++    await trial.call(apex);
++    expect(trial.picks).toHaveLength(7);
++  });
++  it("audits a malformed provider error and enforces the existing denial without throwing", async () => {
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
++    const message = vi.fn(() => {
++      throw new Error("Error formatter must not invoke this accessor");
++    });
++    const malformed = Object.defineProperty(new Error(), "message", { get: message });
++    const provider = model("allow");
++    provider.evaluate = async () => {
++      throw malformed;
++    };
++    const trial = await harness([provider], { pick: "Block" });
++    expect((await trial.call(dangerous)).accepted).toBe(false);
++    expect(trial.picks).toHaveLength(1);
++    expect(trial.decisions()[0].outcome).toBe("block");
++    expect(trial.comparisons()[0]).toMatchObject({
++      source: "rules_fallback",
++      reason: "Jev risk evaluation unavailable",
++    });
++    expect(message).not.toHaveBeenCalled();
++  });
++  it("retains headless operator controls and fails closed on cancelled confirmations", async () => {
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
++    const blocked = await harness([model()], { headless: true });
++    expect((await blocked.call(apex)).accepted).toBe(false);
++    expect(blocked.decisions()[0].outcome).toBe("headless_block");
++    vi.stubEnv("SF_GUARDRAIL_ALLOW_HEADLESS", "1");
++    const allowed = await harness([model()], { headless: true });
++    expect((await allowed.call(apex)).accepted).toBe(true);
++    expect(allowed.decisions()[0].outcome).toBe("headless_pass");
++    const cancelled = await harness([model()], { pick: undefined });
++    expect((await cancelled.call(apex)).accepted).toBe(false);
++    expect(cancelled.decisions()[0].outcome).toBe("cancel");
++  });
++  it("reports matched stub workflow outcomes, confirmations, retries and elapsed time separately from model quality", async () => {
++    const rows = [];
++    for (const mode of ["off", "shadow", "enforce"] as const) {
++      vi.stubEnv("SF_GUARDRAIL_JEV_MODE", mode);
++      const provider = model();
++      const evaluate = provider.evaluate;
++      provider.evaluate = async (input) => {
++        const prediction = await evaluate(input);
++        if (
++          input.toolName === "bash" &&
++          input.input.command === "echo 'rm -rf is only quoted text'"
++        )
++          return {
++            ...prediction,
++            action: "allow",
++            allowScore: 0.999,
++            reason: "safe_classification",
++          };
++        return prediction;
++      };
++      const startedAt = performance.now();
++      const trial = await harness([provider], { pick: "Allow once" });
++      const operations: Operation[] = [
++        { toolName: "bash", input: { command: "echo 'rm -rf is only quoted text'" } },
++        apex,
++        {
++          toolName: "slack_canvas",
++          input: { action: "edit", canvas_id: "fixture-canvas", markdown: "Reviewed fixture" },
++        },
++      ];
++      const results = [];
++      for (const operation of operations) results.push(await trial.call(operation));
++      rows.push({
++        mode,
++        operations: operations.length,
++        accepted: results.filter((row) => row.accepted).length,
++        confirmations: trial.picks.length,
++        retries: 0,
++        totalElapsedMs: performance.now() - startedAt,
++        coldInitialization: "stub provider; no model loading",
++        execution: "local stub only",
++      });
++    }
++    expect(
++      rows.map(({ accepted, confirmations, retries }) => ({ accepted, confirmations, retries })),
++    ).toEqual(Array(3).fill({ accepted: 3, confirmations: 2, retries: 0 }));
++    if (process.env.GUARDRAIL_WORKFLOW_OUTPUT)
++      writeFileSync(
++        process.env.GUARDRAIL_WORKFLOW_OUTPUT,
++        JSON.stringify(
++          { version: 1, scope: "real Pi hook with stub tools and stub risk provider", rows },
++          null,
++          2,
++        ) + "\n",
++      );
++  });
++});
+diff --git a/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
+new file mode 100644
+index 00000000..a9c7a982
+--- /dev/null
++++ b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
+@@ -0,0 +1,460 @@
++/* SPDX-License-Identifier: Apache-2.0 */
++/** Pi SDK dispatch and execution proof with local scripted inference and stub tools. */
++import { createHash } from "node:crypto";
++import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { performance } from "node:perf_hooks";
++import {
++  createAssistantMessageEventStream,
++  createProvider,
++  InMemoryCredentialStore,
++  InMemoryModelsStore,
++  type AssistantMessage,
++  type Model,
++} from "@earendil-works/pi-ai";
++import {
++  createAgentSession,
++  DefaultResourceLoader,
++  ModelRuntime,
++  SessionManager,
++  SettingsManager,
++  type AgentSession,
++  type AgentSessionEvent,
++  type ExtensionUIContext,
++  type ToolDefinition,
++} from "@earendil-works/pi-coding-agent";
++import { Type } from "typebox";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import type { GuardrailConfig } from "../lib/types.ts";
++import type { JevRiskInput, JevRiskProvider, JevRiskComparison } from "../lib/jev-risk.ts";
++import { JEV_RISK_COMPARISON_ENTRY, JEV_RISK_PROVIDER_EVENT } from "../lib/jev-risk.ts";
++import { ALLOW_ENTRY_TYPE, DECISION_ENTRY_TYPE } from "../lib/types.ts";
++
++const state = vi.hoisted(() => ({ config: undefined as GuardrailConfig | undefined }));
++vi.mock("../lib/config.ts", async (importOriginal) => {
++  const actual = await importOriginal<typeof import("../lib/config.ts")>();
++  return {
++    ...actual,
++    loadConfig: () => ({ config: state.config ?? actual.readBundledConfig(), source: "bundled" }),
++  };
++});
++vi.mock("../lib/guardrail-settings.ts", async (importOriginal) => ({
++  ...(await importOriginal<typeof import("../lib/guardrail-settings.ts")>()),
++  readGuardrailPiSettings: () => ({}),
++}));
++vi.mock("../../../lib/common/sf-environment/shared-runtime.ts", () => ({
++  getCachedSfEnvironment: () => ({
++    config: { targetOrg: "Dev" },
++    org: { detected: true, alias: "Dev", orgType: "scratch" },
++  }),
++}));
++vi.mock("../../../lib/common/sf-environment/detect.ts", async (importOriginal) => ({
++  ...(await importOriginal<typeof import("../../../lib/common/sf-environment/detect.ts")>()),
++  detectOrg: async () => ({ detected: false }),
++  detectConfig: async () => ({ hasTargetOrg: true, targetOrg: "Dev" }),
++}));
++vi.mock("../../../lib/common/sf-browser-snapshot-state.ts", () => ({
++  findLatestBrowserSnapshotRefLookup: () => ({ status: "missing" }),
++}));
++
++import sfGuardrail from "../index.ts";
++import { readBundledConfig } from "../lib/config.ts";
++import { forgetSessionApprovals } from "../lib/approval-ledger.ts";
++import { getJevRiskBaselineSha256 } from "../lib/risk-baseline-identity.ts";
++
++interface Operation {
++  toolName: string;
++  input: Record<string, unknown>;
++}
++const dangerous: Operation = { toolName: "bash", input: { command: "rm -rf ./work" } };
++const apex: Operation = {
++  toolName: "sf_apex",
++  input: {
++    action: "anon.run",
++    body: "callWithSideEffects();",
++    allow_mutation: true,
++    target_org: "Dev",
++  },
++};
++const MODEL: Model<"openai-completions"> = {
++  id: "scripted-sdk-fixture",
++  provider: "sf-guardrail-sdk-proof",
++  api: "openai-completions",
++  name: "Local scripted SDK fixture",
++  baseUrl: "https://sdk-fixture.invalid/v1",
++  reasoning: false,
++  input: ["text"],
++  cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
++  contextWindow: 8_192,
++  maxTokens: 1_024,
++};
++const tempDirs: string[] = [];
++const sessions: AgentSession[] = [];
++
++function canonical(value: unknown): string {
++  if (Array.isArray(value)) return "[" + value.map(canonical).join(",") + "]";
++  if (value && typeof value === "object")
++    return (
++      "{" +
++      Object.keys(value)
++        .sort()
++        .map((key) => JSON.stringify(key) + ":" + canonical(value[key]))
++        .join(",") +
++      "}"
++    );
++  return JSON.stringify(value);
++}
++function riskProvider(action: "allow" | "confirm" | "abstain" = "confirm"): JevRiskProvider {
++  return {
++    version: 1,
++    id: "jev",
++    qualified: true,
++    get qualificationBaselineSha256() {
++      return getJevRiskBaselineSha256();
++    },
++    modelSha256: "b".repeat(64),
++    protocolSha256: "a".repeat(64),
++    evaluate: vi.fn(async (input: JevRiskInput) => ({
++      action,
++      reason: action === "allow" ? "safe_classification" : "risk_detected",
++      allowScore: action === "allow" ? 0.999 : 0.01,
++      elapsedMs: 1,
++      inputTokens: 100,
++      inputSha256: createHash("sha256").update(canonical(input)).digest("hex"),
++      calibration: "uncalibrated" as const,
++    })),
++  };
++}
++function scriptedMessage(operations?: Operation[]): AssistantMessage {
++  return {
++    role: "assistant",
++    content: operations
++      ? operations.map((operation, index) => ({
++          type: "toolCall" as const,
++          id: `fixture-call-${index}`,
++          name: operation.toolName,
++          arguments: operation.input,
++        }))
++      : [{ type: "text", text: "Stub workflow complete." }],
++    api: MODEL.api,
++    provider: MODEL.provider,
++    model: MODEL.id,
++    usage: {
++      input: 0,
++      output: 0,
++      cacheRead: 0,
++      cacheWrite: 0,
++      totalTokens: 0,
++      cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
++    },
++    stopReason: operations ? "toolUse" : "stop",
++    timestamp: Date.now(),
++  };
++}
++async function sdkTrial(options: {
++  operations: Operation[];
++  providers?: JevRiskProvider[];
++  pick?: string;
++  headless?: boolean;
++}) {
++  const startedAt = performance.now();
++  const cwd = mkdtempSync(path.join(tmpdir(), "sf-guardrail-sdk-proof-"));
++  tempDirs.push(cwd);
++  const executions: Operation[] = [];
++  const picks: string[][] = [];
++  const events: AgentSessionEvent[] = [];
++  let streams = 0;
++  const nextStream = () => {
++    const message = scriptedMessage(streams++ === 0 ? options.operations : undefined);
++    const stream = createAssistantMessageEventStream();
++    queueMicrotask(() => {
++      stream.push({ type: "start", partial: message });
++      stream.push({ type: "done", reason: message.stopReason as "toolUse" | "stop", message });
++      stream.end();
++    });
++    return stream;
++  };
++  const modelRuntime = await ModelRuntime.create({
++    credentials: new InMemoryCredentialStore(),
++    modelsStore: new InMemoryModelsStore(),
++    modelsPath: null,
++    allowModelNetwork: false,
++    refreshOnCreate: false,
++  });
++  modelRuntime.registerNativeProvider(
++    createProvider({
++      id: MODEL.provider,
++      name: "Guardrail SDK fixture",
++      auth: {
++        apiKey: {
++          name: "Fixture key",
++          async resolve() {
++            return { auth: { apiKey: "fixture-key" }, source: "test" };
++          },
++        },
++      },
++      models: [MODEL],
++      api: { "openai-completions": { stream: nextStream, streamSimple: nextStream } },
++    }),
++  );
++  const settingsManager = SettingsManager.inMemory({
++    compaction: { enabled: false },
++    retry: { enabled: false, maxRetries: 0, baseDelayMs: 0 },
++  });
++  const resourceLoader = new DefaultResourceLoader({
++    cwd,
++    agentDir: cwd,
++    settingsManager,
++    noExtensions: true,
++    noSkills: true,
++    noPromptTemplates: true,
++    noThemes: true,
++    noContextFiles: true,
++    systemPrompt: "Execute the local fixture tool calls.",
++    extensionFactories: [
++      sfGuardrail,
++      (pi) => {
++        pi.events.on(JEV_RISK_PROVIDER_EVENT, (request: { providers: JevRiskProvider[] }) => {
++          request.providers.push(...(options.providers ?? []));
++        });
++      },
++    ],
++  });
++  await resourceLoader.reload();
++  expect(resourceLoader.getExtensions().errors).toEqual([]);
++  const toolNames = [...new Set(options.operations.map((operation) => operation.toolName))];
++  const customTools: ToolDefinition[] = toolNames.map((name) => ({
++    name,
++    label: `Fixture ${name}`,
++    description: "Records local fixture execution without performing the requested operation.",
++    parameters: Type.Record(Type.String(), Type.Unknown()),
++    executionMode: "sequential",
++    async execute(_toolCallId, params) {
++      executions.push({ toolName: name, input: params as Record<string, unknown> });
++      return { content: [{ type: "text", text: "Local stub executed." }], details: {} };
++    },
++  }));
++  const { session } = await createAgentSession({
++    cwd,
++    agentDir: cwd,
++    model: MODEL,
++    modelRuntime,
++    settingsManager,
++    resourceLoader,
++    sessionManager: SessionManager.inMemory(cwd),
++    tools: toolNames,
++    customTools,
++  });
++  sessions.push(session);
++  session.subscribe((event) => events.push(event));
++  // Retain Pi's complete no-op UI surface; only the human choice is scripted.
++  const ui = {
++    ...session.extensionRunner.getUIContext(),
++    select: async (_title: string, choices: string[]) => {
++      picks.push(choices);
++      return options.pick;
++    },
++  } as ExtensionUIContext;
++  await session.bindExtensions(
++    options.headless ? { mode: "print" } : { mode: "tui", uiContext: ui },
++  );
++  expect(session.getActiveToolNames().sort()).toEqual([...toolNames].sort());
++  const promptStartedAt = performance.now();
++  await session.prompt("Run the scripted fixture workflow.");
++  const finishedAt = performance.now();
++  const entries = session.sessionManager.getEntries();
++  const decisions = entries
++    .filter((entry) => entry.type === "custom" && entry.customType === DECISION_ENTRY_TYPE)
++    .map((entry) => (entry as { data: Record<string, unknown> }).data);
++  const comparisons = entries
++    .filter((entry) => entry.type === "custom" && entry.customType === JEV_RISK_COMPARISON_ENTRY)
++    .map((entry) => (entry as { data: JevRiskComparison }).data);
++  const grants = entries.filter(
++    (entry) => entry.type === "custom" && entry.customType === ALLOW_ENTRY_TYPE,
++  );
++  const toolResults = session.agent.state.messages.filter(
++    (message) => message.role === "toolResult",
++  );
++  return {
++    session,
++    executions,
++    picks,
++    events,
++    decisions,
++    comparisons,
++    grants,
++    toolResults,
++    streams,
++    initializationMs: promptStartedAt - startedAt,
++    workflowMs: finishedAt - promptStartedAt,
++    totalElapsedMs: finishedAt - startedAt,
++  };
++}
++
++beforeEach(() => {
++  state.config = readBundledConfig();
++  vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "off");
++  vi.stubEnv("SF_GUARDRAIL_ALLOW_HEADLESS", "0");
++  vi.stubEnv("SF_GUARDRAIL_OPERATOR_AUTO_APPROVE", "");
++  forgetSessionApprovals();
++});
++afterEach(() => {
++  for (const session of sessions.splice(0)) session.dispose();
++  for (const dir of tempDirs.splice(0)) rmSync(dir, { recursive: true, force: true });
++  vi.unstubAllEnvs();
++});
++
++describe("Jev risk through Pi SDK tool execution", () => {
++  it("makes SDK hard blocks prevent actual stub execution despite a model allow and headless opt-ins", async () => {
++    state.config.commandGate.patterns = state.config.commandGate.patterns.map((pattern) =>
++      pattern.id === "rm-rf" ? { ...pattern, action: "block", behavior: "block" } : pattern,
++    );
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
++    vi.stubEnv("SF_GUARDRAIL_ALLOW_HEADLESS", "1");
++    vi.stubEnv("SF_GUARDRAIL_OPERATOR_AUTO_APPROVE", "allow-confirm-actions-for-this-process");
++    const provider = riskProvider("allow");
++    const trial = await sdkTrial({
++      operations: [dangerous],
++      providers: [provider],
++      headless: true,
++    });
++    expect(trial.executions).toEqual([]);
++    expect(trial.picks).toEqual([]);
++    expect(provider.evaluate).not.toHaveBeenCalled();
++    expect(trial.decisions).toMatchObject([{ outcome: "hard_block" }]);
++    expect(trial.toolResults).toMatchObject([{ isError: true }]);
++    expect(trial.events.filter((event) => event.type === "tool_execution_end")).toMatchObject([
++      { toolName: "bash", isError: true },
++    ]);
++    expect(trial.streams).toBe(2);
++  });
++  it("prevents SDK execution after a denied uncertain prediction and a claimed input approval", async () => {
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
++    const trial = await sdkTrial({
++      operations: [{ toolName: "bash", input: { command: "echo fixture", approved: true } }],
++      providers: [riskProvider("abstain")],
++      pick: "Block",
++    });
++    expect(trial.executions).toEqual([]);
++    expect(trial.picks).toEqual([["Allow once", "Block"]]);
++    expect(trial.decisions).toMatchObject([{ outcome: "block", risk: { source: "jev" } }]);
++    expect(trial.comparisons).toMatchObject([{ prediction: "abstain", actual: "confirm" }]);
++    expect(trial.toolResults).toMatchObject([{ isError: true }]);
++  });
++  it("executes a confirmed tool exactly once through SDK dispatch and records the model-bound audit", async () => {
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
++    const provider = riskProvider();
++    const trial = await sdkTrial({ operations: [apex], providers: [provider], pick: "Allow once" });
++    expect(trial.executions).toEqual([apex]);
++    expect(trial.picks).toHaveLength(1);
++    expect(provider.evaluate).toHaveBeenCalledOnce();
++    expect(trial.decisions).toMatchObject([
++      {
++        outcome: "allow_once",
++        toolName: "sf_apex",
++        risk: { source: "jev", modelSha256: provider.modelSha256 },
++      },
++    ]);
++    expect(trial.grants).toEqual([]);
++    expect(trial.toolResults).toMatchObject([{ isError: false }]);
++    expect(trial.events.filter((event) => event.type === "tool_execution_end")).toMatchObject([
++      { toolName: "sf_apex", isError: false },
++    ]);
++  });
++  it("preserves actual SDK execution, prompt choices and session approvals in shadow mode", async () => {
++    const outcomes = [];
++    const measurements = [];
++    for (const mode of ["off", "shadow"]) {
++      forgetSessionApprovals();
++      vi.stubEnv("SF_GUARDRAIL_JEV_MODE", mode);
++      const trial = await sdkTrial({
++        operations: [dangerous, dangerous],
++        providers: [riskProvider("allow")],
++        pick: "Allow for this session",
++      });
++      outcomes.push({
++        executions: trial.executions,
++        picks: trial.picks,
++        grants: trial.grants.length,
++        outcomes: trial.decisions.map((decision) => decision.outcome),
++        errors: trial.toolResults.map((result) => result.isError),
++      });
++      measurements.push({
++        mode,
++        acceptedOutcomes: trial.executions.length,
++        confirmationCount: trial.picks.length,
++        sessionGrantCount: trial.grants.length,
++        retries: trial.events.filter((event) => event.type === "auto_retry_start").length,
++        errors: trial.toolResults.filter((result) => result.isError).length,
++        initializationMs: trial.initializationMs,
++        workflowMs: trial.workflowMs,
++        totalElapsedMs: trial.totalElapsedMs,
++      });
++      expect(trial.comparisons).toHaveLength(mode === "shadow" ? 2 : 0);
++    }
++    expect(outcomes[1]).toEqual(outcomes[0]);
++    expect(outcomes[0]).toMatchObject({
++      executions: [dangerous, dangerous],
++      grants: 1,
++      outcomes: ["allow_session", "allow_session"],
++      errors: [false, false],
++    });
++    expect(outcomes[0].picks).toHaveLength(1);
++    expect(measurements).toMatchObject([
++      { mode: "off", acceptedOutcomes: 2, confirmationCount: 1, retries: 0, errors: 0 },
++      { mode: "shadow", acceptedOutcomes: 2, confirmationCount: 1, retries: 0, errors: 0 },
++    ]);
++    if (process.env.GUARDRAIL_SDK_WORKFLOW_OUTPUT) {
++      const output = process.env.GUARDRAIL_SDK_WORKFLOW_OUTPUT;
++      mkdirSync(path.dirname(output), { recursive: true });
++      writeFileSync(
++        output,
++        JSON.stringify(
++          {
++            version: 1,
++            scope:
++              "Actual Pi AgentSession.prompt and ExtensionRunner; local scripted inference and counter-only custom tools; no local Jev candidate inference or external operations.",
++            workflow:
++              "Two identical bash requests: one confirmation followed by an exact session grant reuse.",
++            modelInitialization:
++              "Scripted stub provider; initializationMs measures SDK session setup.",
++            measurements,
++          },
++          null,
++          2,
++        ) + "\n",
++        { mode: 0o600 },
++      );
++    }
++  });
++  it("uses SDK headless blocking when no operator opt-in or human approval exists", async () => {
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
++    const trial = await sdkTrial({
++      operations: [apex],
++      providers: [riskProvider()],
++      headless: true,
++    });
++    expect(trial.executions).toEqual([]);
++    expect(trial.picks).toEqual([]);
++    expect(trial.decisions).toMatchObject([{ outcome: "headless_block" }]);
++    expect(trial.toolResults).toMatchObject([{ isError: true }]);
++  });
++  it("audits provider outages and lets the SDK enforce the original denial without an exception bypass", async () => {
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
++    const provider = riskProvider("allow");
++    provider.evaluate = vi.fn(async () => {
++      throw new Error("Fixture provider unavailable");
++    });
++    const trial = await sdkTrial({ operations: [dangerous], providers: [provider], pick: "Block" });
++    expect(provider.evaluate).toHaveBeenCalledOnce();
++    expect(trial.executions).toEqual([]);
++    expect(trial.picks).toHaveLength(1);
++    expect(trial.decisions).toMatchObject([{ outcome: "block" }]);
++    expect(trial.comparisons).toMatchObject([
++      { source: "rules_fallback", reason: "Fixture provider unavailable" },
++    ]);
++    expect(trial.toolResults).toMatchObject([{ isError: true }]);
++    expect(trial.streams).toBe(2);
++  });
++});
+diff --git a/extensions/sf-guardrail/tests/jev-risk.test.ts b/extensions/sf-guardrail/tests/jev-risk.test.ts
+new file mode 100644
+index 00000000..cbaf9675
+--- /dev/null
++++ b/extensions/sf-guardrail/tests/jev-risk.test.ts
+@@ -0,0 +1,312 @@
++/* SPDX-License-Identifier: Apache-2.0 */
++import { createHash } from "node:crypto";
++import { afterEach, describe, it, expect, vi } from "vitest";
++import { performance } from "node:perf_hooks";
++vi.mock("../../../lib/common/sf-environment/shared-runtime.ts", () => ({
++  getCachedSfEnvironment: () => null,
++}));
++vi.mock("../../../lib/common/sf-browser-snapshot-state.ts", () => ({
++  findLatestBrowserSnapshotRefLookup: () => ({
++    status: "fresh",
++    ref: { label: "Save", role: "button" },
++  }),
++}));
++import { readBundledConfig } from "../lib/config.ts";
++import { getJevRiskBaselineSha256 } from "../lib/risk-baseline-identity.ts";
++import { evaluateJevRisk, buildJevRiskInput, type JevRiskProvider } from "../lib/jev-risk.ts";
++import type { SafetyKernelInput } from "../lib/safety-kernel.ts";
++import type { ClassifiedDecision } from "../lib/types.ts";
++
++function canonical(value: any): string {
++  if (Array.isArray(value)) return "[" + value.map(canonical).join(",") + "]";
++  if (value && typeof value === "object")
++    return (
++      "{" +
++      Object.keys(value)
++        .sort()
++        .map((k) => JSON.stringify(k) + ":" + canonical(value[k]))
++        .join(",") +
++      "}"
++    );
++  return JSON.stringify(value);
++}
++const input = (): SafetyKernelInput => ({
++  toolName: "bash",
++  input: { command: "rm -rf ./work" },
++  cwd: "/project",
++  config: readBundledConfig(),
++});
++const baseline: ClassifiedDecision = {
++  action: "confirm",
++  ruleId: "rm-rf",
++  feature: "commandGate",
++  subject: "rm -rf ./work",
++  reason: "dangerous",
++  fingerprint: "legacy",
++  approvalScope: { fingerprint: "legacy", label: "old scope" },
++};
++function provider(action: "allow" | "confirm" | "abstain" = "confirm"): JevRiskProvider {
++  return {
++    version: 1,
++    id: "jev",
++    protocolSha256: "a".repeat(64),
++    modelSha256: "b".repeat(64),
++    qualified: true,
++    get qualificationBaselineSha256() {
++      return getJevRiskBaselineSha256();
++    },
++    evaluate: vi.fn(async (value) => ({
++      action,
++      allowScore: action === "allow" ? 0.999 : 0.01,
++      elapsedMs: 1,
++      inputSha256: createHash("sha256").update(canonical(value)).digest("hex"),
++      inputTokens: 100,
++      reason: "risk_detected",
++      calibration: "uncalibrated" as const,
++    })),
++  };
++}
++const pi = (...providers: JevRiskProvider[]) =>
++  ({
++    events: { emit: (_event: string, request: any) => request.providers.push(...providers) },
++  }) as any;
++afterEach(() => vi.unstubAllEnvs());
++
++describe("optional Jev risk engine", () => {
++  it("keeps off and shadow outcomes under the existing engine", async () => {
++    const model = provider("allow");
++    expect((await evaluateJevRisk(pi(model), input(), baseline, { mode: "off" })).decision).toBe(
++      baseline,
++    );
++    expect(model.evaluate).not.toHaveBeenCalled();
++    const shadow = await evaluateJevRisk(pi(model), input(), baseline, { mode: "shadow" });
++    expect(shadow.decision).toBe(baseline);
++    expect(shadow.comparison).toMatchObject({
++      baseline: "confirm",
++      actual: "allow",
++      source: "jev",
++    });
++  });
++  it("retains exact hard blocks, file restrictions, and custom off/allow policy", async () => {
++    const model = provider("allow");
++    for (const [request, decision] of [
++      [input(), { ...baseline, action: "block" }],
++      [{ ...input(), toolName: "write", input: { path: ".env" } }, baseline],
++      [
++        {
++          ...input(),
++          config: {
++            ...readBundledConfig(),
++            commandGate: {
++              ...readBundledConfig().commandGate,
++              allowedPatterns: [{ id: "exact-allow", pattern: "rm -rf" }],
++            },
++          },
++        },
++        undefined,
++      ],
++    ] as Array<[SafetyKernelInput, ClassifiedDecision | undefined]>) {
++      const result = await evaluateJevRisk(pi(model), request, decision, { mode: "enforce" });
++      expect(result.decision).toBe(decision);
++      expect(result.comparison?.source).toBe("exact_policy");
++    }
++    expect(model.evaluate).not.toHaveBeenCalled();
++  });
++  it("uses complete raw native payload and fresh snapshot facts without old risk labels", async () => {
++    const request = {
++      ...input(),
++      toolName: "sf_apex",
++      input: { action: "anon.run", body: "callWithSideEffects();", allow_mutation: true },
++    };
++    const value = buildJevRiskInput(request);
++    expect(value.input).toEqual(request.input);
++    expect(canonical(value)).not.toContain("riskTier");
++    expect(
++      buildJevRiskInput({
++        ...input(),
++        toolName: "sf_browser_click",
++        input: { ref: "e1", reason: "look" },
++      }).facts.browserRef,
++    ).toEqual({ status: "fresh", label: "Save", role: "button" });
++  });
++  it("routes novel risk and abstention through ordinary confirmation with no broad session grant", async () => {
++    for (const action of ["confirm", "abstain"] as const) {
++      const result = await evaluateJevRisk(pi(provider(action)), input(), undefined, {
++        mode: "enforce",
++      });
++      expect(result.decision).toMatchObject({
++        action: "confirm",
++        approvalScope: { allowSession: false },
++        risk: { source: "jev" },
++      });
++      expect(result.decision.fingerprint).not.toBe("legacy");
++    }
++  });
++  it("refuses unqualified/duplicate providers and malformed or truncated predictions", async () => {
++    const unqualified = { ...provider(), qualified: false };
++    const incomplete = provider("allow");
++    incomplete.evaluate = async () => ({
++      action: "allow",
++      allowScore: 1,
++      elapsedMs: 1,
++      inputTokens: 1,
++      inputSha256: "d".repeat(64),
++      reason: "safe",
++      calibration: "uncalibrated",
++    });
++    for (const surface of [pi(unqualified), pi(provider(), provider()), pi(incomplete), pi()]) {
++      const result = await evaluateJevRisk(surface, input(), baseline, { mode: "enforce" });
++      expect(result.decision).toBe(baseline);
++      expect(result.comparison?.source).toBe("rules_fallback");
++    }
++    const staleBaseline = { ...provider("allow"), qualificationBaselineSha256: "f".repeat(64) };
++    const stale = await evaluateJevRisk(pi(staleBaseline), input(), baseline, { mode: "enforce" });
++    expect(stale.decision).toBe(baseline);
++    expect(stale.comparison.reason).toContain("installed sf-guardrail baseline");
++  });
++  it("invalidates prior approvals when the model or policy changes", async () => {
++    const first = await evaluateJevRisk(pi(provider()), input(), baseline, { mode: "enforce" });
++    const changed = { ...provider(), modelSha256: "c".repeat(64) };
++    const second = await evaluateJevRisk(pi(changed), input(), baseline, { mode: "enforce" });
++    expect(first.decision.fingerprint).not.toBe(second.decision.fingerprint);
++    const changedOrg = await evaluateJevRisk(
++      pi(provider()),
++      input(),
++      { ...baseline, orgId: "fixture-new-org" },
++      { mode: "enforce" },
++    );
++    expect(first.decision.fingerprint).not.toBe(changedOrg.decision.fingerprint);
++    const changedPolicy = {
++      ...input(),
++      config: { ...input().config, productionAliases: ["Protected"] },
++    };
++    const third = await evaluateJevRisk(pi(provider()), changedPolicy, baseline, {
++      mode: "enforce",
++    });
++    expect(first.decision.fingerprint).not.toBe(third.decision.fingerprint);
++    const changedProject = await evaluateJevRisk(
++      pi(provider()),
++      { ...input(), cwd: "/another-project" },
++      baseline,
++      { mode: "enforce" },
++    );
++    expect(first.decision.fingerprint).not.toBe(changedProject.decision.fingerprint);
++  });
++  it("retains hard blocks and audits fallback on invalid operator modes or failing policy inspection", async () => {
++    const block = { ...baseline, action: "block" as const };
++    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "invalid");
++    const invalid = await evaluateJevRisk(pi(provider("allow")), input(), block);
++    expect(invalid).toMatchObject({
++      decision: block,
++      comparison: { mode: "invalid", source: "rules_fallback" },
++    });
++    const brokenConfig = { ...input(), config: { ...input().config, commandGate: undefined } };
++    const failedFloor = await evaluateJevRisk(pi(provider("allow")), brokenConfig, baseline, {
++      mode: "enforce",
++    });
++    expect(failedFloor.decision).toBe(baseline);
++    expect(failedFloor.comparison.source).toBe("rules_fallback");
++  });
++  it("rejects incomplete, oversized, cyclic and accessor inputs without invoking getters", async () => {
++    const getter = vi.fn(() => "echo safe");
++    const accessor = Object.defineProperty({}, "command", { get: getter, enumerable: true });
++    const cyclic: Record<string, unknown> = { command: "echo safe" };
++    cyclic.child = cyclic;
++    const arrayAccessor = ["hello"];
++    Object.defineProperty(arrayAccessor, "0", { get: getter });
++    const model = provider("allow");
++    for (const payload of [
++      {},
++      { command: "x".repeat(32769) },
++      cyclic,
++      accessor,
++      { command: "echo safe", nested: arrayAccessor },
++      { command: "echo safe", nodes: Array(4097).fill(0) },
++      { command: "\ud800" },
++    ]) {
++      const result = await evaluateJevRisk(pi(model), { ...input(), input: payload }, baseline, {
++        mode: "enforce",
++      });
++      expect(result.decision).toBe(baseline);
++      expect(result.comparison.source).toBe("rules_fallback");
++    }
++    expect(getter).not.toHaveBeenCalled();
++    expect(model.evaluate).not.toHaveBeenCalled();
++  });
++  it("includes preparation in the deadline and rejects identity changes or revoked qualification", async () => {
++    const expired = provider("allow");
++    const slowPreparation = await evaluateJevRisk(pi(expired), input(), baseline, {
++      mode: "enforce",
++      startedAt: performance.now() - 501,
++    });
++    expect(slowPreparation.decision).toBe(baseline);
++    expect(expired.evaluate).not.toHaveBeenCalled();
++    for (const field of ["modelSha256", "protocolSha256", "qualified"] as const) {
++      const model = provider("allow");
++      const evaluate = model.evaluate;
++      model.evaluate = async (value) => {
++        const prediction = await evaluate(value);
++        Object.assign(model, { [field]: field === "qualified" ? false : "e".repeat(64) });
++        return prediction;
++      };
++      const result = await evaluateJevRisk(pi(model), input(), baseline, { mode: "enforce" });
++      expect(result.decision).toBe(baseline);
++      expect(result.comparison.reason).toContain("changed during evaluation");
++    }
++  });
++  it("times out uncooperative providers and recovers on the next call", async () => {
++    const model = provider("allow");
++    const evaluate = model.evaluate;
++    model.evaluate = () => new Promise(() => {});
++    const result = await evaluateJevRisk(pi(model), input(), baseline, {
++      mode: "enforce",
++      startedAt: performance.now() - 450,
++    });
++    expect(result.decision).toBe(baseline);
++    expect(result.comparison.source).toBe("rules_fallback");
++    model.evaluate = evaluate;
++    const recovered = await evaluateJevRisk(pi(model), input(), baseline, { mode: "enforce" });
++    expect(recovered.decision.action).toBe("allow");
++  });
++  it("cancels an uncooperative provider without dropping existing enforcement", async () => {
++    const model = provider();
++    model.evaluate = () => new Promise(() => {});
++    const controller = new AbortController();
++    const operation = evaluateJevRisk(pi(model), input(), baseline, {
++      mode: "enforce",
++      signal: controller.signal,
++    });
++    controller.abort(new Error("cancelled"));
++    const result = await operation;
++    expect(result.decision).toBe(baseline);
++    expect(result.comparison?.reason).toContain("cancelled");
++  });
++  it("preserves fallback even when provider discovery or rejection carries a throwing error accessor", async () => {
++    const message = vi.fn(() => {
++      throw new Error("Error formatter must not invoke this accessor");
++    });
++    const malformed = Object.defineProperty(new Error(), "message", { get: message });
++    const model = provider("allow");
++    model.evaluate = async () => {
++      throw malformed;
++    };
++    for (const surface of [
++      pi(model),
++      {
++        events: {
++          emit: () => {
++            throw malformed;
++          },
++        },
++      } as any,
++    ]) {
++      const result = await evaluateJevRisk(surface, input(), baseline, { mode: "enforce" });
++      expect(result.decision).toBe(baseline);
++      expect(result.comparison).toMatchObject({
++        source: "rules_fallback",
++        reason: "Jev risk evaluation unavailable",
++      });
++    }
++    expect(message).not.toHaveBeenCalled();
++  });
++});
+
+base-commit: 4f901db9c3f5076ea0305dea33ad6e8856e467da
+-- 
+2.50.1 (Apple Git-155)
+

@@ -11,6 +11,10 @@ import {
   type InferenceAdapter,
 } from "./backend.js";
 import { registerAutomation } from "./automation.js";
+import {
+  registerGuardrailProvider,
+  type GuardrailExtensionOptions,
+} from "./guardrail-extension.js";
 import { validateRequest } from "./core.js";
 import {
   LoadedRequestCache,
@@ -162,6 +166,7 @@ export function registerExtension(
     cwd?: string;
     agentDir?: string;
     createBackend?: (config: Config) => InferenceAdapter;
+    guardrailRisk?: Omit<GuardrailExtensionOptions, "enabled">;
     contextCompression?: ContextCompressionOptions;
     routingDispatcher?: RegisterRoutingDispatcherOptions;
   } = {},
@@ -209,6 +214,10 @@ export function registerExtension(
     preferences: { ...resolved.values },
     preference_sources: { ...resolved.sources },
   });
+  const guardrailRisk = registerGuardrailProvider(pi, {
+    ...options.guardrailRisk,
+    enabled: () => !stopped && resolved.values.enabled,
+  });
   const getClassifier = () => {
     if (stopped) throw new Error("Jev extension is shut down");
     if (!resolved.values.enabled)
@@ -233,11 +242,12 @@ export function registerExtension(
     classifier = undefined;
     backend = undefined;
     ready = false;
+    const riskRetirement = guardrailRisk.reset();
     retirement = retirement.then(async () => {
       if (current) await current.dispose();
       else if (currentBackend) await currentBackend.dispose();
     });
-    await retirement;
+    await Promise.all([retirement, riskRetirement]);
   };
   const apply = async (
     targetCwd: string,
@@ -656,6 +666,7 @@ export function registerExtension(
     contextCompression,
     contextActivity,
     routingReady,
+    guardrailRisk,
     preferences: () => ({ ...resolved.values }),
     get classifier() {
       return classifier;

@@ -18,6 +18,12 @@ for (const required of [
   "dist/cli.d.ts",
   "dist/server.js",
   "dist/server.d.ts",
+  "dist/guardrail.js",
+  "dist/guardrail.d.ts",
+  "dist/guardrail-extension.js",
+  "dist/guardrail-extension.d.ts",
+  "dist/guardrail-evaluation.js",
+  "dist/guardrail-evaluation.d.ts",
   "rfdt/worker.py",
   "rfdt/requirements.txt",
   "rfdt/requirements.lock",
@@ -28,8 +34,15 @@ for (const required of [
   "scripts/build-native.sh",
   "scripts/build-agent-server.sh",
   "scripts/build-rfdt.sh",
+  "scripts/guardrail-train.mjs",
+  "scripts/guardrail-eval.mjs",
+  "scripts/guardrail-corpus.mjs",
+  "fixtures/guardrail/corpus.json",
+  "fixtures/guardrail/RUBRIC.md",
   "integrations/sf-pi-manager/README.md",
+  "integrations/sf-pi-guardrail/README.md",
   "README.md",
+  "GUARDRAIL.md",
   "LICENSE",
   "NOTICE",
   "THIRD_PARTY_NOTICES.md",
@@ -50,6 +63,12 @@ assert.ok(
     /^integrations\/sf-pi-manager\/[^/]+\.patch$/.test(path),
   ),
   "Package missing the SF Pi manager integration patch",
+);
+assert.ok(
+  paths.some((path) =>
+    /^integrations\/sf-pi-guardrail\/[^/]+\.patch$/.test(path),
+  ),
+  "Package missing the SF Guardrail integration patch",
 );
 assert.ok(
   !paths.some((path) =>

@@ -1,6 +1,121 @@
 # Implementation evidence
 
-The TypeScript package is at `/Users/bsonntag/code/simple-jev-ts`, with current evaluation work on `feat/developer-improvement` in the private repository `barretts/simple-jev-ts`. The initial delivered commit is `0fef15dab99ec01d8ec091359c773b3e2db942be`; the expanded source checkpoint is `7a8f823e0375419030b08d81de81efdc580d77e6`, the hardened source checkpoint is `4d30c58d43912c76fe0e1dffd236517f730d4909`, the download-recovery source checkpoint is `47d7c2efc02374912aa9444efaf939550690348e`, the Metal startup/fixture checkpoint is `ba82de592fb80b2e9014c685e708b748724740d6`, and the typed-teacher/cache checkpoint is `e6b64ac24760a726f3d8a848c8e7a6a080e0cd09`. All were committed and pushed privately. Subsequent real-model evidence is recorded below. Native builds, weights, private run data, and raw proof files are excluded from Git.
+## Current guardrail replacement evidence
+
+The current goal is equal-or-better semantic risk detection with no increase in
+unnecessary interruptions. The Jev and sf-pi changes are isolated on
+`barretts/jev-guardrail-risk` in
+`/private/tmp/simple-jev-ts-guardrail-risk-20260921` (base `95c0b50`) and
+`/private/tmp/sf-pi-guardrail-risk-20260921` (base `4f901db9`). The existing
+sf-guardrail hook owns enforcement, human approvals, grants, revocations and
+audit records. Jev supplies a versioned risk judgment; exact custom policy and
+hard blocks remain authoritative. Default mode is `off`; rule fallback is
+retained even when an operator enables the provider.
+
+The dedicated machine-authored operation-policy corpus has 612 cases / 204
+groups with 285 training, 165 validation and 162 held-out test cases; semantic
+eligibility is 252 / 144 / 141. Human label review remains pending. Current
+corpus SHA-256 is
+`f04d11f220f8f167a579e0fd3f466a1d47f2c0a612fb1411ee264bfc34675ee2`.
+An executable comparison calls the actual old safety kernel and independently
+resolves the complete raw request from generic mocked host observations. It
+does not execute the requested tools. The fixed-label baseline has 30 unsafe
+automatic allows and 17 unnecessary interruptions; all exact-policy floor
+outcomes matched their labels. That establishes a reproducible local baseline,
+not candidate effectiveness or population safety.
+
+Candidate 1 was stopped at optimizer update 42/256 when source review found two
+incomplete Data 360 rehearsal parameter sets. Its abandonment receipt records
+zero held-out model calls. Candidate 2 starts afresh from pinned Google Gemma 3
+1B with corrected complete inputs. Its 256 fixed optimizer updates completed;
+the final train/validation and adapter-reload checks completed. Training loss
+decreased from 4.70919 to 0.62621, the adapter changed, and reload maximum
+probability delta was zero. Native prompt/token/label preparation parity checked
+396 train/validation rows and 792 labels. A separate F16 export is recorded;
+none of these checks establishes the native bridge's risk effectiveness.
+The prepared RFDT input has exactly 252 training and 144 validation
+branches; its test file has zero bytes. Neither optimizer completion nor MLX
+validation is a native SF risk-check qualification result.
+
+Candidate 2's actual native SF bridge validation subsequently completed 165
+cases / 55 groups with all 144 eligible calls answered and zero errors or
+fallbacks. Warm p95 was 208.353333 ms, including preparation/queueing; cold
+initialization was 2,548.651041 ms. Unsafe allows were zero versus baseline 14,
+with zero safety regressions and zero exact hard-block demotions. Unnecessary
+interruptions were 75 versus baseline three, so the candidate is **rejected by
+the usability gate**. It is neither qualified nor established as equally
+effective. No prospective freeze or held-out model calls were made. The full
+[native validation receipt](./reports/guardrail-risk-2026-09-21/sf-bridge-validation.json)
+is retained with its measurement, model, protocol, corpus, runtime and native
+binary identities. A separate 18-case TRAIN-only overfit diagnosis is running
+with 256 fixed updates and zero validation/test branches; no completed diagnostic
+result is recorded.
+
+The initial interface draft passed 24 focused Jev tests and 46 focused sf-pi
+tests. Final Jev source checks passed 1,011 tests across 46 files in 10.44 seconds,
+with isolated Pi state and narrowly escalated local fixture listeners. The
+TypeScript/package checks, build, 38 focused guardrail tests across four files
+and formatting also passed. SF guardrail/runtime checks passed 315 tests (one
+further test skipped), and six actual Pi SDK tests passed. Those establish the
+covered contracts and lifecycle behavior. SF test files were exercised across
+appropriate isolated partitions:
+the broad 593-file run had 4,214 passes, one failure and 40 skips; its unrelated
+AgentScript dynamic-import timeout passed in a four-test isolated replay. Six
+state-sensitive files passed all 70 tests with an isolated agent directory, and
+two localhost files passed eight tests with narrowly escalated local fixtures.
+Final SF lint and documentation/validation stages before the full-suite stage
+passed. A uniform `npm test`/`validate:ci` command did not pass under the sandbox;
+partition coverage is not a claim of that uniform command's success.
+Exact run counts and scope are retained in
+[the guardrail evidence report](./reports/guardrail-risk-2026-09-21/README.md).
+
+The package dry run passed with 171 files, 6,158,422 unpacked bytes and 1,270,707
+tarball bytes at that checkpoint, including required guardrail sources, corpus,
+scripts and patch, with no weights. These size observations precede the final
+documentation update and are not a sealed final archive identity. The SF patch
+has SHA-256 `db3d9350616b3e9709b442fc7a0d4678c17704a06bc82da121ccd86f36e95b7d`;
+applying it against the pinned `4f901db9` baseline in a temporary index reproduced
+tree `85351e72e8a5d8cecfd64914eb9a6ea46edd405b`, the tree of local SF commit
+`beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2`. No push or active Pi host change is
+part of that proof.
+
+The actual Pi SDK matched workflow uses scripted inference and counter-only
+tools. Both `off` and `shadow` accepted two requests with one confirmation, one
+session grant, no retries and no errors. SDK setup and workflow elapsed times
+are separate measurements. The real-hook stub workflow also records equal
+accepted outcomes and confirmations for `off`, `shadow` and `enforce`. These
+prove controlled execution/approval behavior; they do not measure local Jev
+candidate accuracy, model cold initialization, warm model latency, complete
+developer-task benefit or dangerous external execution.
+
+The SDK workflow repeats an identical operation. It does not establish prompt
+parity when related operation payloads change: current model-derived session
+grants are exact and bound to operation/policy/model/protocol, while baseline
+operation-family grants may permit broader reuse. That usability limitation
+must be measured in matched workflows; tool-supplied approval claims remain
+insufficient and novel model risks do not receive a broad session grant.
+
+Automatic approval review rejected restoration of the baseline's implicit
+session-approval option. The current conservative model-confirmation session
+setting is pending an explicit user decision; tests cannot establish usability
+parity while that limitation remains.
+
+Qualification requires a passing real SF bridge validation result followed by
+a prospective freeze and a complete held-out bridge test. Every frozen case,
+gold/baseline outcome, model/protocol/native/runtime identity and active policy
+is bound. Scores remain uncalibrated. Gates require zero unsafe allows, no
+safety regression, no exact-block demotion, unnecessary interruptions no higher
+than baseline, all eligible calls completed without fallback/error, and warm
+p95 ≤500 ms including request preparation and queueing. Cold initialization is
+reported separately. Qualification, improvement and production acceptance
+remain separate claims; failed qualification keeps the current engine active.
+
+## Historical implementation and evaluation evidence
+
+The following delivery and evaluation records describe earlier experiments;
+they remain unchanged and do not qualify the guardrail candidate.
+
+The TypeScript package is at `/Users/bsonntag/code/simple-jev-ts`, with earlier evaluation work on `feat/developer-improvement` in the private repository `barretts/simple-jev-ts`. The initial delivered commit is `0fef15dab99ec01d8ec091359c773b3e2db942be`; the expanded source checkpoint is `7a8f823e0375419030b08d81de81efdc580d77e6`, the hardened source checkpoint is `4d30c58d43912c76fe0e1dffd236517f730d4909`, the download-recovery source checkpoint is `47d7c2efc02374912aa9444efaf939550690348e`, the Metal startup/fixture checkpoint is `ba82de592fb80b2e9014c685e708b748724740d6`, and the typed-teacher/cache checkpoint is `e6b64ac24760a726f3d8a848c8e7a6a080e0cd09`. All were committed and pushed privately. Subsequent real-model evidence is recorded below. Native builds, weights, private run data, and raw proof files are excluded from Git.
 
 The original Simple Jev checkout remains unchanged. The original sf-pi checkout remains unchanged, including its existing untracked `.logs/`. Manager work is isolated in `/Users/bsonntag/code/sf-pi-jev-manager`, branch `barretts/jev-external-manager`, against baseline `4f901db9c3f5076ea0305dea33ad6e8856e467da`. Global pi preferences are preserved; integration exercises use isolated agent/workspace directories. No public sf-pi push is part of this delivery.
 

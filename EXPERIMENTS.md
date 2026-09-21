@@ -1,4 +1,103 @@
-# Developer improvement experiments
+# Jev experiments
+
+## Current experiment: replace sf-guardrail semantic risk detection
+
+The current goal is a separate local Jev guardrail candidate that is as effective
+as, or more effective than, sf-guardrail's semantic risk detector. Safety and
+usability are measured together: no unsafe automatic allows, no weakening of
+exact policy, and no increase in unnecessary confirmations or blocks. The
+existing sf-pi `tool_call` hook retains approval, session and audit ownership.
+
+Work is isolated on `barretts/jev-guardrail-risk` in
+`/private/tmp/simple-jev-ts-guardrail-risk-20260921` and
+`/private/tmp/sf-pi-guardrail-risk-20260921`, based on Jev `95c0b50` and sf-pi
+`4f901db9`. This experiment preserves the default general classifier and uses a
+fresh reviewed `google/gemma-3-1b-it` base through the existing RFDT pipeline.
+The model-lineage exclusion below continues to apply to students, derivatives,
+teachers, fallbacks and test fixtures.
+
+The version-1 provider receives the complete original tool request plus
+independently resolved org and browser observations. Existing engine labels and
+reasons are excluded from its input. Selected next-token logits compare `allow`
+with `confirm`; an `allow` winner needs an uncalibrated score of at least 0.99.
+Risky or uncertain predictions require confirmation. Exact protected paths,
+explicit rule overrides, validated cleanup exceptions and hard blocks stay in
+code. Operator configuration defaults to `off`; `shadow` records comparisons
+while the existing engine enforces; `enforce` requires a qualified, bound model.
+Missing, timed-out, malformed or incomplete model results use an audited rule
+fallback rather than an implicit model approval.
+
+The dedicated [operation-policy rubric](./fixtures/guardrail/RUBRIC.md) supplies
+labels independently of the current engine. The
+[corpus](./fixtures/guardrail/corpus.json) has 612 cases in 204 operation groups:
+285 train, 165 validation and 162 test cases. Related variants share a split.
+There are 252, 144 and 141 eligible semantic calls respectively; exact policy
+cases are retained as separate code-protection checks. Labels were machine
+authored from inspected public implementation; human label review remains
+pending. Corpus SHA-256 is
+`f04d11f220f8f167a579e0fd3f466a1d47f2c0a612fb1411ee264bfc34675ee2`.
+The actual baseline engine measured 30 unsafe allows and 17 unnecessary
+interruptions on these fixed labels, producing 47 disagreements. These are
+corpus-specific baseline observations, not a production failure-rate estimate.
+
+Candidate selection uses validation only. A passing candidate must freeze its
+weights, prompt/protocol, 0.99 cutoff, runtime/baseline identities, exact case
+inventory and criteria before held-out inference. Qualification requires zero
+unsafe allows, zero safety regressions, zero exact-block demotions, unnecessary
+interruptions at or below the baseline, every eligible model call completed
+without error, and warm p95 at most 500 ms including preparation and queueing.
+The real SF bridge measures host preparation and baseline resolution inside
+that deadline; cold model initialization is reported separately. Fallbacks are
+execution failures for qualification and cannot make a candidate pass.
+
+| Guardrail round                      | Observed status                                                                                                                                                       | Decision                                                                                     |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Corpus and actual-engine baseline    | 612 authored cases / 204 groups; static family, group, duplicate-state and exact-policy checks pass                                                                   | Preserve supplied gold and measure disagreements independently.                              |
+| Candidate 1                          | Stopped at optimizer update 42/256 after source review found two incomplete Data 360 rehearsal parameter sets; no held-out model calls                                | Retain abandonment evidence and use a fresh official-base trial after correction.            |
+| Candidate 2                          | All 256 fixed optimizer updates and checkpoint checks completed; loss 4.70919 → 0.62621; adapter changed; reload probability delta zero; separate F16 export recorded | Learning/checkpoint integrity does not establish native risk effectiveness or qualification. |
+| Interface and integration proof      | Focused provider, qualification, real-hook and actual Pi SDK tests exercise controlled failures and stub execution                                                    | Keep contract/SDK proof separate from candidate and production claims.                       |
+| Candidate 2 native bridge validation | Completed 165 cases / 55 groups; all 144 eligible calls answered; zero errors/unsafe allows; warm p95 208.353 ms; 75 safe-case interruptions versus baseline 3        | Rejected by the usability gate; no freeze or held-out model calls.                           |
+| TRAIN-only pipeline diagnosis        | A separate 18-case TRAIN-only overfit diagnosis is running with 256 fixed updates, zero validation/test branches, and no completed result yet                         | Diagnose input-dependent learning on TRAIN only while preserving the held-out test.          |
+
+Candidate 2's native validation found zero unsafe allows versus 14 for the
+baseline and preserved exact blocks, but its 75 unnecessary interruptions
+exceeded the baseline's three. The candidate does not meet the equal-or-better
+goal and remains unqualified. Cold initialization was 2,548.651 ms, separate
+from the warm check distribution. The complete local native bridge receipt is
+[preserved with the evidence report](./reports/guardrail-risk-2026-09-21/sf-bridge-validation.json).
+
+Session-approval behavior remains a proof boundary: the current integration
+binds model-derived grants to an exact operation, active policy, model and
+protocol. Broader operation-family reuse can reduce repeated prompts in the
+baseline; equivalence of prompt counts across changed operations has not been
+established by the identical-operation SDK mock. Complete real-model matched
+workflows must measure that difference before claiming usability parity.
+
+Automatic approval review rejected restoring the baseline's implicit session
+approval option. The conservative current model-confirmation session setting
+therefore remains pending an explicit user decision; source and SDK tests do
+not resolve that product limitation.
+
+Final Jev source checks passed: 1,011 tests across 46 files in 10.44 seconds,
+TypeScript/package checks and build, 38 focused guardrail tests across four
+files, and formatting. SF guardrail/runtime checks passed 315 tests; its full
+test-file coverage used appropriate isolated partitions and an unrelated
+timeout replay, so a uniform `npm test` or `validate:ci` success is not claimed.
+The package dry run included the guardrail sources, corpus and integration
+patch without weights. The baseline-bound SF patch reproduced the committed
+tree in a temporary index. These establish source and delivery integrity,
+separately from the rejected candidate's effectiveness.
+
+The current summary and remaining proof boundaries are maintained in
+[the guardrail evidence report](./reports/guardrail-risk-2026-09-21/README.md).
+Weights, adapters and large raw run files stay in ignored `.build/guardrail/`.
+No earlier rejected student or routing head is promoted by this experiment.
+
+## Historical developer-improvement experiments
+
+The following objectives, source identities, rounds and results describe earlier
+developer-routing and context experiments. They remain preserved evidence and do
+not qualify the current guardrail candidate.
 
 Objective: make Jev a reliable improvement in developer speed and resource cost using models, tooling, and access already available. A fast classifier call is insufficient: the complete developer task must finish correctly sooner, or use measurably less work with equivalent results.
 
