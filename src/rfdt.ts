@@ -1038,9 +1038,21 @@ export async function trainRfdt(
     modelPath?: string;
     python?: string;
     signal?: AbortSignal;
+    guardrailPairsPath?: string;
+    guardrailPlanPath?: string;
   } = {},
 ): Promise<RfdtRunManifest> {
   const manifest = await readManifest(runDir);
+  requireThat(
+    Boolean(options.guardrailPairsPath) === Boolean(options.guardrailPlanPath),
+    "Guardrail pair training requires both pair manifest and TRAIN objective plan",
+  );
+  if (options.guardrailPairsPath)
+    requireThat(
+      manifest.prepared.branches.validation === 0 &&
+        manifest.prepared.branches.test === 0,
+      "Guardrail pair training requires a TRAIN-only RFDT run",
+    );
   await verifyPrepared(manifest);
   await assertRfdtQualityIsolation(
     await readExamples(manifest.prepared.dataset_file!),
@@ -1069,6 +1081,10 @@ export async function trainRfdt(
   ];
   if (manifest.prepared.branches.validation)
     args.push("--validation-data", manifest.prepared.files.validation);
+  if (options.guardrailPairsPath)
+    args.push("--guardrail-pairs", resolve(options.guardrailPairsPath));
+  if (options.guardrailPlanPath)
+    args.push("--guardrail-plan", resolve(options.guardrailPlanPath));
   const result = parseWorker(
     await runProcess(pythonBinary(options.python), args, options.signal),
   );

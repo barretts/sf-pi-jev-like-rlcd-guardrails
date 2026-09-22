@@ -38,6 +38,10 @@ LEARNING_RATE = 1e-4
 SEED = 42
 FREE_CACHE_LIMIT_BYTES = 256 * 1024 * 1024
 PROGRESS_ROW_INTERVAL = 25
+GUARDRAIL_PAIR_MARGIN = 2.0
+GUARDRAIL_ANCHOR_MARGIN = 1.0
+GUARDRAIL_CE_WEIGHT = 0.25
+GUARDRAIL_ANCHOR_WEIGHT = 0.5
 
 
 class MemoryProgress:
@@ -256,6 +260,54 @@ def read_rows(path: Path, split: str | None = None) -> list[dict[str, Any]]:
     return rows
 
 
+def read_guardrail_pairs(path: Path, rows: list[dict[str, Any]], content: bytes | None = None) -> list[dict[str, Any]]:
+    """Admit only explicit, disjoint pairs from the prepared TRAIN branch."""
+    manifest = json.loads(content if content is not None else path.read_bytes())
+    if not isinstance(manifest, dict) or set(manifest) != {"version", "pairs"} or type(manifest["version"]) is not int or manifest["version"] != 1 or not isinstance(manifest["pairs"], list) or not manifest["pairs"]:
+        raise ValueError("Invalid guardrail TRAIN pair manifest")
+    by_source = {}
+    for row in rows:
+        source = row.get("source_id")
+        if not isinstance(source, str) or not source or source in by_source:
+            raise ValueError("Guardrail pair training requires unique prepared source IDs")
+        if row.get("split") != "train" or row.get("question_id") != "risk" or row.get("question_type") != "choice" or row.get("answer_labels") != ["allow", "confirm"] or row.get("target_probabilities") not in ([1, 0], [0, 1]) or len(row["allowed_token_ids"]) != 2:
+            raise ValueError("Guardrail pair training requires exact allow/confirm TRAIN targets")
+        by_source[source] = row
+    pair_ids = set()
+    used_sources = set()
+    pairs = []
+    for pair in manifest["pairs"]:
+        if not isinstance(pair, dict) or set(pair) != {"pair_id", "group_id", "safe_id", "risky_id"} or any(not isinstance(value, str) or not value or len(value) > 256 for value in pair.values()):
+            raise ValueError("Invalid guardrail pair record")
+        pair_id, group, safe_id, risky_id = (pair[key] for key in ("pair_id", "group_id", "safe_id", "risky_id"))
+        if pair_id in pair_ids or safe_id == risky_id or safe_id in used_sources or risky_id in used_sources:
+            raise ValueError("Duplicate guardrail pair ID or reused TRAIN source")
+        safe, risky = by_source.get(safe_id), by_source.get(risky_id)
+        if safe is None or risky is None or safe["group"] != group or risky["group"] != group:
+            raise ValueError("Guardrail pair must name two TRAIN rows from its own group")
+        if safe["target_probabilities"] != [1, 0] or risky["target_probabilities"] != [0, 1]:
+            raise ValueError("Guardrail pair requires safe then risky targets")
+        if safe.get("prompt_token_ids") == risky.get("prompt_token_ids"):
+            raise ValueError("Opposite guardrail targets cannot share one rendered prompt")
+        pair_ids.add(pair_id)
+        used_sources.update((safe_id, risky_id))
+        pairs.append({"pair_id": pair_id, "group_id": group, "safe": safe, "risky": risky})
+    return pairs
+
+
+def read_guardrail_plan(path: Path, pair_sha256: str, content: bytes | None = None) -> dict[str, Any]:
+    plan = json.loads(content if content is not None else path.read_bytes())
+    expected_loss = {"pair_margin": GUARDRAIL_PAIR_MARGIN, "anchor_margin": GUARDRAIL_ANCHOR_MARGIN, "ce_weight": GUARDRAIL_CE_WEIGHT, "anchor_weight": GUARDRAIL_ANCHOR_WEIGHT}
+    if not isinstance(plan, dict) or set(plan) != {"version", "purpose", "objective", "pair_manifest_sha256", "loss", "cutoff_status", "validation_rows_passed_to_training", "test_rows_passed_to_training"}:
+        raise ValueError("Invalid guardrail TRAIN objective plan")
+    if type(plan["version"]) is not int or plan["version"] != 1 or plan["purpose"] != "candidate8_train_only" or plan["objective"] != "guardrail_train_group_pair_margin_v1" or plan["pair_manifest_sha256"] != pair_sha256 or plan["cutoff_status"] != "unset_requires_train_calibration_before_VALID" or type(plan["validation_rows_passed_to_training"]) is not int or plan["validation_rows_passed_to_training"] != 0 or type(plan["test_rows_passed_to_training"]) is not int or plan["test_rows_passed_to_training"] != 0:
+        raise ValueError("Guardrail TRAIN objective plan identity or split boundary changed")
+    loss = plan["loss"]
+    if not isinstance(loss, dict) or set(loss) != set(expected_loss) or any(type(loss[key]) not in {int, float} or not math.isfinite(loss[key]) or loss[key] != expected for key, expected in expected_loss.items()):
+        raise ValueError("Guardrail TRAIN objective plan loss parameters changed")
+    return plan
+
+
 def verify_prompt_parity(tokenizer: Any, rows: list[dict[str, Any]]) -> dict[str, Any]:
     labels_checked = 0
     for row in rows:
@@ -357,6 +409,122 @@ def selected_loss(model: Any, tokens: Any, allowed: Any, targets: Any) -> Any:
     return -mx.sum(targets * log_probabilities)
 
 
+def selected_logit_margin(model: Any, tokens: Any, allowed: Any) -> Any:
+    import mlx.core as mx
+
+    logits = mx.take(final_logits(model, tokens)[0], allowed).astype(mx.float32)
+    return logits[0] - logits[1]
+
+
+def sigmoid(value: float) -> float:
+    return 1.0 / (1.0 + math.exp(-value)) if value >= 0 else math.exp(value) / (1.0 + math.exp(value))
+
+
+def softplus(value: float) -> float:
+    return max(value, 0.0) + math.log1p(math.exp(-abs(value)))
+
+
+def guardrail_row_loss(margin: float, safe: bool) -> float:
+    ce = softplus(-margin if safe else margin)
+    anchor = softplus(GUARDRAIL_ANCHOR_MARGIN - margin if safe else GUARDRAIL_ANCHOR_MARGIN + margin)
+    return ce + GUARDRAIL_ANCHOR_WEIGHT * anchor
+
+
+def guardrail_pair_loss(safe_margin: float, risky_margin: float) -> float:
+    separation = softplus(GUARDRAIL_PAIR_MARGIN + risky_margin - safe_margin)
+    ce = (softplus(-safe_margin) + softplus(risky_margin)) / 2.0
+    anchors = softplus(GUARDRAIL_ANCHOR_MARGIN - safe_margin) + softplus(GUARDRAIL_ANCHOR_MARGIN + risky_margin)
+    return separation + GUARDRAIL_CE_WEIGHT * ce + GUARDRAIL_ANCHOR_WEIGHT * anchors
+
+
+def guardrail_pair_derivatives(safe_margin: float, risky_margin: float) -> tuple[float, float]:
+    pair = sigmoid(GUARDRAIL_PAIR_MARGIN + risky_margin - safe_margin)
+    safe = -pair + (GUARDRAIL_CE_WEIGHT / 2.0) * (sigmoid(safe_margin) - 1.0) - GUARDRAIL_ANCHOR_WEIGHT * sigmoid(GUARDRAIL_ANCHOR_MARGIN - safe_margin)
+    risky = pair + (GUARDRAIL_CE_WEIGHT / 2.0) * sigmoid(risky_margin) + GUARDRAIL_ANCHOR_WEIGHT * sigmoid(GUARDRAIL_ANCHOR_MARGIN + risky_margin)
+    return safe, risky
+
+
+def guardrail_row_derivative(margin: float, safe: bool) -> float:
+    if safe:
+        return sigmoid(margin) - 1.0 - GUARDRAIL_ANCHOR_WEIGHT * sigmoid(GUARDRAIL_ANCHOR_MARGIN - margin)
+    return sigmoid(margin) + GUARDRAIL_ANCHOR_WEIGHT * sigmoid(GUARDRAIL_ANCHOR_MARGIN + margin)
+
+
+def guardrail_training_units(rows: list[dict[str, Any]], pairs: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    used = {row["source_id"] for pair in pairs for row in (pair["safe"], pair["risky"])}
+    units: dict[str, list[dict[str, Any]]] = {}
+    for pair in pairs:
+        units.setdefault(pair["group_id"], []).append({"kind": "pair", **pair})
+    for row in rows:
+        if row["source_id"] not in used:
+            units.setdefault(row["group"], []).append({"kind": "single", "row": row})
+    return units
+
+
+def guardrail_objective_report(model: Any, units: dict[str, list[dict[str, Any]]], progress: MemoryProgress | None = None) -> float:
+    import mlx.core as mx
+
+    model.eval()
+    losses = []
+    for group in sorted(units):
+        group_losses = []
+        for unit in units[group]:
+            margins = []
+            for row in (unit["safe"], unit["risky"]) if unit["kind"] == "pair" else (unit["row"],):
+                tokens = allowed = margin = None
+                try:
+                    tokens, allowed, _ = row_arrays(row)
+                    margin = selected_logit_margin(model, tokens, allowed)
+                    mx.eval(margin)
+                    value = float(margin.item())
+                    if not math.isfinite(value):
+                        raise ValueError("Nonfinite guardrail logit margin")
+                    margins.append(value)
+                finally:
+                    del tokens, allowed, margin
+                    progress.clear() if progress is not None else mx.clear_cache()
+            if unit["kind"] == "pair":
+                group_losses.append(guardrail_pair_loss(*margins))
+            else:
+                group_losses.append(guardrail_row_loss(margins[0], unit["row"]["target_probabilities"] == [1, 0]))
+        losses.append(sum(group_losses) / len(group_losses))
+    return sum(losses) / len(losses)
+
+
+def guardrail_margin_and_gradient(model: Any, row: dict[str, Any], value_and_grad: Any, progress: MemoryProgress) -> tuple[float, Any]:
+    import mlx.core as mx
+
+    tokens, allowed, _ = row_arrays(row)
+    margin, gradient = value_and_grad(model, tokens, allowed)
+    mx.eval(margin, gradient)
+    value = float(margin.item())
+    del tokens, allowed, margin
+    if not math.isfinite(value):
+        raise ValueError("Nonfinite guardrail logit margin")
+    progress.clear()
+    return value, gradient
+
+
+def guardrail_unit_gradient(model: Any, unit: dict[str, Any], value_and_grad: Any, progress: MemoryProgress) -> tuple[float, Any]:
+    import mlx.core as mx
+    from mlx.utils import tree_map
+
+    if unit["kind"] == "single":
+        row = unit["row"]
+        margin, gradient = guardrail_margin_and_gradient(model, row, value_and_grad, progress)
+        coefficient = guardrail_row_derivative(margin, row["target_probabilities"] == [1, 0])
+        combined = tree_map(lambda value: coefficient * value, gradient)
+        loss = guardrail_row_loss(margin, row["target_probabilities"] == [1, 0])
+    else:
+        safe_margin, safe_gradient = guardrail_margin_and_gradient(model, unit["safe"], value_and_grad, progress)
+        risky_margin, risky_gradient = guardrail_margin_and_gradient(model, unit["risky"], value_and_grad, progress)
+        safe_coefficient, risky_coefficient = guardrail_pair_derivatives(safe_margin, risky_margin)
+        combined = tree_map(lambda safe, risky: safe_coefficient * safe + risky_coefficient * risky, safe_gradient, risky_gradient)
+        loss = guardrail_pair_loss(safe_margin, risky_margin)
+    mx.eval(combined)
+    return loss, combined
+
+
 def row_arrays(row: dict[str, Any]) -> tuple[Any, Any, Any]:
     import mlx.core as mx
 
@@ -430,9 +598,22 @@ def train_with_progress(args: argparse.Namespace, output: Path, adapter: Path, p
     from mlx_lm.tuner.utils import linear_to_lora_layers
 
     identity = provenance()
-    model_dir = resolve_model(args.model, fetch=True)
+    pair_path = Path(args.guardrail_pairs).expanduser().resolve() if getattr(args, "guardrail_pairs", None) else None
+    plan_path = Path(args.guardrail_plan).expanduser().resolve() if getattr(args, "guardrail_plan", None) else None
+    if (pair_path is None) != (plan_path is None):
+        raise ValueError("Guardrail pair manifest and TRAIN objective plan must be supplied together")
+    if pair_path is not None and args.validation_data:
+        raise ValueError("Guardrail pair training cannot inspect a validation split")
     rows = read_rows(Path(args.data), "train")
     validation = read_rows(Path(args.validation_data), "validation") if args.validation_data else []
+    pair_content = pair_path.read_bytes() if pair_path is not None else None
+    plan_content = plan_path.read_bytes() if plan_path is not None else None
+    pair_sha256 = hashlib.sha256(pair_content).hexdigest() if pair_content is not None else None
+    plan_sha256 = hashlib.sha256(plan_content).hexdigest() if plan_content is not None else None
+    plan = read_guardrail_plan(plan_path, pair_sha256, plan_content) if plan_path is not None else None
+    pairs = read_guardrail_pairs(pair_path, rows, pair_content) if pair_path is not None else []
+    pair_units = guardrail_training_units(rows, pairs) if pair_path is not None else {}
+    model_dir = resolve_model(args.model, fetch=True)
     if validation:
         if {row["group"] for row in rows} & {row["group"] for row in validation}:
             raise ValueError("Training and validation context/source groups overlap")
@@ -453,11 +634,14 @@ def train_with_progress(args: argparse.Namespace, output: Path, adapter: Path, p
     initial_parameters = {name: mx.array(value) for name, value in trainable.items()}
     progress.emit("phase_end", phase="model_load")
     initial_report = evaluate_rows(model, rows, progress, "initial_evaluation")
+    initial_objective = guardrail_objective_report(model, pair_units, progress) if pair_path is not None else initial_report["mean_loss"]
     optimizer = optimizers.Adam(learning_rate=LEARNING_RATE)
-    loss_and_grad = nn.value_and_grad(model, selected_loss)
+    loss_and_grad = nn.value_and_grad(model, selected_logit_margin if pair_path is not None else selected_loss)
     adapter.mkdir(parents=True)
     history = []
     order = list(range(len(rows)))
+    group_order = sorted(pair_units)
+    group_visits = {group: 0 for group in group_order}
     cursor = 0
     started = time.monotonic()
     model.train()
@@ -466,19 +650,29 @@ def train_with_progress(args: argparse.Namespace, output: Path, adapter: Path, p
         accumulated = None
         losses = []
         for _ in range(ACCUMULATION):
-            if cursor % len(order) == 0:
-                random.shuffle(order)
-            row = rows[order[cursor % len(order)]]
+            if pair_path is None:
+                if cursor % len(order) == 0:
+                    random.shuffle(order)
+                row = rows[order[cursor % len(order)]]
+                loss, gradients = loss_and_grad(model, *row_arrays(row))
+                mx.eval(loss, gradients)
+                scalar = float(loss.item())
+                del loss
+            else:
+                if cursor % len(group_order) == 0:
+                    random.shuffle(group_order)
+                group = group_order[cursor % len(group_order)]
+                units = pair_units[group]
+                unit = units[group_visits[group] % len(units)]
+                group_visits[group] += 1
+                scalar, gradients = guardrail_unit_gradient(model, unit, loss_and_grad, progress)
             cursor += 1
-            loss, gradients = loss_and_grad(model, *row_arrays(row))
-            mx.eval(loss, gradients)
-            scalar = float(loss.item())
             if not math.isfinite(scalar):
                 raise ValueError(f"Nonfinite loss at optimizer step {step + 1}")
             losses.append(scalar)
             accumulated = gradients if accumulated is None else tree_map(lambda total, current: total + current, accumulated, gradients)
             mx.eval(accumulated)
-            del loss, gradients
+            del gradients
             progress.clear()
         gradients = tree_map(lambda gradient: gradient / ACCUMULATION, accumulated)
         if any(not bool(mx.all(mx.isfinite(gradient)).item()) for _, gradient in tree_flatten(gradients)):
@@ -492,13 +686,18 @@ def train_with_progress(args: argparse.Namespace, output: Path, adapter: Path, p
     progress.emit("phase_end", phase="optimization", steps_completed=args.steps, steps_total=args.steps)
     changed = any(bool(mx.any(value != initial_parameters[name]).item()) for name, value in tree_flatten(model.trainable_parameters()))
     final_report = evaluate_rows(model, rows, progress, "final_evaluation")
+    final_objective = guardrail_objective_report(model, pair_units, progress) if pair_path is not None else final_report["mean_loss"]
     validation_report = evaluate_rows(model, validation, progress, "validation_evaluation") if validation else None
+    if pair_path is not None and sha256(pair_path) != pair_sha256:
+        raise ValueError("Guardrail TRAIN pair manifest changed during optimization")
+    if plan_path is not None and sha256(plan_path) != plan_sha256:
+        raise ValueError("Guardrail TRAIN objective plan changed during optimization")
     weights = dict(tree_flatten(model.trainable_parameters()))
     mx.save_safetensors(str(adapter / "adapters.safetensors"), weights)
     write_json(adapter / "adapter_config.json", {"fine_tune_type": "lora", "num_layers": 26, "lora_parameters": LORA})
     manifest = {
         "schema_version": 1,
-        "objective": "selected_label_soft_cross_entropy_at_final_real_prompt_position",
+        "objective": "guardrail_train_group_pair_margin_v1" if pair_path is not None else "selected_label_soft_cross_entropy_at_final_real_prompt_position",
         "template_version": rows[0]["template_version"],
         "provenance": identity,
         "prompt_parity": parity,
@@ -507,17 +706,24 @@ def train_with_progress(args: argparse.Namespace, output: Path, adapter: Path, p
         "adapter_sha256": sha256(adapter / "adapters.safetensors"),
         "hyperparameters": {"batch_size": 1, "gradient_accumulation": ACCUMULATION, "learning_rate": LEARNING_RATE, "seed": SEED, "max_prompt_tokens": MAX_PROMPT_TOKENS, "truncation": False, "lora": LORA, "layers": 26, "steps": args.steps},
         "adapter_dir": str(adapter),
-        "initial_loss": initial_report["mean_loss"],
-        "final_loss": final_report["mean_loss"],
+        "initial_loss": initial_objective,
+        "final_loss": final_objective,
         "steps": args.steps,
         "adapter_changed": changed,
-        "training_loss_decreased": final_report["mean_loss"] < initial_report["mean_loss"],
+        "training_loss_decreased": final_objective < initial_objective,
         "reload_verified": False,
         "duration_seconds": time.monotonic() - started,
         "history": history,
         "validation": validation_report,
         "memory": progress.summary(),
     }
+    if pair_path is not None:
+        manifest.update({
+            "selected_ce_initial_loss": initial_report["mean_loss"],
+            "selected_ce_final_loss": final_report["mean_loss"],
+            "guardrail_pairs": {"file": str(pair_path), "sha256": pair_sha256, "pairs": len(pairs), "groups": len(pair_units), "pair_margin": GUARDRAIL_PAIR_MARGIN, "anchor_margin": GUARDRAIL_ANCHOR_MARGIN, "ce_weight": GUARDRAIL_CE_WEIGHT, "anchor_weight": GUARDRAIL_ANCHOR_WEIGHT, "group_balanced": True},
+            "guardrail_train_plan": {"file": str(plan_path), "sha256": plan_sha256, "content": plan},
+        })
     write_json(adapter / "rfdt-manifest.json", manifest)
     # Release model/optimizer state before constructing a fresh checkpoint load.
     expected_predictions = final_report["predictions"]
@@ -885,6 +1091,64 @@ def self_test_with_progress(_: argparse.Namespace, progress: MemoryProgress) -> 
     return {"ok": True, "fixture": "random_tiny_gemma3_no_checkpoint_weights", "device": "cpu", "dependencies": identity, "full_context_gradient_verified": True, "initial_loss": float(before.item()), "final_loss": float(after.item()), "trainable_leaves": len(leaves), "adapter_changed": changed, "reload_verified": True, "reload_max_probability_delta": reload_delta, "fusion_verified": True, "fusion_max_probability_delta": fusion_delta, "fusion_dtype": "float32", "evaluation_max_probability_delta": row_delta, "selected_probabilities": expected.tolist(), "memory": progress.summary()}
 
 
+def guardrail_pair_self_test(_: argparse.Namespace) -> dict[str, Any]:
+    """Compare the memory-bounded pair gradient with direct autograd on random tiny Gemma."""
+    import mlx.core as mx
+    import mlx.nn as nn
+    from mlx.utils import tree_flatten
+    from mlx_lm.models.gemma3_text import Model, ModelArgs
+    from mlx_lm.tuner.utils import linear_to_lora_layers
+
+    mx.set_default_device(mx.cpu)
+    identity = dependencies()
+    with MemoryProgress() as progress:
+        mx.random.seed(SEED)
+        args = ModelArgs(model_type="gemma3_text", hidden_size=16, intermediate_size=32, num_hidden_layers=6, num_attention_heads=2, num_key_value_heads=1, head_dim=8, vocab_size=64, sliding_window=16, max_position_embeddings=64)
+        model = Model(args)
+        model.freeze()
+        linear_to_lora_layers(model, 6, {**LORA, "rank": 4})
+        model.train()
+        allowed = mx.array([2, 3], dtype=mx.int32)
+        safe_tokens = mx.array([[1, 7, 12, 3, 21]], dtype=mx.int32)
+        risky_tokens = mx.array([[1, 7, 12, 3, 22]], dtype=mx.int32)
+
+        def direct_loss(model: Any, safe_tokens: Any, risky_tokens: Any, allowed: Any) -> Any:
+            safe = selected_logit_margin(model, safe_tokens, allowed)
+            risky = selected_logit_margin(model, risky_tokens, allowed)
+            zero = mx.array(0.0)
+            return mx.logaddexp(zero, GUARDRAIL_PAIR_MARGIN + risky - safe) + (GUARDRAIL_CE_WEIGHT / 2.0) * (mx.logaddexp(zero, -safe) + mx.logaddexp(zero, risky)) + GUARDRAIL_ANCHOR_WEIGHT * (mx.logaddexp(zero, GUARDRAIL_ANCHOR_MARGIN - safe) + mx.logaddexp(zero, GUARDRAIL_ANCHOR_MARGIN + risky))
+
+        direct, direct_gradient = nn.value_and_grad(model, direct_loss)(model, safe_tokens, risky_tokens, allowed)
+        mx.eval(direct, direct_gradient)
+        direct_value = float(direct.item())
+        direct_leaves = {name: value.tolist() for name, value in tree_flatten(direct_gradient)}
+        direct_peak = int(mx.get_peak_memory())
+        del direct, direct_gradient
+        import gc
+        gc.collect()
+        progress.clear()
+        safe_row = {"id": "tiny-safe:risk", "source_id": "tiny-safe", "group": "tiny-pair", "split": "train", "prompt_token_ids": safe_tokens.tolist()[0], "allowed_token_ids": allowed.tolist(), "target_probabilities": [1, 0]}
+        risky_row = {"id": "tiny-risky:risk", "source_id": "tiny-risky", "group": "tiny-pair", "split": "train", "prompt_token_ids": risky_tokens.tolist()[0], "allowed_token_ids": allowed.tolist(), "target_probabilities": [0, 1]}
+        unit = {"kind": "pair", "safe": safe_row, "risky": risky_row}
+        mx.reset_peak_memory()
+        sequential, sequential_gradient = guardrail_unit_gradient(model, unit, nn.value_and_grad(model, selected_logit_margin), progress)
+        sequential_peak = int(mx.get_peak_memory())
+        sequential_leaves = dict(tree_flatten(sequential_gradient))
+        if direct_leaves.keys() != sequential_leaves.keys():
+            raise ValueError("Pair gradient changed the trainable parameter set")
+        gradient_delta = max(float(mx.max(mx.abs(mx.array(direct_leaves[name]) - sequential_leaves[name])).item()) for name in direct_leaves)
+        first_layer = [gradient for name, gradient in sequential_leaves.items() if "layers.0." in name]
+        if not first_layer or not any(bool(mx.any(gradient != 0).item()) for gradient in first_layer):
+            raise ValueError("Pair loss did not reach the first context layer")
+        if abs(direct_value - sequential) > 1e-5 or gradient_delta > 1e-4:
+            raise ValueError("Sequential pair gradient differs from direct autograd")
+        if sequential_peak > 128 * 1024 * 1024:
+            raise ValueError("Tiny sequential pair gradient exceeded its memory envelope")
+        del direct_leaves, sequential_gradient, sequential_leaves
+        progress.clear()
+        return {"ok": True, "fixture": "random_tiny_gemma3_pair_no_checkpoint_weights", "device": "cpu", "dependencies": identity, "direct_loss": direct_value, "sequential_loss": sequential, "max_gradient_delta": gradient_delta, "direct_peak_memory_bytes": direct_peak, "sequential_peak_memory_bytes": sequential_peak, "full_context_gradient_verified": True, "memory": progress.summary()}
+
+
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(description=__doc__)
     commands = root.add_subparsers(dest="command", required=True)
@@ -897,6 +1161,8 @@ def parser() -> argparse.ArgumentParser:
             command.add_argument("--output", required=True)
         if name == "train":
             command.add_argument("--validation-data")
+            command.add_argument("--guardrail-pairs", help="Explicit TRAIN-only allow/confirm pairs; enables the optional guardrail margin objective")
+            command.add_argument("--guardrail-plan", help="Hash-pinned TRAIN-only objective and loss parameters; required with guardrail pairs")
             command.add_argument("--steps", type=int, default=8)
         elif name == "evaluate":
             command.add_argument("--adapter")
@@ -911,6 +1177,7 @@ def parser() -> argparse.ArgumentParser:
     command.add_argument("--output", required=True)
     command.add_argument("--accept-gemma-terms", action="store_true")
     commands.add_parser("self-test")
+    commands.add_parser("pair-self-test")
     return root
 
 
@@ -921,7 +1188,7 @@ def main() -> int:
             raise ValueError("--steps must be 1..100000 optimizer updates")
         # Third-party status output goes to stderr; stdout stays one JSON object.
         with contextlib.redirect_stdout(sys.stderr):
-            result = {"doctor": doctor, "fetch": fetch, "train": train, "evaluate": evaluate, "fuse": fuse, "self-test": self_test}[args.command](args)
+            result = {"doctor": doctor, "fetch": fetch, "train": train, "evaluate": evaluate, "fuse": fuse, "self-test": self_test, "pair-self-test": guardrail_pair_self_test}[args.command](args)
         print(json.dumps(result, allow_nan=False), flush=True)
         return 0 if result.get("ok") else 1
     except Exception as error:

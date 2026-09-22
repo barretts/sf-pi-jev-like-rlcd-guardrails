@@ -223,6 +223,31 @@ process.exitCode = 7;
     });
   });
 
+  it("rejects paired training before inspecting a reserved validation split", async () => {
+    const fake = await fakePython("ready(); console.log('{}');"),
+      run = await preparedRun(fake.directory),
+      file = join(run.directory, "manifest.json"),
+      manifest = JSON.parse(await readFile(file, "utf8"));
+    manifest.prepared.branches.validation = 1;
+    await writeFile(file, JSON.stringify(manifest));
+    await rm(run.prepared.files.validation);
+    const result = await observe(
+      trainRfdt(run.directory, {
+        python: fake.python,
+        guardrailPairsPath: join(fake.directory, "pairs.json"),
+        guardrailPlanPath: join(fake.directory, "plan.json"),
+      }),
+    );
+    expect(result).toEqual({
+      error: expect.objectContaining({
+        message: "Guardrail pair training requires a TRAIN-only RFDT run",
+      }),
+    });
+    await expect(readFile(fake.pidFile, "utf8")).rejects.toMatchObject({
+      code: "ENOENT",
+    });
+  });
+
   it("lets ordinary training run longer than the cleanup grace period", async () => {
     const fake = await fakePython(`
 process.on('SIGTERM', () => { record('term'); process.exit(1); });
