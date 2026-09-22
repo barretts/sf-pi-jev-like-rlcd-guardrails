@@ -13,8 +13,11 @@ import {
 
 const baseModel = "google/gemma-3-1b-it";
 export const C9_CAL_SOURCE_PINS = Object.freeze({
-  // Filled only after the independent TRAIN admission is committed.
-  admissionSha256: null,
+  // Frozen after the independent TRAIN overlap acceptance and final admission.
+  admissionSha256:
+    "ce145449b951d67996a6d6d4348725e0513afd5db8910f479060216ece098131",
+  overlapReceiptSha256:
+    "0adf75b23578459ce5886c151c88f84b623d7382645605c006385b3eb09bada7",
   hostCommit: "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a",
   baselineSha256:
     "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421",

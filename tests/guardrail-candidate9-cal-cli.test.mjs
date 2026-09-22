@@ -10,6 +10,7 @@ import {
   verifyInferenceFormat,
   verifyQuantizerRuntime,
 } from "../scripts/guardrail-candidate9-cal-cli.mjs";
+import { C9_CAL_SOURCE_PINS } from "../scripts/guardrail-candidate9-cal-score.mjs";
 
 test("C9 scorer rejects source or artifact replacement during a long scoring run", async () => {
   const dir = await mkdtemp(join(tmpdir(), "c9-cal-identity-"));
@@ -60,7 +61,15 @@ test("C9 Q8 derivation binds every adjacent payload and loader alias", async () 
   }
 });
 
-test("C9 native scorer cannot load TRAIN-CAL before the exact admission pin is committed", async () => {
+test("C9 native scorer rejects a TRAIN-CAL admission other than the accepted overlap-free pin", async () => {
+  assert.equal(
+    C9_CAL_SOURCE_PINS.admissionSha256,
+    "ce145449b951d67996a6d6d4348725e0513afd5db8910f479060216ece098131",
+  );
+  assert.equal(
+    C9_CAL_SOURCE_PINS.overlapReceiptSha256,
+    "0adf75b23578459ce5886c151c88f84b623d7382645605c006385b3eb09bada7",
+  );
   await assert.rejects(
     loadCandidate9Calibration({
       admissionSha256: "a".repeat(64),

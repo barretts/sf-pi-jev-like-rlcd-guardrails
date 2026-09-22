@@ -201,6 +201,8 @@ export async function loadCandidate9Calibration(values) {
     admission.source?.scorerProtocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
     admission.source?.hostCommit !== C9_CAL_SOURCE_PINS.hostCommit ||
     admission.source?.hostRuntimeSha256 !== C9_CAL_SOURCE_PINS.baselineSha256 ||
+    admission.source?.overlapReceiptSha256 !==
+      C9_CAL_SOURCE_PINS.overlapReceiptSha256 ||
     ![
       admission.source?.c9SourceSha256,
       admission.source?.pairsSha256,
