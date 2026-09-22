@@ -2,7 +2,7 @@
 /** A physical pre-validation pin, not a model qualification or permission to run TEST. */
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { readFile, mkdir, realpath, writeFile } from "node:fs/promises";
+import { readFile, mkdir, realpath, stat, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
@@ -15,6 +15,7 @@ import {
 import {
   GUARDRAIL_LIMITS,
   GUARDRAIL_PROTOCOL_SHA256,
+  guardrailRequest,
 } from "../dist/guardrail.js";
 import {
   GUARDRAIL_BRIDGE_EXPORTER_SOURCE,
@@ -80,6 +81,9 @@ const jevSourceFiles = [
   "src/backend.ts",
   "src/models.ts",
   "scripts/guardrail-eval.mjs",
+  "scripts/guardrail-train.mjs",
+  "scripts/guardrail-candidate5-bundle.mjs",
+  "scripts/guardrail-prospective-plan.mjs",
   "scripts/guardrail-campaign-receipt.mjs",
 ];
 const jevCompiledFiles = [
@@ -201,26 +205,215 @@ function committedSources(root, paths, description, requireTracked = false) {
   }
 }
 
-/** Confirm the original TRAIN/VALID source bytes, prepared copy and counts. */
-export function assertPreparedTrainingData(prospective, manifest, runFiles) {
+function jsonl(bytes, description) {
+  const value = bytes.toString("utf8");
+  if (!value.endsWith("\n")) fail(`${description} is not complete JSONL`);
+  const lines = value.slice(0, -1).split("\n");
+  if (lines.some((line) => !line)) fail(`${description} has a blank row`);
+  try {
+    return lines.map((line) => JSON.parse(line));
+  } catch {
+    fail(`${description} has invalid JSON`);
+  }
+}
+
+/** Reconstruct TRAIN/VALID membership from the admitted source and prepared files. */
+export function assertPreparedTrainingData(
+  prospective,
+  training,
+  manifest,
+  runFiles,
+  admitted,
+  prepared,
+) {
   const authored = runFiles["authored-train-validation.jsonl"];
   const dataset = runFiles["dataset.jsonl"];
+  const train = runFiles["train.jsonl"];
+  const validation = runFiles["validation.jsonl"];
+  const run = resolve(prospective.run ?? "");
+  const source = admitted.bundle;
+  const rows = source?.records;
   if (
-    !Number.isSafeInteger(prospective.trainRows) ||
-    prospective.trainRows < 1 ||
-    !Number.isSafeInteger(prospective.validationRows) ||
-    prospective.validationRows < 1 ||
+    !isAbsolute(prospective.bundleFile ?? "") ||
+    resolve(prospective.bundleFile) !== admitted.file.path ||
+    !isAbsolute(training.admission?.bundle ?? "") ||
+    resolve(training.admission.bundle) !== admitted.file.path ||
+    !isAbsolute(training.admission?.receipt ?? "") ||
+    resolve(training.admission.receipt) !== admitted.receiptFile.path ||
+    prospective.admissionReceiptSha256 !== admitted.receiptFile.sha256 ||
+    training.admissionReceiptSha256 !== admitted.receiptFile.sha256 ||
+    admitted.receipt?.outputSha256 !== admitted.file.sha256 ||
+    admitted.receipt?.trainingReady !== true ||
+    admitted.receipt?.testRows !== 0 ||
+    admitted.receipt?.modelCalls !== 0 ||
+    admitted.receipt?.externalOperationsExecuted !== 0 ||
+    admitted.receipt?.reservedLabelsRead !== false ||
+    admitted.receipt?.reservedContentEmitted !== false ||
+    admitted.file.sha256 !== prospective.bundleSha256 ||
+    admitted.file.sha256 !== training.bundleSha256 ||
+    source?.version !== 1 ||
+    source.mockedExecution !== true ||
+    source.trainingReady !== true ||
+    !Array.isArray(rows) ||
+    !rows.length ||
+    source.corpusSha256 !== prospective.corpusSha256 ||
+    source.corpusSha256 !== training.corpusSha256 ||
+    source.baselineSourceSha256 !== prospective.baselineSourceSha256 ||
+    source.baselineSourceSha256 !== training.baselineSourceSha256 ||
+    prospective.trainingPlanSha256 !==
+      runFiles["guardrail-plan.json"]?.sha256 ||
     prospective.testRowsPassedToTraining !== 0 ||
     prospective.authoredTrainValidationSha256 !== authored?.sha256 ||
+    prospective.preparedDatasetSha256 !== dataset?.sha256 ||
+    prospective.trainSha256 !== train?.sha256 ||
+    prospective.validationSha256 !== validation?.sha256 ||
+    prospective.emptyTestSha256 !== hash(Buffer.alloc(0)) ||
+    prospective.preparedSha256 !== manifest.prepared?.sha256 ||
     resolve(manifest.source?.file ?? "") !== authored?.path ||
     manifest.source?.sha256 !== authored?.sha256 ||
-    manifest.source?.examples !==
-      prospective.trainRows + prospective.validationRows ||
+    resolve(manifest.directory ?? "") !== run ||
     resolve(manifest.prepared?.dataset_file ?? "") !== dataset?.path ||
     manifest.prepared?.dataset_sha256 !== dataset?.sha256 ||
-    dataset?.sha256 !== authored?.sha256
+    dataset?.sha256 !== authored?.sha256 ||
+    resolve(manifest.prepared?.files?.train ?? "") !== train?.path ||
+    resolve(manifest.prepared?.files?.validation ?? "") !== validation?.path ||
+    resolve(manifest.prepared?.files?.test ?? "") !==
+      resolve(run, "test.jsonl") ||
+    manifest.prepared?.branches?.test !== 0 ||
+    prepared.testSize !== 0 ||
+    hash(prepared.authored) !== authored?.sha256 ||
+    hash(prepared.dataset) !== dataset?.sha256 ||
+    hash(prepared.train) !== train?.sha256 ||
+    hash(prepared.validation) !== validation?.sha256 ||
+    !prepared.dataset.equals(prepared.authored) ||
+    hash(
+      Buffer.concat([
+        Buffer.from("train\n"),
+        prepared.train,
+        Buffer.from("validation\n"),
+        prepared.validation,
+        Buffer.from("test\n"),
+      ]),
+    ) !== manifest.prepared?.sha256
   )
-    fail("candidate prepared TRAIN/VALID data or split counts changed");
+    fail("candidate prepared TRAIN/VALID data or source identity changed");
+
+  const authoredRows = jsonl(prepared.authored, "authored TRAIN/VALID");
+  const trainRows = jsonl(prepared.train, "prepared TRAIN");
+  const validationRows = jsonl(prepared.validation, "prepared VALIDATION");
+  if (
+    authoredRows.length !== rows.length ||
+    manifest.source.examples !== rows.length
+  )
+    fail("candidate TRAIN/VALID source row count changed");
+
+  const counts = { train: 0, validation: 0 };
+  const ids = new Set();
+  const groups = new Map();
+  for (const [index, row] of rows.entries()) {
+    if (
+      row?.modelEligible !== true ||
+      !["train", "validation"].includes(row.split) ||
+      !["allow", "confirm"].includes(row.expected) ||
+      typeof row.id !== "string" ||
+      !row.id ||
+      ids.has(row.id) ||
+      typeof row.groupId !== "string" ||
+      !row.groupId ||
+      (groups.has(row.groupId) && groups.get(row.groupId) !== row.split)
+    )
+      fail("admitted bundle has an invalid TRAIN/VALID split");
+    ids.add(row.id);
+    groups.set(row.groupId, row.split);
+    same(
+      authoredRows[index],
+      {
+        id: row.id,
+        group_id: row.groupId,
+        split: row.split,
+        request: guardrailRequest(row.riskInput, "google/gemma-3-1b-it"),
+        targets: { risk: { answer: row.expected } },
+        target_provenance: { risk: { source: "supplied" } },
+      },
+      "authored TRAIN/VALID source row",
+    );
+    counts[row.split]++;
+  }
+
+  for (const [split, branchRows] of [
+    ["train", trainRows],
+    ["validation", validationRows],
+  ]) {
+    const sourceRows = rows.filter((row) => row.split === split);
+    if (
+      sourceRows.length !== branchRows.length ||
+      manifest.prepared.branches?.[split] !== sourceRows.length ||
+      prospective[`${split}Rows`] !== sourceRows.length
+    )
+      fail(`candidate ${split} split count changed`);
+    for (const [index, branch] of branchRows.entries()) {
+      const row = sourceRows[index];
+      same(
+        {
+          id: branch.id,
+          source_id: branch.source_id,
+          group_id: branch.group_id,
+          split: branch.split,
+          question_id: branch.question_id,
+          question_type: branch.question_type,
+          template_version: branch.template_version,
+          output_labels: branch.output_labels,
+          answer_labels: branch.answer_labels,
+          target_probabilities: branch.target_probabilities,
+          target_provenance: branch.target_provenance,
+        },
+        {
+          id: `${row.id}:risk`,
+          source_id: row.id,
+          group_id: row.groupId,
+          split,
+          question_id: "risk",
+          question_type: "choice",
+          template_version: "v2",
+          output_labels: ["A", "B"],
+          answer_labels: ["allow", "confirm"],
+          target_probabilities: row.expected === "allow" ? [1, 0] : [0, 1],
+          target_provenance: { risk: { source: "supplied" } },
+        },
+        `prepared ${split} source membership`,
+      );
+    }
+  }
+  if (
+    counts.train < 1 ||
+    counts.validation < 1 ||
+    admitted.receipt.trainRows !== counts.train ||
+    admitted.receipt.validationRows !== counts.validation
+  )
+    fail("candidate admission TRAIN/VALIDATION counts changed");
+}
+
+export function assertFrozenTrainingPolicy(prospective, training) {
+  if (
+    prospective.noTeacher !== true ||
+    prospective.noForbiddenFallback !== true ||
+    prospective.testNotPassedToTraining !== true ||
+    prospective.modelCallsBeforeFreeze !== 0 ||
+    prospective.testEvaluationsBeforeFreeze !== 0 ||
+    prospective.allowCutoff !== GUARDRAIL_LIMITS.minimumAllowScore ||
+    prospective.criteriaSha256 !== GUARDRAIL_CRITERIA_SHA256 ||
+    canonical(prospective.criteria) !== canonical(GUARDRAIL_CRITERIA) ||
+    prospective.selection !== "validation_only" ||
+    training.testPassedToTraining !== false ||
+    training.forbiddenFallbacks !== true ||
+    training.selection !==
+      "Validation only; all guardrail gates must pass before a frozen held-out test" ||
+    training.protocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
+    prospective.protocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
+    prospective.bundleSha256 !== training.bundleSha256 ||
+    prospective.steps !== training.steps
+  )
+    fail("candidate no-TEST training policy or frozen criteria changed");
 }
 
 async function snapshot(input) {
@@ -268,28 +461,63 @@ async function snapshot(input) {
     "artifact.json",
     "authored-train-validation.jsonl",
     "dataset.jsonl",
+    "train.jsonl",
+    "validation.jsonl",
   ])
     runFiles[name] = await physical(resolve(paths.run, name));
   const prospective = await json(runFiles["prospective-plan.json"].path);
   const training = await json(runFiles["guardrail-plan.json"].path);
   const manifest = await json(runFiles["manifest.json"].path);
   const artifact = await json(runFiles["artifact.json"].path);
-  assertPreparedTrainingData(prospective, manifest, runFiles);
+  if (!isAbsolute(prospective.bundleFile ?? ""))
+    fail("prospective admitted bundle path is not absolute");
+  if (!isAbsolute(training.admission?.receipt ?? ""))
+    fail("training admission receipt path is not absolute");
+  const [admittedBytes, admissionReceiptBytes] = await Promise.all([
+    readFile(prospective.bundleFile),
+    readFile(training.admission.receipt),
+  ]);
+  const admittedFile = {
+    path: resolve(prospective.bundleFile),
+    sha256: hash(admittedBytes),
+    size: admittedBytes.length,
+  };
+  const admissionReceiptFile = {
+    path: resolve(training.admission.receipt),
+    sha256: hash(admissionReceiptBytes),
+    size: admissionReceiptBytes.length,
+  };
+  const admitted = {
+    file: admittedFile,
+    bundle: JSON.parse(admittedBytes),
+    receiptFile: admissionReceiptFile,
+    receipt: JSON.parse(admissionReceiptBytes),
+  };
+  const [authored, dataset, train, validation, testStatus] = await Promise.all([
+    readFile(runFiles["authored-train-validation.jsonl"].path),
+    readFile(runFiles["dataset.jsonl"].path),
+    readFile(runFiles["train.jsonl"].path),
+    readFile(runFiles["validation.jsonl"].path),
+    stat(resolve(paths.run, "test.jsonl")),
+  ]);
+  if (!testStatus.isFile()) fail("prepared TEST is not a regular empty file");
+  assertPreparedTrainingData(
+    prospective,
+    training,
+    manifest,
+    runFiles,
+    admitted,
+    {
+      authored,
+      dataset,
+      train,
+      validation,
+      testSize: testStatus.size,
+    },
+  );
+  assertFrozenTrainingPolicy(prospective, training);
   if (
     resolve(prospective.run) !== paths.run ||
-    prospective.noTeacher !== true ||
-    prospective.noForbiddenFallback !== true ||
-    prospective.testNotPassedToTraining !== true ||
-    prospective.modelCallsBeforeFreeze !== 0 ||
-    prospective.testEvaluationsBeforeFreeze !== 0 ||
-    prospective.allowCutoff !== GUARDRAIL_LIMITS.minimumAllowScore ||
-    prospective.criteria?.deadlineMs !== GUARDRAIL_LIMITS.deadlineMs ||
-    training.testPassedToTraining !== false ||
-    training.forbiddenFallbacks !== true ||
-    training.protocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
-    prospective.protocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
-    prospective.bundleSha256 !== training.bundleSha256 ||
-    prospective.steps !== training.steps ||
     manifest.status !== "exported" ||
     manifest.base_model !== "google/gemma-3-1b-it" ||
     manifest.base_revision !== GEMMA_TRAINING_REVISION ||
@@ -367,6 +595,7 @@ async function snapshot(input) {
     originalProspectivePlanSha256: runFiles["prospective-plan.json"].sha256,
     originalTrainingCorpusSha256: prospective.corpusSha256,
     originalTrainingBaselineSourceSha256: prospective.baselineSourceSha256,
+    admittedTrainingBundle: admittedFile,
     runFiles,
     registry: registryFile,
     model: modelFile,

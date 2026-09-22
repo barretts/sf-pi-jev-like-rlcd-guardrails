@@ -6,7 +6,16 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
 import {
+  guardrailRequest,
+  GUARDRAIL_PROTOCOL_SHA256,
+} from "../dist/guardrail.js";
+import {
+  GUARDRAIL_CRITERIA,
+  GUARDRAIL_CRITERIA_SHA256,
+} from "../dist/guardrail-evaluation.js";
+import {
   assertCompatibleCampaignSnapshot,
+  assertFrozenTrainingPolicy,
   assertPreparedTrainingData,
   verifyBaselineSources,
 } from "../scripts/guardrail-campaign-receipt.mjs";
@@ -92,51 +101,264 @@ test("receipt preflight rejects omitted exporter and inconsistent source summari
   }
 });
 
-test("receipt preflight binds the physical authored and prepared TRAIN/VALID dataset", () => {
-  const authored = {
-    path: "/tmp/candidate/authored-train-validation.jsonl",
-    sha256: "a".repeat(64),
+const jsonl = (rows) =>
+  Buffer.from(rows.map((row) => JSON.stringify(row)).join("\n") + "\n");
+
+function preparedFixture() {
+  const run = "/tmp/candidate";
+  const bundlePath = "/tmp/candidate-admitted-bundle.json";
+  const records = [
+    ["train-safe", "train", "allow", "pwd"],
+    ["train-risk", "train", "confirm", "rm -r scratch"],
+    ["train-read", "train", "allow", "ls"],
+    ["valid-safe", "validation", "allow", "date"],
+    ["valid-risk", "validation", "confirm", "rm -r cache"],
+  ].map(([id, split, expected, command]) => ({
+    id,
+    groupId: `${id}-group`,
+    split,
+    expected,
+    modelEligible: true,
+    riskInput: { version: 2, toolName: "bash", input: { command }, facts: {} },
+  }));
+  const bundle = {
+    version: 1,
+    mockedExecution: true,
+    trainingReady: true,
+    corpusSha256: "c".repeat(64),
+    baselineSourceSha256: "b".repeat(64),
+    records,
   };
-  const dataset = {
-    path: "/tmp/candidate/dataset.jsonl",
-    sha256: authored.sha256,
+  const admitted = {
+    file: { path: bundlePath, sha256: sha(JSON.stringify(bundle)) },
+    bundle,
+  };
+  admitted.receipt = {
+    outputSha256: admitted.file.sha256,
+    trainingReady: true,
+    trainRows: 3,
+    validationRows: 2,
+    testRows: 0,
+    modelCalls: 0,
+    externalOperationsExecuted: 0,
+    reservedLabelsRead: false,
+    reservedContentEmitted: false,
+  };
+  admitted.receiptFile = {
+    path: "/tmp/candidate-admission-receipt.json",
+    sha256: sha(JSON.stringify(admitted.receipt)),
+  };
+  const authoredRows = records.map((row) => ({
+    id: row.id,
+    group_id: row.groupId,
+    split: row.split,
+    request: guardrailRequest(row.riskInput, "google/gemma-3-1b-it"),
+    targets: { risk: { answer: row.expected } },
+    target_provenance: { risk: { source: "supplied" } },
+  }));
+  const branches = records.map((row) => ({
+    id: `${row.id}:risk`,
+    source_id: row.id,
+    group_id: row.groupId,
+    split: row.split,
+    question_id: "risk",
+    question_type: "choice",
+    template_version: "v2",
+    output_labels: ["A", "B"],
+    answer_labels: ["allow", "confirm"],
+    target_probabilities: row.expected === "allow" ? [1, 0] : [0, 1],
+    target_provenance: { risk: { source: "supplied" } },
+  }));
+  const prepared = {
+    authored: jsonl(authoredRows),
+    dataset: jsonl(authoredRows),
+    train: jsonl(branches.filter((row) => row.split === "train")),
+    validation: jsonl(branches.filter((row) => row.split === "validation")),
+    testSize: 0,
   };
   const runFiles = {
-    "authored-train-validation.jsonl": authored,
-    "dataset.jsonl": dataset,
+    "guardrail-plan.json": {
+      path: `${run}/guardrail-plan.json`,
+      sha256: sha("training plan"),
+    },
+    "authored-train-validation.jsonl": {
+      path: `${run}/authored-train-validation.jsonl`,
+      sha256: sha(prepared.authored),
+    },
+    "dataset.jsonl": {
+      path: `${run}/dataset.jsonl`,
+      sha256: sha(prepared.dataset),
+    },
+    "train.jsonl": { path: `${run}/train.jsonl`, sha256: sha(prepared.train) },
+    "validation.jsonl": {
+      path: `${run}/validation.jsonl`,
+      sha256: sha(prepared.validation),
+    },
+  };
+  const preparedSha256 = sha(
+    Buffer.concat([
+      Buffer.from("train\n"),
+      prepared.train,
+      Buffer.from("validation\n"),
+      prepared.validation,
+      Buffer.from("test\n"),
+    ]),
+  );
+  const manifest = {
+    directory: run,
+    source: {
+      file: runFiles["authored-train-validation.jsonl"].path,
+      sha256: sha(prepared.authored),
+      examples: records.length,
+    },
+    prepared: {
+      sha256: preparedSha256,
+      dataset_file: runFiles["dataset.jsonl"].path,
+      dataset_sha256: sha(prepared.dataset),
+      files: {
+        train: runFiles["train.jsonl"].path,
+        validation: runFiles["validation.jsonl"].path,
+        test: `${run}/test.jsonl`,
+      },
+      branches: { train: 3, validation: 2, test: 0 },
+    },
+  };
+  const training = {
+    bundleSha256: admitted.file.sha256,
+    admission: { bundle: bundlePath, receipt: admitted.receiptFile.path },
+    admissionReceiptSha256: admitted.receiptFile.sha256,
+    corpusSha256: bundle.corpusSha256,
+    baselineSourceSha256: bundle.baselineSourceSha256,
+    steps: 16,
+    testPassedToTraining: false,
+    forbiddenFallbacks: true,
+    protocolSha256: GUARDRAIL_PROTOCOL_SHA256,
+    selection:
+      "Validation only; all guardrail gates must pass before a frozen held-out test",
   };
   const prospective = {
+    run,
+    bundleFile: bundlePath,
+    bundleSha256: admitted.file.sha256,
+    admissionReceiptSha256: admitted.receiptFile.sha256,
+    corpusSha256: bundle.corpusSha256,
+    baselineSourceSha256: bundle.baselineSourceSha256,
+    trainingPlanSha256: runFiles["guardrail-plan.json"].sha256,
+    authoredTrainValidationSha256: sha(prepared.authored),
+    preparedDatasetSha256: sha(prepared.dataset),
+    trainSha256: sha(prepared.train),
+    validationSha256: sha(prepared.validation),
+    emptyTestSha256: sha(Buffer.alloc(0)),
+    preparedSha256,
     trainRows: 3,
     validationRows: 2,
     testRowsPassedToTraining: 0,
-    authoredTrainValidationSha256: authored.sha256,
+    noTeacher: true,
+    noForbiddenFallback: true,
+    testNotPassedToTraining: true,
+    modelCallsBeforeFreeze: 0,
+    testEvaluationsBeforeFreeze: 0,
+    allowCutoff: 0.99,
+    criteriaSha256: GUARDRAIL_CRITERIA_SHA256,
+    criteria: GUARDRAIL_CRITERIA,
+    selection: "validation_only",
+    protocolSha256: GUARDRAIL_PROTOCOL_SHA256,
+    steps: 16,
   };
-  const manifest = {
-    source: { file: authored.path, sha256: authored.sha256, examples: 5 },
-    prepared: { dataset_file: dataset.path, dataset_sha256: dataset.sha256 },
+  const verify = () =>
+    assertPreparedTrainingData(
+      prospective,
+      training,
+      manifest,
+      runFiles,
+      admitted,
+      prepared,
+    );
+  return {
+    prospective,
+    training,
+    manifest,
+    runFiles,
+    admitted,
+    prepared,
+    verify,
   };
-  assert.doesNotThrow(() =>
-    assertPreparedTrainingData(prospective, manifest, runFiles),
+}
+
+test("receipt independently checks admitted TRAIN/VALID counts and membership", () => {
+  const fixture = preparedFixture();
+  assert.doesNotThrow(fixture.verify);
+  fixture.prospective.trainRows = 2;
+  fixture.prospective.validationRows = 3;
+  fixture.manifest.prepared.branches.train = 2;
+  fixture.manifest.prepared.branches.validation = 3;
+  assert.throws(fixture.verify, /train split count changed/);
+});
+
+test("receipt rejects a prepared branch moved across split membership with matching hashes", () => {
+  const fixture = preparedFixture();
+  const rows = fixture.prepared.train
+    .toString("utf8")
+    .trimEnd()
+    .split("\n")
+    .map(JSON.parse);
+  rows[0].source_id = "valid-safe";
+  fixture.prepared.train = jsonl(rows);
+  fixture.runFiles["train.jsonl"].sha256 = sha(fixture.prepared.train);
+  fixture.prospective.trainSha256 = sha(fixture.prepared.train);
+  fixture.manifest.prepared.sha256 = sha(
+    Buffer.concat([
+      Buffer.from("train\n"),
+      fixture.prepared.train,
+      Buffer.from("validation\n"),
+      fixture.prepared.validation,
+      Buffer.from("test\n"),
+    ]),
   );
+  fixture.prospective.preparedSha256 = fixture.manifest.prepared.sha256;
+  assert.throws(fixture.verify, /prepared train source membership changed/);
+});
+
+test("receipt rejects a nonempty prepared TEST branch without opening it", () => {
+  const fixture = preparedFixture();
+  fixture.prepared.testSize = 1;
+  assert.throws(
+    fixture.verify,
+    /prepared TRAIN\/VALID data or source identity changed/,
+  );
+});
+
+test("receipt binds the physical admission receipt and source bundle path", () => {
+  const fixture = preparedFixture();
+  assert.doesNotThrow(fixture.verify);
+  fixture.training.admission.bundle = "/tmp/another-bundle.json";
+  assert.throws(fixture.verify, /source identity changed/);
+  fixture.training.admission.bundle = fixture.admitted.file.path;
+  fixture.prospective.admissionReceiptSha256 = "0".repeat(64);
+  assert.throws(fixture.verify, /source identity changed/);
+});
+
+test("receipt enforces the full frozen criteria and validation-only policy", () => {
+  const { prospective, training } = preparedFixture();
+  assert.doesNotThrow(() => assertFrozenTrainingPolicy(prospective, training));
   assert.throws(
     () =>
-      assertPreparedTrainingData(
-        { ...prospective, testRowsPassedToTraining: 1 },
-        manifest,
-        runFiles,
-      ),
-    /prepared TRAIN\/VALID data/,
-  );
-  assert.throws(
-    () =>
-      assertPreparedTrainingData(prospective, manifest, {
-        ...runFiles,
-        "authored-train-validation.jsonl": {
-          ...authored,
-          sha256: "b".repeat(64),
+      assertFrozenTrainingPolicy(
+        {
+          ...prospective,
+          criteria: { ...GUARDRAIL_CRITERIA, warmP95MaxMs: 600 },
         },
-      }),
-    /prepared TRAIN\/VALID data/,
+        training,
+      ),
+    /frozen criteria changed/,
+  );
+  assert.throws(
+    () =>
+      assertFrozenTrainingPolicy(
+        { ...prospective, selection: "test_selection" },
+        training,
+      ),
+    /no-TEST training policy/,
   );
 });
 
