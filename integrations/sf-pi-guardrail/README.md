@@ -1,10 +1,60 @@
 # SF Guardrail semantic risk integration
 
-This local patch lets the existing SF Guardrail tool-call hook obtain semantic
+These local patches let the existing SF Guardrail tool-call hook obtain semantic
 risk judgments from Simple Jev. The hook owns enforcement, approval, session
 grants and audit records. Exact policy constraints remain in code. The extension
 uses no Jev implementation imports: it discovers one versioned provider through
 `sf-guardrail:risk-providers`.
+
+## Candidate 5 integration
+
+| Artifact                 | Revision                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| SF Pi baseline commit    | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                                     |
+| Baseline tree            | `4e08ddb00626e8d47852f604564b10f135082f1a`                                     |
+| Local integration commit | `530c024dd99ddf98e9819967924b5be179d61082`                                     |
+| Integration tree         | `184b5561531398ecf3b630f7daf6290dce9670e5`                                     |
+| Patch                    | [candidate5-sf-pi-from-4f901db9.patch](./candidate5-sf-pi-from-4f901db9.patch) |
+| Patch SHA-256            | `5f5385614dfd6f2979288283073108d9fcabb3acf5f1f881e1c4d8eb458eb500`             |
+| Patch size               | 311,302 bytes                                                                  |
+
+This binary Git diff captures the version-2 Jev risk input, the optional SF Pi
+bridge, policy floors, fallback, corpus exporter, and related hook and workflow
+checks. Provider discovery and the provider event remain version 1. SF Pi
+supplies independently observed browser-page facts when available, but
+`sf_browser_press` always falls back to the existing rules because the host
+cannot establish the live page and focused element at that moment. Unverified
+Salesforce org facts also fall back to rules. These safeguards leave candidate
+5's browser coverage gate open.
+
+The patch was generated from the two pinned commits with `git diff --binary
+--full-index`. It passed `git diff --check` and `git apply --index --check`.
+Applying it in a fresh detached worktree at the pinned baseline reproduced the
+integration tree above exactly. The verification checkout was removed afterward;
+the active SF Pi branch and index were not changed. The patch has not been
+pushed or installed in the user's active Pi environment.
+
+No candidate 5 model has completed training or qualification. This patch is
+integration source, not evidence of model effectiveness or permission to enable
+`enforce`. The existing risk engine remains active while the browser coverage
+and all other qualification gates are unresolved.
+
+## Current local use
+
+Use a fresh SF Pi worktree at the pinned baseline, then apply the current patch:
+
+```sh
+git -C /path/to/sf-pi worktree add --detach /tmp/sf-pi-jev-risk 4f901db9c3f5076ea0305dea33ad6e8856e467da
+git -C /tmp/sf-pi-jev-risk apply --index /path/to/simple-jev-ts/integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch
+git -C /tmp/sf-pi-jev-risk write-tree
+```
+
+The final command should print `184b5561531398ecf3b630f7daf6290dce9670e5`.
+Install that local SF Pi package and the separately built Jev extension in an
+isolated Pi environment when exercising it. See [GUARDRAIL.md](../../GUARDRAIL.md)
+for candidate selection, training, and the reproducible bridge evaluation.
+
+## Historical candidate 4 integration
 
 | Artifact                         | Revision                                                                                                                             |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
@@ -25,7 +75,7 @@ exact baseline reproduced the integration tree above. The active SF Pi branch
 and index were not changed by that verification. This patch has not been pushed
 or installed in the user's active Pi environment.
 
-## Local use
+### Historical local replay
 
 Use a fresh SF Pi worktree at the pinned baseline, then apply the retained patch:
 
@@ -39,6 +89,8 @@ The final command should print `368241cef98569779904763bc20f0688a9773ca9`.
 Install that local SF Pi package and the separately built Jev extension in an
 isolated Pi environment when exercising it. See [GUARDRAIL.md](../../GUARDRAIL.md)
 for candidate selection, training and the reproducible bridge evaluation.
+
+## Operation modes
 
 `SF_GUARDRAIL_JEV_MODE` defaults to `off`. `shadow` records comparisons while the
 existing engine enforces. `enforce` requires a warmed candidate with a verified
@@ -58,13 +110,13 @@ the slash commands use a UI notification surface with no headless output.
 
 ## Verification scope
 
-The single patch was generated from the committed SF Pi integration tree and
-replayed with `git am` in a fresh detached worktree at the exact baseline. Its
-resulting tree was identical to `368241cef98569779904763bc20f0688a9773ca9`.
-The qualification baseline exported from that committed integration was produced
-twice with byte-identical output; its SHA-256 is pinned above. The corpus,
-model, scoring protocol, exporter, and native runtime must be checked against
-the same frozen qualification receipt before model enforcement.
+The candidate 5 patch reproduces the exact integration tree
+`184b5561531398ecf3b630f7daf6290dce9670e5` from the pinned baseline. The
+historical candidate 4 patch was replayed with `git am` and reproduced tree
+`368241cef98569779904763bc20f0688a9773ca9`. Its qualification baseline was
+exported twice with byte-identical output; the SHA-256 is in the historical
+table. The corpus, model, scoring protocol, exporter, and native runtime must
+match the same frozen qualification receipt before model enforcement.
 
 The SF Pi hook and SDK harness use stub tools to exercise blocks, confirmations,
 audit records, fallback, and shadow isolation without performing dangerous
