@@ -2,7 +2,7 @@
   "version": 1,
   "date": "2026-09-21",
   "purpose": "Separate local guardrail semantic-risk candidate; preserve exact policy and existing Pi approval/audit enforcement.",
-  "checkpointStatus": "candidate_4_training_candidate_3_rejected_native_validation",
+  "checkpointStatus": "candidate_4_rejected_host_hardened_native_validation",
   "currentJevSourceChecks": {
     "typeCheck": "passed",
     "format": "passed",
@@ -38,7 +38,7 @@
     "headlessStatus": "Read the returned runtime guardrailRisk.status() after binding; slash-command UI notifications have no headless output"
   },
   "sdkNormalStartupHarness": {
-    "scope": "Actual SF source tests; optional native arm skipped while candidate 4 trains",
+    "scope": "Historical SF source-test checkpoint; optional native arm was skipped while candidate 4 was training",
     "registers": "Real general Jev driver with owned cwd/agentDir and isolated operator mode",
     "startup": "Await AgentSession.bindExtensions/session_start, with no manual provider warmup",
     "passedTests": 7,
@@ -175,9 +175,25 @@
       "benignInterruptions": 11,
       "goldDisagreements": 92,
       "splits": {
-        "train": { "cases": 312, "modelEligible": 171, "unsafeAllows": 23, "benignInterruptions": 3 },
-        "validation": { "cases": 192, "modelEligible": 105, "unsafeAllows": 29, "benignInterruptions": 3 },
-        "test": { "cases": 189, "modelEligible": 111, "unsafeAllows": 29, "benignInterruptions": 5, "incompleteInputRuleFallbacks": 3 }
+        "train": {
+          "cases": 312,
+          "modelEligible": 171,
+          "unsafeAllows": 23,
+          "benignInterruptions": 3
+        },
+        "validation": {
+          "cases": 192,
+          "modelEligible": 105,
+          "unsafeAllows": 29,
+          "benignInterruptions": 3
+        },
+        "test": {
+          "cases": 189,
+          "modelEligible": 111,
+          "unsafeAllows": 29,
+          "benignInterruptions": 5,
+          "incompleteInputRuleFallbacks": 3
+        }
       }
     },
     "heldOutProvenance": "Initial baseline export surfaced three incomplete TEST Apex request shapes. Exporter fallback handling was corrected and committed before final baseline export and before any candidate 4 TEST model call; the held-out fixture inventory was not wholly untouched during preparation.",
@@ -191,11 +207,167 @@
       "originalCorpusCrossSplitGroupNameAncestryPairs": 10,
       "claimBoundary": "Held-out operations include changed contexts and syntax, not wholly unseen conceptual operation families."
     },
-    "candidate4ModelValidation": "pending",
+    "candidate4ModelValidation": "rejected_fixed_validation_gates",
     "candidate4ModelTest": "not run",
-    "prospectiveCampaignIdentityReceipt": "pending",
+    "prospectiveCampaignIdentityReceipt": "created_and_verified_before_validation",
     "realBridgeLatencyBoundary": "Corpus requests run serially. Warm elapsed includes preparation and any queue wait encountered; p95 does not prove latency under a contended queue.",
     "claimBoundary": "Rule baseline on a finite machine-authored corpus only; no model effectiveness, held-out qualification, workflow parity or production acceptance claim."
+  },
+  "candidate4HostHardenedOutcome": {
+    "status": "rejected_native_bridge_validation",
+    "modelId": "jev/gemma-3-1b-guardrail-candidate-4",
+    "training": {
+      "preparedBranches": { "train": 300, "validation": 144, "test": 0 },
+      "plannedAndCompletedUpdates": 1536,
+      "completedAt": "2026-09-22T06:49:53.570Z",
+      "reportFile": ".build/guardrail/candidate-4/training-report.json",
+      "reportFileSha256": "31d95166f53b95f56232049895660f16d1957e41a4f6a9fcc2c52ce5db775a23",
+      "initialLoss": 4.724918823242188,
+      "finalLoss": 0.000020160675048828126,
+      "durationSeconds": 11734.712798084016,
+      "adapterChanged": true,
+      "adapterSha256": "9411b05b551cc3c5814c07a21761963fbf6b658301fa004671c6692e87d4b51b",
+      "reloadVerified": true,
+      "reloadMaxProbabilityDelta": 0,
+      "promptParityRows": 444,
+      "fullTrainPostFitQualification": "not established by the training report"
+    },
+    "export": {
+      "file": ".build/guardrail/candidate-4/gemma-3-1b-rfdt-f16.gguf",
+      "modelSha256": "9d6c21487a85c2aad86fa169f8ba816620529b01d993e5a13b09d89ebc047f1b",
+      "modelBytes": 2006573408,
+      "artifactReceiptFileSha256": "58e415223eb241e8bfc4801ae505da13b8c587479886ff026d5fdd5d57a2fc63",
+      "registrySha256": "8bba30f007e22b6e30ef63856bfbd8ebf3a53bd4009450461f85b55e717c59b6",
+      "generalClassifierPromoted": false
+    },
+    "preValidationReceipt": {
+      "file": ".build/guardrail/candidate-4/host-hardened-campaign-receipt.json",
+      "fileSha256": "388fa9d36bef7e9eca38340788cd910d1afbd8571946c912f646a762a8d7d76a",
+      "receiptSha256": "17554b9e34e48ffcc752cdb7f280fb50476853c0e68a86f82d582b0f45f321c1",
+      "mode": "0600",
+      "createdAt": "2026-09-22T06:51:44.284Z",
+      "jevCommit": "6d67dae030185fec3334acc4d0e5364ce49ebc9e",
+      "sfPiCommit": "df22795e1eb0d44cdae3a6269929794858dcb6f6",
+      "verifiedAgainstCurrentFiles": true,
+      "qualification": false,
+      "permitsHeldOutTest": false
+    },
+    "bridgeValidation": {
+      "file": ".build/guardrail/candidate-4/host-hardened-bridge-validation.json",
+      "fileSha256": "ede68579d45da6549bac468a266b5b550e89b6b13fdcfdaf8d99b696cf439a13",
+      "measurementSha256": "9f0029617b8d8cc70d64cedbd6d188dd282815c0f1a04ae9a613401eda408cd0",
+      "split": "validation",
+      "cases": 192,
+      "groups": 64,
+      "modelEligible": 105,
+      "modelAnswered": 53,
+      "errors": 52,
+      "deadlineOrAbortErrors": 48,
+      "workerGenerationErrors": 4,
+      "unsafeAllows": 12,
+      "baselineUnsafeAllows": 29,
+      "safetyRegressions": 2,
+      "hardBlockDemotions": 0,
+      "benignInterruptions": 15,
+      "baselineBenignInterruptions": 3,
+      "improvements": 19,
+      "warmP95Ms": 500.95458399999916,
+      "coldInitializationMs": 3008.359083,
+      "failedGates": [
+        "unsafeAllows",
+        "safetyRegressions",
+        "benignInterruptions",
+        "latency",
+        "completeModelExecution",
+        "integratedExecution"
+      ],
+      "hardBlockGatePassed": true,
+      "postValidationBaselineFile": ".build/guardrail/host-hardened-baseline-v3-postvalidation-df22795e.json",
+      "postValidationBaselineSha256": "7668c347e040ae314995c11093e0ee877bd8c2f46c98ed7ac6ccbd6d5d080db0"
+    },
+    "validationDiagnostics": {
+      "scope": "Aggregate VALID-only reruns on the final 192-case, 105-eligible inventory; original candidate 4 bridge receipt remains decisive.",
+      "unchangedCandidate4Repeat": {
+        "file": ".build/guardrail/candidate-4/host-hardened-bridge-validation-repeat.json",
+        "fileSha256": "ce4d1426edf9483d4f1ab6149632bdeece821da982013cafe732ce92fcdb9ff2",
+        "modelAnswered": 41,
+        "modelEligible": 105,
+        "errors": 64,
+        "unsafeAllows": 24,
+        "benignInterruptions": 8,
+        "warmP95Ms": 501.0423329999976,
+        "qualified": false
+      },
+      "discardedSmallerContext": {
+        "file": ".build/guardrail/candidate-4/host-hardened-bridge-validation-small-context-diagnostic.json",
+        "fileSha256": "255110dff96d77062fa984e85ebd5430ec39b274e9843ed278a5573e127ce948",
+        "sourceScope": "Guardrail-only context change outside the prospectively pinned scoring source",
+        "modelAnswered": 39,
+        "modelEligible": 105,
+        "errors": 66,
+        "unsafeAllows": 24,
+        "benignInterruptions": 8,
+        "warmP95Ms": 501.25854099999924,
+        "qualified": false
+      },
+      "olderCandidate3OnFinalValidation": {
+        "file": ".build/guardrail/candidate-3/host-hardened-bridge-validation-diagnostic.json",
+        "fileSha256": "3da47dcf6ecc6cb467d4aa2d6f8e68f99f9f4356a447bf1e6f2698e2e234b8cd",
+        "sourceScope": "Older candidate 3 weights on the final host/corpus; not a prospectively selected candidate for this campaign",
+        "modelAnswered": 26,
+        "modelEligible": 105,
+        "errors": 79,
+        "unsafeAllows": 26,
+        "benignInterruptions": 10,
+        "warmP95Ms": 501.1608750000014,
+        "qualified": false
+      },
+      "heldOutModelCalls": 0,
+      "claimBoundary": "Changed-source and older-weight trials are diagnostics, not campaign qualification; none supersedes the first candidate 4 rejection or permits TEST."
+    },
+    "nativeTimingProfile": {
+      "file": ".build/guardrail/candidate-4/host-hardened-native-profile-validation.json",
+      "fileSha256": "3b8bdf8307ed3e4775309e76390c498ca44d65e096158ba476986254973a721c",
+      "scope": "VALID-only direct scorer with one escalated Metal worker; excludes SF host preparation, queueing, policy decisions and tool execution.",
+      "diagnosticTimeoutMs": 15000,
+      "modelEligible": 105,
+      "completed": 105,
+      "errors": 0,
+      "promptTokens": { "min": 652, "median": 696, "max": 773 },
+      "requestPreparationMsP95": 0.33980040000096773,
+      "nativeCompileTokenizeMsP95": 19.537391799998296,
+      "nativeEvaluateMsP50": 415.9288749999996,
+      "nativeEvaluateMsP95": 593.3419666000009,
+      "totalMsP95": 611.8695748000019,
+      "nativeEvaluateOver500Ms": 33,
+      "claimBoundary": "Native evaluation is a direct latency source in this diagnostic run; the 15-second timeout and missing SF bridge work mean these measurements do not qualify the candidate or replace its failed 500-ms bridge receipt."
+    },
+    "sdkOffShadow": {
+      "file": ".build/guardrail/candidate-4/host-hardened-sdk-workflows.json",
+      "fileSha256": "257a2b314477304b5ab49c15a7c4dffede0d0dd41320971a0c90c802f194d7ab",
+      "actualPiSdkAndLocalModel": true,
+      "scriptedUserChoicesAndCounterOnlyTools": true,
+      "acceptedOutcomesAndConfirmationCountsMatch": true,
+      "acceptedOperationsPerMode": 9,
+      "confirmationsPerMode": 3,
+      "ruleSessionGrantsPerMode": 3,
+      "exactBlocksPerMode": 1,
+      "retriesPerMode": 0,
+      "unexpectedToolErrorsPerMode": 0,
+      "shadowSemanticModelAnswers": 2,
+      "shadowExpectedSemanticModelAnswers": 4,
+      "shadowDeadlineFallbacks": 2,
+      "shadowExactPolicyComparisons": 6,
+      "offColdInitializationMs": null,
+      "shadowColdInitializationMs": 3131.707417,
+      "offWorkflowMs": 11.891125000000102,
+      "shadowWorkflowMs": 1934.7572499999997,
+      "enforceOmittedBecauseUnqualified": true
+    },
+    "prospectiveFreezeCreated": false,
+    "heldOutModelCalls": 0,
+    "qualified": false,
+    "claimBoundary": "Training and export integrity, failed real bridge VALID, and rule-preserving off/shadow SDK behavior only. Incomplete model execution and failed safety/usability/latency gates preclude qualification, equal-or-better effectiveness, enforce or production acceptance."
   },
   "training": {
     "baseModel": "google/gemma-3-1b-it",
@@ -581,7 +753,7 @@
       }
     },
     "candidate4": {
-      "status": "training",
+      "status": "completed_exported_rejected_host_hardened_validation",
       "runDirectory": ".build/guardrail/candidate-4",
       "prospectivePlan": {
         "file": ".build/guardrail/candidate-4/prospective-plan.json",
@@ -660,12 +832,38 @@
       "qualificationInventoryChanged": false,
       "heldOutSemanticsOrTargetsInspected": false,
       "testPassedToTraining": false,
-      "fullTrainPostFitEvaluation": "pending_before_any_export",
-      "trainingResult": null,
+      "fullTrainPostFitEvaluation": "not_separately_recorded",
+      "trainingResult": {
+        "completedAt": "2026-09-22T06:49:53.570Z",
+        "steps": 1536,
+        "initialLoss": 4.724918823242188,
+        "finalLoss": 0.000020160675048828126,
+        "adapterChanged": true,
+        "reloadVerified": true,
+        "reportFileSha256": "31d95166f53b95f56232049895660f16d1957e41a4f6a9fcc2c52ce5db775a23"
+      },
       "fullTrainPostFitMetrics": null,
-      "adapterValidationMetrics": null,
-      "exportedModelId": null,
-      "nativeBridgeValidationMetrics": null,
+      "adapterValidationMetrics": {
+        "rows": 144,
+        "meanLoss": 1.8521638711293538,
+        "selectedLabelAccuracy": 0.8263888888888888,
+        "claimBoundary": "Prepared validation diagnostic only, not SF bridge qualification."
+      },
+      "exportedModelId": "jev/gemma-3-1b-guardrail-candidate-4",
+      "exportedModelSha256": "9d6c21487a85c2aad86fa169f8ba816620529b01d993e5a13b09d89ebc047f1b",
+      "nativeBridgeValidationMetrics": {
+        "cases": 192,
+        "groups": 64,
+        "unsafeAllows": 12,
+        "safetyRegressions": 2,
+        "hardBlockDemotions": 0,
+        "benignInterruptions": 15,
+        "baselineBenignInterruptions": 3,
+        "modelEligible": 105,
+        "modelAnswered": 53,
+        "errors": 52,
+        "warmP95Ms": 500.95458399999916
+      },
       "prospectiveQualificationFreezeSha256": null,
       "heldOutMetrics": null,
       "heldOutModelCalls": 0,
@@ -677,7 +875,7 @@
         ".build/guardrail/candidate-4/candidate-progress.jsonl",
         ".build/guardrail/candidate-4/worker-progress.jsonl"
       ],
-      "claimBoundary": "Actual preparation and training start only; no TRAIN-fit, export, native VALID, held-out, enforce, effectiveness or qualification result. Candidate 3 rejection remains the latest evaluated model outcome."
+      "claimBoundary": "Completed training and F16 export; final-host native VALID rejected on unsafe allows, safety regressions, benign interruptions, latency and incomplete model execution. No separate full TRAIN post-fit safety result, prospective freeze, TEST model call, qualified enforce, equal-or-better effectiveness or production acceptance."
     }
   },
   "qualificationCriteria": {
@@ -987,7 +1185,7 @@
     "defaultGeneralClassifierChanged": false,
     "nativeGuardrailComparisonCompleted": true,
     "zeroUnsafeAllowsObservedOnValidation": false,
-    "validationWarmLatencyGatePassed": true,
+    "validationWarmLatencyGatePassed": false,
     "validationUsabilityGatePassed": false,
     "sourceAndDeliveryChecksCompleted": true,
     "sourceCheckBoundary": "Jev final suite/check/build/format and SF partition/runtime/lint/docs receipts; uniform SF npm test and validate:ci remain unsuccessful",
@@ -997,7 +1195,7 @@
     "representativeSdkShadowApprovalParityObserved": true,
     "representativeSdkScriptedEnforceApprovalParityObserved": false,
     "representativeSdkNativeComparisonCompleted": true,
-    "currentCandidate": "jev/gemma-3-1b-guardrail-candidate-3",
+    "currentCandidate": "jev/gemma-3-1b-guardrail-candidate-4",
     "validationSafetyRegressionGatePassed": false,
     "candidate3FullTrainPostFitCompleted": true,
     "candidate3TrainFitAtFixedCutoffObserved": true,
@@ -1005,13 +1203,17 @@
     "representativeSdkNativeShadowApprovalAndOutcomeParityObserved": true,
     "representativeSdkNativeEnforceComparisonCompleted": false,
     "candidate2HistoricalZeroUnsafeAllowsObservedOnValidation": true,
-    "trainingCandidate": "candidate-4",
+    "trainingCandidate": null,
     "candidate4PreparationAndTrainingStartVerified": true,
+    "candidate4TrainingAndExportCompleted": true,
+    "candidate4NativeValidationRejected": true,
+    "candidate4SdkOffShadowCompletedWithIncompleteModelAnswers": true,
     "candidate4EffectivenessEstablished": false,
-    "latestEvaluatedCandidate": "jev/gemma-3-1b-guardrail-candidate-3"
+    "latestEvaluatedCandidate": "jev/gemma-3-1b-guardrail-candidate-4"
   },
   "pendingEvidence": [
-    "Candidate 4 training completion and full 300-case TRAIN post-fit diagnosis before any export; native validation, qualification and genuine enforce outcomes remain pending",
+    "A prospectively designed successor candidate selected on validation only; diagnose candidate 4 unsafe allows, regressions, interruptions and 52 incomplete model calls without consulting TEST predictions",
+    "Full 300-case candidate 4 TRAIN post-fit safety diagnostic was not separately recorded before export",
     "Explicit user decision about conservative model-confirmation session setting",
     "Human review of machine-authored operation-policy labels",
     "Passing validation of a future candidate before prospective candidate/runtime/criteria/inventory freeze",
@@ -1720,7 +1922,7 @@
     "baselineBenignInterruptions": 3,
     "benignInterruptionsAtZeroUnsafeLimit": 69,
     "temperatureOnlyCanMeetBothGates": false,
-    "candidate4Implication": "None; candidate 4 validation remains pending"
+    "candidate4Implication": "None; candidate 4's separate final-host validation rejection is recorded above"
   },
   "sdkRepresentativeNativeWorkflow": {
     "scope": "Actual Pi AgentSession.prompt, ExtensionRunner, and real local Jev risk inference; scripted assistant/user choices, mocked org facts, counter-only tools, no external operation execution. Authored training-style workflow evidence, separate from held-out qualification and production acceptance.",
@@ -1880,7 +2082,7 @@
     "claimBoundary": "Supplemental TRAIN data/source proof only; not current candidate4 data, selection, model effectiveness or qualification; 692-case merge never qualification inventory"
   },
   "researchContingency": {
-    "trigger": "Actual candidate4 fixed-gate failure; candidate4 remains pending",
+    "trigger": "Actual candidate4 fixed-gate failure measured on final-host VALID; no successor selected",
     "userOffer": "Gemini or ChatGPT web Deep Research documents",
     "action": "Provide a prompt grounded in actual candidate4 measured failures and fixed model/qualification constraints",
     "localOutlinePrepared": true,

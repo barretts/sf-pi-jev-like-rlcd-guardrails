@@ -2,24 +2,26 @@
 
 This report separates source/interface proof, Pi SDK execution with scripted
 or actual native inference, RFDT training, qualification and production
-acceptance. Candidate 3 is **rejected and unqualified**: all 252 TRAIN cases fit
-the fixed cutoff, but real native SF bridge validation produced six unsafe
-automatic allows, five safety regressions and 19 unnecessary interruptions
-versus baseline three. All 144 eligible calls completed and warm p95 was
-213.736 ms. Candidate 2's earlier usability rejection is preserved separately.
-The actual candidate 3 SDK off/shadow fixture completed with matching approval
-and execution outcomes while the old engine enforced. No qualified enforce,
-improvement, held-out qualification or production acceptance claim is made.
-Candidate 4 has now passed genuine preparation and started its prospectively
-bound 1,536-update training run; its outcomes remain pending.
+acceptance. Candidate 4 completed its fixed 1,536-update training run and
+exported a separate model, but is **rejected and unqualified** on the final
+host-hardened SF bridge validation: 12 unsafe automatic allows, two safety
+regressions, 15 unnecessary interruptions versus baseline three, and only
+53 of 105 eligible model calls answered. Warm p95 was 500.955 ms, above the
+500 ms limit. Its actual SDK off/shadow workflow preserved rule-enforced
+outcomes and approval counts, but shadow completed only two of four semantic
+model checks. No held-out model calls, qualified enforce, overall improvement
+or production acceptance claim is made. Candidate 3's earlier rejection and
+candidate 2's usability rejection remain preserved below.
 
 ## Current host-hardened campaign checkpoint, 2026-09-22
 
-Candidate 4 is still training from its prospectively frozen original Google
-Gemma 3 1B base and 300 TRAIN / 144 validation / zero TEST prepared rows. There
-is no candidate 4 export, bridge validation, held-out result, qualified
-enforcement or real-model workflow result yet. Its training loss and progress
-cannot establish the required safety, interruption or latency gates.
+Candidate 4 completed training from its prospectively frozen original Google
+Gemma 3 1B base and 300 TRAIN / 144 validation / zero TEST prepared rows. The
+separate F16 GGUF was exported without changing the default general classifier.
+The pre-validation campaign receipt bound that model and final host/corpus,
+but the measured validation failed safety, usability, latency and complete
+execution gates. The existing rule engine remains active; no qualification
+freeze or TEST inference followed.
 
 The SF host review identified operations that require exact confirmation even
 when an input appears read-like. The current integration worktree at
@@ -97,32 +99,30 @@ operation families across splits. A later held-out result may therefore claim
 new contexts and syntax, but not wholly unseen operation families. This audit
 made no TEST model predictions.
 
-Before any candidate 4 validation on the new campaign, the final corpus bytes,
-rubric source, committed host and source hash, exported baseline and exporter
-source-inventory hash, model bytes, prompt/scoring protocol, 0.99 cutoff and
-qualification criteria must be recorded together in a prospective identity
-receipt.
-The current freeze command requires `--sfRoot` and verifies the executing SF
-exporter against that recorded provenance. Validation selects or rejects the
-candidate. Only a passing
-candidate can be frozen before the held-out TEST calls; failed validation must
-leave the existing engine active. The old `0f31a950...` SF baseline, the
-original-corpus results below, source tests, scripted SDK tests and native
-shadow results cannot be relabeled as host-hardened model qualification.
-
-After model export and the final Jev source commit, the
+Before candidate 4 validation, the
 [`guardrail-campaign-receipt.mjs` preflight](../../GUARDRAIL.md)
-must create and verify an exclusive mode-`0600` receipt before bridge
-validation. It pins the model, original prepared TRAIN/validation run, corpus,
-rubric, baseline, SF import-closed source inventories, scorer and criteria; it
-does not qualify the model or authorize TEST. After the bridge run, a fresh
-source-only baseline export from the same committed host and corpus must match
-SHA-256 `7668c347e040ae314995c11093e0ee877bd8c2f46c98ed7ac6ccbd6d5d080db0`,
-and the receipt must still verify.
+created an exclusive mode-`0600` receipt after model export and the Jev source
+commit. It bound the original prepared TRAIN/validation run, model and
+registry, final corpus and rubric, committed SF host and its source inventories,
+scorer, 0.99 cutoff, 500 ms budget and qualification criteria. Its content
+identity is SHA-256
+`17554b9e34e48ffcc752cdb7f280fb50476853c0e68a86f82d582b0f45f321c1`;
+the receipt verified against current files and explicitly records
+`qualification:false` and `permitsHeldOutTest:false`. A source-only baseline
+re-export after validation was byte-identical to the pinned baseline, SHA-256
+`7668c347e040ae314995c11093e0ee877bd8c2f46c98ed7ac6ccbd6d5d080db0`.
+The receipt and baseline are provenance checks, not passing model results.
+
+The current freeze command requires `--sfRoot` and verifies the executing SF
+exporter against that recorded provenance. Only a passing validation candidate
+can be frozen before held-out TEST calls. Candidate 4 failed validation, so the
+existing engine stays active. The old `0f31a950...` SF baseline, original-corpus
+results below, source tests, scripted SDK tests and native shadow results cannot
+be relabeled as host-hardened model qualification.
 
 The v2 draft source-only baseline preview contained 672 cases, 224 groups and
 89 baseline/gold disagreements (78 unsafe baseline allows and 11 unnecessary
-interruptions). It made no model calls and is superseded by the pending safe
+interruptions). It made no model calls and is superseded by the final safe
 paired controls. These preview counts are neither candidate 4 results nor
 qualification thresholds for the final campaign. No held-out model prediction
 has been inspected for the new campaign.
@@ -406,12 +406,76 @@ independent CPU review confirmed the genuine preparation postconditions.
 The run retains the original reviewed Google base, default RFDT settings and
 1,536 fixed updates. With 300 TRAIN rows, nominal mean presentations per row
 are 40.96 versus candidate 3's 48.7619. This is an exposure calculation, not a
-progress percentage or accuracy forecast. The original 612-case qualification
-corpus, reserved groups, protocol, cutoff and criteria remain unchanged; the
-660-record supplemental container is training input only. Candidate 4 is
-training. TRAIN fit, export, native bridge VALID, qualification freeze, held-out
-and genuine enforce outcomes remain pending. Candidate 3's rejection and
-separate actual native off/shadow SDK proof remain intact.
+progress percentage or accuracy forecast. Training completed all 1,536 updates
+at 06:49:53.570 UTC on 2026-09-22. Recorded loss fell from 4.724919 to
+0.000020; the adapter changed, checkpoint reload matched, and rendered-prompt
+parity covered all 444 prepared TRAIN/validation rows. Training-phase duration
+was 11,734.713 seconds. This is training integrity, not a full 300-row
+post-fit safety result. The separate F16 GGUF, model ID
+`jev/gemma-3-1b-guardrail-candidate-4`, is 2,006,573,408 bytes with SHA-256
+`9d6c21487a85c2aad86fa169f8ba816620529b01d993e5a13b09d89ebc047f1b`.
+The original 612-case corpus, reserved groups, protocol, cutoff and criteria
+were unchanged for training; the 660-record supplemental container remained
+training input only.
+
+The [host-hardened bridge VALID receipt](../../.build/guardrail/candidate-4/host-hardened-bridge-validation.json)
+has physical SHA-256
+`ede68579d45da6549bac468a266b5b550e89b6b13fdcfdaf8d99b696cf439a13`.
+It covers 192 validation cases in 64 groups against the final 693-case corpus.
+The actual SF bridge and local Jev worker used authored host facts and mocked
+execution. Cold initialization was 3,008.359 ms, separate from warm checks.
+
+| Qualification gate            | Candidate 4 |     Required or baseline | Result |
+| ----------------------------- | ----------: | -----------------------: | ------ |
+| Unsafe automatic allows       |          12 |           0; baseline 29 | Fail   |
+| Safety regressions            |           2 |                        0 | Fail   |
+| Hard-block demotions          |           0 |                        0 | Pass   |
+| Benign interruptions          |          15 |       At most baseline 3 | Fail   |
+| Eligible model calls answered |    53 / 105 | 105 / 105 without errors | Fail   |
+| Warm risk-check p95           |  500.955 ms |           At most 500 ms | Fail   |
+
+The 52 eligible call errors comprise 48 deadline/abort results and four worker
+generation changes. Nineteen baseline disagreements were correctly resolved,
+but the unsafe allows, safety regressions and extra interruptions preclude an
+equal-or-better claim. Warm p95 is from serial corpus requests and does not
+establish latency under a contended queue. Candidate 4 was rejected; no
+qualification freeze or TEST model call followed.
+
+Three subsequent VALID-only diagnostics did not change that result. An
+[unchanged candidate 4 repeat](../../.build/guardrail/candidate-4/host-hardened-bridge-validation-repeat.json)
+answered 41/105 eligible calls, with 64 errors and 501.042 ms warm p95. A
+[smaller-context guardrail-only trial](../../.build/guardrail/candidate-4/host-hardened-bridge-validation-small-context-diagnostic.json)
+under changed scoring source was discarded after 39/105 answers, 66 errors
+and 501.259 ms p95. The older candidate 3 model, tried on the
+[same final VALID inventory](../../.build/guardrail/candidate-3/host-hardened-bridge-validation-diagnostic.json),
+answered 26/105, with 79 errors and 501.161 ms p95. The latter two are
+diagnostics using changed source or old model weights, not prospective
+campaign qualification. The original candidate 4 receipt remains decisive;
+none of these runs used TEST model calls or justifies changing the fixed gates.
+
+A separate [VALID-only native timing profile](../../.build/guardrail/candidate-4/host-hardened-native-profile-validation.json)
+scored all 105 eligible prompts with one escalated Metal worker and a 15-second
+diagnostic timeout. Exact prompt lengths were 652–773 tokens (median 696).
+Request preparation p95 was 0.34 ms and native compile/tokenize p95 was
+19.54 ms; native evaluation itself took 415.93 ms at p50 and 593.34 ms at
+p95. Total diagnostic p95 was 611.87 ms, with 33/105 native evaluations above
+500 ms. This isolates native computation as a direct latency source in that
+run even without SF host preparation or queueing. It is a diagnostic under a
+different timeout, not campaign qualification or a replacement for the failed
+bridge receipt.
+
+The [actual Pi SDK off/shadow report](../../.build/guardrail/candidate-4/host-hardened-sdk-workflows.json)
+has physical SHA-256
+`257a2b314477304b5ab49c15a7c4dffede0d0dd41320971a0c90c802f194d7ab`.
+It used the real driver and local model with scripted user choices, authored
+host facts and counter-only tools. Both modes accepted the same nine of ten
+operations, blocked the same protected-path request, requested three
+confirmations, issued three rule-owned session grants, and had no retries or
+unexpected tool errors. Off stayed lazy; shadow initialized in 3,131.707 ms
+and recorded all six exact-policy comparisons. Only two of four semantic
+checks received model answers; two fell back after the 500 ms deadline.
+Shadow did not change approval or execution outcomes, but the incomplete model
+calls and absence of qualified enforce prevent a workflow-benefit claim.
 
 The separate [prospective TRAIN diversity supplement](../../docs/GUARDRAIL_TRAIN_DIVERSITY.md)
 retains 80 exact bridge inputs in 40 groups, with 40 allow and 40 confirm
@@ -429,12 +493,13 @@ full discarded/replacement contribution ledger is retained. Root checked all
 and all 21 unchanged candidate 4 source pins. Another candidate is not selected;
 the temporary 692-case source replay must never become qualification evidence.
 
-If candidate 4 fails its fixed gates, the user has offered Gemini or ChatGPT
-Deep Research documents. Provide a research prompt filled with candidate 4's
-actual measured results and explicit constraints at that point. Research may
-guide a validation-selected future experiment; it must not supply a cloud
-teacher, replace operation-policy labels, tune using held-out results or
-weaken qualification criteria. Candidate 4 remains pending.
+Candidate 4 failed its fixed gates. The user has offered Gemini or ChatGPT
+Deep Research documents for a future experiment; any research prompt should
+include the measured 12 unsafe allows, two safety regressions, 15 benign
+interruptions, 52 incomplete eligible calls and 500.955 ms warm p95. Research
+may guide a validation-selected future experiment, but must not supply a cloud
+teacher, replace operation-policy labels, tune using held-out results or weaken
+qualification criteria. No successor candidate is selected here.
 
 The saved-scalar CPU parity receipt
 `.build/guardrail/candidate-3/initial-256-parity-receipt.json`, observed at
