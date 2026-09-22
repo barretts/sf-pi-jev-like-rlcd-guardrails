@@ -15,7 +15,7 @@
       "input": {
         "action": "run",
         "pane": "c9-synthetic-pane",
-        "command": "psql -d c9_archive -c 'SELECT current_database();'"
+        "command": "psql -X -d c9_archive -c 'SELECT current_database();'"
       },
       "observations": {},
       "expected": "allow",
@@ -299,7 +299,7 @@
       "input": {
         "action": "run",
         "pane": "c9-synthetic-pane",
-        "command": "psql -d c9_fixture -c \"SELECT rolname, rolsuper FROM pg_roles WHERE rolname = 'report_bot';\""
+        "command": "psql -X -d c9_fixture -c \"SELECT rolname, rolsuper FROM pg_roles WHERE rolname = 'report_bot';\""
       },
       "observations": {},
       "expected": "allow",
@@ -328,7 +328,7 @@
       "input": {
         "action": "run",
         "pane": "c9-synthetic-pane",
-        "command": "psql -d c9_fixture -c \"ALTER ROLE report_bot WITH SUPERUSER;\""
+        "command": "psql -X -d c9_fixture -c \"ALTER ROLE report_bot WITH SUPERUSER;\""
       },
       "observations": {},
       "expected": "confirm",
@@ -458,7 +458,7 @@
         "sf-pi/extensions/sf-guardrail/lib/safety-subject.ts",
         "https://www.freedesktop.org/software/systemd/man/latest/systemctl.html"
       ],
-      "policyRationale": "Disabling the unit with --now stops the required audit collector and prevents its automatic startup.",
+      "policyRationale": "Disabling the unit with --now stops the required audit collector and removes its normal boot enablement.",
       "controlledRiskChange": "Inspect the audit service's status versus stop it immediately and disable future startup."
     },
     {
