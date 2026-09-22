@@ -2,13 +2,14 @@
   "version": 1,
   "date": "2026-09-21",
   "purpose": "Separate local guardrail semantic-risk candidate; preserve exact policy and existing Pi approval/audit enforcement.",
-  "checkpointStatus": "candidate_5_preparation_blocked_on_browser_coverage_and_label_review",
+  "checkpointStatus": "candidate_5_750ms_runtime_unqualified_browser_coverage_blocked",
   "candidate5Preparation": {
     "scope": "Version-2 source and corpus preparation; candidate 4 remains the latest model evaluated on the real bridge",
     "jevCheckout": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922",
     "sfPiCheckout": "/private/tmp/sf-pi-guardrail-candidate5-20260922",
     "riskInputVersion": 2,
-    "scoringProtocolSha256": "cd315082c885b8326a6aef10424cd8b386d00aa59f8",
+    "prior307ScoringProtocolSha256": "cd315082c885b8326a6aef10424cd8b386d00aa59f8",
+    "scoringProtocolSha256": "b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e",
     "sourceCommits": {
       "jevProtocol": "019da47b0f9dfdf37294cc293e7bbabb661677b5",
       "sfFreshBrowserPage": "3a169e3709b9de121a4218987b7e7e65f87645fd",
@@ -24,11 +25,41 @@
       "jevTrainingReadinessGuard": "3c08a56b1621bcd549716a56edf029395261629d",
       "jevPriorSafeHostSourcePin": "b1267379090c3124f15da6efa1a0b68651726131",
       "jevPriorSfIntegrationPatch": "8f0f1246fc7df87fd5a970337b0e6a64a5d2a32f",
-      "jevFinalSfSourcePin": "2b0e9f219f3b011300ec699d872381aec1482cc2",
-      "jevFinalSfIntegrationPatch": "052de58c13d140d9c27337cb7eafa9ec125aa2b1"
+      "jevPrior307SfSourcePin": "2b0e9f219f3b011300ec699d872381aec1482cc2",
+      "jevPrior307SfIntegrationPatch": "052de58c13d140d9c27337cb7eafa9ec125aa2b1",
+      "jev750MsRiskRuntime": "51a9f7c987f388fa1d3c718b2b311bf44cca3a6e",
+      "jev750MsCriteriaDocumentation": "1cf1239d0b21a3b5200011f73b88407dfaa9fca6",
+      "jev750MsSfIntegrationPatch": "68bcb8c1a8914fde58e0d14d9d491b2ff57f6e1f",
+      "sf750MsRiskRuntime": "40ba11da1959723052c106db4272e779b802757d"
+    },
+    "prospective750MsRuntimeCheckpoint": {
+      "scope": "Candidate-5 source and latency contract, not model qualification",
+      "hardPerCallDeadlineMs": 750,
+      "qualificationWarmP95MsMaximum": 500,
+      "qualificationP95IncludesPreparationAndQueueing": true,
+      "everyEligibleModelCallMustComplete": true,
+      "compiledCriteriaSha256": "c654224157b3185dc15c26eb32f5de3e8a68d465e07b504e86f25e4e07e7e53c",
+      "scoringProtocolSha256": "b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e",
+      "historicalValidationOrFreezeReusable": false,
+      "admissibleCurrentBaselineAvailable": false,
+      "candidate5ModelTrained": false,
+      "candidate5Qualified": false
     },
     "retainedSfIntegrationPatch": {
       "path": "integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch",
+      "sha256": "93f2bfce0eb1b21650644e7b67dd2dda5be755837ad62859ae8daeb0026887d8",
+      "bytes": 318074,
+      "sfBaseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
+      "sfBaseTree": "4e08ddb00626e8d47852f604564b10f135082f1a",
+      "sfTargetCommit": "40ba11da1959723052c106db4272e779b802757d",
+      "sfTargetTree": "0b5f973115696887838150f768f89a810cd1f995",
+      "freshDetachedApplyExactTreeMatch": true,
+      "sourceDeliveryOnly": true,
+      "hostActivationOrModelQualification": false
+    },
+    "prior307SfIntegrationPatch": {
+      "historicalPath": "integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch",
+      "fileAtHistoricalPathNowContainsFinalPatch": true,
       "sha256": "2fea634e5f5f1d5b13ef406717e624c1d3097898612c0451cf0689bc9801dc17",
       "bytes": 315457,
       "sfBaseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
@@ -36,6 +67,7 @@
       "sfTargetCommit": "3070408136ff0a9da3cc2ced095cf64741b2b12f",
       "sfTargetTree": "20c9c827e5db0d364f788283b912e40075621918",
       "freshDetachedApplyExactTreeMatch": true,
+      "supersededBySfCommit": "40ba11da1959723052c106db4272e779b802757d",
       "sourceDeliveryOnly": true,
       "hostActivationOrModelQualification": false
     },
@@ -88,13 +120,23 @@
       "writableTestStateRerun": "passed",
       "modelQualification": false
     },
+    "sfSourceChecksAfter750MsRuntime": {
+      "sfPiCommit": "40ba11da1959723052c106db4272e779b802757d",
+      "sfPiTree": "0b5f973115696887838150f768f89a810cd1f995",
+      "focusedTestsPassed": 361,
+      "focusedTestsSkipped": 2,
+      "runtimeSurfaceChecksPassed": 31,
+      "sourceCheck": "passed",
+      "lint": "passed",
+      "modelQualification": false
+    },
     "jevSourceChecksAfterTrainingReadinessGuard": {
       "focusedReadinessTestsPassed": 6,
       "focusedReadinessTestsFailed": 0,
       "sourceCheck": "passed",
       "format": "passed"
     },
-    "jevCurrentSourceSuite": {
+    "prior307JevSourceSuite": {
       "sourceCommit": "052de58c13d140d9c27337cb7eafa9ec125aa2b1",
       "sandboxOnlyAttempt": {
         "localServerTestsFailed": 18,
@@ -108,6 +150,11 @@
       "npmRunCheck": "passed",
       "build": "passed",
       "candidate5ModelEffectivenessEstablished": false
+    },
+    "jevCurrentSourceSuite": {
+      "sourceCommit": "51a9f7c987f388fa1d3c718b2b311bf44cca3a6e",
+      "fullSuite": { "filesPassed": 48, "testsPassed": 1048, "testsFailed": 0 },
+      "modelQualification": false
     },
     "directFamilyRubricTimingDiagnostic": {
       "scope": "VALID-only direct native timing using rejected candidate-4 F16 weights and older version-1 host inputs; no SF preparation, queueing, policy execution or version-2 page facts",
@@ -145,7 +192,7 @@
       "output": "/dev/null",
       "admissibleBaselineProduced": false
     },
-    "finalSfStrictV3BaselineDiagnostic": {
+    "prior307SfStrictV3BaselineDiagnostic": {
       "sfPiCommit": "3070408136ff0a9da3cc2ced095cf64741b2b12f",
       "subtestsPassed": 7,
       "subtestsFailed": 1,
@@ -234,7 +281,7 @@
       "approvalAndOutcomeParityWithOff": true,
       "candidate5ModelEffectivenessOrWarmP95Established": false
     },
-    "finalSourcePiSdkShadowDiagnostic": {
+    "prior307SourcePiSdkShadowDiagnostic": {
       "scope": "Actual Pi SDK at SF 3070408 with current Jev distribution and rejected candidate-4 F16 weights; mocked facts, counter-only tools, off/shadow only",
       "path": ".build/guardrail/candidate-5-diagnostic/c4-weights-sdk-v2-3070408.json",
       "sha256": "021a4d330d65ad78f0e3ff004ceff05cff0e94ad8f2edf51e6f9c0340d408d97",
@@ -258,6 +305,45 @@
       "shadowTenCallWorkflowMs": 511.7475,
       "coldStartupComparisonBoundary": "Cached exact-source run; 530c repeat observed 2,591.47 ms and earlier diagnostic observed 21,449.6 ms",
       "approvalAndOutcomeParityWithOff": true,
+      "candidate5ModelEffectivenessOrWarmP95Established": false
+    },
+    "firstSandboxed750MsPiSdkAttempt": {
+      "scope": "Actual Pi SDK at SF 40ba11d with rejected candidate-4 F16 weights, mocked facts and counter-only tools; first sandboxed run",
+      "path": ".build/guardrail/candidate-5-diagnostic/c4-weights-sdk-v2-40ba11d-750ms-sandboxed-fallback.json",
+      "sha256": "970a5297dda15673e1eded8cc2e4507c487cb2c588fd3730dc058dac75c33e92",
+      "semanticModelChecksCompleted": 0,
+      "semanticModelChecksExpected": 4,
+      "rulesFallbacks": 4,
+      "deadlineOrAbortFallbacks": 3,
+      "workerRetiredFallbacks": 1,
+      "approximately750MsDeadlineObserved": true,
+      "failureCauseEstablished": false,
+      "qualifyingModelExecution": false
+    },
+    "finalSourcePiSdkShadowDiagnostic": {
+      "scope": "Actual Pi SDK at SF 40ba11d with current Jev distribution and rejected candidate-4 F16 weights; mocked facts, counter-only tools, off/shadow only, escalated Metal rerun",
+      "path": ".build/guardrail/candidate-5-diagnostic/c4-weights-sdk-v2-40ba11d-750ms.json",
+      "sha256": "909636678283a3a3e006f377720017ff96298d375b9b6b3b39b8b6c6c81d61a3",
+      "sfPiCommit": "40ba11da1959723052c106db4272e779b802757d",
+      "baselineSourceSha256": "7c047635954f884fe0c04fa29a6a44590044e64408598078d9f7045baa30a433",
+      "riskModuleSha256": "57b5f63d7790908e4bf9c34b40de4bdad8c79ca0b0bccd0a5994d8e288167f1c",
+      "selectedOptionalSdkTestPassed": 1,
+      "otherSdkTestsSkipped": 9,
+      "toolOperationsPerMode": 10,
+      "offAndShadowEach": {
+        "acceptedOutcomes": 9,
+        "exactBlocks": 1,
+        "confirmations": 3,
+        "sessionGrants": 3,
+        "retries": 0
+      },
+      "shadowSemanticModelChecks": { "completed": 4, "expected": 4 },
+      "shadowExactPolicyChecks": { "completed": 6, "expected": 6 },
+      "shadowComparisons": 10,
+      "shadowFallbacks": 0,
+      "modelBackedComparisonElapsedMs": [178.799, 124.933, 124.063, 125.231],
+      "shadowColdInitializationMs": 2549.703958,
+      "shadowTenCallWorkflowMs": 560.596125,
       "candidate5ModelEffectivenessOrWarmP95Established": false
     },
     "candidate5TrainingCompleted": false,

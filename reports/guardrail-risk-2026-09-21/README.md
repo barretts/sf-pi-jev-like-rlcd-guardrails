@@ -13,7 +13,56 @@ model checks. No held-out model calls, qualified enforce, overall improvement
 or production acceptance claim is made. Candidate 3's earlier rejection and
 candidate 2's usability rejection remain preserved below.
 
-## Candidate 5 preparation checkpoint, 2026-09-22
+## Candidate 5 750 ms runtime checkpoint, 2026-09-22
+
+SF Pi commit `40ba11d` (tree `0b5f973115696887838150f768f89a810cd1f995`)
+and Jev source commit `51a9f7c` set a **750 ms hard deadline per warm risk call**.
+The qualification limit remains **warm p95 at most 500 ms**, including request
+preparation and queueing, and every eligible model call must complete. The
+prospective candidate-5 criteria SHA-256 is
+`c654224157b3185dc15c26eb32f5de3e8a68d465e07b504e86f25e4e07e7e53c`;
+the scoring protocol SHA-256 is
+`b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e`.
+These are new source identities, not a relaxation of the p95 or safety gates.
+Prior validation and SDK diagnostics cannot qualify this source. The default
+is still `off`, and no candidate-5 model has been trained or qualified.
+
+The final Jev source suite passed 1,048 tests in 48 files. SF Pi's focused
+suite passed 361 tests with two skipped, 31 runtime-surface checks passed, and
+source check and lint passed. Jev commit `68bcb8c` retained the
+[integration patch](../../integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch)
+(318,074 bytes, SHA-256
+`93f2bfce0eb1b21650644e7b67dd2dda5be755837ad62859ae8daeb0026887d8`).
+Fresh application from SF base `4f901db9` reproduced `40ba11d` and its tree
+exactly. This is source-delivery proof; it does not show installation or model
+effectiveness.
+
+The first sandboxed Pi SDK run did **not** complete its
+semantic model checks: zero of four answered, three reached approximately the
+750 ms deadline, and the fourth found the worker retired. The
+[failed-completion receipt](../../.build/guardrail/candidate-5-diagnostic/c4-weights-sdk-v2-40ba11d-750ms-sandboxed-fallback.json)
+has SHA-256 `970a5297dda15673e1eded8cc2e4507c487cb2c588fd3730dc058dac75c33e92`.
+Rule fallback preserved the mocked workflow's outcomes, but it cannot count as
+model completion. The cause of this run's failure is unproven.
+
+An escalated Metal rerun on the same source passed the selected optional SDK
+test, with nine other tests skipped. It used the
+old rejected candidate-4 F16 weights, scripted choices, mocked facts and
+counter-only tools. Off and shadow each had nine accepted executions, three
+confirmations and session grants, one expected exact block and zero retries.
+Shadow completed four of four semantic and six of six exact-policy checks with
+no fallback. Its four model-backed times were 178.799, 124.933, 124.063 and
+125.231 ms. Cached cold startup took 2,549.704 ms; all ten shadow workflow
+calls took 560.596 ms. The
+[passing receipt](../../.build/guardrail/candidate-5-diagnostic/c4-weights-sdk-v2-40ba11d-750ms.json)
+has SHA-256 `909636678283a3a3e006f377720017ff96298d375b9b6b3b39b8b6c6c81d61a3`.
+Four representative model-backed calls do not establish the qualification
+corpus's warm p95, and old weights do not establish candidate-5 accuracy.
+Browser clicks and presses still use the existing rules. The earlier strict
+v3 diagnostic failed browser coverage, and no admissible candidate-5 baseline,
+training, validation or held-out test result exists.
+
+## Earlier candidate 5 preparation checkpoint (SF 3070408), 2026-09-22
 
 Jev commit `019da47` introduced risk-input version 2 with an original-tool-name
 family rubric; SF Pi commit `3a169e37` bound browser-press risk to fresh host
@@ -34,17 +83,16 @@ guardrail tests passed with two skipped, all 31 runtime-surface checks passed,
 and source check, lint, catalog and documentation health passed. An initial
 broad sandbox run had seven test-store write failures; the rerun with writable
 test state passed. These verify source behavior and the fallback boundary, not
-candidate-5 model effectiveness. The current baseline-bound integration patch
-is retained as
-[`candidate5-sf-pi-from-4f901db9.patch`](../../integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch)
-in Jev commit `052de58` (SHA-256
+candidate-5 model effectiveness. At this checkpoint, Jev commit `052de58`
+retained a baseline-bound integration patch (SHA-256
 `2fea634e5f5f1d5b13ef406717e624c1d3097898612c0451cf0689bc9801dc17`).
 Fresh detached application exactly reproduced SF commit `3070408` and tree
 `20c9c827e5db0d364f788283b912e40075621918` from pinned SF base
-`4f901db9`. Patch replay is source-delivery evidence, not host activation or
-model qualification.
+`4f901db9`. The file at that patch path has since been replaced by the
+current patch above. Patch replay is source-delivery evidence, not host
+activation or model qualification.
 
-The final Jev source suite passed on an authorized loopback-enabled rerun: 48
+The then-current Jev source suite passed on an authorized loopback-enabled rerun: 48
 files and 1,046 tests, with `npm run check` and build also passing. The initial
 sandbox-only attempt failed 18 local-server tests because `127.0.0.1` listen
 returned
