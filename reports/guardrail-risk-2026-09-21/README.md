@@ -62,6 +62,53 @@ Browser clicks and presses still use the existing rules. The earlier strict
 v3 diagnostic failed browser coverage, and no admissible candidate-5 baseline,
 training, validation or held-out test result exists.
 
+## Candidate 5 training admission and latency diagnostics, 2026-09-22
+
+Jev commits `5699b2d`, `9d81d0e`, `9fe8c85` and `e8a79aa` add a prospective
+TRAIN/VALIDATION plan and close the hand-authored-readiness gap. Preparation
+now rebuilds the builder's bundle and admission receipt from pinned corpus,
+baseline and SF Pi source, then requires byte-for-byte matches. Before an
+optimizer call, training rechecks that admission, the prospective plan, the
+prepared split hashes and the empty TEST training file. The campaign receipt
+reconstructs split membership and targets independently, binds the physical
+admission receipt, and pins RFDT source, worker, build and dependency bytes.
+The TRAIN supplement also gained two bounded Contact-query controls with the
+same selected personal fields as their broad disclosure counterparts. These
+are proposed TRAIN inputs, not an admitted bundle or qualified model.
+
+The pinned original Google Gemma 3 1B snapshot passed the RFDT Metal doctor
+check (`training_ready: true`); ignored symlinks in this worktree point to the
+existing RFDT environment and native build. No candidate-5 RFDT preparation,
+training, export or model qualification has occurred. The current v3 strict
+baseline still has six browser safe/risk eligibility gaps across TRAIN,
+VALIDATION and TEST. The builder's sealed-corpus and SF-source pins have not
+been loosened to manufacture a ready result, so a positive admitted-bundle
+prepare remains unexercised.
+
+On rejected candidate-4 weights, a TRAIN-only paired direct-native context
+diagnostic completed 72/72 scores across 18 requests, with identical prompts,
+selected logits and decisions at both context settings. The original 49,152
+token context measured warm direct p95 **495.87 ms**; a 4,096-token context
+measured **464.20 ms**. A separate 8,192-token-context repeat completed
+36/36 scores at **470.70 ms** p95 with the same logits and decisions. A
+tokenizer-only check compiled 115/115 draft TRAIN prompts (333–481 tokens).
+The [paired receipt](../../.build/guardrail/candidate-5-diagnostic/context-abba-train-metal.json),
+[8,192-token receipt](../../.build/guardrail/candidate-5-diagnostic/context-8192-train.json)
+and [token-length receipt](../../.build/guardrail/candidate-5-diagnostic/train-v2-token-lengths.json)
+are local diagnostics. The initial sandboxed Metal initialization failure is
+preserved in a [separate receipt](../../.build/guardrail/candidate-5-diagnostic/context-abba-train.json).
+These runs used a 15-second diagnostic timeout, sampled TRAIN requests and
+omitted SF preparation and queueing. They do not establish the 500 ms bridge
+p95, the 750 ms runtime deadline for all eligible calls, or safety. No
+smaller-context setting was adopted because longer permitted requests might
+otherwise fall back.
+
+After these source changes, the integrated Jev suite passed **1,051 tests in
+48 files**, the prospective/receipt Node suites passed **15/15**, and
+TypeScript check, build and formatting passed. Those verify source behavior
+and tamper rejection, not candidate effectiveness. The existing SF Pi source
+and retained integration patch are unchanged by this checkpoint.
+
 ## Earlier candidate 5 preparation checkpoint (SF 3070408), 2026-09-22
 
 Jev commit `019da47` introduced risk-input version 2 with an original-tool-name

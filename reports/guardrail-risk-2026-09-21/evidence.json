@@ -3,6 +3,75 @@
   "date": "2026-09-21",
   "purpose": "Separate local guardrail semantic-risk candidate; preserve exact policy and existing Pi approval/audit enforcement.",
   "checkpointStatus": "candidate_5_750ms_runtime_unqualified_browser_coverage_blocked",
+  "candidate5AdmissionAndLatency": {
+    "scope": "TRAIN/VALIDATION admission and TRAIN-only timing diagnostics; no candidate-5 model result",
+    "sourceCommits": {
+      "trainContrast": "3bb1664a7ff28ad6b361fc42577ec65fe3e3cead",
+      "prospectivePlan": "5699b2d1dda991db2bbfa490aba8a54d9abdbee4",
+      "admissionReplay": "9d81d0ef3bc248c0a6f8f7cbded19e79c75e6f34",
+      "receiptMembership": "9fe8c856a54b91bf5f45067c4913dd3665955ccf",
+      "rfdtSourceInventory": "e8a79aaa2ef7f740df953532503c6796ca8b8615"
+    },
+    "trainingEnvironmentDoctor": {
+      "base": "google/gemma-3-1b-it",
+      "revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+      "metalAvailable": true,
+      "trainingReady": true,
+      "candidate5TrainingStarted": false
+    },
+    "qualificationBoundary": {
+      "strictBrowserCoverageGaps": 6,
+      "admittedReadyBundle": false,
+      "positiveAdmittedPreparationExercised": false,
+      "candidate5ModelTrained": false,
+      "candidate5Validation": false,
+      "candidate5HeldOutInference": false,
+      "candidate5Qualified": false
+    },
+    "sourceChecks": {
+      "jevFullSuiteFilesPassed": 48,
+      "jevFullSuiteTestsPassed": 1051,
+      "prospectiveAndReceiptNodeTestsPassed": 15,
+      "typeCheck": "passed",
+      "build": "passed",
+      "format": "passed"
+    },
+    "trainOnlyTiming": {
+      "model": "rejected candidate-4 F16 weights",
+      "modelSha256": "9d6c21487a85c2aad86fa169f8ba816620529b01d993e5a13b09d89ebc047f1b",
+      "scoringProtocolSha256": "b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e",
+      "directNativeOnly": true,
+      "qualificationBridgeTimingProved": false,
+      "defaultContextTokens": 49152,
+      "defaultWarmP95Ms": 495.87,
+      "smallContextTokens": 4096,
+      "smallWarmP95Ms": 464.2,
+      "smallContextCallsCompleted": 36,
+      "intermediateContextTokens": 8192,
+      "intermediateWarmP95Ms": 470.7,
+      "intermediateCallsCompleted": 36,
+      "selectedLogitsAndDecisionsIdenticalOnSample": true,
+      "trainOnlyPromptsCompiled": 115,
+      "trainOnlyPromptTokensMaximum": 481,
+      "runtimeContextChangeAdopted": false,
+      "pairedReceipt": {
+        "path": ".build/guardrail/candidate-5-diagnostic/context-abba-train-metal.json",
+        "sha256": "3b7f7fa89b403eebd05032270448c8103ca14b6d2770f85495dc32aecdc201eb"
+      },
+      "intermediateReceipt": {
+        "path": ".build/guardrail/candidate-5-diagnostic/context-8192-train.json",
+        "sha256": "403f7bafc03588a498afcbc94044b9a3d9819ea11e36163b714966af03b571fa"
+      },
+      "tokenLengthReceipt": {
+        "path": ".build/guardrail/candidate-5-diagnostic/train-v2-token-lengths.json",
+        "sha256": "292b6d2bef4299d389cadce40e8f69116522b64bf8ea3b180f96752f10073a27"
+      },
+      "initialSandboxMetalFailureReceipt": {
+        "path": ".build/guardrail/candidate-5-diagnostic/context-abba-train.json",
+        "sha256": "44de06066b2dec91d62357b020e759fbd233d36a52a853d2c7734bdc88907e73"
+      }
+    }
+  },
   "candidate5Preparation": {
     "scope": "Version-2 source and corpus preparation; candidate 4 remains the latest model evaluated on the real bridge",
     "jevCheckout": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922",
