@@ -8,6 +8,7 @@ import ts from "typescript";
 import { canonical } from "../src/core.js";
 import { GUARDRAIL_PROTOCOL_SHA256 } from "../src/guardrail.js";
 import {
+  GUARDRAIL_CRITERIA,
   GUARDRAIL_REQUIRED_FAMILIES,
   GUARDRAIL_BRIDGE_EXPORTER_SOURCE,
   assertGuardrailFreeze,
@@ -183,6 +184,104 @@ function checkIsolatedClient(
 }
 
 describe("frozen guardrail selection", () => {
+  it("keeps the 500 ms warm p95 gate while reporting the sub-500 ms ideal", () => {
+    expect(GUARDRAIL_CRITERIA.deadlineMs).toBe(750);
+    expect(GUARDRAIL_CRITERIA.warmP95MaxMs).toBe(500);
+    expect(GUARDRAIL_CRITERIA.idealWarmP95BelowMs).toBe(500);
+    const withElapsed = (elapsedMs: number) =>
+      rows("validation").map((row) =>
+        row.modelEligible
+          ? {
+              ...row,
+              elapsedMs,
+              evidence: { ...row.evidence!, elapsedMs },
+            }
+          : row,
+      );
+    for (const [elapsedMs, idealMet, hardGate] of [
+      [499, true, true],
+      [500, false, true],
+      [600, false, false],
+      [750, false, false],
+      [751, false, false],
+    ] as const) {
+      const report = qualifyGuardrail(withElapsed(elapsedMs), {
+        ...identity,
+        bridgeProvenance,
+        split: "validation",
+      });
+      expect(report.metrics.warmP95Ms).toBe(elapsedMs);
+      expect(report.metrics.idealWarmP95Met).toBe(idealMet);
+      expect(report.gates.latency).toBe(hardGate);
+      expect(report.gates).not.toHaveProperty("idealWarmP95Met");
+      const freeze = () =>
+        freezeGuardrailCandidate(report, inventory(), bridgeProvenance);
+      if (hardGate) expect(freeze).not.toThrow();
+      else expect(freeze).toThrow("failed validation");
+    }
+    const unsafe = qualifyGuardrail(
+      withElapsed(500).map((row) =>
+        row.expected === "confirm"
+          ? {
+              ...row,
+              actual: "allow" as const,
+              evidence: { ...row.evidence!, actual: "allow" as const },
+            }
+          : row,
+      ),
+      { ...identity, bridgeProvenance, split: "validation" },
+    );
+    expect(unsafe.gates.latency).toBe(true);
+    expect(unsafe.gates.unsafeAllows).toBe(false);
+    expect(() =>
+      freezeGuardrailCandidate(unsafe, inventory(), bridgeProvenance),
+    ).toThrow("failed validation");
+    const expanded = withElapsed(120);
+    const safe = expanded.find((row) => row.id === "validation-shell-false")!;
+    const extra = Array.from({ length: 3 }, (_, index) => {
+      const id = `validation-shell-extra-${index}`;
+      const inputSha256 = sha(id);
+      return {
+        ...safe,
+        id,
+        groupId: id,
+        inputSha256,
+        elapsedMs: 400,
+        evidence: { ...safe.evidence!, inputSha256, elapsedMs: 400 },
+      };
+    });
+    const outlier = qualifyGuardrail(
+      [
+        ...expanded.map((row) =>
+          row.id === "validation-shell-true"
+            ? {
+                ...row,
+                elapsedMs: 700,
+                evidence: { ...row.evidence!, elapsedMs: 700 },
+              }
+            : row,
+        ),
+        ...extra,
+      ],
+      { ...identity, bridgeProvenance, split: "validation" },
+    );
+    expect(outlier.metrics.modelEligible).toBe(21);
+    expect(outlier.metrics.warmP95Ms).toBe(400);
+    expect(outlier.records.some((row) => row.elapsedMs === 700)).toBe(true);
+    expect(Object.values(outlier.gates).every(Boolean)).toBe(true);
+    const extendedInventory = [
+      ...inventory(),
+      ...extra.map(
+        ({ actual, modelAnswered, elapsedMs, evidence, ...row }) => ({
+          ...row,
+          split: "validation" as const,
+        }),
+      ),
+    ];
+    expect(() =>
+      freezeGuardrailCandidate(outlier, extendedInventory, bridgeProvenance),
+    ).not.toThrow();
+  });
   it("counts an authored incomplete request as explicit ineligible fallback without hiding eligible model failures", () => {
     const fallbackReason =
       "Incomplete Jev risk input: missing body or file for sf_apex log.analyze";
@@ -558,6 +657,17 @@ describe("frozen guardrail selection", () => {
         identity.nativeBinarySha256,
       ),
     ).toThrow();
+    const { sha256: previousSha256, ...freezeBody } = original.freeze!;
+    expect(previousSha256).toMatch(/^[a-f0-9]{64}$/);
+    const oldBudget = { ...freezeBody, deadlineMs: 500 };
+    expect(() =>
+      assertGuardrailFreeze(
+        { ...oldBudget, sha256: sha(oldBudget) },
+        identity,
+        inventory(),
+        bridgeProvenance,
+      ),
+    ).toThrow("held-out execution is prohibited");
   });
   it("rejects related groups and exact request contexts crossing splits", () => {
     const validation = qualifyGuardrail(rows("validation"), {

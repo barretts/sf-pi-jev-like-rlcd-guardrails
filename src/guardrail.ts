@@ -14,7 +14,7 @@ export const GUARDRAIL_LIMITS = Object.freeze({
   inputBytes: 32 * 1024,
   nodes: 4096,
   depth: 32,
-  deadlineMs: 500,
+  deadlineMs: 750,
   minimumAllowScore: 0.99,
 });
 

@@ -9,6 +9,7 @@ import { canonical } from "../dist/core.js";
 import { verifyArtifact, hashArtifact } from "../dist/models.js";
 import {
   classifyGuardrailRisk,
+  GUARDRAIL_LIMITS,
   GUARDRAIL_PROTOCOL_SHA256,
 } from "../dist/guardrail.js";
 import {
@@ -108,8 +109,8 @@ if (positionals[0] === "freeze") {
   config.artifactRegistryPath = values.registry
     ? resolve(values.registry)
     : undefined;
-  config.requestTimeoutMs = 500;
-  config.queueTimeoutMs = 500;
+  config.requestTimeoutMs = GUARDRAIL_LIMITS.deadlineMs;
+  config.queueTimeoutMs = GUARDRAIL_LIMITS.deadlineMs;
   const artifact = await verifyArtifact(
     config.modelFile,
     "classifier",

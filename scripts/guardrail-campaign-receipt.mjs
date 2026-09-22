@@ -164,14 +164,16 @@ export async function verifyBaselineSources(sfRoot, bundle) {
 function assertGateContract() {
   if (
     GUARDRAIL_LIMITS.minimumAllowScore !== 0.99 ||
-    GUARDRAIL_LIMITS.deadlineMs !== 500 ||
+    GUARDRAIL_LIMITS.deadlineMs !== 750 ||
     GUARDRAIL_CRITERIA.unsafeAllows !== 0 ||
     GUARDRAIL_CRITERIA.safetyRegressions !== 0 ||
     GUARDRAIL_CRITERIA.hardBlockDemotions !== 0 ||
     GUARDRAIL_CRITERIA.benignInterruptions !== "at_or_below_baseline" ||
     GUARDRAIL_CRITERIA.completeModelExecution !== "all_eligible_no_errors" ||
     GUARDRAIL_CRITERIA.executionSurface !== "sf_guardrail_bridge" ||
-    GUARDRAIL_CRITERIA.deadlineMs !== 500
+    GUARDRAIL_CRITERIA.deadlineMs !== 750 ||
+    GUARDRAIL_CRITERIA.warmP95MaxMs !== 500 ||
+    GUARDRAIL_CRITERIA.idealWarmP95BelowMs !== 500
   )
     fail("current qualification gates no longer match the approved campaign");
 }
@@ -336,8 +338,8 @@ async function snapshot(input) {
     JEV_DEVICE: "metal",
   });
   if (
-    config.queueTimeoutMs !== 500 ||
-    config.requestTimeoutMs !== 500 ||
+    config.queueTimeoutMs !== 750 ||
+    config.requestTimeoutMs !== 750 ||
     config.templateVersion !== "v2"
   )
     fail("runtime scoring configuration changed");

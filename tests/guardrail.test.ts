@@ -345,7 +345,7 @@ describe("guardrail risk classification", () => {
   it("counts preparation in its deadline and rejects a late response even before a delayed timer fires", async () => {
     const now = vi.spyOn(performance, "now");
     try {
-      now.mockReturnValueOnce(0).mockReturnValueOnce(501);
+      now.mockReturnValueOnce(0).mockReturnValueOnce(750);
       const early = classify(response(0.999));
       await expect(
         classifyGuardrailRisk(early, input, "google/gemma-3-1b-it"),
@@ -355,7 +355,7 @@ describe("guardrail risk classification", () => {
         .mockReset()
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(0)
-        .mockReturnValueOnce(501);
+        .mockReturnValueOnce(750);
       await expect(
         classifyGuardrailRisk(
           classify(response(0.999)),
@@ -363,6 +363,21 @@ describe("guardrail risk classification", () => {
           "google/gemma-3-1b-it",
         ),
       ).rejects.toThrow("deadline exceeded");
+    } finally {
+      now.mockRestore();
+    }
+  });
+  it("accepts a valid response within the 750 ms per-call deadline", async () => {
+    const now = vi.spyOn(performance, "now");
+    try {
+      now.mockReturnValueOnce(0).mockReturnValue(600);
+      const prediction = await classifyGuardrailRisk(
+        classify(response(0.999)),
+        input,
+        "google/gemma-3-1b-it",
+      );
+      expect(prediction.action).toBe("allow");
+      expect(prediction.elapsedMs).toBe(600);
     } finally {
       now.mockRestore();
     }
@@ -476,7 +491,7 @@ describe("guardrail qualification", () => {
       records.map((r) =>
         r.id === "block" ? { ...r, actual: "confirm" as const } : r,
       ),
-      records.map((r) => ({ ...r, elapsedMs: 600 })),
+      records.map((r) => ({ ...r, elapsedMs: 751 })),
       records.map((r) => ({ ...r, modelAnswered: false })),
       records.map((r) => (r.id === "risk" ? { ...r, error: "timed out" } : r)),
     ])

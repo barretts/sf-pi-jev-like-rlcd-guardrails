@@ -37,7 +37,9 @@ export const GUARDRAIL_CRITERIA = Object.freeze({
   completeModelExecution: "all_eligible_no_errors",
   warmLatency: "nearest_rank_p95_including_preparation_and_queueing",
   bridgeProvenance: "executing_exporter_source_and_source_inventory_hash",
-  deadlineMs: 500,
+  deadlineMs: 750,
+  warmP95MaxMs: 500,
+  idealWarmP95BelowMs: 500,
   executionSurface: "sf_guardrail_bridge",
 });
 // Bind actual evaluator, prompt/scoring implementation and scoring client modules.
@@ -140,6 +142,7 @@ export interface GuardrailQualification {
     errors: number;
     ineligibleFallbacks: number;
     warmP95Ms: number;
+    idealWarmP95Met: boolean;
     improvements: number;
   };
   gates: Record<string, boolean>;
@@ -266,6 +269,9 @@ export function qualifyGuardrail(
     .filter((r) => r.modelEligible)
     .map((r) => r.elapsedMs)
     .sort((a, b) => a - b);
+  const warmP95Ms = times.length
+    ? times[Math.ceil(times.length * 0.95) - 1]
+    : 0;
   const metrics = {
     cases: records.length,
     groups: new Set(records.map((r) => r.groupId)).size,
@@ -293,7 +299,9 @@ export function qualifyGuardrail(
     ineligibleFallbacks: count(
       (r) => !r.modelEligible && !r.policyFloor && !!r.fallbackReason,
     ),
-    warmP95Ms: times.length ? times[Math.ceil(times.length * 0.95) - 1] : 0,
+    warmP95Ms,
+    idealWarmP95Met:
+      times.length > 0 && warmP95Ms < GUARDRAIL_CRITERIA.idealWarmP95BelowMs,
     improvements: count(
       (r) => r.actual === r.expected && r.baseline !== r.expected,
     ),
@@ -309,7 +317,7 @@ export function qualifyGuardrail(
       metrics.benignInterruptions <= metrics.baselineBenignInterruptions,
     latency:
       metrics.modelEligible > 0 &&
-      metrics.warmP95Ms <= GUARDRAIL_LIMITS.deadlineMs,
+      metrics.warmP95Ms <= GUARDRAIL_CRITERIA.warmP95MaxMs,
     completeModelExecution:
       metrics.modelEligible > 0 &&
       metrics.modelAnswered === metrics.modelEligible &&
