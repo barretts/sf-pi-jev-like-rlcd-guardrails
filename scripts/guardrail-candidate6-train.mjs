@@ -46,6 +46,13 @@ const testManifestFile = resolve(
 );
 const baseWeightsSha256 =
   "3d4ef8d71c14db7e448a09ebe891cfb6bf32c57a9b44499ae0d1c098e48516b6";
+// RFDT rejects prompts over 2,048 tokens without truncation. Preparation only
+// compiles prompts, so its native context need not use serving-time capacity.
+const compilerLimits = Object.freeze({
+  maxModelLen: 2048,
+  maxBatchSize: 32,
+  maxBatchTokens: 2048,
+});
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const pin = (value) =>
   typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
@@ -604,48 +611,57 @@ async function main() {
     const checkpoint = resolve(values.checkpoint);
     const baseFiles = await verifyBase(checkpoint);
     await mkdir(run, { recursive: false });
-    await withAttempt(run, "prepare", source, async () => {
-      const config = configFromEnv({
-        JEV_DEVICE: "metal",
-        JEV_MODEL_ID: RFDT_BASE_MODEL,
-        JEV_MODEL_FILE: resolve(root, "models/gemma-3-1b-it-f16.gguf"),
-        JEV_TEMPLATE_VERSION: "v2",
-      });
-      const manifest = await prepareRfdt(source.admittedDatasetFile, {
-        outputDir: run,
-        templateVersion: "v2",
-        config,
-        signal: controller.signal,
-      });
-      const plan = {
-        version: 1,
-        purpose: "candidate6_train_only_research_rfdt",
-        qualification: false,
-        source: options,
-        sourcePins: source,
-        checkpoint,
-        baseFiles,
-        steps,
-        protocolSha256: GUARDRAIL_PROTOCOL_SHA256,
-        criteriaSha256: GUARDRAIL_CRITERIA_SHA256,
-        allowCutoff: GUARDRAIL_LIMITS.minimumAllowScore,
-        rfdtPreparedSha256: manifest.prepared.sha256,
-        selection: "prospective_c6_valid_v4_only",
-        historicalDiagnosticForSelection: false,
-        testRowsPassedToTraining: 0,
-        testEvaluationsBeforeFreeze: 0,
-      };
-      await verifyPreparedRun(run, plan, source);
-      await writeFile(
-        resolve(run, "candidate6-training-plan.json"),
-        `${JSON.stringify(plan, null, 2)}\n`,
-        { flag: "wx", mode: 0o600 },
-      );
-      return {
-        rfdtPreparedSha256: manifest.prepared.sha256,
-        trainRows: source.counts.admittedRows,
-      };
-    });
+    await withAttempt(
+      run,
+      "prepare",
+      { ...source, compilerLimits },
+      async () => {
+        const config = {
+          ...configFromEnv({
+            JEV_DEVICE: "metal",
+            JEV_MODEL_ID: RFDT_BASE_MODEL,
+            JEV_MODEL_FILE: resolve(root, "models/gemma-3-1b-it-f16.gguf"),
+            JEV_TEMPLATE_VERSION: "v2",
+          }),
+          ...compilerLimits,
+        };
+        const manifest = await prepareRfdt(source.admittedDatasetFile, {
+          outputDir: run,
+          templateVersion: "v2",
+          config,
+          signal: controller.signal,
+        });
+        const plan = {
+          version: 1,
+          purpose: "candidate6_train_only_research_rfdt",
+          qualification: false,
+          source: options,
+          sourcePins: source,
+          checkpoint,
+          baseFiles,
+          steps,
+          protocolSha256: GUARDRAIL_PROTOCOL_SHA256,
+          criteriaSha256: GUARDRAIL_CRITERIA_SHA256,
+          allowCutoff: GUARDRAIL_LIMITS.minimumAllowScore,
+          compilerLimits,
+          rfdtPreparedSha256: manifest.prepared.sha256,
+          selection: "prospective_c6_valid_v4_only",
+          historicalDiagnosticForSelection: false,
+          testRowsPassedToTraining: 0,
+          testEvaluationsBeforeFreeze: 0,
+        };
+        await verifyPreparedRun(run, plan, source);
+        await writeFile(
+          resolve(run, "candidate6-training-plan.json"),
+          `${JSON.stringify(plan, null, 2)}\n`,
+          { flag: "wx", mode: 0o600 },
+        );
+        return {
+          rfdtPreparedSha256: manifest.prepared.sha256,
+          trainRows: source.counts.admittedRows,
+        };
+      },
+    );
     console.log(
       JSON.stringify({
         phase: "prepared",
@@ -668,6 +684,7 @@ async function main() {
     plan.protocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
     plan.criteriaSha256 !== GUARDRAIL_CRITERIA_SHA256 ||
     plan.allowCutoff !== GUARDRAIL_LIMITS.minimumAllowScore ||
+    JSON.stringify(plan.compilerLimits) !== JSON.stringify(compilerLimits) ||
     plan.selection !== "prospective_c6_valid_v4_only" ||
     plan.historicalDiagnosticForSelection !== false ||
     plan.testRowsPassedToTraining !== 0 ||

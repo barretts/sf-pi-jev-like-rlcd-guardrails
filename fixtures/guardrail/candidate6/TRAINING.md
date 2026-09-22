@@ -49,20 +49,27 @@ node scripts/guardrail-candidate6-train.mjs prepare \
   --admission-sha256 9552d3412dca9f2079d8d7566471889da7a6596c0551e9aab2e172b52c275dfc \
   --sf-pi /private/tmp/sf-pi-guardrail-candidate5-20260922 \
   --checkpoint /Users/bsonntag/code/simple-jev-ts/.build/hf-session-1_s2hbhu/home/hub/models--google--gemma-3-1b-it/snapshots/dcc83ea841ab6100d6b47a070329e1ba4cf78752 \
-  --run .build/guardrail/candidate-6-rfdt-8step-smoke \
+  --run .build/guardrail/candidate-6-rfdt-new-8step-smoke \
   --steps 8
 
 node scripts/guardrail-candidate6-train.mjs train \
-  --run .build/guardrail/candidate-6-rfdt-8step-smoke
+  --run .build/guardrail/candidate-6-rfdt-new-8step-smoke
 
 node scripts/guardrail-candidate6-train.mjs export \
-  --run .build/guardrail/candidate-6-rfdt-8step-smoke \
+  --run .build/guardrail/candidate-6-rfdt-new-8step-smoke \
   --model-id jev/gemma-3-1b-guardrail-c6-smoke-8
 ```
 
 The 8-step run is a bounded pipeline smoke, not a quality candidate. For a
 64-, 128-, or 256-step research fit, prepare a **new** run from the original
 Google checkpoint with its chosen step count; never resume the smoke adapter.
+Preparation fixes native compilation limits at 2,048 prompt tokens, 32 batch
+slots, and 2,048 batch tokens. RFDT already rejects longer prompts without
+truncation; this smaller context does not change the prompt or serving-time
+scoring protocol. The completed `candidate-6-rfdt-8step-smoke-4096` run verified
+adapter reload, then its rebuildable adapter and compiled inputs were removed.
+Its manifest, training report, progress, and hash cleanup receipt remain in the
+run directory. That smoke result is training-pipeline evidence only.
 One training operation writes an attempt receipt, including a failure or
 cancellation state and the worker progress hash when available. The run plan
 pins the admitted bytes, base checkpoint, protocol, criteria, cutoff, host,
