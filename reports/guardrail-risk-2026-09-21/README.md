@@ -85,7 +85,7 @@ VALIDATION and TEST. The builder's sealed-corpus and SF-source pins have not
 been loosened to manufacture a ready result, so a positive admitted-bundle
 prepare remains unexercised.
 
-The strict baseline diagnostic was repeated on current SF Pi `40ba11d` with
+The strict baseline diagnostic was repeated on SF Pi `40ba11d` with
 the sealed 693-case v3 corpus (SHA-256
 `bb4ed147933c076111b127e6a5433c6ce7ea54cc43befb7d384ddb54681e6309`).
 Seven exporter tests passed; the coverage test failed on the same six
@@ -94,6 +94,16 @@ baseline source SHA-256 is
 `7c047635954f884fe0c04fa29a6a44590044e64408598078d9f7045baa30a433`.
 The source-pinned TRAIN supplement still names the earlier SF `3070408`
 commit; changing that pin alone cannot create an admissible baseline.
+SF Pi `5e2ee1e` subsequently kept the existing direct `agent-browser` shell
+confirmation as an exact floor even when Jev predicts allow. The focused
+Guardrail suite passed 362 tests (two skipped), the runtime-surface suite
+passed 31, and type, focused lint, formatting and catalog checks passed. The
+full repository suite had 34 failures in unrelated extensions, including
+sandbox permission errors, and is not a pass. Repeating the sealed-corpus
+strict diagnostic on `5e2ee1e` again passed seven exporter tests and failed
+only the same six browser coverage checks; no baseline was written. Its new
+runtime source SHA-256 is
+`5e125efa9d840317c1f974b844a50aff35dca1279b8835e3339f17439092b69c`.
 The browser tool sends a separate native click or press after Guardrail's
 hook, and the native driver may resolve a stale element ref to another node
 with the same role and name. A sound browser-model path needs a guarded
