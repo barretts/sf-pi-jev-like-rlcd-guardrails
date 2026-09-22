@@ -85,8 +85,8 @@ test("VALID host receipt pins every baseline action and prepared input", async (
   assert.equal(receipt.source_sha256, createHash("sha256").update(sourceBytes).digest("hex"));
   assert.equal(receipt.mode, "fake-facts-no-model-no-execution");
   assert.equal(receipt.label_review, "machine_authored_human_review_pending");
-  assert.match(receipt.host_commit, /^[a-f0-9]{40}$/);
-  assert.match(receipt.host_baseline_sha256, /^[a-f0-9]{64}$/);
+  assert.equal(receipt.host_commit, "bc7862b078997d2c60aa908979b5cbf59f83db80");
+  assert.equal(receipt.host_baseline_sha256, "6ec845e7365d2948ecf502326bcabbb7b042b7d300437516db3b299fd390078e");
   assert.match(receipt.model_protocol_sha256, /^[a-f0-9]{64}$/);
   assert.equal(receipt.status.length, corpus.cases.length);
   assert.deepEqual(receipt.status.map((row) => row.id), corpus.cases.map((row) => row.id));

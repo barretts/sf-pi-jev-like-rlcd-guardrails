@@ -14,6 +14,14 @@
   receipt pins the corrected source, host identity, per-case baseline action,
   routing lane, and risk-input digest. TEST remains sealed until model and
   scoring gates are frozen.
+- **C7 final-host repin, VALID-only follow-up**: The fake/stubbed VALID replay
+  was repeated on sf-pi commit `bc7862b078997d2c60aa908979b5cbf59f83db80`
+  with host baseline SHA-256
+  `6ec845e7365d2948ecf502326bcabbb7b042b7d300437516db3b299fd390078e`.
+  All 96 per-case baseline actions, routing lanes, and prepared risk-input
+  hashes match the prior replay on `a12f1de85c1919fa2ff94bf9315c522b0ad382da`.
+  No model was called. The newer receipt supersedes the older host receipt for
+  Candidate 8 scoring.
 
 The original 90-case record array has SHA-256
 `c13422cc1dbdbd62795a82051fed8cfc0f3243576dbd2fd25bd697bf1eb78d86`
