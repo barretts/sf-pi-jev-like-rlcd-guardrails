@@ -11,7 +11,7 @@ index 898b0e862ed664d247d4883d6c8270f538b78f7f..51b7da79285a5e2b976fed810a81e9d1
  
  # Security scan reports
 diff --git a/catalog/index.json b/catalog/index.json
-index fe4232ae85bd69ab6675e8f8819360560845605e..ee895b10e8b1039628965947bc0335cca258d232 100644
+index fe4232ae85bd69ab6675e8f8819360560845605e..93da000da879f91d2fa20b2d3a78290e87e24b7a 100644
 --- a/catalog/index.json
 +++ b/catalog/index.json
 @@ -226,7 +226,7 @@
@@ -60,7 +60,7 @@ index fe4232ae85bd69ab6675e8f8819360560845605e..ee895b10e8b1039628965947bc0335cc
      "hasReadme": true,
      "hasTests": true,
 -    "srcLoc": 5673
-+    "srcLoc": 7047
++    "srcLoc": 7048
    },
    {
      "id": "sf-herdr",
@@ -1215,10 +1215,10 @@ index d96bfc0df37d67fd989d461c8b66457d8d945e72..28b1863395965385cafaa980fbb4f727
      }
 diff --git a/extensions/sf-guardrail/lib/jev-risk.ts b/extensions/sf-guardrail/lib/jev-risk.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..b201728595c4df43a4b3dea58fba73c525820ac4
+index 0000000000000000000000000000000000000000..c4ae71f6bbb8728a7636beaede8950b2ebfb71bd
 --- /dev/null
 +++ b/extensions/sf-guardrail/lib/jev-risk.ts
-@@ -0,0 +1,1079 @@
+@@ -0,0 +1,1080 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +/** Optional local risk classification; the existing tool_call owns enforcement. */
 +import { createHash } from "node:crypto";
@@ -2029,6 +2029,7 @@ index 0000000000000000000000000000000000000000..b201728595c4df43a4b3dea58fba73c5
 +    baseline?.action === "block" ||
 +    baseline?.ruleId === "safe-temp-cleanup" ||
 +    baseline?.ruleId === "remote-script-command-substitution" ||
++    baseline?.ruleId === "agent-browser-direct" ||
 +    nativeIntentPolicyFloor(input, baseline)
 +  )
 +    return true;
@@ -6208,10 +6209,10 @@ index 0000000000000000000000000000000000000000..172974cb68c751a4b1768ba666335255
 +});
 diff --git a/extensions/sf-guardrail/tests/jev-risk.test.ts b/extensions/sf-guardrail/tests/jev-risk.test.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..1473f4e4ee4e955bbb1d1a767f4ac024d1a69ceb
+index 0000000000000000000000000000000000000000..c776014da9afef87cdfba50dc12c7fa69d05dc85
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/jev-risk.test.ts
-@@ -0,0 +1,713 @@
+@@ -0,0 +1,736 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +import { createHash } from "node:crypto";
 +import { afterEach, describe, it, expect, vi } from "vitest";
@@ -6242,6 +6243,7 @@ index 0000000000000000000000000000000000000000..1473f4e4ee4e955bbb1d1a767f4ac024
 +  type JevRiskProvider,
 +} from "../lib/jev-risk.ts";
 +import type { SafetyKernelInput } from "../lib/safety-kernel.ts";
++import { evaluateSafety } from "../lib/safety-kernel.ts";
 +import type { ClassifiedDecision } from "../lib/types.ts";
 +
 +function canonical(value: any): string {
@@ -6356,6 +6358,28 @@ index 0000000000000000000000000000000000000000..1473f4e4ee4e955bbb1d1a767f4ac024
 +      const result = await evaluateJevRisk(pi(model), request, decision, { mode: "enforce" });
 +      expect(result.decision).toBe(decision);
 +      expect(result.comparison?.source).toBe("exact_policy");
++    }
++    expect(model.evaluate).not.toHaveBeenCalled();
++  });
++  it("keeps direct browser CLI commands under the existing confirmation", async () => {
++    const model = provider("allow");
++    for (const command of [
++      "agent-browser --session sf-pi click @e7",
++      "npx agent-browser click @e7",
++    ]) {
++      const request = { ...input(), input: { command } };
++      const existing = await evaluateSafety(request);
++      expect(existing).toMatchObject({ action: "confirm", ruleId: "agent-browser-direct" });
++      expect(jevRiskPolicyFloor(request, existing)).toBe(true);
++      for (const mode of ["shadow", "enforce"] as const) {
++        const result = await evaluateJevRisk(pi(model), request, existing, { mode });
++        expect(result.decision).toBe(existing);
++        expect(result.comparison).toMatchObject({
++          source: "exact_policy",
++          baseline: "confirm",
++          actual: "confirm",
++        });
++      }
 +    }
 +    expect(model.evaluate).not.toHaveBeenCalled();
 +  });
