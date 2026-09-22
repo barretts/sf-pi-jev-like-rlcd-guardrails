@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:simple-jev:blind-c9:valid:2026-09-22:snapshot-v1",
+  "title": "Blind Candidate 9 prospective validation cases",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "split",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "c9.1"
+    },
+    "split": {
+      "const": "valid"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "family",
+        "group_id",
+        "template_id",
+        "fixture",
+        "operation",
+        "expected",
+        "sources"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^c9-valid-[0-9]{3}$"
+        },
+        "family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "group_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "template_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixture": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cwd",
+            "facts"
+          ],
+          "properties": {
+            "cwd": {
+              "type": "string",
+              "minLength": 1
+            },
+            "facts": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "observations": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "org": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "alias",
+                    "type",
+                    "guessed"
+                  ],
+                  "properties": {
+                    "alias": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "type": {
+                      "enum": [
+                        "production",
+                        "sandbox",
+                        "scratch",
+                        "developer",
+                        "trial",
+                        "unknown"
+                      ]
+                    },
+                    "guessed": {
+                      "type": "boolean"
+                    },
+                    "command": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "browserRef": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "status"
+                  ],
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "fresh",
+                        "stale",
+                        "missing"
+                      ]
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    },
+                    "snapshotSha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "line": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "browserPage": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "status",
+                    "url",
+                    "snapshotSha256"
+                  ],
+                  "properties": {
+                    "status": {
+                      "const": "fresh"
+                    },
+                    "url": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "snapshotSha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "snapshot": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            },
+            "policyBehaviors": {
+              "type": "object",
+              "additionalProperties": {
+                "enum": [
+                  "off",
+                  "confirm",
+                  "block"
+                ]
+              }
+            }
+          }
+        },
+        "operation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tool",
+            "input"
+          ],
+          "properties": {
+            "tool": {
+              "type": "string",
+              "minLength": 1
+            },
+            "input": {
+              "type": "object"
+            }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decision",
+            "reason_code",
+            "rationale"
+          ],
+          "properties": {
+            "decision": {
+              "enum": [
+                "allow",
+                "require_approval",
+                "hard_block"
+              ]
+            },
+            "reason_code": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rationale": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

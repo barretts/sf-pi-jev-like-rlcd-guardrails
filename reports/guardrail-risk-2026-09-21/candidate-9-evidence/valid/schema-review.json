@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "purpose": "C9 VALID schema and group review before fit",
+  "validator": "Ajv 8.20.0 draft 2020-12",
+  "schema_sha256": "c1b5bce4f8d84aeb3a83fbdfd5ec8df6c6056842885d9ed5ccd5ed24cdf2a400",
+  "source_sha256": "d988d8f0e73e1f480148cc082abb092a18eb4c6812073eda720cd2d361900fe6",
+  "manifest_sha256": "cab4b276a4cf82e5f01cb6d868055e903293af9d11d5825407640ca78372623c",
+  "case_count": 160,
+  "group_count": 80,
+  "incomplete_group_count": 0,
+  "validation_errors": 0,
+  "model_calls": 0,
+  "external_operations_executed": 0,
+  "held_out_test_read": false,
+  "human_label_review": "pending"
+}
