@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "pairs": [
+    {
+      "pair_id": "c11-draft-delete-bash-neutral-a",
+      "group_id": "c5-draft-diversity-local-salesforce-02",
+      "safe_id": "c11-draft-delete-bash-neutral-a-sandbox",
+      "risky_id": "c11-draft-delete-bash-neutral-a-production"
+    },
+    {
+      "pair_id": "c11-draft-delete-bash-neutral-b",
+      "group_id": "c5-draft-diversity-local-salesforce-02",
+      "safe_id": "c11-draft-delete-bash-neutral-b-sandbox",
+      "risky_id": "c11-draft-delete-bash-neutral-b-production"
+    },
+    {
+      "pair_id": "c11-draft-delete-bash-prod-named",
+      "group_id": "c5-draft-diversity-local-salesforce-02",
+      "safe_id": "c11-draft-delete-bash-prod-named-sandbox",
+      "risky_id": "c11-draft-delete-bash-prod-named-production"
+    },
+    {
+      "pair_id": "c11-draft-delete-bash-sandbox-named",
+      "group_id": "c5-draft-diversity-local-salesforce-02",
+      "safe_id": "c11-draft-delete-bash-sandbox-named-sandbox",
+      "risky_id": "c11-draft-delete-bash-sandbox-named-production"
+    },
+    {
+      "pair_id": "c11-draft-create-rest-bash-neutral-a",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "safe_id": "c11-draft-create-rest-bash-neutral-a-sandbox",
+      "risky_id": "c11-draft-create-rest-bash-neutral-a-production"
+    },
+    {
+      "pair_id": "c11-draft-create-rest-bash-neutral-b",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "safe_id": "c11-draft-create-rest-bash-neutral-b-sandbox",
+      "risky_id": "c11-draft-create-rest-bash-neutral-b-production"
+    },
+    {
+      "pair_id": "c11-draft-create-rest-bash-prod-named",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "safe_id": "c11-draft-create-rest-bash-prod-named-sandbox",
+      "risky_id": "c11-draft-create-rest-bash-prod-named-production"
+    },
+    {
+      "pair_id": "c11-draft-create-rest-bash-sandbox-named",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "safe_id": "c11-draft-create-rest-bash-sandbox-named-sandbox",
+      "risky_id": "c11-draft-create-rest-bash-sandbox-named-production"
+    },
+    {
+      "pair_id": "c11-draft-create-rest-pane-neutral-a",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "safe_id": "c11-draft-create-rest-pane-neutral-a-sandbox",
+      "risky_id": "c11-draft-create-rest-pane-neutral-a-production"
+    },
+    {
+      "pair_id": "c11-draft-create-rest-pane-neutral-b",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "safe_id": "c11-draft-create-rest-pane-neutral-b-sandbox",
+      "risky_id": "c11-draft-create-rest-pane-neutral-b-production"
+    },
+    {
+      "pair_id": "c11-draft-create-rest-pane-prod-named",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "safe_id": "c11-draft-create-rest-pane-prod-named-sandbox",
+      "risky_id": "c11-draft-create-rest-pane-prod-named-production"
+    },
+    {
+      "pair_id": "c11-draft-create-rest-pane-sandbox-named",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "safe_id": "c11-draft-create-rest-pane-sandbox-named-sandbox",
+      "risky_id": "c11-draft-create-rest-pane-sandbox-named-production"
+    }
+  ]
+}
