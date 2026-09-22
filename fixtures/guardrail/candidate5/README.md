@@ -51,11 +51,11 @@ node scripts/guardrail-candidate5-bundle.mjs \
 ```
 
 Do not run this command until the sf-pi baseline passes its full coverage
-checks. The v3 baseline
-sends browser presses without a fresh page to rules fallback, leaving its
-browser risk coverage gate unmet. A revised, source-pinned qualification
-corpus and baseline are required before training; a proposed v4 browser
-addendum was held because page facts do not establish focus or layout.
+checks. The current host sends browser presses to rules fallback because it
+cannot verify the live focused element and page at scoring and execution.
+That leaves the v3 browser risk coverage gate unmet. A revised, source-pinned
+qualification corpus and baseline are required before training; a proposed v4
+browser addendum was held because page facts do not establish focus or layout.
 The builder deliberately pins the v3 corpus SHA-256. Any future revised
 corpus requires separate source and split review, then an explicit update to
 that pin and the supplement's corpus identity; the builder will not silently
@@ -63,6 +63,10 @@ accept a different corpus.
 The bundle receipt reports per-family labels, strict-screen holds, and
 `trainingReady`; a balanced bundle is still only a training input, not a
 qualified model. Human label review and live API acceptance remain separate.
+For candidate 5, RFDT preparation is permitted only from this builder's
+explicit `trainingReady: true` bundle after a sealed revised corpus, matching
+sf-pi baseline, and full admission check. The current v3 corpus cannot produce
+a qualifying bundle; omission of the field is not a candidate-5 approval.
 
 The following proposals are deliberately absent: Tooling `executeAnonymous`
 because it overlaps reserved Anonymous Apex semantics; an AgentScript

@@ -556,6 +556,18 @@ try {
   const coverageGaps = requiredFamilies.filter(
     (family) => !byFamily[family]?.allow || !byFamily[family]?.confirm,
   );
+  const validationByFamily = {};
+  for (const row of validation) {
+    validationByFamily[row.family] ??= { allow: 0, confirm: 0 };
+    validationByFamily[row.family][row.expected]++;
+  }
+  const validationCoverageGaps = requiredFamilies.filter(
+    (family) =>
+      !validationByFamily[family]?.allow ||
+      !validationByFamily[family]?.confirm,
+  );
+  const trainingReady =
+    coverageGaps.length === 0 && validationCoverageGaps.length === 0;
   const source = {
     corpusSha256: corpus.sha256,
     baselineSha256: baseline.sha256,
@@ -572,9 +584,9 @@ try {
     baselineSourceSha256: baseline.value.baselineSourceSha256,
     sourceSha256: source,
     mockedExecution: true,
-    trainingReady: coverageGaps.length === 0,
-    status: coverageGaps.length
-      ? "review-only; TRAIN coverage gaps remain"
+    trainingReady,
+    status: !trainingReady
+      ? "review-only; TRAIN or VALIDATION coverage gaps remain"
       : "TRAIN/VALIDATION only; qualification pending",
     records: [...selected, ...validation],
   };
@@ -600,8 +612,10 @@ try {
       return acc;
     }, {}),
     trainFamilyLabels: byFamily,
+    validationFamilyLabels: validationByFamily,
     coverageGaps,
-    trainingReady: coverageGaps.length === 0,
+    validationCoverageGaps,
+    trainingReady,
     exactReservedReplay: 0,
     canonicalReservedReplay: 0,
     coarseReservedReplay: 0,

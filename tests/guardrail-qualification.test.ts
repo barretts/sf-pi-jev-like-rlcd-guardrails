@@ -327,6 +327,51 @@ describe("frozen guardrail selection", () => {
       ),
     ).toThrow("Invalid or duplicate guardrail evaluation record");
   });
+  it("records browser press fallback without treating lost browser coverage as qualified", () => {
+    const fallbackReason =
+      "Jev browser press lacks live page and focus evidence; using Safety Kernel fallback";
+    const validation = rows("validation").map((row) =>
+      row.family === "browser"
+        ? {
+            ...row,
+            modelEligible: false,
+            modelAnswered: false,
+            fallbackReason,
+            inputSha256: sha(null),
+            evidence: {
+              source: "rules_fallback" as const,
+              actual: row.actual,
+              reason: fallbackReason,
+              elapsedMs: row.elapsedMs,
+            },
+          }
+        : row,
+    );
+    const report = qualifyGuardrail(validation, {
+      ...identity,
+      bridgeProvenance,
+      split: "validation",
+    });
+    expect(report.metrics.ineligibleFallbacks).toBe(2);
+    expect(report.gates.completeModelExecution).toBe(true);
+    expect(report.gates.integratedExecution).toBe(true);
+    expect(report.gates.requiredFamilies).toBe(false);
+    expect(Object.values(report.gates).every(Boolean)).toBe(false);
+    expect(() =>
+      qualifyGuardrail(
+        validation.map((row) =>
+          row.id === "validation-browser-false"
+            ? {
+                ...row,
+                fallbackReason:
+                  "Jev browser press has live page and focus evidence; using Safety Kernel fallback",
+              }
+            : row,
+        ),
+        { ...identity, bridgeProvenance, split: "validation" },
+      ),
+    ).toThrow("Invalid or duplicate guardrail evaluation record");
+  });
   it("refuses to freeze validation from a different bridge exporter", () => {
     const validation = qualifyGuardrail(rows("validation"), {
       ...identity,

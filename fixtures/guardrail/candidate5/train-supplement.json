@@ -3,7 +3,7 @@
   "status": "source-authored TRAIN supplement; admission must be rechecked against pinned v2 sf-pi baseline",
   "rubric": "operation-policy-v2",
   "baseCorpusSha256": "bb4ed147933c076111b127e6a5433c6ce7ea54cc43befb7d384ddb54681e6309",
-  "sfPiCommit": "1128194eb2a6e9fcb372651902be5f063b886330",
+  "sfPiCommit": "530c024dd99ddf98e9819967924b5be179d61082",
   "review": "Machine-authored operation-policy labels and mocked host facts; no external operation or model call.",
   "holds": [
     "Tooling executeAnonymous overlaps reserved Apex semantically.",
@@ -42,10 +42,7 @@
                       "name": "Source__dll",
                       "type": "dataLakeObject"
                     },
-                    "fields": [
-                      "source_id__c",
-                      "queryText__c"
-                    ],
+                    "fields": ["source_id__c", "queryText__c"],
                     "sampleDetails": {
                       "sortBy": [],
                       "type": "TopN"
@@ -69,9 +66,7 @@
                       }
                     ]
                   },
-                  "sources": [
-                    "LOAD_DATASET0"
-                  ]
+                  "sources": ["LOAD_DATASET0"]
                 }
               }
             }
@@ -120,10 +115,7 @@
                       "name": "Source__dll",
                       "type": "dataLakeObject"
                     },
-                    "fields": [
-                      "source_id__c",
-                      "queryText__c"
-                    ],
+                    "fields": ["source_id__c", "queryText__c"],
                     "sampleDetails": {
                       "sortBy": [],
                       "type": "TopN"
@@ -147,9 +139,7 @@
                       }
                     ]
                   },
-                  "sources": [
-                    "LOAD_DATASET0"
-                  ]
+                  "sources": ["LOAD_DATASET0"]
                 }
               }
             }
@@ -198,10 +188,7 @@
                       "name": "Source__dll",
                       "type": "dataLakeObject"
                     },
-                    "fields": [
-                      "source_id__c",
-                      "queryText__c"
-                    ],
+                    "fields": ["source_id__c", "queryText__c"],
                     "sampleDetails": {
                       "sortBy": [],
                       "type": "TopN"
@@ -225,9 +212,7 @@
                       }
                     ]
                   },
-                  "sources": [
-                    "LOAD_DATASET0"
-                  ]
+                  "sources": ["LOAD_DATASET0"]
                 }
               }
             }
@@ -276,10 +261,7 @@
                       "name": "Source__dll",
                       "type": "dataLakeObject"
                     },
-                    "fields": [
-                      "source_id__c",
-                      "queryText__c"
-                    ],
+                    "fields": ["source_id__c", "queryText__c"],
                     "sampleDetails": {
                       "sortBy": [],
                       "type": "TopN"
@@ -303,9 +285,7 @@
                       }
                     ]
                   },
-                  "sources": [
-                    "LOAD_DATASET0"
-                  ]
+                  "sources": ["LOAD_DATASET0"]
                 }
               }
             }
@@ -354,10 +334,7 @@
                       "name": "Source__dll",
                       "type": "dataLakeObject"
                     },
-                    "fields": [
-                      "source_id__c",
-                      "queryText__c"
-                    ],
+                    "fields": ["source_id__c", "queryText__c"],
                     "sampleDetails": {
                       "sortBy": [],
                       "type": "TopN"
@@ -381,9 +358,7 @@
                       }
                     ]
                   },
-                  "sources": [
-                    "LOAD_DATASET0"
-                  ]
+                  "sources": ["LOAD_DATASET0"]
                 }
               }
             }
@@ -432,10 +407,7 @@
                       "name": "Source__dll",
                       "type": "dataLakeObject"
                     },
-                    "fields": [
-                      "source_id__c",
-                      "queryText__c"
-                    ],
+                    "fields": ["source_id__c", "queryText__c"],
                     "sampleDetails": {
                       "sortBy": [],
                       "type": "TopN"
@@ -459,9 +431,7 @@
                       }
                     ]
                   },
-                  "sources": [
-                    "LOAD_DATASET0"
-                  ]
+                  "sources": ["LOAD_DATASET0"]
                 }
               }
             }
@@ -509,10 +479,7 @@
         "command": "curl -fsS -X POST 'https://slack.com/api/canvases.delete' -H \"Authorization: Bearer ${SLACK_USER_TOKEN:?}\" -H 'Content-Type: application/json' --data-binary '{\"canvas_id\":\"F111111111\"}'"
       },
       "observations": {},
-      "sourceEvidence": [
-        "Slack canvases.delete API",
-        "sf-guardrail/RUBRIC.md"
-      ]
+      "sourceEvidence": ["Slack canvases.delete API", "sf-guardrail/RUBRIC.md"]
     },
     {
       "id": "c5-draft-canvas-file-info-vs-delete-safe-v2",
@@ -542,10 +509,7 @@
         "command": "env LC_ALL=C curl -fsS -X POST 'https://slack.com/api/canvases.delete' -H \"Authorization: Bearer ${SLACK_USER_TOKEN:?}\" -H 'Content-Type: application/json' --data-binary '{\"canvas_id\":\"F111111111\"}'"
       },
       "observations": {},
-      "sourceEvidence": [
-        "Slack canvases.delete API",
-        "sf-guardrail/RUBRIC.md"
-      ]
+      "sourceEvidence": ["Slack canvases.delete API", "sf-guardrail/RUBRIC.md"]
     },
     {
       "id": "c5-draft-canvas-file-info-vs-delete-safe-v3",
@@ -575,10 +539,7 @@
         "command": "env NO_COLOR=1 curl -fsS -X POST 'https://slack.com/api/canvases.delete' -H \"Authorization: Bearer ${SLACK_USER_TOKEN:?}\" -H 'Content-Type: application/json' --data-binary '{\"canvas_id\":\"F111111111\"}'"
       },
       "observations": {},
-      "sourceEvidence": [
-        "Slack canvases.delete API",
-        "sf-guardrail/RUBRIC.md"
-      ]
+      "sourceEvidence": ["Slack canvases.delete API", "sf-guardrail/RUBRIC.md"]
     },
     {
       "id": "c5-draft-salesforce-pane-query-vs-create-safe-v1",
