@@ -10,6 +10,8 @@ versus baseline three. All 144 eligible calls completed and warm p95 was
 The actual candidate 3 SDK off/shadow fixture completed with matching approval
 and execution outcomes while the old engine enforced. No qualified enforce,
 improvement, held-out qualification or production acceptance claim is made.
+Candidate 4 has now passed genuine preparation and started its prospectively
+bound 1,536-update training run; its outcomes remain pending.
 
 The isolated worktrees use `barretts/jev-guardrail-risk`: Jev at
 `/private/tmp/simple-jev-ts-guardrail-risk-20260921`, based on `95c0b50`, and sf-pi
@@ -182,8 +184,31 @@ not qualification. Six unsafe allows and five regressions preclude an
 equal-or-better claim even though aggregate unsafe allows are below the
 baseline. The 16 correctly resolved disagreements do not establish overall
 improvement. The failed candidate is neither frozen nor promoted; no held-out
-model inference occurred. Candidate 4 TRAIN-only counterfactual diversity
-preparation remains pending, with scoring and qualification criteria unchanged.
+model inference occurred.
+
+Candidate 4's genuine preparation completed at 01:58:10.772 UTC on 2026-09-22;
+its inventory checks passed before training began at 01:58:10.786 UTC. The
+prospective plan SHA-256 is
+`05947f9119dfb3a567ae1248fa2414160f383217fc8c45d53bc8f6e8e63fb4b0`.
+The [48 retained TRAIN-only counterfactual records](../../fixtures/guardrail/train-counterfactuals.json)
+and [reproduction instructions](../../fixtures/guardrail/TRAIN_COUNTERFACTUALS.md)
+are the only changed training axis. Actual prepared branches are 300 TRAIN /
+144 validation / zero TEST, with authored SHA-256
+`ee60d00405d57fbeb31ecd675559ad2660dec2dd3f270f2cfb2f34e33434f315`.
+The original 252 prepared TRAIN rows remain an exact byte prefix; prepared
+validation SHA-256 is unchanged and the TEST file is empty. Root's execution
+review verified all 21 source pins before the first model call, and a subsequent
+independent CPU review confirmed the genuine preparation postconditions.
+
+The run retains the original reviewed Google base, default RFDT settings and
+1,536 fixed updates. With 300 TRAIN rows, nominal mean presentations per row
+are 40.96 versus candidate 3's 48.7619. This is an exposure calculation, not a
+progress percentage or accuracy forecast. The original 612-case qualification
+corpus, reserved groups, protocol, cutoff and criteria remain unchanged; the
+660-record supplemental container is training input only. Candidate 4 is
+training. TRAIN fit, export, native bridge VALID, qualification freeze, held-out
+and genuine enforce outcomes remain pending. Candidate 3's rejection and
+separate actual native off/shadow SDK proof remain intact.
 
 The saved-scalar CPU parity receipt
 `.build/guardrail/candidate-3/initial-256-parity-receipt.json`, observed at

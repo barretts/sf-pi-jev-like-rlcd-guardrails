@@ -61,6 +61,7 @@ execution failures for qualification and cannot make a candidate pass.
 | Candidate 3 training                 | Completed 1,536 fixed updates; all 252 TRAIN cases meet the fixed cutoff; adapter reload delta zero; separate F16 export recorded                                     | Complete TRAIN fit establishes memorization on training cases; native generalization is measured separately. |
 | Candidate 3 native bridge validation | All 144 eligible calls answered; six unsafe allows, five safety regressions, and 19 safe-case interruptions versus baseline 3; warm p95 213.736 ms                    | Rejected by safety and usability gates; no freeze or held-out model calls.                                   |
 | Candidate 3 actual native SDK        | Off/shadow each executed nine operations, preserved one exact block, and used three confirmations and three grants; shadow answered all eight semantic calls          | Actual shadow fixture behavior only; unqualified candidate does not execute the enforce arm.                 |
+| Candidate 4                          | Genuine preparation verified 300 TRAIN / 144 validation / zero TEST branches; original prepared rows preserved; same-profile 1,536-update training started            | TRAIN fit, export, native validation, held-out and enforce outcomes remain pending.                          |
 
 Candidate 2's native validation found zero unsafe allows versus 14 for the
 baseline and preserved exact blocks, but its 75 unnecessary interruptions
@@ -106,9 +107,21 @@ generalize sufficiently. Independent CPU review verified the current
 implementation seal, metrics, model/native identities and all 33 runtime pins.
 The [freeze refusal receipt](./reports/guardrail-risk-2026-09-21/candidate-3-freeze-refusal.json)
 records exit 1 and no output: failed validation prohibits held-out testing.
-No freeze, held-out inference, qualification or promotion occurred. Candidate 4
-TRAIN-only counterfactual diversity preparation remains pending; no result is
-claimed for that future experiment.
+No freeze, held-out inference, qualification or promotion occurred.
+
+Candidate 4's genuine preparation completed and training started at 01:58:10 UTC
+on 2026-09-22 under prospective plan SHA-256
+`05947f9119dfb3a567ae1248fa2414160f383217fc8c45d53bc8f6e8e63fb4b0`.
+The only changed axis is the [48 TRAIN counterfactuals](./fixtures/guardrail/train-counterfactuals.json),
+retained with their [reproduction recipe](./fixtures/guardrail/TRAIN_COUNTERFACTUALS.md).
+Preparation admitted 300 TRAIN / 144 validation / zero TEST branches, preserving
+the original 252 prepared TRAIN rows as an exact byte prefix and unchanged
+validation bytes. Root reviewed all 21 source pins before the first model call.
+The original base, default RFDT settings and 1,536 fixed updates remain the
+same; nominal mean TRAIN presentations per row change from 48.7619 to 40.96.
+The original 612-case qualification inventory and all criteria remain unchanged.
+TRAIN fit, export, native validation, held-out and enforce results are pending;
+training start supplies no accuracy forecast or qualification claim.
 
 An independent CPU comparison of saved batch-loss scalars found exact parity
 for candidate 3's first 256 updates against candidate 2: 256/256 step IDs and

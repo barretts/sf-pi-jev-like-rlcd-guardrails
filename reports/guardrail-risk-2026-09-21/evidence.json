@@ -2,7 +2,7 @@
   "version": 1,
   "date": "2026-09-21",
   "purpose": "Separate local guardrail semantic-risk candidate; preserve exact policy and existing Pi approval/audit enforcement.",
-  "checkpointStatus": "candidate_3_rejected_native_validation_safety_and_usability_gates",
+  "checkpointStatus": "candidate_4_training_candidate_3_rejected_native_validation",
   "workspaces": {
     "branch": "barretts/jev-guardrail-risk",
     "jev": {
@@ -438,6 +438,105 @@
         "freezeCreated": false,
         "sealMatchesCurrentImplementation": true
       }
+    },
+    "candidate4": {
+      "status": "training",
+      "runDirectory": ".build/guardrail/candidate-4",
+      "prospectivePlan": {
+        "file": ".build/guardrail/candidate-4/prospective-plan.json",
+        "sha256": "05947f9119dfb3a567ae1248fa2414160f383217fc8c45d53bc8f6e8e63fb4b0",
+        "bytes": 9179
+      },
+      "prospectivePlanCreatedAt": "2026-09-22T01:56:32.852Z",
+      "ownedWrapper": {
+        "file": ".build/guardrail/candidate-4/run.mjs",
+        "sha256": "4b3155fa2b52214d0d76f2d555207d10398b834f465045856d0eefed085a33c9",
+        "bytes": 9398
+      },
+      "sourceFingerprintSha256": "9dc00b6494809250079f8a9148c1f88083793c4851552b5fad8b1f49fdaefbfd",
+      "sourcePinsVerifiedBeforeFirstModelCall": 21,
+      "rootExecutionReview": {
+        "file": ".build/guardrail/candidate-4/root-execution-review.json",
+        "sha256": "ada417b49c09b3cc901109fd26716fac1d3a1bab7e0374ff64c17184064cfb5f",
+        "bytes": 432
+      },
+      "rootPreparationReview": {
+        "file": ".build/guardrail/candidate-4/root-preparation-review.json",
+        "sha256": "46c8a81023ab72a81258778c5f688021090651d32f15539204f4162b3de6d795",
+        "bytes": 538
+      },
+      "preparationCompletedAt": "2026-09-22T01:58:10.772Z",
+      "preparationInventoryVerifiedAt": "2026-09-22T01:58:10.785Z",
+      "trainingStartedAt": "2026-09-22T01:58:10.786Z",
+      "ownedSession": 24062,
+      "ownerPidAtStart": 21693,
+      "trainCliPidAtStart": 21863,
+      "changedAxis": "Append exactly 48 pre-C3-VALID machine-authored TRAIN counterfactuals; same original reviewed base, default RFDT settings and 1536 fixed updates",
+      "retainedSupplement": "fixtures/guardrail/train-counterfactuals.json",
+      "reproductionRecipe": "fixtures/guardrail/TRAIN_COUNTERFACTUALS.md",
+      "trainingInputBundleSha256": "acc33f57d031e0e1e86483cbc81f3daeb5a263cc48dadcb67e1b9ee546d5d89c",
+      "authoredTrainValidationSha256": "ee60d00405d57fbeb31ecd675559ad2660dec2dd3f270f2cfb2f34e33434f315",
+      "preparedTrainBranches": 300,
+      "preparedValidationBranches": 144,
+      "preparedTestBranches": 0,
+      "originalPreparedTrainPrefixPreserved": true,
+      "originalPreparedTrainPrefixRows": 252,
+      "preparedValidationSha256": "889ced806d4e9fd307bd980f8bbadab4dcf09c8b435bb79db6103a9be12a622c",
+      "preparedTestBytes": 0,
+      "plannedUpdates": 1536,
+      "hyperparameters": {
+        "seed": 42,
+        "rank": 16,
+        "scale": 2,
+        "dropout": 0,
+        "layers": 26,
+        "projections": ["self_attn.q_proj", "self_attn.v_proj"],
+        "batch_size": 1,
+        "accumulation": 8,
+        "learning_rate": 0.0001,
+        "max_prompt_tokens": 2048
+      },
+      "optimizer": {
+        "name": "mlx.optimizers.Adam",
+        "learning_rate": 0.0001,
+        "betas": [0.9, 0.999],
+        "eps": 1e-8,
+        "bias_correction": false,
+        "weight_decay": 0,
+        "schedule": "constant",
+        "gradient_clipping": false
+      },
+      "nominalMeanTrainPresentationsPerRow": 40.96,
+      "candidate3NominalMeanTrainPresentationsPerRow": 48.76190476190476,
+      "exposureCalculationScope": "Fixed updates times batch size times gradient accumulation divided by TRAIN rows; not observed progress or a quality forecast",
+      "baseModel": "google/gemma-3-1b-it",
+      "baseRevision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+      "protocolSha256": "da0fa5b6b3c48333c0467dedcc5e0b0160d224749d920e950fbb621ce8d43788",
+      "criteriaSha256": "b7147735bc3c2c2dc5fd00b61d1abfc1c3a66888213d5f37dc1c790ba791c8b7",
+      "originalQualificationCorpusSha256": "f04d11f220f8f167a579e0fd3f466a1d47f2c0a612fb1411ee264bfc34675ee2",
+      "baselineSourceSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
+      "originalQualificationInventoryCases": 612,
+      "qualificationInventoryChanged": false,
+      "heldOutSemanticsOrTargetsInspected": false,
+      "testPassedToTraining": false,
+      "fullTrainPostFitEvaluation": "pending_before_any_export",
+      "trainingResult": null,
+      "fullTrainPostFitMetrics": null,
+      "adapterValidationMetrics": null,
+      "exportedModelId": null,
+      "nativeBridgeValidationMetrics": null,
+      "prospectiveQualificationFreezeSha256": null,
+      "heldOutMetrics": null,
+      "heldOutModelCalls": 0,
+      "realModelEnforceWorkflowMetrics": null,
+      "qualified": false,
+      "eligibleForDefaultPromotion": false,
+      "exportAuthorizedByThisRun": false,
+      "progressFiles": [
+        ".build/guardrail/candidate-4/candidate-progress.jsonl",
+        ".build/guardrail/candidate-4/worker-progress.jsonl"
+      ],
+      "claimBoundary": "Actual preparation and training start only; no TRAIN-fit, export, native VALID, held-out, enforce, effectiveness or qualification result. Candidate 3 rejection remains the latest evaluated model outcome."
     }
   },
   "qualificationCriteria": {
@@ -764,10 +863,14 @@
     "candidate3FreezeRefusalVerified": true,
     "representativeSdkNativeShadowApprovalAndOutcomeParityObserved": true,
     "representativeSdkNativeEnforceComparisonCompleted": false,
-    "candidate2HistoricalZeroUnsafeAllowsObservedOnValidation": true
+    "candidate2HistoricalZeroUnsafeAllowsObservedOnValidation": true,
+    "trainingCandidate": "candidate-4",
+    "candidate4PreparationAndTrainingStartVerified": true,
+    "candidate4EffectivenessEstablished": false,
+    "latestEvaluatedCandidate": "jev/gemma-3-1b-guardrail-candidate-3"
   },
   "pendingEvidence": [
-    "Candidate 4 TRAIN-only counterfactual diversity preparation; no prepared corpus, training or model result claimed yet",
+    "Candidate 4 training completion and full 300-case TRAIN post-fit diagnosis before any export; native validation, qualification and genuine enforce outcomes remain pending",
     "Explicit user decision about conservative model-confirmation session setting",
     "Human review of machine-authored operation-policy labels",
     "Passing validation of a future candidate before prospective candidate/runtime/criteria/inventory freeze",

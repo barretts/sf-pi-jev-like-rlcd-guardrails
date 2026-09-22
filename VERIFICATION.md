@@ -96,7 +96,22 @@ metrics/gates, model/native identities and all 33 runtime source pins. The
 [freeze refusal receipt](./reports/guardrail-risk-2026-09-21/candidate-3-freeze-refusal.json)
 records expected CLI exit 1, the failed-validation prohibition on held-out
 testing, and no freeze output. No held-out model call or promotion occurred.
-Candidate 4 TRAIN-only counterfactual diversity preparation remains pending.
+Candidate 4's genuine preparation verified 300 TRAIN / 144 validation / zero
+TEST branches before training started at 01:58:10 UTC on 2026-09-22. Authored
+SHA-256 is `ee60d00405d57fbeb31ecd675559ad2660dec2dd3f270f2cfb2f34e33434f315`;
+the original 252 prepared TRAIN rows remain an exact byte prefix and validation
+SHA-256 remains `889ced806d4e9fd307bd980f8bbadab4dcf09c8b435bb79db6103a9be12a622c`.
+The prepared TEST file is empty. Prospective plan SHA-256 is
+`05947f9119dfb3a567ae1248fa2414160f383217fc8c45d53bc8f6e8e63fb4b0`;
+root's execution review verified all 21 source pins before the first model call.
+Only the [48 retained TRAIN counterfactuals](./fixtures/guardrail/train-counterfactuals.json)
+change, using the [existing-CLI reproduction recipe](./fixtures/guardrail/TRAIN_COUNTERFACTUALS.md).
+The original reviewed base, default profile and 1,536 fixed updates remain
+unchanged; nominal mean TRAIN presentations per row are 40.96 versus 48.7619
+for candidate 3. Qualification still uses the original 612 cases and criteria.
+Candidate 4 is training; TRAIN fit, export, native VALID, held-out and enforce
+outcomes remain pending. This preparation/start proof does not qualify a model
+or revise candidate 3's rejection.
 
 The CPU-only initial-256 parity receipt at
 `.build/guardrail/candidate-3/initial-256-parity-receipt.json` has SHA-256
