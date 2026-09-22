@@ -60,5 +60,40 @@ class MonitorTests(unittest.TestCase):
             self.assertEqual(summary["samples"], 1)
 
 
+    def test_absolute_total_cap_stops_only_owned_worker_below_delta_limit(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "worker.pid").write_text("12345")
+            output = root / "memory.jsonl"
+            args = Namespace(pid_file=str(root / "worker.pid"), worker="/ours/worker.py", run_dir="/ours/run",
+                             output=str(output), adapter_tag=TAG, baseline_dedicated_bytes=10_000_000_000,
+                             baseline_shared_bytes=0, hard_budget_bytes=8_000_000_000,
+                             stop_dedicated_delta_bytes=7_500_000_000, shared_growth_limit_bytes=128_000_000,
+                             interval_seconds=2.0, stop_total_dedicated_bytes=16_000_000_000)
+            with patch.object(monitor, "is_owned_worker", return_value=True), patch.object(
+                monitor, "sample", return_value=(16_000_000_000, 0)
+            ), patch.object(monitor, "stop_owned_worker") as stop:
+                monitor.run(args)
+            stop.assert_called_once_with(12345, Path("/ours/worker.py"), Path("/ours/run"))
+            summary = json.loads(output.with_suffix(".summary.json").read_text())
+            self.assertEqual(summary["reason"], "absolute_total_dedicated_limit")
+            self.assertEqual(summary["peak_total_dedicated_bytes"], 16_000_000_000)
+            self.assertEqual(summary["stop_total_dedicated_bytes"], 16_000_000_000)
+            self.assertEqual(summary["peak_dedicated_delta_bytes"], 6_000_000_000)
+
+    def test_worker_ownership_requires_exact_arguments(self):
+        worker = Path("/ours/worker.py")
+        run = Path("/ours/run")
+        for command, owned in [(b"python\0/ours/worker.py\0--output\0/ours/run\0", True),
+                               (b"python\0/ours/worker.py.other\0--output\0/ours/run\0", False),
+                               (b"python\0/ours/worker.py\0--output\0/ours/run-other\0", False),
+                               (b"python\0/ours/worker.py\0--input\0/ours/run\0", False)]:
+            with self.subTest(command=command), patch.object(Path, "read_bytes", return_value=command):
+                self.assertEqual(monitor.is_owned_worker(123, worker, run), owned)
+        with patch.object(monitor, "is_owned_worker", return_value=False), patch.object(monitor.os, "kill") as kill:
+            self.assertFalse(monitor.stop_owned_worker(123, worker, run))
+            kill.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()

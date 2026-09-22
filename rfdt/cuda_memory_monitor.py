@@ -54,10 +54,13 @@ def sample(adapter_tag: str) -> tuple[int, int]:
 
 def is_owned_worker(pid: int, worker: Path, run_dir: Path) -> bool:
     try:
-        command = Path(f"/proc/{pid}/cmdline").read_bytes().decode("utf-8", "replace")
+        command = Path(f"/proc/{pid}/cmdline").read_bytes().decode("utf-8", "replace").split("\0")
     except FileNotFoundError:
         return False
-    return str(worker.resolve()) in command and str(run_dir.resolve()) in command
+    if str(worker.resolve()) not in command:
+        return False
+    return any(command[index] == "--output" and command[index + 1] == str(run_dir.resolve())
+               for index in range(len(command) - 1))
 
 
 def stop_owned_worker(pid: int, worker: Path, run_dir: Path) -> bool:
@@ -72,6 +75,9 @@ def run(args: argparse.Namespace) -> None:
         raise ValueError("Dedicated stop threshold must precede the hard budget")
     if args.interval_seconds <= 0 or args.shared_growth_limit_bytes <= 0:
         raise ValueError("Invalid monitor sampling settings")
+    total_limit = getattr(args, "stop_total_dedicated_bytes", None)
+    if total_limit is not None and total_limit <= 0:
+        raise ValueError("Invalid absolute dedicated memory limit")
     output = Path(args.output)
     if output.exists():
         raise ValueError("Memory monitor output already exists")
@@ -89,6 +95,7 @@ def run(args: argparse.Namespace) -> None:
     run_dir = Path(args.run_dir)
     if not is_owned_worker(pid, worker, run_dir):
         raise ValueError("PID does not identify this CUDA worker and run")
+    peak_dedicated = 0
     peak_dedicated_delta = 0
     peak_shared_delta = 0
     samples = 0
@@ -99,6 +106,7 @@ def run(args: argparse.Namespace) -> None:
                 dedicated, shared = sample(args.adapter_tag)
                 dedicated_delta = max(0, dedicated - args.baseline_dedicated_bytes)
                 shared_delta = max(0, shared - args.baseline_shared_bytes)
+                peak_dedicated = max(peak_dedicated, dedicated)
                 peak_dedicated_delta = max(peak_dedicated_delta, dedicated_delta)
                 peak_shared_delta = max(peak_shared_delta, shared_delta)
                 record = {
@@ -111,7 +119,9 @@ def run(args: argparse.Namespace) -> None:
                 }
                 journal.write(json.dumps(record) + "\n")
                 samples += 1
-                if dedicated_delta >= args.stop_dedicated_delta_bytes:
+                if total_limit is not None and dedicated >= total_limit:
+                    reason = "absolute_total_dedicated_limit"
+                elif dedicated_delta >= args.stop_dedicated_delta_bytes:
                     reason = "dedicated_stop_threshold"
                 elif shared_delta >= args.shared_growth_limit_bytes:
                     reason = "shared_memory_growth"
@@ -131,6 +141,8 @@ def run(args: argparse.Namespace) -> None:
         "reason": reason,
         "samples": samples,
         "sampling_interval_seconds": args.interval_seconds,
+        "peak_total_dedicated_bytes": peak_dedicated,
+        "stop_total_dedicated_bytes": total_limit,
         "peak_dedicated_delta_bytes": peak_dedicated_delta,
         "peak_shared_delta_bytes": peak_shared_delta,
         "hard_budget_bytes": args.hard_budget_bytes,
@@ -152,6 +164,7 @@ def parser() -> argparse.ArgumentParser:
     command.add_argument("--hard-budget-bytes", type=int, default=8_000_000_000)
     command.add_argument("--stop-dedicated-delta-bytes", type=int, default=7_500_000_000)
     command.add_argument("--shared-growth-limit-bytes", type=int, default=128_000_000)
+    command.add_argument("--stop-total-dedicated-bytes", type=int)
     command.add_argument("--interval-seconds", type=float, default=2.0)
     return command
 
