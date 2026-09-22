@@ -3,6 +3,7 @@ import { guardrailRequest } from "../dist/guardrail.js";
 import {
   applyCandidate6Corrections,
   CORRECTIONS,
+  REST_CONTACT_REPAIRS,
   screenCrossSplitOperations,
   WITHHELD_TRAIN_GROUPS,
 } from "../scripts/guardrail-candidate6-corrections.mjs";
@@ -69,7 +70,18 @@ function c5Rows() {
         ),
       );
   }
-  for (let i = 0; i < 155; i++)
+  for (const repair of REST_CONTACT_REPAIRS)
+    rows.push(
+      row(
+        repair.id,
+        "c5-soql-proposal-rest-sample-vs-contact-disclosure",
+        "train",
+        `sf api request rest 'services/data/v66.0/query/?q=${repair.query}' --method GET --target-org DevOrg`,
+        repair.label as "allow" | "confirm",
+        "sandbox",
+      ),
+    );
+  for (let i = 0; i < 149; i++)
     rows.push(
       row(
         `train-filler-${i}`,
@@ -97,8 +109,8 @@ describe("Candidate 6 source-valid development correction", () => {
     const source = c5Rows();
     const original = structuredClone(source);
     const result = applyCandidate6Corrections(source);
-    expect(result).toMatchObject({ train: 161, validation: 96 });
-    expect(result.rows).toHaveLength(257);
+    expect(result).toMatchObject({ train: 158, validation: 96 });
+    expect(result.rows).toHaveLength(254);
     expect(result.collisionScreen.disjointProven).toBe(false);
     expect(source).toEqual(original);
     for (const correction of CORRECTIONS) {
@@ -115,6 +127,18 @@ describe("Candidate 6 source-valid development correction", () => {
         expect(state.facts.orgs[0].command).toBe(state.input.command);
         expect(item.request).toEqual(guardrailRequest(state, model));
       }
+    }
+    for (const repair of REST_CONTACT_REPAIRS) {
+      const updated = result.rows.find((item) => item.id === repair.id);
+      expect(updated).toBeDefined();
+      const state = updated?.request.state as {
+        input: { command: string };
+        facts: { orgs: Array<{ command: string }> };
+      };
+      expect(state.input.command).toContain(`/query?q=${repair.query}`);
+      expect(state.input.command).not.toContain("/query/?q=");
+      expect(state.facts.orgs[0].command).toBe(state.input.command);
+      expect(updated?.request).toEqual(guardrailRequest(state, model));
     }
     expect(
       result.rows.some((item) => WITHHELD_TRAIN_GROUPS.includes(item.group_id)),

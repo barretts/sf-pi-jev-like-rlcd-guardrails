@@ -30,6 +30,7 @@ import { RFDT_BASE_MODEL, RFDT_BASE_REVISION } from "../dist/rfdt.js";
 import {
   applyCandidate6Corrections,
   CORRECTIONS,
+  REST_CONTACT_REPAIRS,
   WITHHELD_TRAIN_GROUPS,
 } from "./guardrail-candidate6-corrections.mjs";
 
@@ -38,9 +39,9 @@ const outputRoot = resolve(root, ".build/guardrail");
 const sourceSha256 =
   "f97050f508c45c16bf14b8c68aae50cf51e43404056bffe25cb91dd1365983ea";
 const correctedSha256 =
-  "5305ae1e746d26dc840d33d0da3c6015a16b2061fbe48a18d734617e6c79bee1";
+  "cb50f35f9d0eedf7c366b5093d216839b26c1c7a7103902b81a368addd8a5f09";
 const correctionScriptSha256 =
-  "078049c99756bc3e8193c6095efb563c221e32f82c110d0345fa9e7f38362309";
+  "d354dfb7cf0ca07463691eb04bff188ff13f8d4402418347d0353472afc33782";
 const protocolSha256 =
   "b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e";
 const sfCommit = "e456e1c9c7c0c9b97ccb08f4084558e5cbcd7a8c";
@@ -112,7 +113,7 @@ export async function verifyCorrectedSource({
     receipt.humanLabelReviewRequired !== true ||
     receipt.fixtureStatus !== "declared_only_not_executed" ||
     canonical(receipt.split) !==
-      canonical({ train: 161, validation: 96, test: 0 }) ||
+      canonical({ train: 158, validation: 96, test: 0 }) ||
     receipt.collisionScreen?.disjointProven !== false ||
     canonical(receipt.changedGroups) !==
       canonical(
@@ -121,6 +122,14 @@ export async function verifyCorrectedSource({
           targetGroup,
           split,
           fixture,
+        })),
+      ) ||
+    canonical(receipt.repairedRestContactRows) !==
+      canonical(
+        REST_CONTACT_REPAIRS.map(({ id, query, label }) => ({
+          id,
+          query,
+          label,
         })),
       ) ||
     canonical(receipt.withheldTrainGroups) !==
@@ -172,7 +181,7 @@ export async function verifyCorrectedSource({
       "Corrected TRAIN/VALID bytes or collision screen do not regenerate from C5",
     );
   const rows = parseJsonlWithoutTest(datasetBytes);
-  if (rows.length !== 257)
+  if (rows.length !== 254)
     throw new Error("Corrected development row count changed");
   return {
     rows,
@@ -447,8 +456,8 @@ export async function replayCorrectedPool({ rows, sf, sfDeps }) {
       bySplit[row.split].matched++;
     }
     if (
-      rows.length !== 257 ||
-      bySplit.train.total !== 161 ||
+      rows.length !== 254 ||
+      bySplit.train.total !== 158 ||
       bySplit.validation.total !== 96 ||
       calculateJevRiskBaselineIdentity().sha256 !== runtimeSha ||
       gitHead(sf) !== sfCommit

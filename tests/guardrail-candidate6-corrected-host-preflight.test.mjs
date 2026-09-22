@@ -14,7 +14,7 @@ import {
 const root = resolve(import.meta.dirname, "..");
 const corrected = resolve(
   root,
-  ".build/guardrail/candidate-6-dev-corrections-20260922",
+  ".build/guardrail/candidate-6-dev-corrections-v4-20260922",
 );
 const c5 = resolve(
   root,

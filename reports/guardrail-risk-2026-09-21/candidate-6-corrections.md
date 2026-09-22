@@ -15,7 +15,13 @@ pins the final Candidate 5 research input SHA-256, applies six source-validity
 corrections, and withholds the remaining `sf apex run --file` TRAIN near replay.
 It also withholds the existing nonproduction `sf project deploy start` TRAIN
 group, which would otherwise nearly replay the corrected scratch-org VALID
-operation. It regenerates each model request, synchronizes the independently
+operation. A blind VALID v2 request-only screen and independent effect review
+found another genuine near replay of `git reset --hard`; the whole
+`train-shell-git-history-rewrite` TRAIN group is withheld. The script also
+normalizes three TRAIN Salesforce REST Contact reads from `/query/?q=` to the
+documented [`/query?q=` path][query resource], preserving their bounded and
+broad contrast.
+It regenerates each model request, synchronizes the independently
 supplied org-command fact, checks the revised ID and job references, and
 requires explicit fixture preconditions. Those fixture declarations are not
 proof of record existence, deploy-job history, or live command success.
@@ -30,17 +36,25 @@ node scripts/guardrail-candidate6-corrections.mjs \
   --receipt .build/guardrail/candidate-6-dev-corrections-NEW/receipt.json
 ```
 
-The current private receipt contains **161 TRAIN, 96 corrected development
+The current private receipt contains **158 TRAIN, 96 corrected development
 VALID, and zero TEST** rows, with output SHA-256
-`5305ae1e746d26dc840d33d0da3c6015a16b2061fbe48a18d734617e6c79bee1`.
+`cb50f35f9d0eedf7c366b5093d216839b26c1c7a7103902b81a368addd8a5f09`.
+It is stored under `candidate-6-dev-corrections-v4-20260922`; v1-v3 are
+superseded development receipts, not training inputs.
 It records four unresolved same-effect template overlaps: Data 360 raw GET,
 Data 360 raw POST write, ordinary native SOQL query, and Slack Canvas read.
 The screen is heuristic and aggregate-only. It neither proves split independence
 nor permits training yet. The old VALID set has already been used for model
 diagnosis; the corrected set is a development pool, not fresh qualification
-VALID. A separately authored, source-reviewed and group-isolated qualification
-VALID set must be sealed before promotion or new candidate selection. New rows
-also need a fresh sf-pi bridge replay and human label review. Browser effect
+VALID. The [separate blind VALID and TEST sets](../../blind-c6-20260922/README.md)
+are sealed but the VALID file-policy labels are under source review. The
+158 TRAIN rows and final 18-row TRAIN supplement screen at zero exact,
+canonical, group, template, and same-effect matches against both blind sets.
+The [model-free host replay](../../.build/guardrail/candidate-6-corrected-host-preflight-v2-20260922/receipt.json)
+matched all 158 TRAIN and 96 historical VALID requests with zero eligibility
+fallback; it found 23 and 24 label-versus-baseline disagreements, respectively.
+That result is host-input parity, not model accuracy or training admission.
+Human label review and fixture prerequisites remain open. Browser effect
 binding and coverage remain required for full qualification.
 
 The script reads only the pinned TRAIN/VALID research file and rejects a TEST
@@ -53,3 +67,4 @@ Candidate 5 corpus, artifacts, receipts, or held-out test.
 [deploy start]: https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_project_deploy_start.html
 [quick deploy]: https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_project_deploy_quick.html
 [deploy report]: https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_project_deploy_report.html
+[query resource]: https://developer.salesforce.com/docs/platform/api-rest/guide/resources-query.html
