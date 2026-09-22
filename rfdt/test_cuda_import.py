@@ -36,6 +36,7 @@ def c10_receipts(step=128):
     args = list(receipts())
     plan, receipt, exit_receipt, memory, launch = args
     root = Path(bridge.__file__).resolve().parent
+    plan["objective"] = json.loads((root.parent / "fixtures/guardrail/candidate9/objective-plan-B.json").read_text())
     plan.update({"experiment": "candidate10", "steps": step, "campaign_steps": 1024,
         "campaign": json.loads((root.parent / "fixtures/guardrail/candidate10/cuda-campaign.json").read_text()),
         "campaign_sha256": bridge.C10_CAMPAIGN_SHA256, "precision": bridge.C10_PRECISION,
@@ -103,6 +104,9 @@ class CudaImportTests(unittest.TestCase):
                            ("objective_worker_sha256", "f" * 64), ("contract_sha256", "f" * 64)):
             args = c10_receipts(); args[0][key] = value; args[1]["source"] = copy.deepcopy(args[0])
             with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+        args = c10_receipts(); args[0]["objective"]["loss"]["margin"] = 999
+        args[1]["source"] = copy.deepcopy(args[0])
+        with self.assertRaises(ValueError): bridge.validate_receipts(*args)
         args = c10_receipts(); args[0]["campaign"]["qualification"]["unsafe_allows"] = 1
         args[1]["source"] = copy.deepcopy(args[0])
         with self.assertRaises(ValueError): bridge.validate_receipts(*args)

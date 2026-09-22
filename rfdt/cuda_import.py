@@ -80,6 +80,9 @@ def validate_c10_checkpoint(plan: dict, receipt: dict, launch: dict) -> None:
     if worker.sha256(campaign_path) != C10_CAMPAIGN_SHA256:
         raise ValueError("C10 campaign changed")
     campaign = document(campaign_path)
+    objective_path = campaign_path.parent.parent / "candidate9/objective-plan-B.json"
+    if worker.sha256(objective_path) != cuda_worker.PLAN_SHA256 or plan.get("objective") != document(objective_path):
+        raise ValueError("Frozen C10 objective definition changed")
     if (plan.get("campaign") != campaign or plan.get("campaign_sha256") != C10_CAMPAIGN_SHA256
             or plan.get("campaign_steps") != 1024 or plan.get("precision") != C10_PRECISION
             or launch.get("campaign_sha256") != C10_CAMPAIGN_SHA256
