@@ -17,6 +17,22 @@
     "externalOperationsExecuted": 0,
     "heldOutLabelsOrRequestsInspectedByAgent": false
   },
+  "candidate5TrainSupplementStructuralScreen": {
+    "supplementSha256": "a53936a41c035ae249ef2bda017cc36704be9e37e1ab5f7b6e8ed5e9ef849446",
+    "authoredTrainRows": 40,
+    "authoredTrainGroups": 9,
+    "allowRows": 22,
+    "confirmRows": 18,
+    "heldUnknownOrgRows": 4,
+    "reservedValidationAndTestIdentities": 381,
+    "duplicateAuthoredIds": 0,
+    "reservedIdCollisions": 0,
+    "reservedGroupCollisions": 0,
+    "eligibilityAndPolicyFloorsVerified": false,
+    "operationSignatureCollisionsVerified": false,
+    "admissionReceiptGenerated": false,
+    "heldOutLabelsOrRequestBodiesInspectedByAgent": false
+  },
   "candidate5AdmissionAndLatency": {
     "scope": "TRAIN/VALIDATION admission and TRAIN-only timing diagnostics; no candidate-5 model result",
     "sourceCommits": {

@@ -100,6 +100,16 @@ with the same role and name. A sound browser-model path needs a guarded
 native driver action that checks live target, node and focus at dispatch,
 including its retry paths. An SF Pi-only precheck cannot close that gap.
 
+A structural rescreen of the current TRAIN supplement (SHA-256
+`a53936a41c035ae249ef2bda017cc36704be9e37e1ab5f7b6e8ed5e9ef849446`)
+found 40 authored rows in nine groups: 22 allow and 18 confirm, including the
+two bounded Contact controls. Four unknown-org rows remain held outside
+training. IDs and group IDs had no collisions with the 381 reserved
+VALIDATION/TEST identities. This is only an identity check: current-host
+eligibility, policy floors and exact/canonical/coarse/semantic operation
+collisions remain unverified without an admissible baseline. No admission
+receipt was generated and no reserved labels or request bodies were reviewed.
+
 On rejected candidate-4 weights, a TRAIN-only paired direct-native context
 diagnostic completed 72/72 scores across 18 requests, with identical prompts,
 selected logits and decisions at both context settings. The original 49,152
