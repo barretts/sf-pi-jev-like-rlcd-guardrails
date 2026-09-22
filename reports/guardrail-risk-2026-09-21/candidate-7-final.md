@@ -89,18 +89,23 @@ Both fixed RFDT runs completed their planned steps, changed the adapter,
 verified checkpoint reload, and exported distinct F16 GGUF files. Training
 loss fell from 7.39 to 0.443 at 128 updates and to 0.132 at 256 updates;
 these TRAIN observations establish that optimization ran, not that either
-model meets the VALID acceptance bar. Each GGUF is 2,006,573,408 bytes and
-remains local outside Git.
+model meets the VALID acceptance bar. Each exported GGUF was 2,006,573,408
+bytes; the rejected 128-update GGUF was removed after its hash was recorded,
+while the 256-update GGUF remains local outside Git.
 
 | Fixed run                                                    | Model identity                       | Training plan SHA-256                                              | GGUF SHA-256                                                       |
 | ------------------------------------------------------------ | ------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
 | [128 updates](./candidate-7-evidence/runs/128/manifest.json) | `jev/gemma-3-1b-guardrail-c7-128-v1` | `75f49e15a3ac4386bb824ffbf984b1328bb6033ff8bc4f6be677bbec9faada07` | `ce635434131c6585935625d1c070e5795c5a72f2ef2375980fcdcaa380944128` |
 | [256 updates](./candidate-7-evidence/runs/256/manifest.json) | `jev/gemma-3-1b-guardrail-c7-256-v1` | `e68b2c5c4f1cd50644d4e577ed6bc1bfa24f968cd7876bdb87dc1ed091e4eb9e` | `9d1bffc4ed982dea529841d20ac4a56cd0f5086107f2aa6da0c1ea17ae148006` |
 
-The weights are at
-`/private/tmp/simple-jev-ts-guardrail-c7-unified-20260922/.build/guardrail/candidate-7-rfdt-128step-finalhost-v2/gemma-3-1b-rfdt-f16.gguf`
-and
+The retained weights are at
 `/private/tmp/simple-jev-ts-guardrail-c7-unified-20260922/.build/guardrail/candidate-7-rfdt-256step-finalhost-v1/gemma-3-1b-rfdt-f16.gguf`.
+Both trained adapters remain local, so the 128-update GGUF can be re-exported
+from its recorded run. The [cleanup receipt](./candidate-7-cleanup-receipt.json)
+(SHA-256 `ef81c1627fab76d6e8f613c852478bfbbee90d42b40dcd3319360386686442cc`)
+records the hashes and sizes of the removed rejected GGUF and two rebuildable
+fused directories; 10,092,851,638 logical bytes were removed. The retained
+256-update GGUF and both adapters were preserved.
 The two exported artifact descriptors and registries are retained in the
 evidence bundle. The [37-file SHA-256 inventory](./candidate-7-evidence/SHA256SUMS)
 has SHA-256 `f94223a62e6d39c2d88ceee42fcb833d2d0c320d322698436aeaa5d9ee7f3cd9`;
