@@ -408,7 +408,7 @@ export async function runCandidate8HostRows({
         assertCandidate8PreparedCall(row, newCalls[0], preflight);
       if (
         routing === "pre_model_fallback" &&
-        comparison?.source !== "rules_fallback"
+        !["rules_fallback", "exact_policy"].includes(comparison?.source)
       )
         throw new Error(`C8 missing-fact fallback changed: ${row.id}`);
       if (
@@ -450,7 +450,10 @@ export async function runCandidate8HostRows({
         ),
         policyFloor: Boolean(floor),
         ...(routing === "pre_model_fallback"
-          ? { fallbackReason: comparison?.reason ?? preflight.reason }
+          ? {
+              fallbackReason: preflight.reason,
+              hostReason: comparison?.reason ?? null,
+            }
           : {}),
         ...(routing === "model_prepared" && source !== "jev"
           ? {
