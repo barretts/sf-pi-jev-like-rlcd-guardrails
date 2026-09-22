@@ -1,0 +1,39 @@
+{
+  "qualified": false,
+  "purpose": "FIT_only_embedding_normalizer_AB",
+  "rows": 327,
+  "reports": {
+    "original_bf16_normalizer": {
+      "rows": 327,
+      "max_probability_delta": 0.06853587219102553,
+      "max_margin_delta": 0.4600334167480469,
+      "decisive_sign_flips": 0,
+      "max_probability_delta_limit": 0.05,
+      "decisive_margin": 0.5,
+      "ok": false
+    },
+    "explicit_fp32_normalizer": {
+      "rows": 327,
+      "max_probability_delta": 0.0001460751333436372,
+      "max_margin_delta": 0.0012226104736328125,
+      "decisive_sign_flips": 0,
+      "max_probability_delta_limit": 0.05,
+      "decisive_margin": 0.5,
+      "ok": true
+    }
+  },
+  "elapsed_seconds": 70.39592775001074,
+  "data_sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+  "reference_sha256": "274662f41a263759213783e679acba674cbc8d8271ce4cf2e3af60c46b5694cf",
+  "adapter_sha256": "6d4e010adc063f5e694863859937a2d4fabd4158da294d2f13ca415ba0136766",
+  "helper_sha256": "ce62f5b1928d981c3276776f9100f10f252f3904337774be63a74347b46a5256",
+  "script_sha256": "01cd9ee24f9f1ca329988c6b45f6c05ee5dd25bf8fdb9f52aebbd868b235ce10",
+  "worker_sha256": "1f17e08d7f2b4db32794ff6b244e86cc9f54855c52e78c2f80e350b8e8597794",
+  "memory": {
+    "peak_memory_bytes": 5045561068
+  },
+  "normalizer": {
+    "original": 34.0,
+    "explicit": 33.941123962402344
+  }
+}
