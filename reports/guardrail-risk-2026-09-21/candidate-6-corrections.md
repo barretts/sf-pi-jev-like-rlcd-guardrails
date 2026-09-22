@@ -39,15 +39,16 @@ node scripts/guardrail-candidate6-corrections.mjs \
 The current private receipt contains **158 TRAIN, 96 corrected development
 VALID, and zero TEST** rows, with output SHA-256
 `cb50f35f9d0eedf7c366b5093d216839b26c1c7a7103902b81a368addd8a5f09`.
-It is stored under `candidate-6-dev-corrections-v4-20260922`; v1-v3 are
-superseded development receipts, not training inputs.
+It is stored under `candidate-6-dev-corrections-v4-20260922`; superseded
+v1-v3 generated pools were removed as rebuildable scratch data.
 It records four unresolved same-effect template overlaps: Data 360 raw GET,
 Data 360 raw POST write, ordinary native SOQL query, and Slack Canvas read.
 The screen is heuristic and aggregate-only. It neither proves split independence
 nor permits training yet. The old VALID set has already been used for model
 diagnosis; the corrected set is a development pool, not fresh qualification
-VALID. The [separate blind VALID and TEST sets](../../blind-c6-20260922/README.md)
-are sealed but the VALID file-policy labels are under source review. The
+VALID. The [separate blind VALID v3 and TEST v2 sets](../../blind-c6-20260922/README.md)
+are sealed. VALID v3 supplies exact custom block behavior for its protected
+file cases; the model-free host replay matched all five declared blocks. The
 158 TRAIN rows and final 18-row TRAIN supplement screen at zero exact,
 canonical, group, template, and same-effect matches against both blind sets.
 The [model-free host replay](../../.build/guardrail/candidate-6-corrected-host-preflight-v2-20260922/receipt.json)

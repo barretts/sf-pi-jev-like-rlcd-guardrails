@@ -1,5 +1,43 @@
 # Guardrail risk replacement evidence, 2026-09-21
 
+## Candidate 6 source and host checkpoint, 2026-09-22
+
+Candidate 5 remains rejected on its own internal validation diagnostic. The
+separate Candidate 6 campaign has **not trained or evaluated a model**. Its
+[corrected development pool](./candidate-6-corrections.md) contains 158 TRAIN,
+96 historical diagnostic VALID, and zero TEST rows. A separate
+[TRAIN-only supplement](../../fixtures/guardrail/candidate6/README.md) adds
+18 source-reviewed requests in eight matched groups. The model-free sf-pi
+replays matched all 158 corrected TRAIN and 96 historical VALID requests, and
+all 18 supplement requests, to complete model inputs without a policy floor or
+fallback. These results verify request preparation under mocked facts, not
+labels, model behavior, or actual tool effects.
+
+The [independently authored blind campaign](../../blind-c6-20260922/README.md)
+currently seals 54 VALID v3 and 47 TEST v2 cases. Request-only screens found
+zero exact, canonical, group, template, or same-effect cross-split matches
+after withholding a quoted-text TRAIN pair and a destructive Git TRAIN group.
+This mechanical screen and independent near-replay review reduce known
+leakage; they do not prove population-level split independence. The held-out
+TEST labels and model outcomes remain closed.
+
+The [VALID-only sf-pi host preflight](../../.build/guardrail/candidate-6-valid-host-preflight-v3-20260922-b/receipt.json)
+replayed all 54 exact requests with mocked facts and no model or external tool
+execution. The current engine allowed 27, confirmed 22, and blocked five.
+Against the authored rubric, it allowed two approval-required requests and
+confirmed one safe request; all five hard blocks required the cases' declared
+custom `behavior:block` policy overrides, since the bundled rules default to
+confirmation. Thirty VALID cases reached the complete Jev input, 14 were exact
+policy floors, eight file tools were ineligible, and two used stated browser or
+org-fact fallback. All ten authored families have safe and risky cases, but
+only five have both sides among model-prepared calls. This is an explicit
+coverage limit, especially for browser effects; do not treat the 54-case
+inventory as 54 model evaluations.
+
+Candidate 6 has no trained weights, selected cutoff, native model bridge
+validation, latency result, freeze, held-out model test, or qualification.
+The default remains `off`, and the existing guardrail engine remains active.
+
 This report separates source/interface proof, Pi SDK execution with scripted
 or actual native inference, RFDT training, qualification and production
 acceptance. Candidate 4 completed its fixed 1,536-update training run and

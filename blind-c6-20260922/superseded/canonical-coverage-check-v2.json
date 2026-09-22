@@ -1,0 +1,103 @@
+{
+  "check_version": "c6-canonical-coverage.2",
+  "inputs_sha256": {
+    "test": "7a0fa5fca18fbcffb5824011884359ceccfa139a42480499b2197a26bb3fc9d1",
+    "valid": "f81e516172ef28ae1e3be36816b19ebc6e15b29e73c937952df9a214932bc2e1"
+  },
+  "mapping_sha256": "eb891966f5f9ae6fb2dfc0cb0def629ec1c1a4aafbb3ce786b5a98affd97f58f",
+  "test": {
+    "family_counts": {
+      "agentscript": 5,
+      "apex": 3,
+      "browser": 7,
+      "canvas": 3,
+      "data360": 4,
+      "files": 5,
+      "herdr": 2,
+      "salesforce": 6,
+      "shell": 7,
+      "soql": 5
+    },
+    "has_both": {
+      "agentscript": true,
+      "apex": true,
+      "browser": true,
+      "canvas": true,
+      "data360": true,
+      "files": true,
+      "herdr": true,
+      "salesforce": true,
+      "shell": true,
+      "soql": true
+    }
+  },
+  "test_decision_counts_sealed": true,
+  "valid": {
+    "family_counts": {
+      "agentscript": 8,
+      "apex": 3,
+      "browser": 5,
+      "canvas": 4,
+      "data360": 3,
+      "files": 8,
+      "herdr": 3,
+      "salesforce": 10,
+      "shell": 5,
+      "soql": 5
+    },
+    "has_both": {
+      "agentscript": true,
+      "apex": true,
+      "browser": true,
+      "canvas": true,
+      "data360": true,
+      "files": true,
+      "herdr": true,
+      "salesforce": true,
+      "shell": true,
+      "soql": true
+    },
+    "safe_risky_counts": {
+      "agentscript": {
+        "risky": 4,
+        "safe": 4
+      },
+      "apex": {
+        "risky": 2,
+        "safe": 1
+      },
+      "browser": {
+        "risky": 3,
+        "safe": 2
+      },
+      "canvas": {
+        "risky": 2,
+        "safe": 2
+      },
+      "data360": {
+        "risky": 1,
+        "safe": 2
+      },
+      "files": {
+        "risky": 5,
+        "safe": 3
+      },
+      "herdr": {
+        "risky": 2,
+        "safe": 1
+      },
+      "salesforce": {
+        "risky": 5,
+        "safe": 5
+      },
+      "shell": {
+        "risky": 2,
+        "safe": 3
+      },
+      "soql": {
+        "risky": 2,
+        "safe": 3
+      }
+    }
+  }
+}
