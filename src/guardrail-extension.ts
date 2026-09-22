@@ -18,6 +18,7 @@ import {
   C8_BASE_PROTOCOL_SHA256,
   verifyC8Calibration,
 } from "./guardrail-calibration.js";
+import { verifyC8HeldoutQualification } from "./guardrail-c8-qualification.js";
 import {
   GUARDRAIL_LIMITS,
   GUARDRAIL_PROTOCOL_SHA256,
@@ -60,6 +61,16 @@ export function registerGuardrailProvider(
   const calibrationSha256 = env.JEV_GUARDRAIL_CALIBRATION_SHA256;
   const calibrated =
     calibrationPath !== undefined || calibrationSha256 !== undefined;
+  const c8FreezePath = env.JEV_GUARDRAIL_C8_FREEZE;
+  const c8FreezeSha256 = env.JEV_GUARDRAIL_C8_FREEZE_SHA256;
+  const c8QualificationPath = env.JEV_GUARDRAIL_C8_QUALIFICATION;
+  const c8QualificationSha256 = env.JEV_GUARDRAIL_C8_QUALIFICATION_SHA256;
+  const c8QualificationConfigured = [
+    c8FreezePath,
+    c8FreezeSha256,
+    c8QualificationPath,
+    c8QualificationSha256,
+  ].some((value) => value !== undefined);
   interface Runtime {
     controller: AbortController;
     backend?: InferenceAdapter;
@@ -72,6 +83,7 @@ export function registerGuardrailProvider(
     scoringProtocolSha256: string | null;
     calibrationPolicySha256: string | null;
     calibrationBaselineSha256: string | null;
+    qualificationSha256: string | null;
     backendGeneration: number | null;
     ready: boolean;
   }
@@ -97,6 +109,7 @@ export function registerGuardrailProvider(
       scoringProtocolSha256: null,
       calibrationPolicySha256: null,
       calibrationBaselineSha256: null,
+      qualificationSha256: null,
       backendGeneration: null,
       ready: false,
     };
@@ -119,6 +132,22 @@ export function registerGuardrailProvider(
       if (calibrated && qualificationPath !== undefined)
         throw new Error(
           "C8 TRAIN calibration cannot inherit a C7 qualification receipt",
+        );
+      if (c8QualificationConfigured && !calibrated)
+        throw new Error(
+          "C8 held-out qualification requires a selected TRAIN cutoff",
+        );
+      if (
+        c8QualificationConfigured &&
+        (!c8FreezePath ||
+          !c8FreezeSha256 ||
+          !/^[a-f0-9]{64}$/.test(c8FreezeSha256) ||
+          !c8QualificationPath ||
+          !c8QualificationSha256 ||
+          !/^[a-f0-9]{64}$/.test(c8QualificationSha256))
+      )
+        throw new Error(
+          "C8 enforcement requires separately pinned freeze and qualification files",
         );
       if (
         calibrated &&
@@ -224,9 +253,49 @@ export function registerGuardrailProvider(
         runtime.scoringProtocolSha256 = receipt.scoringProtocolSha256;
         runtime.calibrationPolicySha256 = receipt.input.policySha256;
         runtime.calibrationBaselineSha256 = receipt.input.baselineSha256;
-        // TRAIN calibration permits shadow comparison. Held-out qualification
-        // remains a separate gate before this provider may enforce decisions.
-        qualified = false;
+        // A TRAIN-selected threshold alone is shadow-only. A separately pinned
+        // pre-TEST freeze and passing held-out receipt unlock enforcement.
+        if (c8QualificationConfigured) {
+          const frozenBytes = await readQualification(
+            c8FreezePath!,
+            runtime.controller.signal,
+          );
+          const qualificationBytes = await readQualification(
+            c8QualificationPath!,
+            runtime.controller.signal,
+          );
+          if (
+            createHash("sha256").update(frozenBytes).digest("hex") !==
+              c8FreezeSha256 ||
+            createHash("sha256").update(qualificationBytes).digest("hex") !==
+              c8QualificationSha256
+          )
+            throw new Error(
+              "C8 freeze or held-out qualification differs from its operator pin",
+            );
+          const qualification = verifyC8HeldoutQualification(
+            JSON.parse(qualificationBytes.toString("utf8")),
+            JSON.parse(frozenBytes.toString("utf8")),
+            receipt,
+            calibrationSha256!,
+            artifact.sha256,
+            binary.sha256,
+          );
+          const binaryAfterQualification = await hashArtifact(
+            config.binary,
+            runtime.controller.signal,
+          );
+          if (
+            binaryAfterQualification.sha256 !== binary.sha256 ||
+            binaryAfterQualification.size !== binary.size
+          )
+            throw new Error(
+              "Guardrail scoring binary changed during C8 qualification warmup",
+            );
+          qualified = qualification.qualified;
+          qualificationBaselineSha256 = receipt.input.baselineSha256;
+          runtime.qualificationSha256 = c8QualificationSha256!;
+        }
       }
       assertCurrent(runtime);
       if (
@@ -297,6 +366,11 @@ export function registerGuardrailProvider(
     get calibrationBaselineSha256() {
       return calibrated && enabled()
         ? (current?.calibrationBaselineSha256 ?? null)
+        : null;
+    },
+    get qualificationSha256() {
+      return calibrated && enabled()
+        ? (current?.qualificationSha256 ?? null)
         : null;
     },
     async evaluate(input, signal) {
@@ -389,6 +463,7 @@ export function registerGuardrailProvider(
     protocolSha256: provider.protocolSha256,
     minimumAllowScore: provider.minimumAllowScore,
     calibrationSha256: provider.calibrationSha256,
+    qualificationSha256: provider.qualificationSha256,
     state: stopped
       ? "disposed"
       : !enabled()
@@ -397,7 +472,9 @@ export function registerGuardrailProvider(
           ? "warming"
           : (current?.classifier?.status.state ?? "cold"),
     calibration: calibrated
-      ? "train_selected_cutoff_unqualified"
+      ? provider.qualified
+        ? "train_cutoff_heldout_qualified"
+        : "train_selected_cutoff_unqualified"
       : "uncalibrated",
     lastError,
   });

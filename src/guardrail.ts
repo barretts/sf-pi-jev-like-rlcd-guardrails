@@ -509,6 +509,7 @@ export interface GuardrailRiskProvider {
   readonly calibrationSha256?: string | null;
   readonly calibrationPolicySha256?: string | null;
   readonly calibrationBaselineSha256?: string | null;
+  readonly qualificationSha256?: string | null;
   evaluate(
     input: GuardrailRiskInput,
     signal?: AbortSignal,
