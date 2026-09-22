@@ -13,6 +13,68 @@ improvement, held-out qualification or production acceptance claim is made.
 Candidate 4 has now passed genuine preparation and started its prospectively
 bound 1,536-update training run; its outcomes remain pending.
 
+## Current host-hardened campaign checkpoint, 2026-09-22
+
+Candidate 4 is still training from its prospectively frozen original Google
+Gemma 3 1B base and 300 TRAIN / 144 validation / zero TEST prepared rows. There
+is no candidate 4 export, bridge validation, held-out result, qualified
+enforcement or real-model workflow result yet. Its training loss and progress
+cannot establish the required safety, interruption or latency gates.
+
+The SF host review identified operations that require exact confirmation even
+when an input appears read-like. The current integration worktree at
+`/private/tmp/sf-pi-guardrail-intent-fix-20260922` keeps the existing Guardrail
+hook as sole enforcement owner and is tightening native request completeness,
+exact Apex and other native operation floors, and shell/API execution-intent
+handling. Incomplete action-specific requests and unresolved facts use the
+existing rules. Model-derived confirmations remain one-attempt and are bound to
+the complete operation, policy, model and scoring protocol; exact rule-owned
+session grants remain separate. This worktree is still being checked and is not
+the old pinned SF integration patch documented below.
+
+The original 612-case corpus and baseline are preserved as historical evidence
+for candidates 1–3 and candidate 4's training plan. The separate v3 source
+composer includes nine anonymous Apex exact-floor cases, 54 semantic-risk
+variants, and 18 paired safe AgentScript and Slack Canvas controls. After the
+pre-freeze label audit, two new compositions produced byte-identical outputs
+with **693 cases in 231 groups**: 312 TRAIN, 192 validation and 189 held-out TEST
+rows. The final composed corpus SHA-256 is
+`bb4ed147933c076111b127e6a5433c6ce7ea54cc43befb7d384ddb54681e6309`.
+Its `operation-policy-v2` rubric source SHA-256 is
+`cad1720e8ee31c153985ee98af010671d323917c0ef30c7ebd61c3832b318ae6`;
+campaign metadata also preserves the original base rubric identity.
+The semantic variants exercise realistic CLI, API, SOQL and browser paths that
+remain model eligible after exact host floors; the safe controls challenge
+broad confirmation heuristics on the same surfaces. The addenda are machine
+authored under the explicit operation-policy rubric, with independent human
+label review pending. Composition alone does not seal the campaign: the final
+host baseline and prospective qualification identity are still pending. The
+earlier 690-case source preview passed coverage and found 387 model-eligible
+requests, including its 18 safe controls. The 690-case corpus and that preview
+baseline are superseded by the revised rubric and 693-case corpus; those counts
+must not be used as current eligibility or qualification evidence. The
+superseded previews made no candidate 4 model calls. The SF baseline must be regenerated
+after the final source commit.
+
+Before any candidate 4 validation on the new campaign, the final corpus bytes,
+rubric source, host commit and source hash, baseline export, exporter source
+hash and its recorded source-inventory hash, model bytes, prompt/scoring
+protocol, 0.99 cutoff and qualification criteria must be recorded together.
+The current freeze command requires `--sfRoot` and verifies the executing SF
+exporter against that recorded provenance. Validation selects or rejects the
+candidate. Only a passing
+candidate can be frozen before the held-out TEST calls; failed validation must
+leave the existing engine active. The old `0f31a950...` SF baseline, the
+original-corpus results below, source tests, scripted SDK tests and native
+shadow results cannot be relabeled as host-hardened model qualification.
+
+The v2 draft source-only baseline preview contained 672 cases, 224 groups and
+89 baseline/gold disagreements (78 unsafe baseline allows and 11 unnecessary
+interruptions). It made no model calls and is superseded by the pending safe
+paired controls. These preview counts are neither candidate 4 results nor
+qualification thresholds for the final campaign. No held-out model prediction
+has been inspected for the new campaign.
+
 The general Jev driver now awaits risk-worker initialization at enabled,
 operator-opted-in `shadow`/`enforce` startup, re-enable and template replacement.
 This closes the cold enforce path that otherwise rejected an uninitialized
@@ -487,10 +549,13 @@ exact operation, active policy, model and protocol; baseline family grants may
 reuse approval more broadly. This remains a usability limitation requiring
 matched real-model workflow evidence. Novel model risks retain allow-once scope.
 
-Automatic approval review rejected restoring the baseline's implicit session
-approval option. The conservative current model-confirmation session setting
-is pending an explicit user decision. This limitation remains separate from
-the candidate's observed validation rejection.
+Automatic approval review rejected extending model-derived confirmations to
+session grants because a broad grant could repeat a destructive shell command
+without a new prompt. The integration retains one-attempt model approval and
+tests operation/policy/model/protocol binding. Exact rule-owned grants and
+revocation remain available. Matched real-model workflows must still establish
+whether this conservative behavior meets the no-extra-confirmations gate; the
+scripted repeated-shell example above did not.
 
 Qualification requires zero unsafe automatic allows, zero safety regressions,
 zero hard-block demotions, unnecessary interruptions at or below the measured

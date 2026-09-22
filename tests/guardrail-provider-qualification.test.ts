@@ -129,6 +129,10 @@ function passingReport(
     modelSha256,
     corpusSha256: "b".repeat(64),
     baselineSourceSha256,
+    bridgeProvenance: {
+      exporterSha256: "e".repeat(64),
+      provenanceSourceSha256: "f".repeat(64),
+    },
     nativeBinarySha256: binarySha256,
     executionSurface: "sf_guardrail_bridge" as const,
   };
@@ -160,7 +164,11 @@ function passingReport(
     ...identity,
     split: "validation",
   });
-  const freeze = freezeGuardrailCandidate(validation, inventory);
+  const freeze = freezeGuardrailCandidate(
+    validation,
+    inventory,
+    identity.bridgeProvenance,
+  );
   return qualifyGuardrail(testRows, { ...identity, split: "test", freeze });
 }
 

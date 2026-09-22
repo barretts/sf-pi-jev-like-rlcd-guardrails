@@ -15,6 +15,8 @@ import {
   qualifyGuardrail,
   freezeGuardrailCandidate,
   assertGuardrailFreeze,
+  guardrailBridgeProvenance,
+  GUARDRAIL_BRIDGE_EXPORTER_SOURCE,
 } from "../dist/guardrail-evaluation.js";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const { values, positionals } = parseArgs({
@@ -28,6 +30,7 @@ const { values, positionals } = parseArgs({
     split: { type: "string", default: "validation" },
     freeze: { type: "string" },
     validation: { type: "string" },
+    sfRoot: { type: "string" },
   },
 });
 const save = async (path, value, exclusive = true) => {
@@ -42,6 +45,17 @@ const digest = (value) =>
 if (!values.bundle || !values.output)
   throw new Error("--bundle and --output required");
 const bundle = JSON.parse(await readFile(resolve(values.bundle)));
+const bridgeProvenance = async () => {
+  if (!values.sfRoot)
+    throw new Error(
+      "--sfRoot SF_PI_ROOT is required to verify the bridge exporter source",
+    );
+  const exporter = resolve(values.sfRoot, GUARDRAIL_BRIDGE_EXPORTER_SOURCE);
+  return guardrailBridgeProvenance(
+    bundle,
+    (await hashArtifact(exporter)).sha256,
+  );
+};
 const inventory = bundle.records.map((r) => ({
   id: r.id,
   groupId: r.groupId,
@@ -51,6 +65,7 @@ const inventory = bundle.records.map((r) => ({
   baseline: r.baseline,
   policyFloor: r.policyFloor,
   modelEligible: r.modelEligible,
+  ...(r.fallbackReason ? { fallbackReason: r.fallbackReason } : {}),
   inputSha256: digest(r.riskInput),
 }));
 if (positionals[0] === "freeze") {
@@ -59,7 +74,11 @@ if (positionals[0] === "freeze") {
       "freeze requires --validation FILE from the real SF bridge evaluation",
     );
   const validation = JSON.parse(await readFile(resolve(values.validation)));
-  const frozen = freezeGuardrailCandidate(validation, inventory);
+  const frozen = freezeGuardrailCandidate(
+    validation,
+    inventory,
+    await bridgeProvenance(),
+  );
   await save(resolve(values.output), frozen);
   console.log(
     JSON.stringify({
@@ -106,6 +125,7 @@ if (positionals[0] === "freeze") {
       frozen.baselineSourceSha256 !== bundle.baselineSourceSha256)
   )
     throw new Error("Frozen candidate or corpus changed");
+  const currentBridgeProvenance = frozen ? await bridgeProvenance() : undefined;
   if (frozen)
     assertGuardrailFreeze(
       frozen,
@@ -116,6 +136,7 @@ if (positionals[0] === "freeze") {
         nativeBinarySha256,
       },
       inventory,
+      currentBridgeProvenance,
     );
   const backend = new NativeBackend(config),
     classifier = new Classifier(config, backend);
@@ -172,6 +193,7 @@ if (positionals[0] === "freeze") {
       modelSha256: artifact.sha256,
       corpusSha256: bundle.corpusSha256,
       baselineSourceSha256: bundle.baselineSourceSha256,
+      bridgeProvenance: currentBridgeProvenance,
       nativeBinarySha256,
       freeze: frozen,
     });

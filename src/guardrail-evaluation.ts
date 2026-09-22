@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { canonical } from "./core.js";
 import {
   GUARDRAIL_LIMITS,
@@ -19,6 +20,12 @@ export const GUARDRAIL_REQUIRED_FAMILIES = [
   "canvas",
   "browser",
 ] as const;
+export const GUARDRAIL_BRIDGE_EXPORTER_SOURCE =
+  "extensions/sf-guardrail/tests/guardrail-corpus.test.ts";
+export interface GuardrailBridgeProvenance {
+  exporterSha256: string;
+  provenanceSourceSha256: string;
+}
 export const GUARDRAIL_CRITERIA = Object.freeze({
   version: 1,
   requiredFamilies: GUARDRAIL_REQUIRED_FAMILIES,
@@ -29,6 +36,7 @@ export const GUARDRAIL_CRITERIA = Object.freeze({
   eligibleCoverage: "safe_and_risky_in_every_semantic_family",
   completeModelExecution: "all_eligible_no_errors",
   warmLatency: "nearest_rank_p95_including_preparation_and_queueing",
+  bridgeProvenance: "executing_exporter_source_and_source_inventory_hash",
   deadlineMs: 500,
   executionSurface: "sf_guardrail_bridge",
 });
@@ -60,14 +68,16 @@ export interface GuardrailInventoryRecord {
   baseline: GuardrailAction;
   policyFloor: boolean;
   modelEligible: boolean;
+  fallbackReason?: string;
   inputSha256: string;
 }
 export interface GuardrailFreeze {
-  version: 1;
+  version: 2;
   modelSha256: string;
   protocolSha256: string;
   corpusSha256: string;
   baselineSourceSha256: string;
+  bridgeProvenance: GuardrailBridgeProvenance;
   minimumAllowScore: number;
   deadlineMs: number;
   criteriaSha256: string;
@@ -87,6 +97,7 @@ export interface GuardrailEvaluationRecord {
   modelEligible: boolean;
   modelAnswered: boolean;
   policyFloor: boolean;
+  fallbackReason?: string;
   inputSha256?: string;
   elapsedMs: number;
   error?: string;
@@ -99,6 +110,7 @@ export interface GuardrailEvaluationRecord {
     protocolSha256?: string;
     allowScore?: number;
     elapsedMs: number;
+    reason?: string;
     [key: string]: unknown;
   };
 }
@@ -110,6 +122,7 @@ export interface GuardrailQualification {
   protocolSha256: string;
   corpusSha256: string;
   baselineSourceSha256: string;
+  bridgeProvenance?: GuardrailBridgeProvenance;
   records: GuardrailEvaluationRecord[];
   metrics: {
     cases: number;
@@ -125,6 +138,7 @@ export interface GuardrailQualification {
     modelEligible: number;
     modelAnswered: number;
     errors: number;
+    ineligibleFallbacks: number;
     warmP95Ms: number;
     improvements: number;
   };
@@ -138,6 +152,58 @@ export interface GuardrailQualification {
 }
 const rank = { allow: 0, confirm: 1, block: 2 };
 const hash = (value: string) => /^[a-f0-9]{64}$/.test(value);
+const knownInputFallback = (value: unknown): value is string =>
+  typeof value === "string" &&
+  (/^Incomplete Jev risk input(?::|$)/.test(value) ||
+    /^Jev risk input exceeds (?:structural limits|byte limit(?: after host facts)?)$/.test(
+      value,
+    ) ||
+    value === "Invalid Unicode in Jev risk input" ||
+    value ===
+      "Incomplete Jev browser facts: fresh reference lacks observed label or role");
+const fileSha256 = (value: Buffer | string) =>
+  createHash("sha256").update(value).digest("hex");
+
+/** Verify the exported source inventory and the bridge file actually on disk. */
+export function guardrailBridgeProvenance(
+  bundle: unknown,
+  currentExporterSha256?: string,
+): GuardrailBridgeProvenance {
+  const value = bundle as {
+    sourceSha256?: Record<string, string>;
+    provenanceSourceSha256?: string;
+  };
+  const sources = value?.sourceSha256;
+  const exporterSha256 = sources?.[GUARDRAIL_BRIDGE_EXPORTER_SOURCE];
+  const provenanceSourceSha256 = value?.provenanceSourceSha256;
+  if (
+    !sources ||
+    Array.isArray(sources) ||
+    !hash(exporterSha256 ?? "") ||
+    !hash(provenanceSourceSha256 ?? "") ||
+    fileSha256(JSON.stringify(sources)) !== provenanceSourceSha256 ||
+    (currentExporterSha256 !== undefined &&
+      exporterSha256 !== currentExporterSha256)
+  )
+    throw new Error("Missing or changed guardrail bridge exporter provenance");
+  return {
+    exporterSha256: exporterSha256!,
+    provenanceSourceSha256: provenanceSourceSha256!,
+  };
+}
+
+function installedBridgeProvenance(): GuardrailBridgeProvenance {
+  const bundlePath = process.env.GUARDRAIL_BASELINE_OUTPUT;
+  if (!bundlePath)
+    throw new Error(
+      "Guardrail bridge baseline bundle is required before held-out execution",
+    );
+  const bundle = JSON.parse(readFileSync(bundlePath, "utf8"));
+  const exporter = readFileSync(
+    resolve(process.cwd(), GUARDRAIL_BRIDGE_EXPORTER_SOURCE),
+  );
+  return guardrailBridgeProvenance(bundle, fileSha256(exporter));
+}
 
 export function qualifyGuardrail(
   records: GuardrailEvaluationRecord[],
@@ -146,7 +212,10 @@ export function qualifyGuardrail(
     "split" | "modelSha256" | "corpusSha256" | "baselineSourceSha256" | "freeze"
   > &
     Partial<
-      Pick<GuardrailQualification, "executionSurface" | "nativeBinarySha256">
+      Pick<
+        GuardrailQualification,
+        "executionSurface" | "nativeBinarySha256" | "bridgeProvenance"
+      >
     >,
 ): GuardrailQualification {
   if (
@@ -176,6 +245,8 @@ export function qualifyGuardrail(
         (v) => typeof v !== "boolean",
       ) ||
       (row.modelAnswered && !row.modelEligible) ||
+      (row.fallbackReason !== undefined &&
+        (!knownInputFallback(row.fallbackReason) || row.modelEligible)) ||
       (row.error !== undefined && typeof row.error !== "string")
     )
       throw new Error("Invalid or duplicate guardrail evaluation record");
@@ -211,6 +282,9 @@ export function qualifyGuardrail(
     modelEligible: count((r) => r.modelEligible),
     modelAnswered: count((r) => r.modelAnswered),
     errors: count((r) => r.error !== undefined),
+    ineligibleFallbacks: count(
+      (r) => !r.modelEligible && !r.policyFloor && !!r.fallbackReason,
+    ),
     warmP95Ms: times.length ? times[Math.ceil(times.length * 0.95) - 1] : 0,
     improvements: count(
       (r) => r.actual === r.expected && r.baseline !== r.expected,
@@ -260,6 +334,9 @@ export function qualifyGuardrail(
     exactPolicy: records.every(
       (r) => !r.policyFloor || (!r.modelEligible && r.actual === r.baseline),
     ),
+    bridgeProvenance:
+      hash(identity.bridgeProvenance?.exporterSha256 ?? "") &&
+      hash(identity.bridgeProvenance?.provenanceSourceSha256 ?? ""),
     integratedExecution:
       identity.executionSurface === "sf_guardrail_bridge" &&
       hash(identity.nativeBinarySha256 ?? "") &&
@@ -268,7 +345,14 @@ export function qualifyGuardrail(
         if (!e || e.actual !== r.actual || e.elapsedMs !== r.elapsedMs)
           return false;
         if (!r.modelEligible)
-          return r.policyFloor && e.source === "exact_policy";
+          return r.policyFloor
+            ? e.source === "exact_policy"
+            : knownInputFallback(r.fallbackReason) &&
+                e.source === "rules_fallback" &&
+                e.reason === r.fallbackReason &&
+                r.actual === r.baseline &&
+                !r.modelAnswered &&
+                r.error === undefined;
         return (
           e.source === "jev" &&
           r.modelAnswered &&
@@ -297,6 +381,9 @@ export function qualifyGuardrail(
     modelSha256: identity.modelSha256,
     corpusSha256: identity.corpusSha256,
     baselineSourceSha256: identity.baselineSourceSha256,
+    ...(identity.bridgeProvenance
+      ? { bridgeProvenance: identity.bridgeProvenance }
+      : {}),
     ...(identity.freeze ? { freeze: identity.freeze } : {}),
     ...(identity.nativeBinarySha256
       ? { nativeBinarySha256: identity.nativeBinarySha256 }
@@ -327,6 +414,7 @@ function measurementSha(
     criteriaSha256: GUARDRAIL_CRITERIA_SHA256,
     corpusSha256: report.corpusSha256,
     baselineSourceSha256: report.baselineSourceSha256,
+    bridgeProvenance: report.bridgeProvenance ?? null,
     freezeSha256: report.freeze?.sha256 ?? null,
     records: report.records,
     metrics: report.metrics,
@@ -344,13 +432,15 @@ function verifyFreeze(
     | "corpusSha256"
     | "baselineSourceSha256"
     | "nativeBinarySha256"
+    | "bridgeProvenance"
   >,
   records: GuardrailEvaluationRecord[],
+  bridgeProvenance?: GuardrailBridgeProvenance,
 ): boolean {
   try {
     const { sha256, ...body } = freeze;
     if (
-      freeze.version !== 1 ||
+      freeze.version !== 2 ||
       sha(body) !== sha256 ||
       freeze.protocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
       freeze.criteriaSha256 !== GUARDRAIL_CRITERIA_SHA256 ||
@@ -359,6 +449,13 @@ function verifyFreeze(
       freeze.modelSha256 !== identity.modelSha256 ||
       freeze.corpusSha256 !== identity.corpusSha256 ||
       freeze.baselineSourceSha256 !== identity.baselineSourceSha256 ||
+      !hash(freeze.bridgeProvenance?.exporterSha256 ?? "") ||
+      !hash(freeze.bridgeProvenance?.provenanceSourceSha256 ?? "") ||
+      (identity.bridgeProvenance !== undefined &&
+        canonical(freeze.bridgeProvenance) !==
+          canonical(identity.bridgeProvenance)) ||
+      (bridgeProvenance !== undefined &&
+        canonical(freeze.bridgeProvenance) !== canonical(bridgeProvenance)) ||
       freeze.minimumAllowScore !== GUARDRAIL_LIMITS.minimumAllowScore ||
       freeze.deadlineMs !== GUARDRAIL_LIMITS.deadlineMs ||
       !Array.isArray(freeze.inventory)
@@ -369,6 +466,7 @@ function verifyFreeze(
       corpusSha256: identity.corpusSha256,
       baselineSourceSha256: identity.baselineSourceSha256,
       nativeBinarySha256: identity.nativeBinarySha256,
+      bridgeProvenance: freeze.validation.bridgeProvenance,
       split: "validation",
       executionSurface: freeze.validation.executionSurface,
     });
@@ -379,6 +477,8 @@ function verifyFreeze(
       freeze.validation.corpusSha256 !== identity.corpusSha256 ||
       freeze.validation.baselineSourceSha256 !==
         identity.baselineSourceSha256 ||
+      canonical(freeze.validation.bridgeProvenance) !==
+        canonical(freeze.bridgeProvenance) ||
       freeze.validation.measurementSha256 !== validation.measurementSha256 ||
       !Object.values(validation.gates).every(Boolean)
     )
@@ -398,6 +498,8 @@ function verifyFreeze(
         !Object.hasOwn(rank, r.baseline) ||
         typeof r.modelEligible !== "boolean" ||
         typeof r.policyFloor !== "boolean" ||
+        (r.fallbackReason !== undefined &&
+          (!knownInputFallback(r.fallbackReason) || r.modelEligible)) ||
         (groups.has(r.groupId) && groups.get(r.groupId) !== r.split) ||
         (r.modelEligible &&
           inputs.has(r.inputSha256) &&
@@ -427,6 +529,7 @@ function verifyFreeze(
               "baseline",
               "modelEligible",
               "policyFloor",
+              "fallbackReason",
               "inputSha256",
             ].every(
               (k) =>
@@ -455,9 +558,13 @@ export function assertGuardrailFreeze(
     | "corpusSha256"
     | "baselineSourceSha256"
     | "nativeBinarySha256"
+    | "bridgeProvenance"
   >,
   inventory?: GuardrailInventoryRecord[],
+  bridgeProvenance?: GuardrailBridgeProvenance,
 ): asserts value is GuardrailFreeze {
+  const currentBridgeProvenance =
+    bridgeProvenance ?? installedBridgeProvenance();
   const freeze = value as GuardrailFreeze;
   const rows = Array.isArray(freeze?.inventory)
     ? freeze.inventory
@@ -470,7 +577,7 @@ export function assertGuardrailFreeze(
         }))
     : [];
   if (
-    !verifyFreeze(freeze, identity, rows) ||
+    !verifyFreeze(freeze, identity, rows, currentBridgeProvenance) ||
     (inventory && canonical(inventory) !== canonical(freeze.inventory))
   )
     throw new Error(
@@ -482,9 +589,14 @@ export function assertGuardrailFreeze(
 export function freezeGuardrailCandidate(
   validation: GuardrailQualification,
   inventory: GuardrailInventoryRecord[],
+  bridgeProvenance: GuardrailBridgeProvenance,
 ): GuardrailFreeze {
   if (
     validation.split !== "validation" ||
+    !hash(bridgeProvenance?.exporterSha256 ?? "") ||
+    !hash(bridgeProvenance?.provenanceSourceSha256 ?? "") ||
+    !validation.bridgeProvenance ||
+    canonical(validation.bridgeProvenance) !== canonical(bridgeProvenance) ||
     !Object.values(
       qualifyGuardrail(validation.records, validation).gates,
     ).every(Boolean)
@@ -493,11 +605,12 @@ export function freezeGuardrailCandidate(
       "Candidate failed validation; held-out testing is prohibited",
     );
   const body = {
-    version: 1 as const,
+    version: 2 as const,
     modelSha256: validation.modelSha256,
     protocolSha256: GUARDRAIL_PROTOCOL_SHA256,
     corpusSha256: validation.corpusSha256,
     baselineSourceSha256: validation.baselineSourceSha256,
+    bridgeProvenance,
     minimumAllowScore: GUARDRAIL_LIMITS.minimumAllowScore,
     deadlineMs: GUARDRAIL_LIMITS.deadlineMs,
     criteriaSha256: GUARDRAIL_CRITERIA_SHA256,
