@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import test from "node:test";
@@ -6,8 +8,13 @@ import { fileURLToPath } from "node:url";
 import {
   C8_VALID_SEAL,
   summarizeCandidate8Valid,
+  verifyCandidate8CalibratedSelection,
   verifyCandidate8ValidPopulation,
 } from "../scripts/guardrail-candidate8-valid-eval.mjs";
+import {
+  selectC8Calibration,
+  verifyC8Calibration,
+} from "../dist/guardrail-calibration.js";
 import {
   assertCandidate8PreparedCall,
   createCandidate8Recorder,
@@ -128,4 +135,148 @@ test("VALID summary rejects incomplete replay and counts attempted fallback", ()
   assert.equal(result.metrics.attemptedModelFallbacks, 1);
   assert.equal(result.gates.allPreparedModelCallsAnswered, false);
   assert.equal(result.gates.humanLabelReviewComplete, false);
+});
+
+test("real VALID path accepts only the admitted dynamic TRAIN-CAL selection", () => {
+  const modelSha256 = "a".repeat(64);
+  const nativeBinarySha256 = "b".repeat(64);
+  const input = {
+    version: 1,
+    purpose: "candidate8_train_calibration_only",
+    modelSha256,
+    nativeBinarySha256,
+    promptProtocolSha256: C8_VALID_SEAL.promptProtocolSha256,
+    baselineSha256: C8_VALID_SEAL.hostRuntimeSha256,
+    policySha256: C8_VALID_SEAL.policySha256,
+    baselineReceiptSha256: C8_VALID_SEAL.calBaselineReceiptSha256,
+    admissionSha256: C8_VALID_SEAL.calAdmissionSha256,
+    fitSha256: C8_VALID_SEAL.calFitSha256,
+    calibrationCorpusSha256: C8_VALID_SEAL.calCorpusSha256,
+    fitGroups: Array.from({ length: 77 }, (_, index) => `fit-${index}`),
+    cases: Array.from({ length: 47 }, (_, index) => ({
+      id: `cal-${index}`,
+      groupId: `cal-group-${index % 17}`,
+      expected: index < 24 ? "allow" : "confirm",
+    })),
+    records: Array.from({ length: 47 }, (_, index) => ({
+      id: `cal-${index}`,
+      groupId: `cal-group-${index % 17}`,
+      expected: index < 24 ? "allow" : "confirm",
+      baseline: index < 24 ? "allow" : "confirm",
+      gate: "prepared",
+      modelAnswered: true,
+      inputSha256: String(index % 10).repeat(64),
+      allowScore: index < 24 ? 0.9 : 0.55,
+      elapsedMs: 4,
+    })),
+  };
+  const selected = selectC8Calibration(input);
+  const accepted = verifyCandidate8CalibratedSelection(
+    selected,
+    modelSha256,
+    nativeBinarySha256,
+    verifyC8Calibration,
+  );
+  assert.equal(accepted.accepted, true);
+  assert.ok(accepted.minimumAllowScore > 0.55);
+  assert.ok(accepted.minimumAllowScore < 0.99);
+  assert.equal(accepted.scoringProtocolSha256, selected.scoringProtocolSha256);
+
+  const changedCutoff = { ...selected, minimumAllowScore: 0.99 };
+  assert.throws(
+    () =>
+      verifyCandidate8CalibratedSelection(
+        changedCutoff,
+        modelSha256,
+        nativeBinarySha256,
+        verifyC8Calibration,
+      ),
+    /changed or did not select/,
+  );
+  const changedPolicy = selectC8Calibration({
+    ...input,
+    policySha256: "c".repeat(64),
+  });
+  assert.throws(
+    () =>
+      verifyCandidate8CalibratedSelection(
+        changedPolicy,
+        modelSha256,
+        nativeBinarySha256,
+        verifyC8Calibration,
+      ),
+    /final host pins/,
+  );
+  assert.throws(
+    () =>
+      verifyCandidate8CalibratedSelection(
+        selected,
+        "d".repeat(64),
+        nativeBinarySha256,
+        verifyC8Calibration,
+      ),
+    /installed model and scorer/,
+  );
+  assert.throws(
+    () =>
+      verifyCandidate8CalibratedSelection(
+        selected,
+        modelSha256,
+        nativeBinarySha256,
+        undefined,
+      ),
+    /verifier is unavailable/,
+  );
+});
+
+test("VALID agent label audit covers the sealed inventory without human signoff", async () => {
+  const source = await readJson("valid.json");
+  const bytes = await readFile(
+    resolve(
+      root,
+      "reports/guardrail-risk-2026-09-21/candidate-8-valid-agent-label-review.json",
+    ),
+  );
+  assert.equal(
+    createHash("sha256").update(bytes).digest("hex"),
+    "2ed90d9c7b83c14f27c48e85157f16b00b0e764cbf0a785ceeb7928313dd9d6a",
+  );
+  const audit = JSON.parse(bytes);
+  assert.equal(audit.purpose, "candidate8_valid_agent_label_audit");
+  assert.equal(audit.validCorpusSha256, C8_VALID_SEAL.sourceSha256);
+  assert.equal(audit.rubricSha256, C8_VALID_SEAL.rubricSha256);
+  assert.equal(audit.humanSignoff, false);
+  assert.equal(audit.unresolvedSuspectedMislabels, 0);
+  assert.equal(audit.reviewedCases, C8_VALID_SEAL.cases);
+  assert.equal(audit.reviewedGroups, C8_VALID_SEAL.groups);
+  assert.equal(audit.records.length, source.cases.length);
+  assert.deepEqual(
+    audit.records.map(({ id, groupId }) => [id, groupId]),
+    source.cases.map(({ id, group_id }) => [id, group_id]),
+  );
+  assert.equal(
+    audit.records.filter((row) => row.disposition === "limit").length,
+    audit.limitsRequireHumanAdjudication,
+  );
+  assert.ok(
+    audit.records.every((row) => ["agree", "limit"].includes(row.disposition)),
+  );
+});
+
+test("real VALID CLI remains locked before any corpus or model scoring", () => {
+  const run = spawnSync(
+    process.execPath,
+    [
+      resolve(root, "scripts/guardrail-candidate8-valid-eval.mjs"),
+      "--sf-pi",
+      "/private/tmp/host-not-opened",
+      "--sf-deps",
+      "/private/tmp/deps-not-opened",
+      "--output-dir",
+      resolve(root, ".build/guardrail/candidate-8-valid-eval-locked-test"),
+    ],
+    { cwd: root, encoding: "utf8" },
+  );
+  assert.notEqual(run.status, 0);
+  assert.match(run.stderr, /Real C8 VALID scoring is disabled/);
 });

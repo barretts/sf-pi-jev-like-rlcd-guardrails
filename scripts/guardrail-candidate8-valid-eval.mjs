@@ -36,6 +36,16 @@ export const C8_VALID_SEAL = Object.freeze({
   sfPiCommit: "d86cdcfcfa02e419a4255291d16e56c48a5f2ade",
   hostRuntimeSha256:
     "927c25ebee99f59ea349bcd6d5da06c9a999255e4e99d7658ee0f113da96e4f2",
+  policySha256:
+    "06aa441885847cce10b5432120b535657b780726b83327cbfd170b1b455bef22",
+  calBaselineReceiptSha256:
+    "59e99e7bfbc810a7b86e14a9d09cd11ec12edf3d7c1ed278d0ee5bdf4e3fc93f",
+  calAdmissionSha256:
+    "c5203e21a9fdad729e6cddd166f923a671654b0968f89d330992f1ca6558f680",
+  calFitSha256:
+    "17f6672fffe913aacdbf44394119bc0b14fbab5db4cc87fccf21c66da449cdc5",
+  calCorpusSha256:
+    "7371877d67874e8d55c418b678d9d808207bb4e645d1868d4e44ad8d5d57144f",
   promptProtocolSha256:
     "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
   decisionBaseProtocolSha256:
@@ -344,27 +354,70 @@ async function readRuntimeIdentity() {
   );
 }
 
+/** Match the accepted TRAIN-CAL selector, not the uncalibrated C7 cutoff. */
+export function verifyCandidate8CalibratedSelection(
+  receipt,
+  modelSha256,
+  nativeBinarySha256,
+  verifyCalibration,
+) {
+  if (typeof verifyCalibration !== "function")
+    throw new Error("C8 calibration verifier is unavailable");
+  const selected = verifyCalibration(receipt, modelSha256, nativeBinarySha256);
+  if (
+    selected.input.promptProtocolSha256 !==
+      C8_VALID_SEAL.promptProtocolSha256 ||
+    selected.input.baselineSha256 !== C8_VALID_SEAL.hostRuntimeSha256 ||
+    selected.input.policySha256 !== C8_VALID_SEAL.policySha256 ||
+    selected.input.baselineReceiptSha256 !==
+      C8_VALID_SEAL.calBaselineReceiptSha256 ||
+    selected.input.admissionSha256 !== C8_VALID_SEAL.calAdmissionSha256 ||
+    selected.input.fitSha256 !== C8_VALID_SEAL.calFitSha256 ||
+    selected.input.calibrationCorpusSha256 !== C8_VALID_SEAL.calCorpusSha256 ||
+    selected.input.cases.length !== 47 ||
+    new Set(selected.input.cases.map((row) => row.groupId)).size !== 17 ||
+    selected.input.fitGroups.length !== 77 ||
+    selected.input.cases.filter((row) => row.expected === "allow").length !==
+      24 ||
+    selected.input.cases.filter((row) => row.expected === "confirm").length !==
+      23 ||
+    !isHash(selected.scoringProtocolSha256) ||
+    !Number.isFinite(selected.minimumAllowScore) ||
+    selected.minimumAllowScore < 0.5 ||
+    selected.minimumAllowScore >= 1
+  )
+    throw new Error(
+      "C8 TRAIN-CAL selection differs from admitted source or final host pins",
+    );
+  return selected;
+}
+
 async function loadRealCandidate(values, runtime) {
   const path = resolve(values["freeze-file"] ?? "");
   const repo = resolve(values["freeze-repo"] ?? "");
   const rel = values["freeze-path"];
   const revision = values["freeze-revision"];
   if (
-    !path ||
-    !repo ||
+    !values["freeze-file"] ||
+    !values["freeze-repo"] ||
+    !values["model-file"] ||
+    !values.registry ||
+    !isAbsolute(values["model-file"]) ||
+    !isAbsolute(values.registry) ||
     typeof rel !== "string" ||
     rel.includes("..") ||
     isAbsolute(rel) ||
     !/^[a-f0-9]{40}$/.test(revision ?? "") ||
     !isHash(values["freeze-sha256"]) ||
     !inside(path, repo) ||
+    path !== resolve(repo, rel) ||
     execFileSync("git", ["rev-parse", "HEAD"], {
       cwd: repo,
       encoding: "utf8",
     }).trim() !== revision
   )
     throw new Error(
-      "C8 real candidate requires a committed, SHA-pinned pre-VALID freeze",
+      "C8 real candidate requires a committed, SHA-pinned TRAIN-CAL cutoff receipt",
     );
   const raw = await regularBytes(path);
   const committed = execFileSync("git", ["show", `${revision}:${rel}`], {
@@ -373,54 +426,44 @@ async function loadRealCandidate(values, runtime) {
   if (sha(raw) !== values["freeze-sha256"] || !raw.equals(committed))
     throw new Error("C8 candidate freeze changed or was not committed");
   const freeze = JSON.parse(raw);
-  if (
-    freeze?.purpose !== "candidate8_prevalidation_freeze" ||
-    freeze.validationRead !== false ||
-    freeze.heldOutTestRead !== false ||
-    freeze.validSha256 !== C8_VALID_SEAL.sourceSha256 ||
-    freeze.preflightSha256 !== C8_VALID_SEAL.preflightSha256 ||
-    freeze.sfPiCommit !== C8_VALID_SEAL.sfPiCommit ||
-    freeze.hostRuntimeSha256 !== C8_VALID_SEAL.hostRuntimeSha256 ||
-    freeze.protocolSha256 !== C8_VALID_SEAL.promptProtocolSha256 ||
-    freeze.modelId !== values["model-id"] ||
-    freeze.modelSha256 !== values["model-sha256"] ||
-    freeze.modelFile !== values["model-file"] ||
-    freeze.registryFile !== values.registry ||
-    freeze.baseModel !== "google/gemma-3-1b-it" ||
-    !isHash(freeze.trainingManifestSha256) ||
-    !isHash(freeze.trainCalibrationReceiptSha256) ||
-    !isHash(freeze.nativeBinarySha256) ||
-    !Number.isFinite(freeze.decisionCutoff) ||
-    freeze.decisionCutoff !== runtime.limits.minimumAllowScore
-  )
-    throw new Error(
-      "C8 freeze does not bind source, host, model, calibration, and cutoff",
-    );
   const { verifyArtifact, hashArtifact } = await import(
     pathToFileURL(resolve(runtimeDir, "models.js")).href
   );
   const artifact = await verifyArtifact(
-    freeze.modelFile,
+    values["model-file"],
     "classifier",
-    freeze.modelId,
-    { registryPath: freeze.registryFile },
+    values["model-id"],
+    { registryPath: values.registry },
   );
-  if (artifact.sha256 !== freeze.modelSha256)
+  if (
+    artifact.sha256 !== values["model-sha256"] ||
+    artifact.base_model !== "google/gemma-3-1b-it" ||
+    artifact.template_version !== "v2"
+  )
     throw new Error("C8 model bytes differ from frozen registry identity");
   const binaryFile = resolve(root, ".build/jev-native");
-  if ((await hashArtifact(binaryFile)).sha256 !== freeze.nativeBinarySha256)
-    throw new Error("C8 native scorer differs from frozen identity");
+  const nativeBinarySha256 = (await hashArtifact(binaryFile)).sha256;
+  const selected = verifyCandidate8CalibratedSelection(
+    freeze,
+    artifact.sha256,
+    nativeBinarySha256,
+    runtime.verifyCalibration,
+  );
   return {
-    modelId: freeze.modelId,
-    modelFile: freeze.modelFile,
-    modelSha256: freeze.modelSha256,
-    registryFile: freeze.registryFile,
+    modelId: values["model-id"],
+    modelFile: values["model-file"],
+    modelSha256: artifact.sha256,
+    registryFile: values.registry,
     nativeBinaryFile: binaryFile,
-    nativeBinarySha256: freeze.nativeBinarySha256,
+    nativeBinarySha256,
+    scoringProtocolSha256: selected.scoringProtocolSha256,
+    minimumAllowScore: selected.minimumAllowScore,
+    policySha256: selected.input.policySha256,
+    calibrationFile: path,
+    calibrationSha256: sha(raw),
     freezeSha256: sha(raw),
     freezeRevision: revision,
-    trainingManifestSha256: freeze.trainingManifestSha256,
-    trainCalibrationReceiptSha256: freeze.trainCalibrationReceiptSha256,
+    trainCalibrationReceiptSha256: sha(raw),
   };
 }
 
@@ -467,7 +510,9 @@ async function main() {
     (!isHash(values["model-sha256"]) ||
       !/^jev\/[a-zA-Z0-9._-]+$/.test(values["model-id"] ?? "") ||
       !values["model-file"] ||
-      !values.registry)
+      !values.registry ||
+      !isAbsolute(values["model-file"]) ||
+      !isAbsolute(values.registry))
   )
     throw new Error(
       "Real C8 VALID requires a model, registry, and committed freeze",
@@ -492,7 +537,7 @@ async function main() {
     { GUARDRAIL_PROTOCOL_SHA256, GUARDRAIL_LIMITS, validateGuardrailInput },
     { registerGuardrailProvider, guardrailConfig },
     { canonical },
-    { C8_BASE_PROTOCOL_SHA256 },
+    { C8_BASE_PROTOCOL_SHA256, verifyC8Calibration },
   ] = await Promise.all([
     import(pathToFileURL(resolve(runtimeDir, "guardrail.js")).href),
     import(pathToFileURL(resolve(runtimeDir, "guardrail-extension.js")).href),
@@ -509,7 +554,9 @@ async function main() {
     );
   const candidate = fake
     ? null
-    : await loadRealCandidate(values, { limits: GUARDRAIL_LIMITS });
+    : await loadRealCandidate(values, {
+        verifyCalibration: verifyC8Calibration,
+      });
   await mkdir(buildRoot, { recursive: true });
   await mkdir(outputDir, { recursive: false });
   try {
@@ -521,8 +568,12 @@ async function main() {
       stubFile,
       hostCommit: C8_VALID_SEAL.sfPiCommit,
       hostRuntimeSha256: C8_VALID_SEAL.hostRuntimeSha256,
-      protocolSha256: C8_VALID_SEAL.promptProtocolSha256,
+      protocolSha256:
+        candidate?.scoringProtocolSha256 ?? C8_VALID_SEAL.promptProtocolSha256,
       expectedModelSha256: candidate?.modelSha256 ?? "f".repeat(64),
+      expectedCalibrationSha256: candidate?.calibrationSha256,
+      expectedMinimumAllowScore: candidate?.minimumAllowScore,
+      expectedPolicySha256: candidate?.policySha256,
       validateInput: validateGuardrailInput,
       createProvider: fake
         ? async (pi, event) => {
@@ -562,11 +613,19 @@ async function main() {
               JEV_GUARDRAIL_MODEL_ID: candidate.modelId,
               JEV_GUARDRAIL_MODEL_FILE: candidate.modelFile,
               JEV_GUARDRAIL_ARTIFACT_REGISTRY: candidate.registryFile,
+              JEV_GUARDRAIL_CALIBRATION: candidate.calibrationFile,
+              JEV_GUARDRAIL_CALIBRATION_SHA256: candidate.calibrationSha256,
             };
             delete env.JEV_GUARDRAIL_QUALIFICATION;
             delete env.JEV_GUARDRAIL_QUALIFICATION_SHA256;
-            if (guardrailConfig(env).modelId !== candidate.modelId)
-              throw new Error("C8 provider selected a different model");
+            const config = guardrailConfig(env);
+            if (
+              config.modelId !== candidate.modelId ||
+              config.binary !== candidate.nativeBinaryFile
+            )
+              throw new Error(
+                "C8 provider selected a different model or scorer",
+              );
             const runtime = registerGuardrailProvider(pi, { env });
             return runtime;
           },

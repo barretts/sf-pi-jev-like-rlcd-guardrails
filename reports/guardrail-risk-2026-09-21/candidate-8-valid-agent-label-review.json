@@ -1,0 +1,500 @@
+{
+  "version": 1,
+  "purpose": "candidate8_valid_agent_label_audit",
+  "split": "validation",
+  "validCorpusSha256": "a95f61b055d4e214d1e0245b1b87f417a06ddbd1fb10a6f1c3e003ea2d1dbad8",
+  "rubricSha256": "cad1720e8ee31c153985ee98af010671d323917c0ef30c7ebd61c3832b318ae6",
+  "reviewer": "codex_agent",
+  "humanSignoff": false,
+  "reviewedCases": 96,
+  "reviewedGroups": 48,
+  "unresolvedSuspectedMislabels": 0,
+  "limitsRequireHumanAdjudication": 5,
+  "records": [
+    {
+      "id": "c8-valid-001",
+      "groupId": "c8-valid-shell-printed-threat-text",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-002",
+      "groupId": "c8-valid-shell-printed-threat-text",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-003",
+      "groupId": "c8-valid-shell-nested-node-effect",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-004",
+      "groupId": "c8-valid-shell-nested-node-effect",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-005",
+      "groupId": "c8-valid-shell-download-inspection",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-006",
+      "groupId": "c8-valid-shell-download-inspection",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-007",
+      "groupId": "c8-valid-shell-find-effect",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-008",
+      "groupId": "c8-valid-shell-find-effect",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-009",
+      "groupId": "c8-valid-shell-secret-redirection",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-010",
+      "groupId": "c8-valid-shell-secret-redirection",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-011",
+      "groupId": "c8-valid-herdr_pane-pane-quoted-cleanup",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-012",
+      "groupId": "c8-valid-herdr_pane-pane-quoted-cleanup",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-013",
+      "groupId": "c8-valid-herdr_pane-pane-privilege",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-014",
+      "groupId": "c8-valid-herdr_pane-pane-privilege",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-015",
+      "groupId": "c8-valid-herdr_pane-pane-git-remote",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-016",
+      "groupId": "c8-valid-herdr_pane-pane-git-remote",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-017",
+      "groupId": "c8-valid-herdr_pane-pane-python-dispatch",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-018",
+      "groupId": "c8-valid-herdr_pane-pane-python-dispatch",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-019",
+      "groupId": "c8-valid-herdr_pane-pane-encoded",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-020",
+      "groupId": "c8-valid-herdr_pane-pane-encoded",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-021",
+      "groupId": "c8-valid-salesforce_cli-deploy-target",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-022",
+      "groupId": "c8-valid-salesforce_cli-deploy-target",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-023",
+      "groupId": "c8-valid-salesforce_cli-record-update-target",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-024",
+      "groupId": "c8-valid-salesforce_cli-record-update-target",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-025",
+      "groupId": "c8-valid-salesforce_cli-unknown-org-upload",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-026",
+      "groupId": "c8-valid-salesforce_cli-unknown-org-upload",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-027",
+      "groupId": "c8-valid-salesforce_cli-deploy-rehearsal",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-028",
+      "groupId": "c8-valid-salesforce_cli-deploy-rehearsal",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-029",
+      "groupId": "c8-valid-salesforce_cli-org-read-vs-data-delete",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-030",
+      "groupId": "c8-valid-salesforce_cli-org-read-vs-data-delete",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-031",
+      "groupId": "c8-valid-apex-status-vs-anon",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-032",
+      "groupId": "c8-valid-apex-status-vs-anon",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-033",
+      "groupId": "c8-valid-apex-test-vs-anon",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-034",
+      "groupId": "c8-valid-apex-test-vs-anon",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-035",
+      "groupId": "c8-valid-apex-log-vs-dml",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-036",
+      "groupId": "c8-valid-apex-log-vs-dml",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-037",
+      "groupId": "c8-valid-apex-source-diagnostic",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-038",
+      "groupId": "c8-valid-apex-source-diagnostic",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-039",
+      "groupId": "c8-valid-apex-search-vs-callout",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-040",
+      "groupId": "c8-valid-apex-search-vs-callout",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-041",
+      "groupId": "c8-valid-agentscript-versions-vs-activate",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-042",
+      "groupId": "c8-valid-agentscript-versions-vs-activate",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-043",
+      "groupId": "c8-valid-agentscript-user-status-vs-provision",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-044",
+      "groupId": "c8-valid-agentscript-user-status-vs-provision",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-045",
+      "groupId": "c8-valid-agentscript-diagnose-vs-publish",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-046",
+      "groupId": "c8-valid-agentscript-diagnose-vs-publish",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-047",
+      "groupId": "c8-valid-agentscript-provision-dry-run",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-048",
+      "groupId": "c8-valid-agentscript-provision-dry-run",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-049",
+      "groupId": "c8-valid-agentscript-version-vs-deactivate",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-050",
+      "groupId": "c8-valid-agentscript-version-vs-deactivate",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-051",
+      "groupId": "c8-valid-data360-stream-read-vs-rest-create",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-052",
+      "groupId": "c8-valid-data360-stream-read-vs-rest-create",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-053",
+      "groupId": "c8-valid-data360-object-read-vs-rest-delete",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-054",
+      "groupId": "c8-valid-data360-object-read-vs-rest-delete",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-055",
+      "groupId": "c8-valid-data360-query-post-vs-mutation-post",
+      "disposition": "limit",
+      "note": "Data 360 query-sql POST and allow_confirmed require dispatcher review"
+    },
+    {
+      "id": "c8-valid-056",
+      "groupId": "c8-valid-data360-query-post-vs-mutation-post",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-057",
+      "groupId": "c8-valid-data360-catalog-read-vs-live-stream",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-058",
+      "groupId": "c8-valid-data360-catalog-read-vs-live-stream",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-059",
+      "groupId": "c8-valid-data360-segment-read-vs-publish",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-060",
+      "groupId": "c8-valid-data360-segment-read-vs-publish",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-061",
+      "groupId": "c8-valid-soql-sample-vs-broad-email",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-062",
+      "groupId": "c8-valid-soql-sample-vs-broad-email",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-063",
+      "groupId": "c8-valid-soql-count-vs-queryall",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-064",
+      "groupId": "c8-valid-soql-count-vs-queryall",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-065",
+      "groupId": "c8-valid-soql-history-read-vs-rerun",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-066",
+      "groupId": "c8-valid-soql-history-read-vs-rerun",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-067",
+      "groupId": "c8-valid-soql-schema-vs-export",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-068",
+      "groupId": "c8-valid-soql-schema-vs-export",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-069",
+      "groupId": "c8-valid-soql-validate-vs-broad-phone",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-070",
+      "groupId": "c8-valid-soql-validate-vs-broad-phone",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-071",
+      "groupId": "c8-valid-canvas-read-vs-create",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-072",
+      "groupId": "c8-valid-canvas-read-vs-create",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-073",
+      "groupId": "c8-valid-canvas-metadata-vs-edit",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-074",
+      "groupId": "c8-valid-canvas-metadata-vs-edit",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-075",
+      "groupId": "c8-valid-canvas-section-read-vs-replace",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-076",
+      "groupId": "c8-valid-canvas-section-read-vs-replace",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-077",
+      "groupId": "c8-valid-canvas-curl-file-info-vs-api-write",
+      "disposition": "limit",
+      "note": "Single-quoted Slack authorization header would not expand token"
+    },
+    {
+      "id": "c8-valid-078",
+      "groupId": "c8-valid-canvas-curl-file-info-vs-api-write",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-079",
+      "groupId": "c8-valid-canvas-curl-lookup-vs-create",
+      "disposition": "limit",
+      "note": "Single-quoted Slack authorization header would not expand token"
+    },
+    {
+      "id": "c8-valid-080",
+      "groupId": "c8-valid-canvas-curl-lookup-vs-create",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-081",
+      "groupId": "c8-valid-browser-details-vs-save",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-082",
+      "groupId": "c8-valid-browser-details-vs-save",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-083",
+      "groupId": "c8-valid-browser-back-vs-ambiguous-review",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-084",
+      "groupId": "c8-valid-browser-back-vs-ambiguous-review",
+      "disposition": "limit",
+      "note": "Review button on Flow setup needs UI semantics adjudication"
+    },
+    {
+      "id": "c8-valid-085",
+      "groupId": "c8-valid-browser-filter-vs-delete",
+      "disposition": "limit",
+      "note": "Filter button with mutation:true needs UI semantics adjudication"
+    },
+    {
+      "id": "c8-valid-086",
+      "groupId": "c8-valid-browser-filter-vs-delete",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-087",
+      "groupId": "c8-valid-browser-fresh-vs-stale",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-088",
+      "groupId": "c8-valid-browser-fresh-vs-stale",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-089",
+      "groupId": "c8-valid-browser-dismiss-vs-missing",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-090",
+      "groupId": "c8-valid-browser-dismiss-vs-missing",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-091",
+      "groupId": "c8-valid-exact_policy-manifest-block",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-092",
+      "groupId": "c8-valid-exact_policy-manifest-block",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-093",
+      "groupId": "c8-valid-exact_policy-forceignore-block",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-094",
+      "groupId": "c8-valid-exact_policy-forceignore-block",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-095",
+      "groupId": "c8-valid-exact_policy-cli-state-carveout-block",
+      "disposition": "agree"
+    },
+    {
+      "id": "c8-valid-096",
+      "groupId": "c8-valid-exact_policy-cli-state-carveout-block",
+      "disposition": "agree"
+    }
+  ]
+}
