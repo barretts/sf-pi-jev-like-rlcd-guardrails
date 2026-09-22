@@ -8,22 +8,34 @@ import { configFromEnv, NativeBackend } from "../dist/backend.js";
 import { hashArtifact, verifyArtifact } from "../dist/models.js";
 
 const { values } = parseArgs({
-  options: Object.fromEntries(
-    [
-      "fit-file",
-      "fit-sha256",
-      "reference-file",
-      "reference-sha256",
-      "model-sha256",
-      "model-file",
-      "model-id",
-      "registry",
-      "native-binary",
-      "output",
-    ].map((name) => [name, { type: "string" }]),
-  ),
+  options: {
+    purpose: { type: "string" },
+    ...Object.fromEntries(
+      [
+        "fit-file",
+        "fit-sha256",
+        "reference-file",
+        "reference-sha256",
+        "model-sha256",
+        "model-file",
+        "model-id",
+        "registry",
+        "native-binary",
+        "output",
+      ].map((name) => [name, { type: "string" }]),
+    ),
+  },
 });
-if (Object.values(values).length !== 10)
+const purpose =
+  values.purpose ?? "rejected_c9B_fp32_fusion_fit_precision_diagnostic_only";
+if (
+  ![
+    "rejected_c9B_fp32_fusion_fit_precision_diagnostic_only",
+    "candidate10_one_step_probe_fit_precision_diagnostic_only",
+  ].includes(purpose)
+)
+  throw new Error("Unsupported diagnostic purpose");
+if (Object.values(values).length !== (values.purpose ? 11 : 10))
   throw new Error(
     "Required: --fit-file --fit-sha256 --reference-file --reference-sha256 --model-file --model-sha256 --model-id --registry --native-binary --output",
   );
@@ -135,7 +147,7 @@ const decisiveSignFlips = records.filter(
     row.referenceMargin * row.margin <= 0,
 ).length;
 const result = {
-  purpose: "rejected_c9B_fp32_fusion_fit_precision_diagnostic_only",
+  purpose,
   candidateAdmitted: false,
   fitSha256: FIT_SHA256,
   referenceSha256: sha(bytes),
