@@ -85,6 +85,19 @@ The calibration records carry a separate split marker and must never be
 passed to an RFDT fit. These build files are local, rebuildable receipts,
 not committed model weights.
 
+A model-free replay of all 47 calibration requests through the pinned
+bc7862b Safety Kernel, using the original requests and reconstructed
+independent org/browser facts, returned 42 allows, five confirmations, no
+blocks, and no unknown decisions. All 24 safe calibration rows were allowed;
+five of 23 risky rows were confirmed by the existing rules. The per-case
+input hashes, actions, and routes are in
+reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/cal-baseline-bc7862b.json.
+Its receipt SHA-256 is
+1687f120545c9670bca7efd6ee08da9b2ad4332be8761cf0e237f10f98232c5e.
+This is a TRAIN-internal baseline, not a model score. The host runtime
+identity will change when the v2 scoring bridge is added; replay this same
+CAL set on that final host before selecting a cutoff.
+
 The committed source-screen and host-preflight receipts plus the
 projected-train.jsonl copy permit a portable admission replay without
 the author's original build directory. Pass their exact receipt hashes
