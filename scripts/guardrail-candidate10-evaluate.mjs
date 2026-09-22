@@ -105,6 +105,7 @@ const requiredRuntime = [
   "scripts/guardrail-candidate9-artifact-provenance.mjs",
   "scripts/guardrail-v3-research-detect-stub.mjs",
 ];
+export { requiredRuntime as C10_EVALUATION_RUNTIME_FILES };
 const fail = (message) => {
   throw new Error(`C10 evaluation: ${message}`);
 };
