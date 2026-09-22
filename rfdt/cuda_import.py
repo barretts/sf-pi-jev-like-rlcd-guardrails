@@ -12,6 +12,7 @@ import math
 import hashlib
 from pathlib import Path
 import shutil
+from datetime import datetime
 
 import worker
 import cuda_worker
@@ -32,7 +33,8 @@ def document(path: Path) -> dict:
 
 def validate_receipts(plan: dict, receipt: dict, exit_receipt: dict, memory: dict, launch: dict,
                       snapshot: dict | None = None, journal: bytes | None = None,
-                      receipt_sha256: str | None = None) -> None:
+                      receipt_sha256: str | None = None, guardian: bytes | None = None,
+                      checkpoint_exit: dict | None = None) -> None:
     experiment = plan.get("experiment")
     if experiment not in (None, "candidate10", "candidate11"):
         raise ValueError("Unrecognized CUDA campaign experiment")
@@ -69,6 +71,8 @@ def validate_receipts(plan: dict, receipt: dict, exit_receipt: dict, memory: dic
     if campaign_run and memory.get("reason") == "checkpoint_snapshot":
         validate_checkpoint_snapshot(plan, receipt, exit_receipt, memory, launch, snapshot, journal, receipt_sha256)
         snapshot_ok = True
+    if experiment == "candidate11" and memory.get("reason") == "worker_exit":
+        validate_c11_final_memory(plan, receipt, exit_receipt, memory, launch, journal, guardian, checkpoint_exit)
     before, after = receipt.get("pre_step_placement", {}), receipt.get("post_step_placement", {})
     if (before != {"parameters": 444, "buffers": 5, "gradients": 104}
             or after != {"parameters": 444, "buffers": 5, "gradients": 0, "optimizer_tensors": 208}):
@@ -146,6 +150,135 @@ def validate_checkpoint_snapshot(plan, receipt, exit_receipt, memory, launch, sn
     if (memory.get("stop_dedicated_delta_bytes") != 7_500_000_000
             or launch.get("stop_dedicated_delta_bytes") != 7_500_000_000):
         raise ValueError("Checkpoint dedicated stop threshold changed")
+
+
+def validate_c11_final_memory(plan, receipt, exit_receipt, memory, launch, journal, guardian, checkpoint_exit):
+    if (plan.get("experiment") != "candidate11" or plan.get("steps") != 1024
+            or plan.get("campaign_steps") != 1024 or plan.get("checkpoint_step") != 1024
+            or receipt.get("checkpoint_step") != 1024 or memory.get("reason") != "worker_exit"
+            or exit_receipt.get("ok") is not True or exit_receipt.get("steps_completed") != 1024
+            or type(exit_receipt.get("elapsed_seconds")) not in (int, float)
+            or not math.isfinite(exit_receipt["elapsed_seconds"]) or exit_receipt["elapsed_seconds"] <= 0
+            or not isinstance(checkpoint_exit, dict) or checkpoint_exit.get("ok") is not True
+            or checkpoint_exit.get("steps_completed") != 1024):
+        raise ValueError("C11 worker_exit requires the genuine completed final1024 campaign and checkpoint exits")
+    completed = checkpoint_exit.get("completed_time_unix")
+    if type(completed) not in (int, float) or not math.isfinite(completed):
+        raise ValueError("C11 final checkpoint completion time is missing")
+    if any(not isinstance(raw, bytes) or not raw.endswith(b"\n") for raw in (journal, guardian)):
+        raise ValueError("C11 final memory and guardian journals require complete raw lines")
+    rows, guard_rows = ([json.loads(line) for line in raw.splitlines()] for raw in (journal, guardian))
+    if len(rows) < 2 or memory.get("samples") != len(rows) or memory.get("sampling_interval_seconds") != 2.0:
+        raise ValueError("C11 final memory sample inventory differs")
+    root, inputs = Path(launch.get("run_root", "")), Path(launch.get("inputs", ""))
+    if not root.is_absolute() or not inputs.is_absolute():
+        raise ValueError("C11 historical launch command roots missing")
+    code, run = inputs / "code", root / "run"
+    commands = [launch.get(key) for key in ("worker_command", "watchdog_command")]
+    if any(not isinstance(command, list) or len(command) < 2
+           or any(not isinstance(arg, str) for arg in command) for command in commands):
+        raise ValueError("C11 historical launch commands missing")
+    worker_command, monitor_command = commands
+    python = worker_command[0]
+    if not Path(python).is_absolute() or monitor_command[0] != python:
+        raise ValueError("C11 historical process executable identity changed")
+    expected_worker = [python, str(code / "c11_cuda_campaign.py"),
+        "--campaign", str(code / "cuda-campaign.json"), "--mode", "train",
+        "--base", str(inputs / "base"), "--train", str(inputs / "fit/prepared-train.jsonl"),
+        "--pairs", str(inputs / "fit/pairs.json"), "--pairs-sha256", cuda_worker.PAIR_SHA256,
+        "--families", str(inputs / "fit/families.json"), "--families-sha256", cuda_worker.FAMILY_SHA256,
+        "--plan", str(code / "objective-plan-B.json"), "--plan-sha256", cuda_worker.PLAN_SHA256,
+        "--output", str(run), "--steps", "1024", "--budget-bytes", "8000000000",
+        "--allocator-cap-bytes", "6500000000"]
+    adapter_tag = monitor_command[monitor_command.index("--adapter-tag") + 1] if monitor_command.count("--adapter-tag") == 1 and monitor_command.index("--adapter-tag") + 1 < len(monitor_command) else None
+    expected_monitor = [python, str(code / "cuda_memory_monitor.py"), "--pid-file", str(root / "worker.pid"),
+        "--worker", str(code / "c11_cuda_campaign.py"), "--run-dir", str(run), "--output", str(root / "memory.jsonl"),
+        "--adapter-tag", adapter_tag, "--baseline-dedicated-bytes", str(launch.get("baseline_dedicated_bytes")),
+        "--baseline-shared-bytes", str(launch.get("baseline_shared_bytes")), "--hard-budget-bytes", "8000000000",
+        "--stop-dedicated-delta-bytes", "7500000000", "--shared-growth-limit-bytes", "128000000",
+        "--stop-total-dedicated-bytes", "16000000000", "--interval-seconds", "2"]
+    if worker_command != expected_worker or monitor_command != expected_monitor or not adapter_tag:
+        raise ValueError("C11 historical worker/watchdog command paths or budgets changed")
+    for key, value in (("hard_budget_bytes", 8_000_000_000), ("stop_dedicated_delta_bytes", 7_500_000_000),
+                       ("shared_growth_limit_bytes", 128_000_000), ("stop_total_dedicated_bytes", 16_000_000_000)):
+        if launch.get(key) != value or memory.get(key) != value:
+            raise ValueError("C11 final memory stop contract changed")
+    if plan.get("budget_bytes") != 8_000_000_000 or plan.get("allocator_cap_bytes") != 6_500_000_000 or launch.get("allocator_cap_bytes") != 6_500_000_000:
+        raise ValueError("C11 final allocator budget changed")
+    before, after = receipt.get("pre_step_placement"), receipt.get("post_step_placement")
+    peak = receipt.get("memory", {}).get("peak_reserved_bytes")
+    if (before != {"parameters": 444, "buffers": 5, "gradients": 104}
+            or after != {"parameters": 444, "buffers": 5, "gradients": 0, "optimizer_tensors": 208}
+            or type(peak) is not int or not 0 < peak <= 6_500_000_000):
+        raise ValueError("C11 final CUDA placement or allocator peak changed")
+    baseline_dedicated, baseline_shared = (launch.get(key) for key in ("baseline_dedicated_bytes", "baseline_shared_bytes"))
+    if any(type(value) is not int or value < 0 for value in (baseline_dedicated, baseline_shared)):
+        raise ValueError("C11 final memory baselines missing")
+    times, elapsed_times, peaks = [], [], {"peak_total_dedicated_bytes": 0, "peak_dedicated_delta_bytes": 0, "peak_shared_delta_bytes": 0}
+    for row in rows:
+        if not isinstance(row, dict) or "monitor_error" in row:
+            raise ValueError("C11 final journal contains a monitor error")
+        stamp, elapsed = row.get("time_unix"), row.get("elapsed_seconds")
+        if (any(type(value) not in (int, float) or not math.isfinite(value) for value in (stamp, elapsed))
+                or elapsed < 0 or any(type(row.get(key)) is not int or row[key] < 0 for key in (
+                    "dedicated_bytes", "shared_bytes", "dedicated_delta_bytes", "shared_delta_bytes"))
+                or row["dedicated_delta_bytes"] != max(0, row["dedicated_bytes"] - baseline_dedicated)
+                or row["shared_delta_bytes"] != max(0, row["shared_bytes"] - baseline_shared)):
+            raise ValueError("C11 final memory counter, clock, or baseline delta changed")
+        times.append(stamp); elapsed_times.append(elapsed)
+        for key, value in (("peak_total_dedicated_bytes", row["dedicated_bytes"]),
+                           ("peak_dedicated_delta_bytes", row["dedicated_delta_bytes"]),
+                           ("peak_shared_delta_bytes", row["shared_delta_bytes"])):
+            peaks[key] = max(peaks[key], value)
+    if (any(a >= b for a, b in zip(times, times[1:])) or any(a >= b for a, b in zip(elapsed_times, elapsed_times[1:]))
+            or any(memory.get(key) != value for key, value in peaks.items())
+            or not 0 < peaks["peak_total_dedicated_bytes"] < 16_000_000_000
+            or peaks["peak_dedicated_delta_bytes"] >= 7_500_000_000 or peaks["peak_shared_delta_bytes"] >= 128_000_000):
+        raise ValueError("C11 final journal ordering, recomputed peaks, or memory limits changed")
+    if (len(guard_rows) < 3 or any(not isinstance(row, dict) for row in guard_rows)
+            or guard_rows[0].get("status") != "watching" or guard_rows[-1].get("status") != "worker_exit"
+            or any(row.get("status") != "healthy" for row in guard_rows[1:-1])):
+        raise ValueError("C11 guardian requires one watching identity and one successful final worker_exit")
+    watching, terminal = guard_rows[0], guard_rows[-1]
+    if (any(type(row.get(key)) is not int or row[key] <= 0 for row, key in (
+                (memory, "worker_pid"), (watching, "worker_pid"), (watching, "watchdog_pid"), (terminal, "worker_pid")))
+            or any(type(launch.get(key)) is not int or launch[key] <= 0 for key in ("worker_pid", "watchdog_pid"))
+            or launch["worker_pid"] == launch["watchdog_pid"] or memory.get("worker_pid") != launch["worker_pid"]
+            or watching.get("worker_pid") != launch["worker_pid"] or terminal.get("worker_pid") != launch["worker_pid"]
+            or watching.get("watchdog_pid") != launch["watchdog_pid"]
+            or any(type(watching.get(key)) is not int or watching[key] <= 0 for key in ("worker_start_ticks", "watchdog_start_ticks"))):
+        raise ValueError("C11 historical guardian PID or process birth identity changed")
+    guard_times = [row.get("time_unix") for row in guard_rows]
+    try:
+        started_at = datetime.fromisoformat(launch["started_at"])
+        if (not launch["started_at"].endswith("+00:00") or started_at.utcoffset() is None
+                or started_at.utcoffset().total_seconds() != 0):
+            raise ValueError("Expected frozen producer UTC timestamp")
+        started = started_at.timestamp()
+    except (KeyError, TypeError, ValueError):
+        raise ValueError("C11 launch start time missing") from None
+    if (any(type(value) not in (int, float) or not math.isfinite(value) for value in guard_times)
+            or any(a >= b for a, b in zip(guard_times, guard_times[1:]))
+            or not started <= guard_times[0] <= completed <= guard_times[-1] or times[0] > completed):
+        raise ValueError("C11 final checkpoint completion is not covered by historical guardian identity")
+    observed, previous_sample = 0, None
+    row_identities = {json.dumps(row, sort_keys=True, separators=(",", ":")) for row in rows}
+    for record in guard_rows[1:-1]:
+        sample = record.get("sample")
+        if sample is None and record["time_unix"] < times[0]:
+            continue
+        if (not isinstance(sample, dict) or json.dumps(sample, sort_keys=True, separators=(",", ":")) not in row_identities or sample["time_unix"] > record["time_unix"]
+                or record["time_unix"] - sample["time_unix"] >= 30
+                or (previous_sample is not None and (sample["time_unix"] < previous_sample["time_unix"]
+                    or sample["elapsed_seconds"] < previous_sample["elapsed_seconds"]
+                    or ((sample["time_unix"] > previous_sample["time_unix"]) != (sample["elapsed_seconds"] > previous_sample["elapsed_seconds"]))))
+                or type(record.get("journalAgeSeconds")) not in (int, float)
+                or not math.isfinite(record["journalAgeSeconds"]) or not 0 <= record["journalAgeSeconds"] < 30):
+            raise ValueError("C11 guardian healthy observation does not match the genuine raw journal")
+        previous_sample = sample
+        observed += 1
+    if not observed:
+        raise ValueError("C11 guardian has no genuine sampled healthy observation")
 
 
 def validate_c10_checkpoint(plan: dict, receipt: dict, launch: dict) -> None:
@@ -249,15 +382,37 @@ def run(args: argparse.Namespace) -> dict:
         raise ValueError("CUDA receipt differs from its explicit pre-import pin")
     plan, receipt = document(source / "run/plan.json"), document(receipt_path)
     memory = document(source / "memory.summary.json")
-    snapshot, journal = None, None
+    snapshot, journal, guardian, checkpoint_exit = None, None, None, None
+    final_paths, final_hashes = {}, {}
+    final_c11 = plan.get("experiment") == "candidate11" and memory.get("reason") == "worker_exit"
     if memory.get("reason") == "checkpoint_snapshot":
         snapshot = document(source / "memory.snapshot.json")
         journal_path = source / "memory.jsonl"
         if not journal_path.is_file() or journal_path.is_symlink():
             raise ValueError("Checkpoint memory journal must be a regular file")
         journal = journal_path.read_bytes()
-    validate_receipts(plan, receipt, document(source / "run/exit.json"), memory,
-                      document(source / "launch.json"), snapshot, journal, args.receipt_sha256)
+    launch = document(source / "launch.json")
+    exit_receipt = document(source / "run/exit.json")
+    if final_c11:
+        final_paths = {"sourceLaunch": source / "launch.json", "sourceExit": source / "run/exit.json",
+            "sourceCheckpointExit": source / "run/checkpoints/step-1024/exit.json",
+            "sourceMemory": source / "memory.summary.json", "sourceMemoryJournal": source / "memory.jsonl",
+            "sourceGuardian": source / "root-guardian.jsonl"}
+        for path in final_paths.values():
+            if not path.is_file() or path.is_symlink():
+                raise ValueError("C11 final envelope files must be regular files")
+        final_bytes = {name: path.read_bytes() for name, path in final_paths.items()}
+        final_hashes = {name: hashlib.sha256(raw).hexdigest() for name, raw in final_bytes.items()}
+        memory, launch, exit_receipt, checkpoint_exit = (json.loads(final_bytes[name]) for name in (
+            "sourceMemory", "sourceLaunch", "sourceExit", "sourceCheckpointExit"))
+        for name in ("memory.jsonl", "root-guardian.jsonl"):
+            path = source / name
+            if not path.is_file() or path.is_symlink():
+                raise ValueError("C11 final journals must be regular files")
+        journal = final_bytes["sourceMemoryJournal"]
+        guardian = final_bytes["sourceGuardian"]
+    validate_receipts(plan, receipt, exit_receipt, memory,
+                      launch, snapshot, journal, args.receipt_sha256, guardian, checkpoint_exit)
     worker.verify_local_base(base)
     if worker.sha256(data) != cuda_worker.TRAIN_SHA256:
         raise ValueError("Local prepared FIT prompts differ from CUDA training")
@@ -321,6 +476,10 @@ def run(args: argparse.Namespace) -> dict:
         result.update({"cuda_campaign_sha256": plan["campaign_sha256"],
                        "checkpoint_step": plan["steps"], "local_precision": C10_PRECISION,
                        "local_architecture": worker.cuda_local_architecture()})
+    if final_c11:
+        if any(worker.sha256(path) != final_hashes[name] for name, path in final_paths.items()):
+            raise ValueError("C11 final envelope changed during local import")
+        result["final_envelope_sha256"] = final_hashes
     worker.write_json(output / "cuda-import-report.json", result)
     return result
 

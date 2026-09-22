@@ -356,6 +356,8 @@ async function fixture(checkpoint = 128) {
     stop_total_dedicated_bytes: 16e9,
   };
   put(resolve(cuda, "launch.json"), launch);
+  const memory = { reason: "checkpoint_snapshot" };
+  put(resolve(cuda, "memory.summary.json"), memory);
   const snapshot = {
     checkpoint_step: checkpoint,
     checkpoint_receipt_sha256: receiptPin.sha256,
@@ -636,7 +638,17 @@ async function fixture(checkpoint = 128) {
     sfDeps: resolve(temp, "synthetic-host-deps"),
     format: "f16",
   };
-  const assemble = () => assembleC11Manifest(options, { pin, document });
+  const assemble = () =>
+    assembleC11Manifest(options, {
+      pin,
+      document,
+      bytes: async (path) => {
+        reads.push(path);
+        if (!buffers.has(path))
+          throw Error("Unexpected synthetic raw read: " + path);
+        return buffers.get(path);
+      },
+    });
   return {
     temp,
     local,
@@ -657,6 +669,7 @@ async function fixture(checkpoint = 128) {
     source,
     launch,
     snapshot,
+    memory,
     handoff,
     quantization,
     f16Proof,
@@ -1083,5 +1096,402 @@ test("C11 pinned null/false launch or snapshot cannot bypass historical provenan
     manifest.files.quantizerBinary.sha256 = "a".repeat(64);
     f.quantization.quantizer.binarySha256 = "a".repeat(64);
     assert.throws(() => validateC11Manifest(manifest), /pins/);
+  });
+});
+
+async function finalFixture() {
+  const f = await fixture(1024);
+  Object.assign(f.source, { budget_bytes: 8e9, allocator_cap_bytes: 6.5e9 });
+  Object.assign(f.receipt, {
+    pre_step_placement: { parameters: 444, buffers: 5, gradients: 104 },
+    post_step_placement: {
+      parameters: 444,
+      buffers: 5,
+      gradients: 0,
+      optimizer_tensors: 208,
+    },
+    memory: { peak_reserved_bytes: 2.5e9 },
+  });
+  const historicRoot = "/synthetic/c11-root",
+    historicInputs = "/synthetic/c11-inputs",
+    python = "/synthetic/python";
+  const code = resolve(historicInputs, "code"),
+    run = resolve(historicRoot, "run");
+  Object.assign(f.launch, {
+    run_root: historicRoot,
+    inputs: historicInputs,
+    watchdog_pid: 122,
+    started_at: "1970-01-01T00:00:10+00:00",
+    baseline_dedicated_bytes: 500,
+    baseline_shared_bytes: 100,
+  });
+  f.launch.worker_command = [
+    python,
+    resolve(code, "c11_cuda_campaign.py"),
+    "--campaign",
+    resolve(code, "cuda-campaign.json"),
+    "--mode",
+    "train",
+    "--base",
+    resolve(historicInputs, "base"),
+    "--train",
+    resolve(historicInputs, "fit/prepared-train.jsonl"),
+    "--pairs",
+    resolve(historicInputs, "fit/pairs.json"),
+    "--pairs-sha256",
+    f.source.inputs.pairs,
+    "--families",
+    resolve(historicInputs, "fit/families.json"),
+    "--families-sha256",
+    f.source.inputs.families,
+    "--plan",
+    resolve(code, "objective-plan-B.json"),
+    "--plan-sha256",
+    f.source.inputs.plan,
+    "--output",
+    run,
+    "--steps",
+    "1024",
+    "--budget-bytes",
+    "8000000000",
+    "--allocator-cap-bytes",
+    "6500000000",
+  ];
+  f.launch.watchdog_command = [
+    python,
+    resolve(code, "cuda_memory_monitor.py"),
+    "--pid-file",
+    resolve(historicRoot, "worker.pid"),
+    "--worker",
+    resolve(code, "c11_cuda_campaign.py"),
+    "--run-dir",
+    run,
+    "--output",
+    resolve(historicRoot, "memory.jsonl"),
+    "--adapter-tag",
+    "synthetic",
+    "--baseline-dedicated-bytes",
+    "500",
+    "--baseline-shared-bytes",
+    "100",
+    "--hard-budget-bytes",
+    "8000000000",
+    "--stop-dedicated-delta-bytes",
+    "7500000000",
+    "--shared-growth-limit-bytes",
+    "128000000",
+    "--stop-total-dedicated-bytes",
+    "16000000000",
+    "--interval-seconds",
+    "2",
+  ];
+  Object.assign(f.memory, {
+    reason: "worker_exit",
+    worker_pid: f.launch.worker_pid,
+    samples: 2,
+    sampling_interval_seconds: 2,
+    hard_budget_bytes: 8e9,
+    stop_dedicated_delta_bytes: 7.5e9,
+    shared_growth_limit_bytes: 128e6,
+    stop_total_dedicated_bytes: 16e9,
+    peak_total_dedicated_bytes: 1000,
+    peak_dedicated_delta_bytes: 500,
+    peak_shared_delta_bytes: 100,
+  });
+  const journal = [11, 12].map((time) => ({
+    time_unix: time,
+    elapsed_seconds: time - 10,
+    dedicated_bytes: 1000,
+    shared_bytes: 200,
+    dedicated_delta_bytes: 500,
+    shared_delta_bytes: 100,
+  }));
+  const guardian = [
+    {
+      status: "watching",
+      worker_pid: f.launch.worker_pid,
+      watchdog_pid: f.launch.watchdog_pid,
+      worker_start_ticks: 12345,
+      watchdog_start_ticks: 12345,
+      time_unix: 10.5,
+    },
+    {
+      status: "healthy",
+      journalAgeSeconds: 0.5,
+      sample: journal.at(-1),
+      time_unix: 12.5,
+    },
+    { status: "worker_exit", worker_pid: f.launch.worker_pid, time_unix: 14 },
+  ];
+  const exit = { ok: true, steps_completed: 1024, elapsed_seconds: 3.5 };
+  const checkpointExit = {
+    ok: true,
+    steps_completed: 1024,
+    completed_time_unix: 13,
+  };
+  const paths = {
+    sourceLaunch: resolve(f.cuda, "launch.json"),
+    sourceExit: resolve(f.cuda, "run/exit.json"),
+    sourceCheckpointExit: resolve(
+      f.cuda,
+      "run/checkpoints/step-1024/exit.json",
+    ),
+    sourceMemory: resolve(f.cuda, "memory.summary.json"),
+    sourceMemoryJournal: resolve(f.cuda, "memory.jsonl"),
+    sourceGuardian: resolve(f.cuda, "root-guardian.jsonl"),
+  };
+  const persist = () => {
+    f.put(paths.sourceLaunch, f.launch);
+    f.put(paths.sourceExit, exit);
+    f.put(paths.sourceCheckpointExit, checkpointExit);
+    f.put(paths.sourceMemory, f.memory);
+    f.put(paths.sourceMemoryJournal, jsonl(journal));
+    f.put(paths.sourceGuardian, jsonl(guardian));
+  };
+  const seal = async () => {
+    persist();
+    f.imported.final_envelope_sha256 = Object.fromEntries(
+      Object.entries(paths).map(([name, path]) => [name, f.pins.get(path)]),
+    );
+    f.run.training.final_envelope_sha256 = f.imported.final_envelope_sha256;
+    f.imported.cuda_receipt_sha256 = f.put(
+      resolve(f.cuda, "run/receipt.json"),
+      f.receipt,
+    ).sha256;
+    f.run.training.cuda_receipt_sha256 = f.imported.cuda_receipt_sha256;
+    f.quantization.sourceCheckpoint = c11Q8SourceIdentity(
+      f.run,
+      f.imported,
+      C11_SOURCE_RUNTIME,
+    );
+    f.put(f.options.q8Manifest, f.quantization);
+    f.put(resolve(f.local, "adapter/cuda-import-report.json"), f.imported);
+    f.put(resolve(f.local, "manifest.json"), f.run);
+    await writeFile(resolve(f.local, "manifest.json"), encode(f.run));
+  };
+  await seal();
+  return Object.assign(f, {
+    finalJournal: journal,
+    guardian,
+    finalExit: exit,
+    checkpointExit,
+    finalPaths: paths,
+    persist,
+    seal,
+  });
+}
+async function withFinal(fn) {
+  const f = await finalFixture();
+  try {
+    await fn(f);
+  } finally {
+    await f.cleanup();
+  }
+}
+
+test("genuine-shaped final C11 worker_exit → manifest → formal scorer passes without a post-completion sample", async () => {
+  await withFinal(async (f) => {
+    assert.ok(
+      f.finalJournal.at(-1).time_unix < f.checkpointExit.completed_time_unix,
+    );
+    const manifest = await f.assemble();
+    validateC11Manifest(manifest);
+    assert.equal(manifest.files.sourceSnapshot, undefined);
+    for (const name of Object.keys(f.finalPaths))
+      assert.equal(
+        f.imported.final_envelope_sha256[name],
+        manifest.files[name].sha256,
+      );
+    const report = await evaluateC11(
+      manifest,
+      resolve(f.temp, "final-result"),
+      f.evaluator,
+    );
+    assert.equal(
+      report.status,
+      "valid_pass_test_and_hook_pending",
+      report.failures.join("\n"),
+    );
+    assert.equal(report.precisionOutcomes.f16.passed, true);
+    assert.equal(report.precisionOutcomes.q8_0.passed, false);
+    assert.equal(report.qualified, false);
+    assert.equal(report.heldOutTestRead, false);
+  });
+});
+
+test("final C11 accepts a genuine in-flight monitor row after guard worker exit; guardian does not prove monitor exit", async () => {
+  await withFinal(async (f) => {
+    f.finalJournal.push({
+      ...f.finalJournal.at(-1),
+      time_unix: 15,
+      elapsed_seconds: 5,
+    });
+    f.memory.samples = 3;
+    await f.seal();
+    const manifest = await f.assemble();
+    const report = await evaluateC11(
+      manifest,
+      resolve(f.temp, "inflight"),
+      f.evaluator,
+    );
+    assert.equal(
+      report.status,
+      "valid_pass_test_and_hook_pending",
+      report.failures.join("\n"),
+    );
+  });
+});
+
+test("final C11 rejects nonfinal/unfinished/missing exit or identity and journal/budget changes before native calls", async () => {
+  const mutations = [
+    (f) => {
+      f.handoff.checkpoint = 512;
+    },
+    (f) => {
+      f.finalExit.ok = false;
+    },
+    (f) => {
+      f.finalExit.steps_completed = 512;
+    },
+    (f) => {
+      f.finalExit.elapsed_seconds = null;
+    },
+    (f) => {
+      f.checkpointExit.steps_completed = 512;
+    },
+    (f) => {
+      f.checkpointExit.completed_time_unix = 15;
+    },
+    (f) => {
+      f.launch.worker_command[1] = "/other/worker.py";
+    },
+    (f) => {
+      f.launch.watchdog_command[1] = "/other/monitor.py";
+    },
+    (f) => {
+      f.launch.launcher_sha256 = "a".repeat(64);
+    },
+    (f) => {
+      f.launch.started_at = "1970-01-01T00:00:10";
+    },
+    (f) => {
+      f.memory.worker_pid = true;
+    },
+    (f) => {
+      f.memory.samples = 3;
+    },
+    (f) => {
+      f.memory.peak_shared_delta_bytes = 99;
+    },
+    (f) => {
+      f.memory.stop_total_dedicated_bytes = 16e9 + 1;
+    },
+    (f) => {
+      f.guardian[0].worker_start_ticks = 0;
+    },
+    (f) => {
+      f.guardian[0].watchdog_pid = f.launch.worker_pid;
+    },
+    (f) => {
+      f.guardian[1].status = "stop";
+    },
+    (f) => {
+      f.guardian[1].sample = { ...f.finalJournal[1], dedicated_bytes: 999 };
+    },
+    (f) => {
+      f.guardian[2].worker_pid = 999;
+    },
+    (f) => {
+      f.guardian.push({ ...f.guardian[2], time_unix: 15 });
+    },
+    (f) => {
+      f.finalJournal[1].elapsed_seconds = 0;
+    },
+    (f) => {
+      f.finalJournal[1].shared_bytes = null;
+    },
+    (f) => {
+      f.finalJournal[1].monitor_error = "synthetic";
+    },
+    (f) => {
+      for (const row of f.finalJournal) {
+        row.dedicated_bytes = 16e9;
+        row.dedicated_delta_bytes = 16e9 - 500;
+      }
+      f.memory.peak_total_dedicated_bytes = 16e9;
+      f.memory.peak_dedicated_delta_bytes = 16e9 - 500;
+    },
+  ];
+  for (const mutate of mutations)
+    await withFinal(async (f) => {
+      mutate(f);
+      await f.seal();
+      await assert.rejects(
+        f.assemble(),
+        /C11|checkpoint|identity|changed|genuine|worker_exit/,
+      );
+      assert.equal(f.counters().nativeCalls, 0);
+    });
+  for (const name of [
+    "sourceGuardian",
+    "sourceMemoryJournal",
+    "sourceCheckpointExit",
+    "sourceExit",
+  ])
+    await withFinal(async (f) => {
+      f.buffers.delete(f.finalPaths[name]);
+      f.documents.delete(f.finalPaths[name]);
+      await assert.rejects(f.assemble(), /Unexpected synthetic/);
+    });
+});
+
+test("final imported digest links reject missing/type-invalid or otherwise-valid repinned evidence before scoring", async () => {
+  for (const name of [
+    "sourceLaunch",
+    "sourceExit",
+    "sourceCheckpointExit",
+    "sourceMemory",
+    "sourceMemoryJournal",
+    "sourceGuardian",
+  ])
+    await withFinal(async (f) => {
+      const manifest = await f.assemble();
+      const original = f.buffers.get(f.finalPaths[name]);
+      f.put(f.finalPaths[name], Buffer.concat([original, Buffer.from("\n")]));
+      manifest.files[name].sha256 = f.pins.get(f.finalPaths[name]);
+      const report = await evaluateC11(
+        manifest,
+        resolve(f.temp, "repinned"),
+        f.evaluator,
+      );
+      assert.equal(report.status, "failed");
+      assert.match(report.failures[0], /digest links/);
+      assert.equal(f.counters().nativeCalls, 0);
+    });
+  for (const value of [undefined, {}, false, { sourceGuardian: 1 }])
+    await withFinal(async (f) => {
+      if (value === undefined) {
+        delete f.imported.final_envelope_sha256;
+        delete f.run.training.final_envelope_sha256;
+      } else {
+        f.imported.final_envelope_sha256 = value;
+        f.run.training.final_envelope_sha256 = value;
+      }
+      await assert.rejects(f.assemble(), /digest links/);
+    });
+  await withFinal(async (f) => {
+    const manifest = await f.assemble();
+    f.guardian[0].worker_start_ticks++;
+    f.persist();
+    manifest.files.sourceGuardian.sha256 = f.pins.get(
+      f.finalPaths.sourceGuardian,
+    );
+    const report = await evaluateC11(
+      manifest,
+      resolve(f.temp, "birth-drift"),
+      f.evaluator,
+    );
+    assert.equal(report.status, "failed");
+    assert.match(report.failures[0], /digest links/);
   });
 });

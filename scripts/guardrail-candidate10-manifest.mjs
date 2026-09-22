@@ -57,7 +57,7 @@ export async function assembleC11Manifest(options, dependencies) {
 }
 async function assembleManifest(options, candidate11, dependencies) {
   const candidate = candidate11 ? "candidate11" : "candidate10";
-  const api = { pin, document, ...dependencies };
+  const api = { pin, document, bytes: readFile, ...dependencies };
   for (const name of [
     "handoff",
     "cudaRun",
@@ -118,6 +118,19 @@ async function assembleManifest(options, candidate11, dependencies) {
     q8Artifact.training_run !== artifact.training_run
   )
     throw new Error("Q8 registry is not bound to this checkpoint");
+  const memory = candidate11
+    ? await api.document(resolve(options.cudaRun, "memory.summary.json"))
+    : undefined;
+  if (
+    candidate11 &&
+    !["checkpoint_snapshot", "worker_exit"].includes(memory?.reason)
+  )
+    throw new Error(
+      "C11 source memory requires strict snapshot or genuine final worker_exit",
+    );
+  const finalC11 = candidate11 && memory.reason === "worker_exit";
+  if (finalC11 && handoff.checkpoint !== 1024)
+    throw new Error("C11 worker_exit requires final1024 checkpoint");
   const selected = options.format === "f16" ? artifact : q8Artifact;
   const files = {};
   const sources = {
@@ -155,7 +168,23 @@ async function assembleManifest(options, candidate11, dependencies) {
     ...(candidate11
       ? {
           sourceLaunch: resolve(options.cudaRun, "launch.json"),
-          sourceSnapshot: resolve(options.cudaRun, "memory.snapshot.json"),
+          ...(finalC11
+            ? {
+                sourceGuardian: resolve(options.cudaRun, "root-guardian.jsonl"),
+                sourceMemory: resolve(options.cudaRun, "memory.summary.json"),
+                sourceMemoryJournal: resolve(options.cudaRun, "memory.jsonl"),
+                sourceExit: resolve(options.cudaRun, "run/exit.json"),
+                sourceCheckpointExit: resolve(
+                  options.cudaRun,
+                  "run/checkpoints/step-1024/exit.json",
+                ),
+              }
+            : {
+                sourceSnapshot: resolve(
+                  options.cudaRun,
+                  "memory.snapshot.json",
+                ),
+              }),
           registryQ8: options.q8Registry,
         }
       : {}),
@@ -191,7 +220,19 @@ async function assembleManifest(options, candidate11, dependencies) {
         resolve(root, "fixtures/guardrail/candidate9/objective-plan-B.json"),
       ),
       launch: await api.document(files.sourceLaunch.path),
-      snapshot: await api.document(files.sourceSnapshot.path),
+      snapshot: finalC11
+        ? undefined
+        : await api.document(files.sourceSnapshot.path),
+      finalEnvelope: finalC11
+        ? {
+            memory,
+            exit: await api.document(files.sourceExit.path),
+            checkpointExit: await api.document(files.sourceCheckpointExit.path),
+            journal: await api.bytes(files.sourceMemoryJournal.path),
+            guardian: await api.bytes(files.sourceGuardian.path),
+            files,
+          }
+        : undefined,
       receiptSha256: files.sourceReceipt.sha256,
       requireSourceProvenance: true,
     });

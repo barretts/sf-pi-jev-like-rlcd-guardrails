@@ -108,6 +108,60 @@ def c11_receipts(step=128):
     return args
 
 
+def c11_snapshot_receipts(step=128):
+    args = c11_receipts(step)
+    plan, receipt, exit_receipt, memory, launch = args
+    monitor_sha = bridge.worker.sha256(Path(bridge.__file__).with_name("cuda_memory_monitor.py"))
+    launch.update({"worker_pid": 1234, "baseline_dedicated_bytes": 500, "baseline_shared_bytes": 100})
+    exit_receipt["completed_time_unix"] = 12.0
+    rows = [{"time_unix": timestamp, "elapsed_seconds": timestamp-10,
+        "dedicated_bytes": 1000, "shared_bytes": 200,
+        "dedicated_delta_bytes": 500, "shared_delta_bytes": 100} for timestamp in (11.0, 13.0)]
+    journal = b"".join(json.dumps(row).encode()+b"\n" for row in rows)
+    snapshot = {"producer_sha256": launch["launcher_sha256"], "checkpoint_receipt_sha256": "f" * 64,
+        "checkpoint_step": step, "worker_pid": 1234, "worker_sha256": plan["source_sha256"], "monitor_sha256": monitor_sha,
+        "journal_sha256": hashlib.sha256(journal).hexdigest(), "snapshot_time_unix": 14.0}
+    memory.update({"reason": "checkpoint_snapshot", "worker_pid": 1234, "samples": 2,
+        "peak_total_dedicated_bytes": 1000, "peak_dedicated_delta_bytes": 500,
+        "peak_shared_delta_bytes": 100, "stop_dedicated_delta_bytes": 7_500_000_000})
+    return args + [snapshot, journal, "f" * 64]
+
+
+def final_c11_receipts():
+    args = c11_receipts(1024)
+    plan, receipt, exit_receipt, memory, launch = args
+    root, inputs, python = Path("/synthetic/c11-root"), Path("/synthetic/c11-inputs"), "/synthetic/python"
+    code, run = inputs / "code", root / "run"
+    launch.update({"mode": "train", "run_root": str(root), "inputs": str(inputs), "worker_pid": 1234, "watchdog_pid": 1233,
+        "baseline_dedicated_bytes": 500, "baseline_shared_bytes": 100, "started_at": "1970-01-01T00:00:10+00:00"})
+    launch["worker_command"] = [python, str(code / "c11_cuda_campaign.py"),
+        "--campaign", str(code / "cuda-campaign.json"), "--mode", "train",
+        "--base", str(inputs / "base"), "--train", str(inputs / "fit/prepared-train.jsonl"),
+        "--pairs", str(inputs / "fit/pairs.json"), "--pairs-sha256", cuda_worker.PAIR_SHA256,
+        "--families", str(inputs / "fit/families.json"), "--families-sha256", cuda_worker.FAMILY_SHA256,
+        "--plan", str(code / "objective-plan-B.json"), "--plan-sha256", cuda_worker.PLAN_SHA256,
+        "--output", str(run), "--steps", "1024", "--budget-bytes", "8000000000", "--allocator-cap-bytes", "6500000000"]
+    launch["watchdog_command"] = [python, str(code / "cuda_memory_monitor.py"), "--pid-file", str(root / "worker.pid"),
+        "--worker", str(code / "c11_cuda_campaign.py"), "--run-dir", str(run), "--output", str(root / "memory.jsonl"),
+        "--adapter-tag", "synthetic", "--baseline-dedicated-bytes", "500", "--baseline-shared-bytes", "100",
+        "--hard-budget-bytes", "8000000000", "--stop-dedicated-delta-bytes", "7500000000", "--shared-growth-limit-bytes", "128000000",
+        "--stop-total-dedicated-bytes", "16000000000", "--interval-seconds", "2"]
+    exit_receipt.update({"elapsed_seconds": 3.5})
+    rows = [{"time_unix": timestamp, "elapsed_seconds": timestamp-10,
+        "dedicated_bytes": 1000, "shared_bytes": 200,
+        "dedicated_delta_bytes": 500, "shared_delta_bytes": 100} for timestamp in (11.0, 12.0)]
+    memory.update({"reason": "worker_exit", "worker_pid": 1234, "samples": 2, "sampling_interval_seconds": 2.0,
+        "peak_total_dedicated_bytes": 1000, "peak_dedicated_delta_bytes": 500,
+        "peak_shared_delta_bytes": 100, "stop_dedicated_delta_bytes": 7_500_000_000})
+    guard = [{"status": "watching", "worker_pid": 1234, "watchdog_pid": 1233,
+        "worker_start_ticks": 12345, "watchdog_start_ticks": 12345, "time_unix": 10.5},
+        {"status": "healthy", "sample": rows[-1], "journalAgeSeconds": 0.5, "time_unix": 12.5},
+        {"status": "worker_exit", "worker_pid": 1234, "time_unix": 14.0}]
+    encode = lambda records: b"".join(json.dumps(row).encode()+b"\n" for row in records)
+    return args + [None, encode(rows), "f" * 64, encode(guard),
+        {"ok": True, "steps_completed": 1024, "completed_time_unix": 13.0}]
+
+
 def local_manifest(candidate="candidate11"):
     _, receipt, _, _, _ = c11_receipts() if candidate == "candidate11" else c10_receipts()
     return {"local_architecture": bridge.worker.cuda_local_architecture(),
@@ -258,13 +312,13 @@ class CudaImportTests(unittest.TestCase):
 
     def test_accepts_only_exact_c11_campaign_checkpoints_and_profile(self):
         for step in (128, 256, 512, 1024):
-            args = c11_receipts(step)
+            args = c11_snapshot_receipts(step)
             bridge.validate_receipts(*args)
             manifest = local_manifest()
             manifest["cuda_source"] = args[1]
             bridge.worker.validate_cuda_local_profile(manifest)
         for step in (1, 127, 1023):
-            with self.assertRaises(ValueError): bridge.validate_receipts(*c11_receipts(step))
+            with self.assertRaises(ValueError): bridge.validate_receipts(*c11_snapshot_receipts(step))
 
     def test_c11_rejects_objective_sampler_code_initialization_and_memory_changes(self):
         for index, key, value in (
@@ -275,17 +329,129 @@ class CudaImportTests(unittest.TestCase):
                 (4, "allocator_cap_bytes", 6_500_000_001), (4, "stop_dedicated_delta_bytes", 8_000_000_000),
                 (4, "shared_growth_limit_bytes", 128_000_001), (4, "launcher_sha256", "f" * 64),
                 (3, "peak_total_dedicated_bytes", 16_000_000_000), (3, "samples", 0)):
-            args = c11_receipts(); args[index][key] = value
+            args = c11_snapshot_receipts(); args[index][key] = value
             args[1]["source"] = copy.deepcopy(args[0])
             with self.subTest(index=index, key=key), self.assertRaises(ValueError):
                 bridge.validate_receipts(*args)
         for name in ("c11_cuda_campaign.py", "c11_fit_sampler.py", "gemma3_fp32.py"):
-            args = c11_receipts(); args[4]["code_sha256"][name] = "f" * 64
+            args = c11_snapshot_receipts(); args[4]["code_sha256"][name] = "f" * 64
             with self.assertRaises(ValueError): bridge.validate_receipts(*args)
         for key, value in (("rows", 326), ("ok", False), ("max_margin_delta", 1.1e-5),
                            ("margin_delta_limit", 0.05), ("adapter_sha256", "f" * 64)):
-            args = c11_receipts(); args[1]["saved_adapter_reload"][key] = value
+            args = c11_snapshot_receipts(); args[1]["saved_adapter_reload"][key] = value
             with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+
+    def test_accepts_final_c11_worker_exit_without_post_completion_sample(self):
+        args = final_c11_receipts()
+        self.assertLess(json.loads(args[6].splitlines()[-1])["time_unix"], args[9]["completed_time_unix"])
+        bridge.validate_receipts(*args)
+
+    def test_final_c11_rejects_nonfinal_unfinished_missing_identity_and_memory_drift(self):
+        for index, key, value in ((0, "steps", 512), (0, "campaign_steps", 512), (2, "ok", False),
+                (2, "steps_completed", 512), (2, "elapsed_seconds", float("nan")),
+                (9, "ok", False), (9, "completed_time_unix", 15.0), (9, "steps_completed", 512),
+                (3, "worker_pid", 999), (3, "samples", 3), (3, "peak_shared_delta_bytes", 99),
+                (3, "stop_total_dedicated_bytes", 16_000_000_001), (4, "watchdog_pid", 1234),
+                (4, "baseline_dedicated_bytes", 501), (4, "inputs", "/other/inputs"),
+                (3, "worker_pid", True), (4, "started_at", "1970-01-01T00:00:10")):
+            args = final_c11_receipts(); args[index][key] = value
+            if index == 0: args[1]["source"] = copy.deepcopy(args[0])
+            with self.subTest(index=index, key=key), self.assertRaises(ValueError): bridge.validate_receipts(*args)
+        for index in (6, 8):
+            args = final_c11_receipts(); args[index] = args[index].rstrip(b"\n")
+            with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+        for key in ("worker_command", "watchdog_command"):
+            args = final_c11_receipts(); args[4][key][1] = "/other/script.py"
+            with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+
+    def test_final_c11_rejects_guardian_stop_bad_birth_identity_unmatched_samples_and_terminal_drift(self):
+        for row, key, value in ((0, "worker_pid", 999), (0, "watchdog_pid", 999),
+                (0, "worker_start_ticks", 0), (0, "watchdog_start_ticks", True),
+                (1, "sample", None), (1, "journalAgeSeconds", 30), (1, "status", "stop"),
+                (2, "worker_pid", 999), (2, "status", "stop"), (2, "time_unix", 12.8)):
+            args = final_c11_receipts(); records = [json.loads(line) for line in args[8].splitlines()]
+            records[row][key] = value
+            args[8] = b"".join(json.dumps(record).encode()+b"\n" for record in records)
+            with self.subTest(row=row, key=key), self.assertRaises(ValueError): bridge.validate_receipts(*args)
+        args = final_c11_receipts(); args[8] += args[8].splitlines()[-1] + b"\n"
+        with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+        for key, value in (("time_unix", 11), ("elapsed_seconds", 0), ("dedicated_delta_bytes", 499),
+                ("shared_bytes", float("inf")), ("monitor_error", "injected")):
+            args = final_c11_receipts(); rows = [json.loads(line) for line in args[6].splitlines()]
+            rows[-1][key] = value
+            args[6] = b"".join(json.dumps(row).encode()+b"\n" for row in rows)
+            with self.subTest(key=key), self.assertRaises(ValueError): bridge.validate_receipts(*args)
+
+    def test_final_c11_healthy_sample_bool_is_not_a_numeric_journal_match(self):
+        args = final_c11_receipts(); rows = [json.loads(line) for line in args[6].splitlines()]
+        rows[-1]["shared_delta_bytes"] = 1; rows[-1]["shared_bytes"] = 101
+        rows[0]["shared_delta_bytes"] = 1; rows[0]["shared_bytes"] = 101
+        args[3]["peak_shared_delta_bytes"] = 1
+        args[6] = b"".join(json.dumps(row).encode()+b"\n" for row in rows)
+        records = [json.loads(line) for line in args[8].splitlines()]
+        records[1]["sample"] = {**rows[-1], "shared_delta_bytes": True}
+        args[8] = b"".join(json.dumps(row).encode()+b"\n" for row in records)
+        with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+
+    def test_final_c11_mock_import_emits_exact_raw_digest_map_and_rejects_mid_import_drift(self):
+        for drift in (False, True):
+            with tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary); source, output, data, base = root / "source", root / "output", root / "data", root / "base"
+                (source / "run/adapter").mkdir(parents=True)
+                (source / "run/checkpoints/step-1024").mkdir(parents=True)
+                args = final_c11_receipts(); plan, receipt, exit_record, memory, launch = args[:5]
+                adapter = source / "run/adapter/adapters.safetensors"; adapter.write_bytes(b"synthetic adapter bytes")
+                margins = source / "run/fit-margins.jsonl"
+                margins.write_text("".join(json.dumps({"source_id": f"synthetic-fit-{index}", "initial": 0, "final": 1})+"\n" for index in range(327)))
+                receipt["adapter_sha256"] = bridge.worker.sha256(adapter)
+                receipt["fit_margins_sha256"] = bridge.worker.sha256(margins)
+                receipt["saved_adapter_reload"].update({"adapter_sha256": receipt["adapter_sha256"], "fit_margins_sha256": receipt["fit_margins_sha256"]})
+                documents = {"run/plan.json": plan, "run/receipt.json": receipt, "run/exit.json": exit_record,
+                    "memory.summary.json": memory, "launch.json": launch, "run/checkpoints/step-1024/exit.json": args[9],
+                    "run/adapter/adapter_config.json": {"fine_tune_type": "lora", "num_layers": 26, "lora_parameters": bridge.worker.LORA}}
+                for name, document in documents.items(): (source / name).write_text(json.dumps(document)+"\n")
+                (source / "memory.jsonl").write_bytes(args[6]); (source / "root-guardian.jsonl").write_bytes(args[8])
+                data.write_bytes(b"synthetic compiled TRAIN marker")
+                tensors = {}
+                for layer in range(26):
+                    for projection, width in (("q_proj", 1024), ("v_proj", 256)):
+                        prefix = f"model.layers.{layer}.self_attn.{projection}"
+                        tensors[prefix+".lora_a"] = types.SimpleNamespace(shape=(1152, 16), dtype="fp32")
+                        tensors[prefix+".lora_b"] = types.SimpleNamespace(shape=(16, width), dtype="fp32")
+                mx = types.ModuleType("mlx.core"); mx.float32 = "fp32"; mx.load = lambda _: tensors
+                mx.isfinite = lambda _: True; mx.all = lambda _: types.SimpleNamespace(item=lambda: True); mx.array = lambda value: value
+                package = types.ModuleType("mlx"); package.core = mx; package.__path__ = []
+                rows = [{"source_id": f"synthetic-fit-{index}", "prompt_token_ids": [1], "allowed_token_ids": [1, 2]} for index in range(327)]
+                sha256 = bridge.worker.sha256; changed = False
+                def selected(*_):
+                    nonlocal changed
+                    if drift and not changed:
+                        changed = True
+                        with (source / "root-guardian.jsonl").open("ab") as stream: stream.write(b"\n")
+                    return types.SimpleNamespace(item=lambda: 1.0)
+                values = types.SimpleNamespace(cuda_run=str(source), output=str(output), data=str(data), model=str(base),
+                    receipt_sha256=sha256(source / "run/receipt.json"))
+                with patch.dict("sys.modules", {"mlx": package, "mlx.core": mx}), patch.object(bridge.worker, "verify_local_base"), \
+                        patch.object(bridge.worker, "sha256", side_effect=lambda path: cuda_worker.TRAIN_SHA256 if Path(path).resolve() == data.resolve() else sha256(path)), \
+                        patch.object(bridge.worker, "read_rows", return_value=rows), patch.object(bridge.worker, "load_model", return_value=(None, None, None)), \
+                        patch.object(bridge.worker, "verify_prompt_parity"), patch.object(bridge.worker, "selected_logit_margin", side_effect=selected):
+                    if drift:
+                        with self.assertRaisesRegex(ValueError, "changed during local import"): bridge.run(values)
+                        self.assertFalse((output / "cuda-import-report.json").exists())
+                    else:
+                        result = bridge.run(values)
+                        expected = {name: sha256(source / path) for name, path in {
+                            "sourceLaunch": "launch.json", "sourceExit": "run/exit.json", "sourceCheckpointExit": "run/checkpoints/step-1024/exit.json",
+                            "sourceMemory": "memory.summary.json", "sourceMemoryJournal": "memory.jsonl", "sourceGuardian": "root-guardian.jsonl"}.items()}
+                        self.assertEqual(result["final_envelope_sha256"], expected)
+                        self.assertEqual(result["cuda_source"], receipt)
+                        self.assertEqual(json.loads((output / "cuda-import-report.json").read_text()), result)
+
+    def test_final_c11_allows_genuine_inflight_monitor_sample_after_guard_exit(self):
+        args = final_c11_receipts(); rows = [json.loads(line) for line in args[6].splitlines()]
+        rows.append({**rows[-1], "time_unix": 15.0, "elapsed_seconds": 5.0})
+        args[6] = b"".join(json.dumps(row).encode()+b"\n" for row in rows); args[3]["samples"] = 3
+        bridge.validate_receipts(*args)
 
     def test_c11_profile_cannot_bypass_source_or_helper_identity(self):
         for key, value in (("objective", {}), ("source_objective_plan", {}),

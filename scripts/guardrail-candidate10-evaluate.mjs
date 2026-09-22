@@ -124,7 +124,7 @@ export const C11_SOURCE_RUNTIME = Object.freeze({
   "rfdt/cuda_campaign_launch.py":
     "05c23f68e40d7f112146591cf9926c18cc732dbe622f64ac3d3cad5aae0a348f",
   "rfdt/cuda_import.py":
-    "58d1489997e144eb32d8379c6df35a6a10ec44d8f470944b1bb23b188aacb407",
+    "4dcc19d891c435fbd4abcd09b2a5243eb31110895e710a8286ac18f4ee56f466",
   "fixtures/guardrail/candidate9/objective-plan-B.json":
     "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
 });
@@ -164,13 +164,23 @@ function validateManifest(manifest, candidate11) {
     !isAbsolute(manifest.sfPi ?? "") ||
     !isAbsolute(manifest.sfDeps ?? "") ||
     (candidate11
-      ? [...requiredFiles, "sourceLaunch", "sourceSnapshot", "registryQ8"]
+      ? [
+          ...requiredFiles,
+          "sourceLaunch",
+          "registryQ8",
+          ...(manifest.files?.sourceSnapshot
+            ? ["sourceSnapshot"]
+            : C11_FINAL_FILES),
+        ]
       : requiredFiles
     ).some(
       (name) =>
         !isAbsolute(manifest.files?.[name]?.path ?? "") ||
         !hex(manifest.files[name].sha256),
     ) ||
+    (candidate11 &&
+      !manifest.files?.sourceSnapshot &&
+      manifest.checkpoint !== 1024) ||
     (candidate11 ? C11_EVALUATION_RUNTIME_FILES : requiredRuntime).some(
       (name) => !hex(manifest.runtime?.[name]),
     ) ||
@@ -520,6 +530,335 @@ export function c10ValidationDecision(selection, diagnosticValid = false) {
         candidateAdmission: selection.accepted === true,
       };
 }
+export const C11_FINAL_FILES = Object.freeze([
+  "sourceLaunch",
+  "sourceExit",
+  "sourceCheckpointExit",
+  "sourceMemory",
+  "sourceMemoryJournal",
+  "sourceGuardian",
+]);
+export function verifyC11FinalMemory({
+  receipt,
+  launch,
+  memory,
+  exit,
+  checkpointExit,
+  journal,
+  guardian,
+  imported,
+  files,
+}) {
+  const plan = receipt.source;
+  if (
+    plan.experiment !== "candidate11" ||
+    plan.steps !== 1024 ||
+    plan.campaign_steps !== 1024 ||
+    plan.checkpoint_step !== 1024 ||
+    receipt.checkpoint_step !== 1024 ||
+    memory.reason !== "worker_exit" ||
+    exit.ok !== true ||
+    exit.steps_completed !== 1024 ||
+    !Number.isFinite(exit.elapsed_seconds) ||
+    exit.elapsed_seconds <= 0 ||
+    checkpointExit.ok !== true ||
+    checkpointExit.steps_completed !== 1024 ||
+    !Number.isFinite(checkpointExit.completed_time_unix)
+  )
+    fail(
+      "C11 worker_exit requires genuine completed final1024 campaign and checkpoint exits",
+    );
+  const expectedDigests = Object.fromEntries(
+    C11_FINAL_FILES.map((name) => [name, files[name].sha256]),
+  );
+  if (
+    !imported.final_envelope_sha256 ||
+    typeof imported.final_envelope_sha256 !== "object" ||
+    Array.isArray(imported.final_envelope_sha256) ||
+    canonical(imported.final_envelope_sha256) !== canonical(expectedDigests)
+  )
+    fail(
+      "C11 final imported envelope digest links missing, invalid, or changed",
+    );
+  for (const [name, bytes] of [
+    ["sourceMemoryJournal", journal],
+    ["sourceGuardian", guardian],
+  ]) {
+    if (
+      !Buffer.isBuffer(bytes) ||
+      bytes.at(-1) !== 10 ||
+      sha(bytes) !== files[name].sha256
+    )
+      fail("C11 final journals require complete, bound raw bytes");
+  }
+  const rows = journal.toString().trim().split("\n").map(JSON.parse);
+  const guards = guardian.toString().trim().split("\n").map(JSON.parse);
+  const object = (value) =>
+    value !== null && typeof value === "object" && !Array.isArray(value);
+  const integer = (value) => Number.isSafeInteger(value) && value >= 0;
+  if (
+    rows.length < 2 ||
+    memory.samples !== rows.length ||
+    memory.sampling_interval_seconds !== 2
+  )
+    fail("C11 final memory sample inventory differs");
+  if (!isAbsolute(launch.run_root ?? "") || !isAbsolute(launch.inputs ?? ""))
+    fail("C11 historical launch command roots missing");
+  const code = resolve(launch.inputs, "code"),
+    run = resolve(launch.run_root, "run");
+  const workerCommand = launch.worker_command,
+    monitorCommand = launch.watchdog_command;
+  if (
+    [workerCommand, monitorCommand].some(
+      (command) =>
+        !Array.isArray(command) ||
+        command.length < 2 ||
+        command.some((arg) => typeof arg !== "string"),
+    )
+  )
+    fail("C11 historical process commands missing");
+  const python = workerCommand[0];
+  if (!isAbsolute(python) || monitorCommand[0] !== python)
+    fail("C11 historical process executable identity changed");
+  const originalPin =
+    C11_SOURCE_RUNTIME["fixtures/guardrail/candidate9/objective-plan-B.json"];
+  const expectedWorker = [
+    python,
+    resolve(code, "c11_cuda_campaign.py"),
+    "--campaign",
+    resolve(code, "cuda-campaign.json"),
+    "--mode",
+    "train",
+    "--base",
+    resolve(launch.inputs, "base"),
+    "--train",
+    resolve(launch.inputs, "fit/prepared-train.jsonl"),
+    "--pairs",
+    resolve(launch.inputs, "fit/pairs.json"),
+    "--pairs-sha256",
+    plan.inputs.pairs,
+    "--families",
+    resolve(launch.inputs, "fit/families.json"),
+    "--families-sha256",
+    plan.inputs.families,
+    "--plan",
+    resolve(code, "objective-plan-B.json"),
+    "--plan-sha256",
+    originalPin,
+    "--output",
+    run,
+    "--steps",
+    "1024",
+    "--budget-bytes",
+    "8000000000",
+    "--allocator-cap-bytes",
+    "6500000000",
+  ];
+  const adapterIndex = monitorCommand.indexOf("--adapter-tag");
+  const adapterTag =
+    monitorCommand.filter((arg) => arg === "--adapter-tag").length === 1
+      ? monitorCommand[adapterIndex + 1]
+      : null;
+  const expectedMonitor = [
+    python,
+    resolve(code, "cuda_memory_monitor.py"),
+    "--pid-file",
+    resolve(launch.run_root, "worker.pid"),
+    "--worker",
+    resolve(code, "c11_cuda_campaign.py"),
+    "--run-dir",
+    run,
+    "--output",
+    resolve(launch.run_root, "memory.jsonl"),
+    "--adapter-tag",
+    adapterTag,
+    "--baseline-dedicated-bytes",
+    String(launch.baseline_dedicated_bytes),
+    "--baseline-shared-bytes",
+    String(launch.baseline_shared_bytes),
+    "--hard-budget-bytes",
+    "8000000000",
+    "--stop-dedicated-delta-bytes",
+    "7500000000",
+    "--shared-growth-limit-bytes",
+    "128000000",
+    "--stop-total-dedicated-bytes",
+    "16000000000",
+    "--interval-seconds",
+    "2",
+  ];
+  if (
+    !adapterTag ||
+    canonical(workerCommand) !== canonical(expectedWorker) ||
+    canonical(monitorCommand) !== canonical(expectedMonitor)
+  )
+    fail("C11 historical worker/watchdog command paths or budgets changed");
+  for (const [name, value] of Object.entries({
+    hard_budget_bytes: 8e9,
+    stop_dedicated_delta_bytes: 7.5e9,
+    shared_growth_limit_bytes: 128e6,
+    stop_total_dedicated_bytes: 16e9,
+  }))
+    if (launch[name] !== value || memory[name] !== value)
+      fail("C11 final memory stop contract changed");
+  if (
+    plan.budget_bytes !== 8e9 ||
+    plan.allocator_cap_bytes !== 6.5e9 ||
+    launch.allocator_cap_bytes !== 6.5e9 ||
+    canonical(receipt.pre_step_placement) !==
+      canonical({ parameters: 444, buffers: 5, gradients: 104 }) ||
+    canonical(receipt.post_step_placement) !==
+      canonical({
+        parameters: 444,
+        buffers: 5,
+        gradients: 0,
+        optimizer_tensors: 208,
+      }) ||
+    !integer(receipt.memory?.peak_reserved_bytes) ||
+    receipt.memory.peak_reserved_bytes <= 0 ||
+    receipt.memory.peak_reserved_bytes > 6.5e9
+  )
+    fail("C11 final CUDA placement or allocator budget changed");
+  if (
+    ![launch.baseline_dedicated_bytes, launch.baseline_shared_bytes].every(
+      integer,
+    )
+  )
+    fail("C11 final memory baselines missing");
+  const peaks = {
+    peak_total_dedicated_bytes: 0,
+    peak_dedicated_delta_bytes: 0,
+    peak_shared_delta_bytes: 0,
+  };
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i],
+      previous = rows[i - 1];
+    if (
+      !object(row) ||
+      "monitor_error" in row ||
+      !Number.isFinite(row.time_unix) ||
+      !Number.isFinite(row.elapsed_seconds) ||
+      row.elapsed_seconds < 0 ||
+      [
+        row.dedicated_bytes,
+        row.shared_bytes,
+        row.dedicated_delta_bytes,
+        row.shared_delta_bytes,
+      ].some((value) => !integer(value)) ||
+      row.dedicated_delta_bytes !==
+        Math.max(0, row.dedicated_bytes - launch.baseline_dedicated_bytes) ||
+      row.shared_delta_bytes !==
+        Math.max(0, row.shared_bytes - launch.baseline_shared_bytes) ||
+      (previous &&
+        (row.time_unix <= previous.time_unix ||
+          row.elapsed_seconds <= previous.elapsed_seconds))
+    )
+      fail(
+        "C11 final memory journal counter, clocks, or baseline delta changed",
+      );
+    peaks.peak_total_dedicated_bytes = Math.max(
+      peaks.peak_total_dedicated_bytes,
+      row.dedicated_bytes,
+    );
+    peaks.peak_dedicated_delta_bytes = Math.max(
+      peaks.peak_dedicated_delta_bytes,
+      row.dedicated_delta_bytes,
+    );
+    peaks.peak_shared_delta_bytes = Math.max(
+      peaks.peak_shared_delta_bytes,
+      row.shared_delta_bytes,
+    );
+  }
+  if (
+    Object.entries(peaks).some(([name, value]) => memory[name] !== value) ||
+    peaks.peak_total_dedicated_bytes <= 0 ||
+    peaks.peak_total_dedicated_bytes >= 16e9 ||
+    peaks.peak_dedicated_delta_bytes >= 7.5e9 ||
+    peaks.peak_shared_delta_bytes >= 128e6
+  )
+    fail("C11 final recomputed journal peaks or memory limits changed");
+  if (
+    guards.length < 3 ||
+    guards.some((record) => !object(record)) ||
+    guards[0].status !== "watching" ||
+    guards.at(-1).status !== "worker_exit" ||
+    guards.slice(1, -1).some((record) => record.status !== "healthy")
+  )
+    fail(
+      "C11 guardian requires one watching identity and one successful final worker_exit",
+    );
+  const watching = guards[0],
+    terminal = guards.at(-1);
+  if (
+    [
+      launch.worker_pid,
+      launch.watchdog_pid,
+      memory.worker_pid,
+      watching.worker_pid,
+      watching.watchdog_pid,
+      terminal.worker_pid,
+      watching.worker_start_ticks,
+      watching.watchdog_start_ticks,
+    ].some((value) => !integer(value) || value <= 0) ||
+    launch.worker_pid === launch.watchdog_pid ||
+    memory.worker_pid !== launch.worker_pid ||
+    watching.worker_pid !== launch.worker_pid ||
+    terminal.worker_pid !== launch.worker_pid ||
+    watching.watchdog_pid !== launch.watchdog_pid
+  )
+    fail("C11 historical guardian PID or process birth identity changed");
+  const started =
+    typeof launch.started_at === "string" &&
+    launch.started_at.endsWith("+00:00")
+      ? Date.parse(launch.started_at) / 1000
+      : NaN;
+  const completed = checkpointExit.completed_time_unix;
+  if (
+    !Number.isFinite(started) ||
+    guards.some(
+      (record, index) =>
+        !Number.isFinite(record.time_unix) ||
+        (index > 0 && record.time_unix <= guards[index - 1].time_unix),
+    ) ||
+    !(
+      started <= watching.time_unix &&
+      watching.time_unix <= completed &&
+      completed <= terminal.time_unix
+    ) ||
+    rows[0].time_unix > completed
+  )
+    fail(
+      "C11 final checkpoint completion is not covered by historical guardian identity",
+    );
+  let observed = 0,
+    previousSample;
+  const rowIdentities = new Set(rows.map(canonical));
+  for (const record of guards.slice(1, -1)) {
+    const sample = record.sample;
+    if (sample === null && record.time_unix < rows[0].time_unix) continue;
+    if (
+      !object(sample) ||
+      !rowIdentities.has(canonical(sample)) ||
+      sample.time_unix > record.time_unix ||
+      record.time_unix - sample.time_unix >= 30 ||
+      (previousSample &&
+        (sample.time_unix < previousSample.time_unix ||
+          sample.elapsed_seconds < previousSample.elapsed_seconds ||
+          sample.time_unix > previousSample.time_unix !==
+            sample.elapsed_seconds > previousSample.elapsed_seconds)) ||
+      !Number.isFinite(record.journalAgeSeconds) ||
+      record.journalAgeSeconds < 0 ||
+      record.journalAgeSeconds >= 30
+    )
+      fail(
+        "C11 guardian healthy observation does not match genuine raw journal",
+      );
+    previousSample = sample;
+    observed++;
+  }
+  if (!observed)
+    fail("C11 guardian has no genuine sampled healthy observation");
+}
 export function verifyC11Checkpoint({
   campaign,
   run,
@@ -532,17 +871,27 @@ export function verifyC11Checkpoint({
   snapshot,
   receiptSha256,
   requireSourceProvenance = false,
+  finalEnvelope,
 }) {
   if (
     requireSourceProvenance &&
     (!launch ||
       typeof launch !== "object" ||
       Array.isArray(launch) ||
-      !snapshot ||
-      typeof snapshot !== "object" ||
-      Array.isArray(snapshot))
+      (snapshot !== undefined &&
+        (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot))))
   )
     fail("C11 historical launch and snapshot provenance missing or changed");
+  if (requireSourceProvenance && snapshot === undefined && !finalEnvelope)
+    fail(
+      "C11 historical snapshot or final envelope provenance missing or changed",
+    );
+  if (
+    requireSourceProvenance &&
+    snapshot !== undefined &&
+    imported.final_envelope_sha256 !== undefined
+  )
+    fail("C11 final imported evidence cannot substitute a snapshot envelope");
   const source = receipt?.source;
   const training = { ...run.training };
   delete training.fusion;
@@ -695,6 +1044,8 @@ export function verifyC11Checkpoint({
     fail(
       "C11 historical launch producer, code, or memory stop identity changed",
     );
+  if (finalEnvelope)
+    verifyC11FinalMemory({ ...finalEnvelope, receipt, launch, imported });
 }
 export function c11Q8SourceIdentity(run, imported, runtime) {
   return {
@@ -852,7 +1203,21 @@ async function evaluateRun(
         runtime: manifest.runtime,
         checkpoint: manifest.checkpoint,
         launch: await api.json(manifest.files.sourceLaunch),
-        snapshot: await api.json(manifest.files.sourceSnapshot),
+        snapshot: manifest.files.sourceSnapshot
+          ? await api.json(manifest.files.sourceSnapshot)
+          : undefined,
+        finalEnvelope: manifest.files.sourceSnapshot
+          ? undefined
+          : {
+              memory: await api.json(manifest.files.sourceMemory),
+              exit: await api.json(manifest.files.sourceExit),
+              checkpointExit: await api.json(
+                manifest.files.sourceCheckpointExit,
+              ),
+              journal: await api.pinned(manifest.files.sourceMemoryJournal),
+              guardian: await api.pinned(manifest.files.sourceGuardian),
+              files: manifest.files,
+            },
         receiptSha256: manifest.files.sourceReceipt.sha256,
         requireSourceProvenance: true,
         originalObjective: await api.json({
