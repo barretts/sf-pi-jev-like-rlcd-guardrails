@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
+import { fileURLToPath } from "node:url";
+import { canonical } from "../dist/core.js";
 import { GUARDRAIL_PROTOCOL_SHA256 } from "../dist/guardrail.js";
 import { selectFromAdmission } from "../scripts/guardrail-c8-select-cutoff.mjs";
 
@@ -24,7 +27,21 @@ test("joins independently pinned TRAIN-CAL baseline and freezes threshold", asyn
       group_id: group,
       split,
       targets: { risk: { answer } },
+      request: {
+        state: {
+          version: 2,
+          toolName: "bash",
+          input: { command: id },
+          facts: {},
+        },
+      },
     });
+    const inputSha = (id) =>
+      sha(
+        Buffer.from(
+          canonical(row(id, "cal-group", "calibration", "allow").request.state),
+        ),
+      );
     const fitBytes = Buffer.from(
       JSON.stringify(row("fit", "fit-group", "train", "allow")) + "\n",
     );
@@ -59,8 +76,8 @@ test("joins independently pinned TRAIN-CAL baseline and freezes threshold", asyn
       policySha256: pin("b"),
       calibrationCorpusSha256: sha(calBytes),
       records: [
-        { id: "safe", action: "allow" },
-        { id: "risky", action: "allow" },
+        { id: "safe", action: "allow", inputSha256: inputSha("safe") },
+        { id: "risky", action: "allow", inputSha256: inputSha("risky") },
       ],
     };
     const baselineBytes = Buffer.from(JSON.stringify(baseline));
@@ -89,7 +106,7 @@ test("joins independently pinned TRAIN-CAL baseline and freezes threshold", asyn
           gate: "prepared",
           modelAnswered: true,
           allowScore: 0.55,
-          inputSha256: pin("e"),
+          inputSha256: inputSha("risky"),
           elapsedMs: 10,
         },
         {
@@ -99,7 +116,7 @@ test("joins independently pinned TRAIN-CAL baseline and freezes threshold", asyn
           gate: "prepared",
           modelAnswered: true,
           allowScore: 0.9,
-          inputSha256: pin("f"),
+          inputSha256: inputSha("safe"),
           elapsedMs: 11,
         },
       ],
@@ -123,6 +140,40 @@ test("joins independently pinned TRAIN-CAL baseline and freezes threshold", asyn
     const output = JSON.parse(await readFile(outputPath, "utf8"));
     assert.equal(output.input.baselineReceiptSha256, sha(baselineBytes));
     assert.equal(output.metrics.selectedUnsafeAutomaticAllows, 0);
+    const cliOutputPath = join(directory, "cli-cutoff.json");
+    const stdout = execFileSync(
+      process.execPath,
+      [
+        fileURLToPath(
+          new URL("../scripts/guardrail-c8-select-cutoff.mjs", import.meta.url),
+        ),
+        "--admission",
+        admissionPath,
+        "--admission-sha256",
+        sha(admissionBytes),
+        "--scores",
+        scoresPath,
+        "--baseline",
+        baselinePath,
+        "--baseline-receipt-sha256",
+        sha(baselineBytes),
+        "--output",
+        cliOutputPath,
+        "--model-sha256",
+        pin("c"),
+        "--native-binary-sha256",
+        pin("d"),
+        "--host-baseline-sha256",
+        pin("a"),
+        "--policy-sha256",
+        pin("b"),
+      ],
+      { encoding: "utf8" },
+    );
+    assert.equal(
+      JSON.parse(stdout).receiptSha256,
+      sha(await readFile(cliOutputPath)),
+    );
     await assert.rejects(
       selectFromAdmission({
         ...args,
@@ -130,6 +181,28 @@ test("joins independently pinned TRAIN-CAL baseline and freezes threshold", asyn
         baselineReceiptSha256: pin("0"),
       }),
       /operator pin/,
+    );
+    const changedBaseline = structuredClone(baseline);
+    changedBaseline.records[0].inputSha256 = pin("0");
+    const changedBaselineBytes = Buffer.from(JSON.stringify(changedBaseline));
+    await writeFile(baselinePath, changedBaselineBytes);
+    await assert.rejects(
+      selectFromAdmission({
+        ...args,
+        outputPath: join(directory, "mismatched-baseline.json"),
+        baselineReceiptSha256: sha(changedBaselineBytes),
+      }),
+      /baseline replay input SHA differs/,
+    );
+    await writeFile(baselinePath, baselineBytes);
+    scores.records[0].inputSha256 = pin("0");
+    await writeFile(scoresPath, JSON.stringify(scores));
+    await assert.rejects(
+      selectFromAdmission({
+        ...args,
+        outputPath: join(directory, "mismatched-score.json"),
+      }),
+      /model score did not use the admitted/,
     );
   } finally {
     await rm(directory, { recursive: true, force: true });

@@ -2,7 +2,7 @@
 /** Freeze a C8 cutoff from complete TRAIN calibration scores and admitted sources only. */
 import { createHash } from "node:crypto";
 import { lstat, readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { canonical } from "../dist/core.js";
@@ -40,12 +40,32 @@ function sourceRows(bytes, split) {
       ids.has(row.id) ||
       typeof row.group_id !== "string" ||
       !row.group_id ||
+      (split === "calibration" &&
+        (!row.request?.state || typeof row.request.state !== "object")) ||
       !["allow", "confirm"].includes(row.targets?.risk?.answer)
     )
       fail(`Invalid ${split} source inventory`);
     ids.add(row.id);
   }
   return rows;
+}
+
+async function admittedRows(
+  admissionPath,
+  savedPath,
+  siblingName,
+  expectedSha256,
+) {
+  const sibling = join(dirname(resolve(admissionPath)), siblingName);
+  let bytes;
+  try {
+    bytes = await regularBytes(sibling, 8 * 1024 * 1024);
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+    bytes = await regularBytes(savedPath, 8 * 1024 * 1024);
+  }
+  if (sha(bytes) !== expectedSha256) fail(`C8 admitted ${siblingName} changed`);
+  return bytes;
 }
 
 export async function selectFromAdmission({
@@ -82,16 +102,18 @@ export async function selectFromAdmission({
     !pin(admission.calibration?.sha256)
   )
     fail("C8 admission is not a frozen TRAIN/CAL source split");
-  const fitBytes = await regularBytes(admission.fit.file, 8 * 1024 * 1024);
-  const calibrationBytes = await regularBytes(
-    admission.calibration.file,
-    8 * 1024 * 1024,
+  const fitBytes = await admittedRows(
+    admissionPath,
+    admission.fit.file,
+    "fit.jsonl",
+    admission.fit.sha256,
   );
-  if (
-    sha(fitBytes) !== admission.fit.sha256 ||
-    sha(calibrationBytes) !== admission.calibration.sha256
-  )
-    fail("C8 fit or TRAIN calibration source changed");
+  const calibrationBytes = await admittedRows(
+    admissionPath,
+    admission.calibration.file,
+    "calibration.jsonl",
+    admission.calibration.sha256,
+  );
   const fit = sourceRows(fitBytes, "fit");
   const calibration = sourceRows(calibrationBytes, "calibration");
   const fitGroups = [...new Set(fit.map((row) => row.group_id))].sort();
@@ -143,6 +165,12 @@ export async function selectFromAdmission({
   )
     fail("C8 sf-pi baseline replay identity or inventory is incomplete");
   const baselineActions = new Map();
+  const calibrationInputSha256 = new Map(
+    calibration.map((row) => [
+      row.id,
+      sha(Buffer.from(canonical(row.request.state))),
+    ]),
+  );
   for (const record of baseline.records) {
     if (
       !record ||
@@ -151,6 +179,10 @@ export async function selectFromAdmission({
       !["allow", "confirm", "block", "unknown"].includes(record.action)
     )
       fail("C8 sf-pi baseline replay contains a duplicate or invalid action");
+    if (record.inputSha256 !== calibrationInputSha256.get(record.id))
+      fail(
+        "C8 sf-pi baseline replay input SHA differs from admitted TRAIN calibration",
+      );
     baselineActions.set(record.id, record.action);
   }
   if (cases.some(({ id }) => !baselineActions.has(id)))
@@ -165,6 +197,14 @@ export async function selectFromAdmission({
       baseline: baselineActions.get(record.id),
     })),
   };
+  if (
+    input.records.some(
+      (record) =>
+        record.gate === "prepared" &&
+        record.inputSha256 !== calibrationInputSha256.get(record.id),
+    )
+  )
+    fail("C8 model score did not use the admitted TRAIN calibration request");
   const receipt = selectC8Calibration(input);
   const bytes = Buffer.from(JSON.stringify(receipt, null, 2) + "\n");
   await writeFile(resolve(outputPath), bytes, { flag: "wx", mode: 0o600 });
@@ -189,11 +229,11 @@ if (
           "admission-sha256",
           "scores",
           "baseline",
-          "baseline-sha256",
+          "baseline-receipt-sha256",
           "output",
           "model-sha256",
           "native-binary-sha256",
-          "baseline-sha256",
+          "host-baseline-sha256",
           "policy-sha256",
         ].map((name) => [name, { type: "string" }]),
       ),
@@ -210,11 +250,11 @@ if (
           admissionSha256: values["admission-sha256"],
           scoresPath: values.scores,
           baselinePath: values.baseline,
-          baselineReceiptSha256: values["baseline-sha256"],
+          baselineReceiptSha256: values["baseline-receipt-sha256"],
           outputPath: values.output,
           modelSha256: values["model-sha256"],
           nativeBinarySha256: values["native-binary-sha256"],
-          baselineSha256: values["baseline-sha256"],
+          baselineSha256: values["host-baseline-sha256"],
           policySha256: values["policy-sha256"],
         }),
       ),
