@@ -12,11 +12,11 @@ uses no Jev implementation imports: it discovers one versioned provider through
 | ------------------------ | ------------------------------------------------------------------------------ |
 | SF Pi baseline commit    | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                                     |
 | Baseline tree            | `4e08ddb00626e8d47852f604564b10f135082f1a`                                     |
-| Local integration commit | `3070408136ff0a9da3cc2ced095cf64741b2b12f`                                     |
-| Integration tree         | `20c9c827e5db0d364f788283b912e40075621918`                                     |
+| Local integration commit | `40ba11da1959723052c106db4272e779b802757d`                                     |
+| Integration tree         | `0b5f973115696887838150f768f89a810cd1f995`                                     |
 | Patch                    | [candidate5-sf-pi-from-4f901db9.patch](./candidate5-sf-pi-from-4f901db9.patch) |
-| Patch SHA-256            | `2fea634e5f5f1d5b13ef406717e624c1d3097898612c0451cf0689bc9801dc17`             |
-| Patch size               | 315,457 bytes                                                                  |
+| Patch SHA-256            | `93f2bfce0eb1b21650644e7b67dd2dda5be755837ad62859ae8daeb0026887d8`             |
+| Patch size               | 318,074 bytes                                                                  |
 
 This binary Git diff captures the version-2 Jev risk input, the optional SF Pi
 bridge, policy floors, fallback, corpus exporter, and related hook and workflow
@@ -50,7 +50,7 @@ git -C /tmp/sf-pi-jev-risk apply --index /path/to/simple-jev-ts/integrations/sf-
 git -C /tmp/sf-pi-jev-risk write-tree
 ```
 
-The final command should print `20c9c827e5db0d364f788283b912e40075621918`.
+The final command should print `0b5f973115696887838150f768f89a810cd1f995`.
 Install that local SF Pi package and the separately built Jev extension in an
 isolated Pi environment when exercising it. See [GUARDRAIL.md](../../GUARDRAIL.md)
 for candidate selection, training, and the reproducible bridge evaluation.
@@ -115,7 +115,7 @@ the slash commands use a UI notification surface with no headless output.
 ## Verification scope
 
 The candidate 5 patch reproduces the exact integration tree
-`20c9c827e5db0d364f788283b912e40075621918` from the pinned baseline. The
+`0b5f973115696887838150f768f89a810cd1f995` from the pinned baseline. The
 historical candidate 4 patch was replayed with `git am` and reproduced tree
 `368241cef98569779904763bc20f0688a9773ca9`. Its qualification baseline was
 exported twice with byte-identical output; the SHA-256 is in the historical

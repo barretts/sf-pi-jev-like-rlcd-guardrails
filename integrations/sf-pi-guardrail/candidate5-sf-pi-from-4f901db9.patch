@@ -110,10 +110,10 @@ index 3b2dd397220b3f627db3bb9ccb5c3ff2e0702fb4..299d186676f25481ac44f22265df9333
  The complete disable path is the SF Pi package lifecycle control: disable the `sf-guardrail` extension from the Manager Surface or with `/sf-pi disable sf-guardrail`. This avoids the ambiguous state where the extension is loaded but a hidden internal switch makes it inert.
 diff --git a/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md b/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..332c376969fe507334124b42ad6bb5cae3ab58c7
+index 0000000000000000000000000000000000000000..3ba77521c49b8761daec91bed59c1389ac13bc82
 --- /dev/null
 +++ b/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md
-@@ -0,0 +1,129 @@
+@@ -0,0 +1,131 @@
 +---
 +id: "0118"
 +status: accepted
@@ -185,8 +185,9 @@ index 0000000000000000000000000000000000000000..332c376969fe507334124b42ad6bb5ca
 +in both shadow and enforce modes because a cached snapshot cannot prove the
 +current page, reference, or focus when the browser action executes. They require
 +live facts and revalidation immediately before execution before model scoring
-+can be eligible. The warm risk-check budget is 500 ms, including preparation
-+and queueing. Cold initialization is measured separately. Module
++can be eligible. Warm risk checks have a hard 750 ms deadline, including
++preparation and queueing; the ideal warm p95 is below 500 ms. Cold
++initialization is measured separately. Module
 +load and factory registration start no model worker; Jev owns and disposes its
 +dedicated worker on shutdown and disable. Existing commands expose mode,
 +readiness, warmup, comparisons, and fallback reasons.
@@ -219,6 +220,7 @@ index 0000000000000000000000000000000000000000..332c376969fe507334124b42ad6bb5ca
 +| Exact hard blocks                   | No weakening or bypass.                                                        |
 +| Unnecessary confirmations or blocks | At or below the current engine's baseline.                                     |
 +| Warm risk-check latency             | p95 at or below 500 ms, including preparation and queueing.                    |
++| Hard warm deadline                  | No check exceeds 750 ms, including preparation and queueing.                   |
 +| Model execution                     | Every eligible qualification call completes; fallback cannot conceal failures. |
 +
 +Parity supports an “as effective” claim. Improvement requires the same evaluation
@@ -841,7 +843,7 @@ index db37337bd533af1a56260e6719ba48ed11520f1b..44faa75f9c128ad5d940342829a907f8
    are global Pi settings under `sfPi.guardrail`; project-local weakening is
    deferred with project-local rule overrides. Adding either means plumbing
 diff --git a/extensions/sf-guardrail/README.md b/extensions/sf-guardrail/README.md
-index 27bba377eedf0bd686f33323566213932a58de01..420b35e039dcdad91aa84dbccc3911523380d108 100644
+index 27bba377eedf0bd686f33323566213932a58de01..54202a7b8a9126accf3c71e3f982ee16615e2174 100644
 --- a/extensions/sf-guardrail/README.md
 +++ b/extensions/sf-guardrail/README.md
 @@ -20,11 +20,20 @@ fail-closed behavior, session approval memory, and audit path:
@@ -865,7 +867,7 @@ index 27bba377eedf0bd686f33323566213932a58de01..420b35e039dcdad91aa84dbccc391152
  - `/sf-guardrail grants` — list legacy persisted grants if present.
  - `/sf-guardrail settings` — open routine preferences.
  - `/sf-guardrail aliases` — edit aliases that receive production-level policy.
-@@ -51,6 +60,98 @@ Process-level automation controls are explicit:
+@@ -51,6 +60,101 @@ Process-level automation controls are explicit:
  
  Neither path bypasses hard blocks.
  
@@ -943,8 +945,9 @@ index 27bba377eedf0bd686f33323566213932a58de01..420b35e039dcdad91aa84dbccc391152
 +live-fact contract with revalidation before execution. If a click reference
 +becomes unavailable between the existing engine's check and this hook, enforce
 +mode still requires a fresh exact confirmation.
-+The warm risk-check budget is 500 ms, including request
-+preparation and queueing; cold initialization is reported separately.
++Warm risk checks have a hard 750 ms deadline, including request preparation
++and queueing; the ideal warm p95 is below 500 ms. Cold initialization is
++reported separately.
 +
 +Known native mutation confirmations stay in the host's exact-policy floor.
 +This includes a valid Anonymous Apex run, since code without visible DML can
@@ -954,17 +957,19 @@ index 27bba377eedf0bd686f33323566213932a58de01..420b35e039dcdad91aa84dbccc391152
 +
 +Qualification requires zero unsafe automatic allows, no safety regression or
 +hard-block weakening, unnecessary confirmations and blocks at or below the
-+current engine's baseline, warm p95 at or below 500 ms, and completion of every
-+eligible model call. Expected outcomes come from an explicit operation-policy
-+rubric; disagreement with the old engine alone is not a model error. Candidate
-+selection uses validation groups only. Weights, prompt, cutoff, and criteria
-+are frozen before the held-out test. Corpus results, matched workflow results,
-+and production acceptance remain separate evidence.
++current engine's baseline, warm p95 at or below 500 ms, no warm risk check
++exceeding the hard 750 ms deadline, and completion of every eligible model
++call. The operating ideal is warm p95 below 500 ms. Expected outcomes come
++from an explicit operation-policy rubric; disagreement with the old engine
++alone is not a model error. Candidate selection uses validation groups only.
++Weights, prompt, cutoff, and criteria are frozen before the held-out test.
++Corpus results, matched workflow results, and production acceptance remain
++separate evidence.
 +
  ## Safety and Data Boundaries
  
  - Interactive confirms offer Allow once, Allow for this session, or Block.
-@@ -62,17 +163,29 @@ Neither path bypasses hard blocks.
+@@ -62,17 +166,29 @@ Neither path bypasses hard blocks.
    and requires a separate production/unknown-org opt-in.
  - Strictly validated temporary-directory cleanup can be auto-allowed; other
    dangerous commands are confirmed or hard-blocked according to rule behavior.
@@ -995,7 +1000,7 @@ index 27bba377eedf0bd686f33323566213932a58de01..420b35e039dcdad91aa84dbccc391152
  ## Troubleshooting
  
  **Production confirms fire for a sandbox:** Inspect `/sf-guardrail audit` to see
-@@ -90,6 +203,23 @@ operator control and retain the audit output; hard blocks remain active.
+@@ -90,6 +206,23 @@ operator control and retain the audit output; hard blocks remain active.
  **Audit is empty after resume:** Decisions belong to the active session file.
  Confirm that the resumed branch is the one that recorded the decision.
  
@@ -1007,7 +1012,7 @@ index 27bba377eedf0bd686f33323566213932a58de01..420b35e039dcdad91aa84dbccc391152
 +next launch to return to the default mode.
 +
 +**The first comparison times out:** Model initialization is separate from the
-+warm 500 ms budget. The first lazy shadow request may fall back while the worker
++warm 750 ms deadline. The first lazy shadow request may fall back while the worker
 +warms. Use `/jev-risk warmup` before collecting warm latency or comparison
 +evidence, and retain the cold-initialization result separately.
 +
@@ -1210,7 +1215,7 @@ index d96bfc0df37d67fd989d461c8b66457d8d945e72..28b1863395965385cafaa980fbb4f727
      }
 diff --git a/extensions/sf-guardrail/lib/jev-risk.ts b/extensions/sf-guardrail/lib/jev-risk.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..3f4e593a52e562ce3ad0fc618896b0831d4022fc
+index 0000000000000000000000000000000000000000..b201728595c4df43a4b3dea58fba73c525820ac4
 --- /dev/null
 +++ b/extensions/sf-guardrail/lib/jev-risk.ts
 @@ -0,0 +1,1079 @@
@@ -1243,7 +1248,7 @@ index 0000000000000000000000000000000000000000..3f4e593a52e562ce3ad0fc618896b083
 +
 +export const JEV_RISK_PROVIDER_EVENT = "sf-guardrail:risk-providers";
 +export const JEV_RISK_COMPARISON_ENTRY = "sf-guardrail-risk-comparison";
-+export const JEV_RISK_DEADLINE_MS = 500;
++export const JEV_RISK_DEADLINE_MS = 750;
 +export const JEV_BROWSER_PRESS_FALLBACK_REASON =
 +  "Jev browser press lacks live page and focus evidence; using Safety Kernel fallback";
 +export const JEV_BROWSER_CLICK_FALLBACK_REASON =
@@ -2257,7 +2262,7 @@ index 0000000000000000000000000000000000000000..3f4e593a52e562ce3ad0fc618896b083
 +    comparison.reason = errorReason(
 +      error,
 +      signal?.aborted
-+        ? "Jev risk check was aborted or exceeded the 500 ms deadline"
++        ? `Jev risk check was aborted or exceeded the ${JEV_RISK_DEADLINE_MS} ms deadline`
 +        : "Jev risk evaluation unavailable",
 +    );
 +    // An explicit operational fallback preserves the existing safety layer.
@@ -3671,10 +3676,10 @@ index 0000000000000000000000000000000000000000..4a570b68079117c2be922c2494f7373c
 +}
 diff --git a/extensions/sf-guardrail/tests/jev-risk-hook.test.ts b/extensions/sf-guardrail/tests/jev-risk-hook.test.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..d40eaded84643b3029e6084e8e555617b61c6423
+index 0000000000000000000000000000000000000000..479d6b8f671bb44e82faed22f7a6c5c138e8f3f0
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/jev-risk-hook.test.ts
-@@ -0,0 +1,702 @@
+@@ -0,0 +1,710 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +/** Exercise the real Pi hook. Execution is always a local counter, never a tool. */
 +import { createHash } from "node:crypto";
@@ -3693,6 +3698,7 @@ index 0000000000000000000000000000000000000000..d40eaded84643b3029e6084e8e555617
 +import {
 +  JEV_BROWSER_CLICK_FALLBACK_REASON,
 +  JEV_RISK_COMPARISON_ENTRY,
++  JEV_RISK_DEADLINE_MS,
 +  JEV_RISK_PROVIDER_EVENT,
 +} from "../lib/jev-risk.ts";
 +
@@ -4233,11 +4239,18 @@ index 0000000000000000000000000000000000000000..d40eaded84643b3029e6084e8e555617
 +      inputSha256: "d".repeat(64),
 +      calibration: "uncalibrated",
 +    });
++    const reportedLate = model("allow");
++    const evaluate = reportedLate.evaluate;
++    reportedLate.evaluate = async (input, signal) => ({
++      ...(await evaluate(input, signal)),
++      elapsedMs: JEV_RISK_DEADLINE_MS + 1,
++    });
 +    for (const providers of [
 +      [],
 +      [model(), model()],
 +      [{ ...model(), qualified: false }],
 +      [malformed],
++      [reportedLate],
 +    ]) {
 +      const trial = await harness(providers, { pick: "Block" });
 +      expect((await trial.call(dangerous)).accepted).toBe(false);
@@ -6195,10 +6208,10 @@ index 0000000000000000000000000000000000000000..172974cb68c751a4b1768ba666335255
 +});
 diff --git a/extensions/sf-guardrail/tests/jev-risk.test.ts b/extensions/sf-guardrail/tests/jev-risk.test.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..d6c684ee9a6863159dda1acdd0985ef5391e490d
+index 0000000000000000000000000000000000000000..1473f4e4ee4e955bbb1d1a767f4ac024d1a69ceb
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/jev-risk.test.ts
-@@ -0,0 +1,664 @@
+@@ -0,0 +1,713 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +import { createHash } from "node:crypto";
 +import { afterEach, describe, it, expect, vi } from "vitest";
@@ -6223,6 +6236,7 @@ index 0000000000000000000000000000000000000000..d6c684ee9a6863159dda1acdd0985ef5
 +  evaluateJevRisk,
 +  buildJevRiskInput,
 +  JEV_BROWSER_CLICK_FALLBACK_REASON,
++  JEV_RISK_DEADLINE_MS,
 +  jevRiskPolicyFloor,
 +  prepareJevRiskInput,
 +  type JevRiskProvider,
@@ -6786,11 +6800,46 @@ index 0000000000000000000000000000000000000000..d6c684ee9a6863159dda1acdd0985ef5
 +    expect(getter).not.toHaveBeenCalled();
 +    expect(model.evaluate).not.toHaveBeenCalled();
 +  });
++  it("accepts a valid warm check past the 500 ms target but rejects the 750 ms deadline", async () => {
++    expect(JEV_RISK_DEADLINE_MS).toBe(750);
++    const withinDeadline = provider("allow");
++    const accepted = await evaluateJevRisk(pi(withinDeadline), input(), baseline, {
++      mode: "enforce",
++      startedAt: performance.now() - 520,
++    });
++    expect(accepted.decision.action).toBe("allow");
++    expect(accepted.comparison.source).toBe("jev");
++    expect(withinDeadline.evaluate).toHaveBeenCalledOnce();
++
++    const expired = provider("allow");
++    const rejected = await evaluateJevRisk(pi(expired), input(), baseline, {
++      mode: "enforce",
++      startedAt: performance.now() - (JEV_RISK_DEADLINE_MS + 1),
++    });
++    expect(rejected.decision).toBe(baseline);
++    expect(rejected.comparison.source).toBe("rules_fallback");
++    expect(expired.evaluate).not.toHaveBeenCalled();
++
++    const reportedLate = provider("allow");
++    const evaluate = reportedLate.evaluate;
++    reportedLate.evaluate = async (value) => ({
++      ...(await evaluate(value)),
++      elapsedMs: JEV_RISK_DEADLINE_MS + 1,
++    });
++    const invalid = await evaluateJevRisk(pi(reportedLate), input(), baseline, {
++      mode: "enforce",
++    });
++    expect(invalid.decision).toBe(baseline);
++    expect(invalid.comparison).toMatchObject({
++      source: "rules_fallback",
++      reason: "Invalid, incomplete or late Jev risk prediction",
++    });
++  });
 +  it("includes preparation in the deadline and rejects identity changes or revoked qualification", async () => {
 +    const expired = provider("allow");
 +    const slowPreparation = await evaluateJevRisk(pi(expired), input(), baseline, {
 +      mode: "enforce",
-+      startedAt: performance.now() - 501,
++      startedAt: performance.now() - (JEV_RISK_DEADLINE_MS + 1),
 +    });
 +    expect(slowPreparation.decision).toBe(baseline);
 +    expect(expired.evaluate).not.toHaveBeenCalled();
@@ -6807,14 +6856,27 @@ index 0000000000000000000000000000000000000000..d6c684ee9a6863159dda1acdd0985ef5
 +      expect(result.comparison.reason).toContain("changed during evaluation");
 +    }
 +  });
-+  it("times out uncooperative providers and recovers on the next call", async () => {
++  it("ignores a model allow returned after timeout and recovers on the next call", async () => {
 +    const model = provider("allow");
 +    const evaluate = model.evaluate;
-+    model.evaluate = () => new Promise(() => {});
++    let release: (() => void) | undefined;
++    model.evaluate = async (value) => {
++      const prediction = await evaluate(value);
++      await new Promise<void>((resolve) => {
++        release = resolve;
++      });
++      return prediction;
++    };
 +    const result = await evaluateJevRisk(pi(model), input(), baseline, {
 +      mode: "enforce",
-+      startedAt: performance.now() - 450,
++      startedAt: performance.now() - 550,
 +    });
++    expect(result.decision).toBe(baseline);
++    expect(result.comparison.source).toBe("rules_fallback");
++    expect(result.comparison.reason).toContain("750 ms deadline");
++    expect(release).toBeTypeOf("function");
++    release?.();
++    await Promise.resolve();
 +    expect(result.decision).toBe(baseline);
 +    expect(result.comparison.source).toBe("rules_fallback");
 +    model.evaluate = evaluate;
