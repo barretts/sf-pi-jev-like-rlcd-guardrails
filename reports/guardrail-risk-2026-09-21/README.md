@@ -25,6 +25,19 @@ the rebuild. These checks do not establish native driver startup timing,
 qualified enforcement or model effectiveness. API embeddings must await Pi's
 extension binding before executing tools.
 
+A later external headless CPU proof passed three cases against the actual
+current compiled Jev driver and SF production modules, with one safe
+counter-only request per mode. Off remained lazy; shadow awaited stub
+initialization and recorded one Jev comparison; genuinely unqualified enforce
+awaited initialization, performed no scoring and recorded rules fallback.
+No qualification receipt or getter override was supplied. All 114 Jev
+source/compiled files and 33 SF production files retained their bytes. The
+retained [complete proof](./sdk-normal-startup-stubs.json) is
+also copied under the ignored startup evidence directory,
+SHA-256 `98d53a280245176afdd93a14188fee119cca52bb91549507662673dfbe28923b`.
+Its deferred-stub timings and one-safe-request denominator do not establish
+native latency, risky approvals, complete workflow parity or qualification.
+
 The updated optional native SDK harness now registers the real general Jev
 driver and awaits that normal binding/startup path, with no manual provider
 warmup. Seven actual SF source cases passed with the native arm skipped, plus
@@ -194,6 +207,22 @@ fallback did not conceal a failure.
 | Eligible calls answered     |   144 / 144 | Every eligible call            | Pass     |
 | Execution errors/fallbacks  |           0 | Required 0                     | Pass     |
 
+The [validation-only score diagnostic](./candidate-3-score-diagnostic.json)
+recomputes case counts and decisions from the tracked SF bridge receipt. For
+any positive global temperature applied to the same two label logits, the
+effective original-score threshold at the fixed 0.99 cutoff stays above 0.5.
+Nine benign cases already score at or below 0.5, so temperature alone cannot
+reach the baseline limit of three benign interruptions. Removing all unsafe
+automatic allows would require an original-score threshold above
+0.9999990659524576 and interrupt at least 69 benign cases. Reproduce it with:
+
+```sh
+node scripts/guardrail-score-diagnostic.mjs --validation reports/guardrail-risk-2026-09-21/candidate-3-sf-bridge-validation.json
+```
+
+This is a saved-score counterfactual, not inference, a calibration fit, a new
+latency measurement, or qualification. It says nothing about candidate 4.
+
 Cold initialization was 2,647.130459 ms, separate from warm risk checks. Raw
 validation SHA-256 is
 `efd12e445ad5fad473c90337b4154e69ec1e802f5c5d8c032ad633a9b79d4126`;
@@ -235,6 +264,29 @@ training. TRAIN fit, export, native bridge VALID, qualification freeze, held-out
 and genuine enforce outcomes remain pending. Candidate 3's rejection and
 separate actual native off/shadow SDK proof remain intact.
 
+The separate [prospective TRAIN diversity supplement](../../docs/GUARDRAIL_TRAIN_DIVERSITY.md)
+retains 80 exact bridge inputs in 40 groups, with 40 allow and 40 confirm
+targets, plus the raw observations and complete source/provenance proof.
+All requests match the actual mocked bridge export. Complete inputs match the
+earlier CPU draft on 61 cases; 12 shell inputs gain source-resolved org facts
+and seven browser inputs gain mock snapshot digests. Five unresolved org
+observations use the supported `unknown` type and produce production with
+`guessed:true` through the existing resolver. On these authored cases the
+baseline has four unsafe allows and six benign interruptions. These are data
+and source observations; no model was evaluated on the supplement. Human label
+review is pending, universal team non-exposure is explicitly false, and the
+full discarded/replacement contribution ledger is retained. Root checked all
+80 inputs with the existing guardrail/RFDT validators, exact bridge equality
+and all 21 unchanged candidate 4 source pins. Another candidate is not selected;
+the temporary 692-case source replay must never become qualification evidence.
+
+If candidate 4 fails its fixed gates, the user has offered Gemini or ChatGPT
+Deep Research documents. Provide a research prompt filled with candidate 4's
+actual measured results and explicit constraints at that point. Research may
+guide a validation-selected future experiment; it must not supply a cloud
+teacher, replace operation-policy labels, tune using held-out results or
+weaken qualification criteria. Candidate 4 remains pending.
+
 The saved-scalar CPU parity receipt
 `.build/guardrail/candidate-3/initial-256-parity-receipt.json`, observed at
 00:34:05.856 UTC, has SHA-256
@@ -262,6 +314,16 @@ across 46 files in 10.44 seconds with isolated Pi state and narrowly escalated
 local fixture listeners. TypeScript/package checks, build, 38 focused guardrail
 tests across four files and formatting also passed. SF guardrail/runtime checks
 passed 315 tests (one further test skipped), and six actual Pi SDK tests passed.
+
+At the current worktree checkpoint, Jev type checking, formatting and 59 focused
+guardrail tests across five files passed. A full sandboxed Jev run passed 1,014
+tests in 45 files but failed 18 tests in `agent-server.test.ts` and
+`rfdt.test.ts`: their localhost fixtures received `listen EPERM` for
+`127.0.0.1`. A narrowly escalated rerun of exactly those two files passed all
+34 tests in 5.22 seconds. The current 47 files and 1,032 tests therefore pass
+by partition/replay, not as one green uniform suite invocation. These source
+checks do not establish candidate 4 model quality or warm risk-check latency.
+
 SF lint, docs build and validation stages before the full-suite stage passed.
 Every SF test file was exercised in the appropriate isolated environment:
 

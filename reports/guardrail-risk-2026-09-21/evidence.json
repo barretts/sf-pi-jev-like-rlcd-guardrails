@@ -3,6 +3,21 @@
   "date": "2026-09-21",
   "purpose": "Separate local guardrail semantic-risk candidate; preserve exact policy and existing Pi approval/audit enforcement.",
   "checkpointStatus": "candidate_4_training_candidate_3_rejected_native_validation",
+  "currentJevSourceChecks": {
+    "typeCheck": "passed",
+    "format": "passed",
+    "focusedGuardrailTests": { "files": 5, "passed": 59, "failed": 0 },
+    "fullSandboxRun": {
+      "filesPassed": 45,
+      "testsPassed": 1014,
+      "testsFailed": 18,
+      "error": "localhost fixture listen EPERM on 127.0.0.1"
+    },
+    "narrowLoopbackReplay": { "files": 2, "testsPassed": 34, "testsFailed": 0 },
+    "uniqueCurrentSuiteCoverage": { "files": 47, "testsPassed": 1032 },
+    "uniformSuiteGreen": false,
+    "modelQualification": false
+  },
   "optInStartupLifecycle": {
     "scope": "Actual Jev worktree, adapter-stub lifecycle tests; no model or native calls",
     "warmup": "Enabled general driver awaits owned risk worker at exact shadow/enforce session_start, re-enable and template replacement",
@@ -240,12 +255,12 @@
       "trainingResult": {
         "completedAt": "2026-09-22T01:30:12.485Z",
         "initialLoss": 4.709187189737956,
-        "finalLoss": 7.5309995620969746e-6,
+        "finalLoss": 0.0000075309995620969746,
         "steps": 1536,
         "adapterChanged": true,
         "lossDecreased": true,
         "reloadVerified": true,
-        "reloadMaxProbabilityDelta": 0.0,
+        "reloadMaxProbabilityDelta": 0,
         "adapterSha256": "7dc95ad1511a19d3689203c86df47c72a6ea932ef9602547c579c3645fb68913",
         "durationSeconds": 4830.391436333011,
         "promptParity": {
@@ -272,7 +287,7 @@
         "unsafeAutomaticAllows": 0,
         "unnecessaryConfirmations": 0,
         "initialMeanCE": 4.709187189737956,
-        "finalMeanCE": 7.5309995620969746e-6,
+        "finalMeanCE": 0.0000075309995620969746,
         "minSafeMargin": 8.31249963969303,
         "maxRiskMargin": -8.187499575107358,
         "semanticFit": true,
@@ -981,7 +996,7 @@
       "riskyCasesAutomaticallyAllowed": 0,
       "targetClassMarginReachesLn99": 18,
       "initialMeanCE": 4.042555491129558,
-      "finalMeanCE": 2.453062269422743e-5,
+      "finalMeanCE": 0.00002453062269422743,
       "minimumSafeAllowMinusConfirmMargin": 8.812499813162471,
       "maximumRiskyAllowMinusConfirmMargin": -9.93749961502119,
       "adapterChanged": true,
@@ -1608,6 +1623,19 @@
     },
     "claimBoundary": "Qualification describes this frozen authored corpus, not population safety, production acceptance, or a complete Pi workflow benefit. Raw decision scores are uncalibrated."
   },
+  "candidate3ScoreDiagnostic": {
+    "scope": "CPU-only counterfactual using the tracked candidate 3 SF bridge validation scores; no model inference or held-out test access",
+    "script": "scripts/guardrail-score-diagnostic.mjs",
+    "scriptSha256": "3df3102ac7c342ec050c34f8314a3d6e5e1b86b9030a92d5b3b14c8eca51dbce",
+    "report": "reports/guardrail-risk-2026-09-21/candidate-3-score-diagnostic.json",
+    "reportSha256": "185a1d7b2f9706cd168c11871261a1a51389fc5314b700453c4130d87d2de504",
+    "sourceTrackedReceiptSha256": "b27ebb75629e6fc9f2769bed1d7eb6e74dca673f7e014dca72f8c84d20959768",
+    "minimumBenignInterruptionsForAnyPositiveTemperature": 9,
+    "baselineBenignInterruptions": 3,
+    "benignInterruptionsAtZeroUnsafeLimit": 69,
+    "temperatureOnlyCanMeetBothGates": false,
+    "candidate4Implication": "None; candidate 4 validation remains pending"
+  },
   "sdkRepresentativeNativeWorkflow": {
     "scope": "Actual Pi AgentSession.prompt, ExtensionRunner, and real local Jev risk inference; scripted assistant/user choices, mocked org facts, counter-only tools, no external operation execution. Authored training-style workflow evidence, separate from held-out qualification and production acceptance.",
     "candidate": "jev/gemma-3-1b-guardrail-candidate-3",
@@ -1693,5 +1721,86 @@
     "benefitEstablished": false,
     "heldOutQualification": false,
     "claimBoundary": "Actual local model SDK shadow comparison on ten authored operations; model does not enforce. Complete semantic/policy comparisons and identical off/shadow outcomes do not establish equal-or-better risk quality, enforce confirmation parity, workflow speed benefit, or production acceptance."
+  },
+  "actualCurrentSdkStartupStubs": {
+    "scope": "Actual current compiled Jev driver and SF production modules; headless actual Pi SDK with deferred artifact/inference stubs; one safe counter-only request per mode",
+    "reportFile": "reports/guardrail-risk-2026-09-21/sdk-normal-startup-stubs.json",
+    "reportSha256": "98d53a280245176afdd93a14188fee119cca52bb91549507662673dfbe28923b",
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "driverSha256": "57b5f63d7790908e4bf9c34b40de4bdad8c79ca0b0bccd0a5994d8e288167f1c",
+    "sfRuntimeBaselineSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
+    "jevSourceAndCompiledFilesUnchanged": 114,
+    "sfProductionFilesUnchanged": 33,
+    "off": {
+      "artifactChecks": 0,
+      "scoringCalls": 0,
+      "comparisons": 0
+    },
+    "shadow": {
+      "artifactChecks": 1,
+      "scoringCalls": 1,
+      "comparisons": 1,
+      "comparisonSource": "jev"
+    },
+    "enforce": {
+      "artifactChecks": 1,
+      "scoringCalls": 0,
+      "comparisons": 1,
+      "comparisonSource": "rules_fallback",
+      "qualified": false,
+      "qualificationReceiptSupplied": false
+    },
+    "approvals": 0,
+    "sessionGrants": 0,
+    "networkCalls": 0,
+    "requestedOperationsPerformed": 0,
+    "nativeCalls": 0,
+    "claimBoundary": "Stub lifecycle and one-safe-call rule fallback only; not native latency, risky approval coverage, full workflow parity, qualified enforcement or model effectiveness"
+  },
+  "prospectiveTrainDiversity": {
+    "status": "retained_prospective_train_only",
+    "inputsFile": "fixtures/guardrail/train-diversity-inputs.json",
+    "inputsSha256": "1f10acb162c833ec3930ae626ec1ef04ab0a4adf8234047dee55df495ec5a17c",
+    "sourceFile": "fixtures/guardrail/train-diversity-source.json",
+    "sourceSha256": "1131bd1818e239fa8fac2c187ca5305c91bafe6eb4e9065b0fe6df8d717f9cdc",
+    "proofFile": "docs/GUARDRAIL_TRAIN_DIVERSITY_PROOF.json",
+    "proofSha256": "2063fe84c459eaade0b26576827921ada863d4c8ba47616cf65693f62e8de785",
+    "records": 80,
+    "groups": 40,
+    "allowTargets": 40,
+    "confirmTargets": 40,
+    "completeActualBridgeInputs": true,
+    "existingGuardrailAndRfdtCpuValidatorsPassed": 80,
+    "matchedDraftCompleteInputs": 61,
+    "factDifferences": {
+      "shellOrgFacts": 12,
+      "browserSnapshotDigests": 7
+    },
+    "unknownOrgMappingsVerified": 5,
+    "originalQualificationCases": 612,
+    "sourceReplayOnlyCases": 692,
+    "baselineUnsafeAllows": 4,
+    "baselineBenignInterruptions": 6,
+    "labelProvenance": "Machine-authored independent operation-policy rubric; agent source review; human label review pending",
+    "humanLabelReview": "pending",
+    "universalTeamNonExposure": false,
+    "candidateSelected": false,
+    "trainingStarted": false,
+    "modelCalls": 0,
+    "nativeCalls": 0,
+    "candidate4SourcePinsUnchanged": 21,
+    "claimBoundary": "Supplemental TRAIN data/source proof only; not current candidate4 data, selection, model effectiveness or qualification; 692-case merge never qualification inventory"
+  },
+  "researchContingency": {
+    "trigger": "Actual candidate4 fixed-gate failure; candidate4 remains pending",
+    "userOffer": "Gemini or ChatGPT web Deep Research documents",
+    "action": "Provide a prompt grounded in actual candidate4 measured failures and fixed model/qualification constraints",
+    "localOutlinePrepared": true,
+    "researchRequested": false,
+    "cloudTeacherAllowed": false,
+    "heldOutInformedRetuningAllowed": false,
+    "criteriaChangesAllowed": false
   }
 }

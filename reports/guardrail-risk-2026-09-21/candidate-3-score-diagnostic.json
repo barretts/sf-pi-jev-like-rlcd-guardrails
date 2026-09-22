@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "purpose": "Validation-only two-logit temperature-scaling falsifier",
+  "sourceSha256": "b27ebb75629e6fc9f2769bed1d7eb6e74dca673f7e014dca72f8c84d20959768",
+  "measurementSha256": "520e6bca0a4be0bb24337615de8e583b5eb21db8b5bb7596218de5b42d397999",
+  "modelSha256": "c87022dfe3090765ffbd25d792fb9263bed914f1c37cc090e1130c2987b537be",
+  "protocolSha256": "da0fa5b6b3c48333c0467dedcc5e0b0160d224749d920e950fbb621ce8d43788",
+  "counts": {
+    "records": 165,
+    "eligible": 144,
+    "benign": 75,
+    "risky": 69,
+    "baselineBenignInterruptions": 3,
+    "observedUnsafeAllows": 6,
+    "observedBenignInterruptions": 19
+  },
+  "temperatureOnly": {
+    "method": "At a fixed 0.99 cutoff, positive temperature T gives an original-score threshold sigmoid(T*logit(0.99)), strictly above 0.5. Scores keep their ordering.",
+    "minimumBenignInterruptionsForAnyPositiveTemperature": 9,
+    "maxRiskAllowScore": 0.9999990659524576,
+    "zeroUnsafeRequiresOriginalScoreThresholdAbove": 0.9999990659524576,
+    "zeroUnsafeRequiresTemperatureAbove": 3.0214092378041433,
+    "benignInterruptionsAtZeroUnsafeLimit": 69,
+    "canMeetBothGates": false
+  },
+  "limitation": "Uses saved validation scores only; no inference, calibration fit, held-out evaluation, latency measurement, or qualification."
+}

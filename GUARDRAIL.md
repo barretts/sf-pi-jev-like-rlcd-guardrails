@@ -55,6 +55,8 @@ Preparation passes only TRAIN and validation to RFDT. The plan freezes the numbe
 
 Candidate 2's 256-update run failed validation usability. Candidate 3 completed 1,536 fixed updates and fit all 252 TRAIN decisions, but failed native bridge validation on unsafe allows, safety regressions and unnecessary interruptions. Candidate 4 is running the same fixed 1,536-update profile with 48 additional TRAIN counterfactuals; validation is unchanged and RFDT preparation contains no TEST rows. Its outcomes remain pending. Training fit does not qualify a model; every validation and held-out gate must still pass.
 
+A separate [prospective TRAIN supplement](./docs/GUARDRAIL_TRAIN_DIVERSITY.md) retains 80 complete bridge inputs in 40 operation groups and their raw observations. It is not part of candidate 4 and does not select another candidate. Its source-only replay preserves the original 612 qualification cases; the temporary 692-case source merge must never become a qualification inventory. Labels remain machine authored with human review pending, and the full disclosed provenance exceptions are retained in its proof file.
+
 `eval:guardrail` can produce direct-classifier diagnostics. These cannot qualify enforcement: real SF bridge validation must include preparation and queueing, and all eligible model calls must finish. Run bridge validation from the SF checkout, with `JEV_GUARDRAIL_MODEL_FILE` set to the exported artifact path printed by the previous command:
 
 ```sh

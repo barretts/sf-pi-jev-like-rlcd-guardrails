@@ -254,9 +254,32 @@ startup does not score requests, initialize the general classifier or grant
 approvals. Source and new-test strict type checks, build and file formatting
 passed. After rebuilding, all 21 candidate 4 frozen source pins and compiled
 criteria `b7147735…` were unchanged. This establishes lifecycle behavior with
-stub adapters; actual native driver startup and its end-to-end fallback remain
-separate checks. The installed Pi SDK's binding awaits startup, including print
-and RPC modes; API embeddings must also await binding.
+stub adapters; actual native driver startup remains a separate check. A later
+external CPU harness passed three headless cases against the actual current
+compiled driver and SF production modules, with one harmless counter-only
+request per mode. Off performed no artifact check or scoring; shadow awaited
+initialization and recorded one score; genuinely unqualified enforce awaited
+initialization, scored zero requests and recorded rule fallback. It supplied
+no qualification receipt or getter override. All 114 Jev source/compiled files
+and 33 SF production files remained unchanged. Its deliberately deferred stub
+startup times do not measure native latency or complete workflow parity. The
+installed Pi SDK's binding awaits startup, including print and RPC modes; API
+embeddings must also await binding.
+
+The [prospective TRAIN diversity supplement](./docs/GUARDRAIL_TRAIN_DIVERSITY.md)
+retains 80 exact seven-field bridge inputs in 40 groups, 40 allow and 40 confirm,
+plus the raw mocked observations and complete source/provenance proof. Root
+validated every input with the existing guardrail and RFDT validators and
+checked equality with the actual mocked SF bridge export. All requests match;
+61 complete inputs match the CPU draft, while 12 shell inputs acquire org facts
+and seven browser inputs acquire mock snapshot digests. Five unknown-org
+observations produce production with guessed facts through the existing
+resolver. Human label review remains pending, and universal team non-exposure
+is explicitly false; affected author contributions were discarded and replaced.
+The finite authored baseline has four unsafe allows and six benign interruptions
+on this supplement. These are source/data evidence, not candidate results.
+Candidate 4 and all 21 frozen sources remain unchanged; another candidate has
+not been selected. The 692-case replay merge is never qualification evidence.
 
 The SDK workflow repeats an identical operation. It does not establish prompt
 parity when related operation payloads change: current model-derived session
