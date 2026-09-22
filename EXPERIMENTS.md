@@ -50,15 +50,17 @@ The real SF bridge measures host preparation and baseline resolution inside
 that deadline; cold model initialization is reported separately. Fallbacks are
 execution failures for qualification and cannot make a candidate pass.
 
-| Guardrail round                      | Observed status                                                                                                                                                       | Decision                                                                                          |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Corpus and actual-engine baseline    | 612 authored cases / 204 groups; static family, group, duplicate-state and exact-policy checks pass                                                                   | Preserve supplied gold and measure disagreements independently.                                   |
-| Candidate 1                          | Stopped at optimizer update 42/256 after source review found two incomplete Data 360 rehearsal parameter sets; no held-out model calls                                | Retain abandonment evidence and use a fresh official-base trial after correction.                 |
-| Candidate 2                          | All 256 fixed optimizer updates and checkpoint checks completed; loss 4.70919 → 0.62621; adapter changed; reload probability delta zero; separate F16 export recorded | Learning/checkpoint integrity does not establish native risk effectiveness or qualification.      |
-| Interface and integration proof      | Focused provider, qualification, real-hook and actual Pi SDK tests exercise controlled failures and stub execution                                                    | Keep contract/SDK proof separate from candidate and production claims.                            |
-| Candidate 2 native bridge validation | Completed 165 cases / 55 groups; all 144 eligible calls answered; zero errors/unsafe allows; warm p95 208.353 ms; 75 safe-case interruptions versus baseline 3        | Rejected by the usability gate; no freeze or held-out model calls.                                |
-| TRAIN-only pipeline diagnosis        | Completed 256 fixed updates on 18 TRAIN cases: 18/18 correct argmax, all nine safe cases meet the 0.99 allow cutoff, and zero of nine risky cases automatically allow | Memorization and pipeline proof on those TRAIN cases only; no export, promotion or qualification. |
-| Candidate 3 training                 | Preparation verified 252 TRAIN / 144 validation / zero test branches; original-base training started with the same inputs and profile and 1,536 fixed updates         | Full TRAIN per-case post-fit evaluation is pending before export; no effectiveness result yet.    |
+| Guardrail round                      | Observed status                                                                                                                                                       | Decision                                                                                                     |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Corpus and actual-engine baseline    | 612 authored cases / 204 groups; static family, group, duplicate-state and exact-policy checks pass                                                                   | Preserve supplied gold and measure disagreements independently.                                              |
+| Candidate 1                          | Stopped at optimizer update 42/256 after source review found two incomplete Data 360 rehearsal parameter sets; no held-out model calls                                | Retain abandonment evidence and use a fresh official-base trial after correction.                            |
+| Candidate 2                          | All 256 fixed optimizer updates and checkpoint checks completed; loss 4.70919 → 0.62621; adapter changed; reload probability delta zero; separate F16 export recorded | Learning/checkpoint integrity does not establish native risk effectiveness or qualification.                 |
+| Interface and integration proof      | Focused provider, qualification, real-hook and actual Pi SDK tests exercise controlled failures and stub execution                                                    | Keep contract/SDK proof separate from candidate and production claims.                                       |
+| Candidate 2 native bridge validation | Completed 165 cases / 55 groups; all 144 eligible calls answered; zero errors/unsafe allows; warm p95 208.353 ms; 75 safe-case interruptions versus baseline 3        | Rejected by the usability gate; no freeze or held-out model calls.                                           |
+| TRAIN-only pipeline diagnosis        | Completed 256 fixed updates on 18 TRAIN cases: 18/18 correct argmax, all nine safe cases meet the 0.99 allow cutoff, and zero of nine risky cases automatically allow | Memorization and pipeline proof on those TRAIN cases only; no export, promotion or qualification.            |
+| Candidate 3 training                 | Completed 1,536 fixed updates; all 252 TRAIN cases meet the fixed cutoff; adapter reload delta zero; separate F16 export recorded                                     | Complete TRAIN fit establishes memorization on training cases; native generalization is measured separately. |
+| Candidate 3 native bridge validation | All 144 eligible calls answered; six unsafe allows, five safety regressions, and 19 safe-case interruptions versus baseline 3; warm p95 213.736 ms                    | Rejected by safety and usability gates; no freeze or held-out model calls.                                   |
+| Candidate 3 actual native SDK        | Off/shadow each executed nine operations, preserved one exact block, and used three confirmations and three grants; shadow answered all eight semantic calls          | Actual shadow fixture behavior only; unqualified candidate does not execute the enforce arm.                 |
 
 Candidate 2's native validation found zero unsafe allows versus 14 for the
 baseline and preserved exact blocks, but its 75 unnecessary interruptions
@@ -75,15 +77,38 @@ unchanged. The [complete diagnostic receipt](./reports/guardrail-risk-2026-09-21
 records those 18 authored training cases only. This establishes that the
 unchanged pipeline can memorize that subset; no validation, held-out test,
 export, promotion or matched workflow evaluation was performed. Candidate 2's
-failed validation remains the current effectiveness result.
+failed validation remains preserved historical evidence.
 
 Candidate 3's training began at 00:08:08 UTC on 2026-09-22 under prospective
 training plan SHA-256
 `60c50c1c21930ad233f489fce5d7deb98e8caaff2e2302d046c6651c72f736dc`.
-Only optimizer updates change from candidate 2's profile. The completed
-preparation worker was disposed before MLX training. Training completion and
-full TRAIN post-fit results remain pending; no export, native validation,
-held-out qualification or matched workflow result is recorded for candidate 3.
+Only optimizer updates changed from candidate 2's profile. The completed
+preparation worker was disposed before MLX training. The owned run exited zero
+and awaited its children. Mean TRAIN cross-entropy decreased from 4.70918719 to
+0.0000075310; all 252 TRAIN cases had correct argmax and met the fixed runtime
+decision rule, including automatic allows for all 129 safe cases and none of
+the 123 risky cases. Reload probability delta was zero and all 15 frozen
+training source pins matched. The [complete TRAIN receipt](./reports/guardrail-risk-2026-09-21/candidate-3-full-train.json)
+preserves all score vectors. A separately authorized F16 export identifies
+`jev/gemma-3-1b-guardrail-candidate-3`, SHA-256
+`c87022dfe3090765ffbd25d792fb9263bed914f1c37cc090e1130c2987b537be`.
+The default general classifier and model registry are unchanged.
+
+Candidate 3's [actual native SF bridge validation](./reports/guardrail-risk-2026-09-21/candidate-3-sf-bridge-validation.json)
+completed 165 cases / 55 groups with all 144 eligible calls answered and zero
+execution errors. It produced six unsafe automatic allows versus baseline 14,
+five safety regressions, and 19 unnecessary interruptions versus baseline
+three. Exact block demotions were zero. Warm p95 was 213.735667 ms and cold
+initialization was 2,647.130459 ms. The candidate is rejected on three fixed
+gates; lower aggregate unsafe-allow counts do not establish equal-or-better
+safety when five risks caught by the baseline regress to automatic allow. Its training fit did not
+generalize sufficiently. Independent CPU review verified the current
+implementation seal, metrics, model/native identities and all 33 runtime pins.
+The [freeze refusal receipt](./reports/guardrail-risk-2026-09-21/candidate-3-freeze-refusal.json)
+records exit 1 and no output: failed validation prohibits held-out testing.
+No freeze, held-out inference, qualification or promotion occurred. Candidate 4
+TRAIN-only counterfactual diversity preparation remains pending; no result is
+claimed for that future experiment.
 
 An independent CPU comparison of saved batch-loss scalars found exact parity
 for candidate 3's first 256 updates against candidate 2: 256/256 step IDs and
@@ -107,15 +132,29 @@ confirmations and created two grants. All modes executed nine operations and
 preserved one explicit protected-path block, with no unsafe automatic allows,
 fallbacks or retries. The extra enforce prompt occurred when repeating the
 same shell operation. This is observed integration-level approval behavior,
-not local-model effectiveness. The native workflow arm has not executed while
-candidate 3 trains.
+not local-model effectiveness. These scripted results remain a separate
+collector and approval-behavior checkpoint.
+
+The [actual candidate 3 native SDK receipt](./reports/guardrail-risk-2026-09-21/candidate-3-sdk-representative-native.json)
+subsequently completed the same ten operations in off and shadow only. Both
+modes executed nine operations, preserved one exact-policy block, and required
+three confirmations and three session grants, with zero unsafe automatic
+allows, fallbacks, retries or unexpected tool errors. Shadow answered eight
+semantic comparisons and recorded two exact-policy comparisons. The old rule
+engine enforced in both modes, so those matching outcomes establish shadow
+isolation on the fixture. Off did not initialize model weights and took
+23.319 ms total. Shadow separately measured 2,646.484 ms model cold startup,
+1,615.331 ms workflow time and 4,265.249 ms total. SDK setup and scripted user
+selection are accounted for separately. The unqualified candidate did not run
+enforce; no workflow speed benefit or enforce confirmation parity is claimed.
 
 Automatic approval review rejected restoring the baseline's implicit session
 approval option. The conservative current model-confirmation session setting
 therefore remains pending an explicit user decision; source and SDK tests do
 not resolve that product limitation.
 
-Final Jev source checks passed: 1,011 tests across 46 files in 10.44 seconds,
+The recorded full Jev source checkpoint, before the later evaluator seal fixes,
+passed 1,011 tests across 46 files in 10.44 seconds,
 TypeScript/package checks and build, 38 focused guardrail tests across four
 files, and formatting. SF guardrail/runtime checks passed 315 tests; its full
 test-file coverage used appropriate isolated partitions and an unrelated
@@ -139,13 +178,15 @@ isolated CPU regressions reject old freezes/receipts when those peer bytes
 change. The existing validation measurement hash now also includes the current
 criteria/source identity: the expanded regressions first reproduced all three
 old-VALID/fresh-freeze bypasses and now reject those attempts. Four focused
-files passed 41 tests in 1.89 seconds. The cutoff and numeric safety
+files passed 41 tests in 1.89 seconds after those fixes; this focused checkpoint
+is separate from the earlier full suite. The cutoff and numeric safety
 criteria remain unchanged; all 15 candidate 3 frozen training source files
 still match. These are collector and identity checks, not model-quality results.
 Candidate 2's original validation receipt remains byte-identical historical
 evidence, intentionally not verifiable under the current seal; it is not
-resealed and its numeric usability rejection is unchanged. Candidate 3 needs
-fresh validation evidence under the current evaluator.
+resealed and its numeric usability rejection is unchanged. Candidate 3's fresh
+validation evidence uses the current evaluator seal and independently verifies;
+its failed gates prevent a qualification freeze.
 
 The current summary and remaining proof boundaries are maintained in
 [the guardrail evidence report](./reports/guardrail-risk-2026-09-21/README.md).

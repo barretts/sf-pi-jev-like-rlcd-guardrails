@@ -1,13 +1,15 @@
 # Guardrail risk replacement evidence, 2026-09-21
 
-This report separates source/interface proof, actual Pi SDK execution with mocks,
-RFDT training, native candidate qualification and production acceptance. The
-candidate 2 is **rejected and unqualified**. Its real native SF bridge validation
-completed with zero unsafe allows and warm p95 208.353 ms, but produced 75
-unnecessary interruptions versus three for the baseline. This fails the
-equal-or-better usability requirement. Optimizer updates, checkpoint checks,
-exact adapter reload and separate F16 export completed. No improvement,
-held-out qualification or production acceptance claim is made here.
+This report separates source/interface proof, Pi SDK execution with scripted
+or actual native inference, RFDT training, qualification and production
+acceptance. Candidate 3 is **rejected and unqualified**: all 252 TRAIN cases fit
+the fixed cutoff, but real native SF bridge validation produced six unsafe
+automatic allows, five safety regressions and 19 unnecessary interruptions
+versus baseline three. All 144 eligible calls completed and warm p95 was
+213.736 ms. Candidate 2's earlier usability rejection is preserved separately.
+The actual candidate 3 SDK off/shadow fixture completed with matching approval
+and execution outcomes while the old engine enforced. No qualified enforce,
+improvement, held-out qualification or production acceptance claim is made.
 
 The isolated worktrees use `barretts/jev-guardrail-risk`: Jev at
 `/private/tmp/simple-jev-ts-guardrail-risk-20260921`, based on `95c0b50`, and sf-pi
@@ -57,10 +59,11 @@ execution, produced 30 unsafe allows and 17 unnecessary interruptions: 47
 disagreements with the fixed gold rubric. All exact-policy floor outputs matched
 gold. These numbers describe this finite authored corpus only.
 
-| Candidate   | Observed training status                                                                                                                                  | Selection/qualification                                                                          |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Candidate 1 | Stopped at update 42/256 after review found two incomplete Data 360 rehearsal parameter sets. The old corpus, plan and abandonment receipt are preserved. | Abandoned; no held-out model calls.                                                              |
-| Candidate 2 | Fresh pinned Google base; corrected corpus; all 256 planned updates and checkpoint/reload checks completed. Separate F16 export recorded.                 | Native validation complete; rejected by usability gate; no prospective freeze or held-out calls. |
+| Candidate   | Observed training status                                                                                                                                  | Selection/qualification                                                                                                      |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Candidate 1 | Stopped at update 42/256 after review found two incomplete Data 360 rehearsal parameter sets. The old corpus, plan and abandonment receipt are preserved. | Abandoned; no held-out model calls.                                                                                          |
+| Candidate 2 | Fresh pinned Google base; corrected corpus; all 256 planned updates and checkpoint/reload checks completed. Separate F16 export recorded.                 | Native validation complete; rejected by usability gate; no prospective freeze or held-out calls.                             |
+| Candidate 3 | Same original base, inputs and profile; all 1,536 planned updates completed; all 252 TRAIN cases fit the fixed cutoff; separate F16 export recorded.      | Native validation rejected on unsafe allows, safety regressions and benign interruptions; freeze refused; no held-out calls. |
 
 Candidate 2's training loss decreased from 4.7091871897 to 0.6262149849; the
 adapter changed and reload maximum probability delta was zero. Training-phase
@@ -126,10 +129,61 @@ worker. It retains the same inputs and profile, changing fixed updates from
 256 to 1,536. The prospective training plan at
 `.build/guardrail/candidate-3/prospective-plan.json` has SHA-256
 `60c50c1c21930ad233f489fce5d7deb98e8caaff2e2302d046c6651c72f736dc`.
-The owner journal and worker progress confirm training is in progress.
-Completion and full TRAIN per-case post-fit evaluation are pending before any
-export. Training, validation, held-out and matched workflow results remain
-unset; selection and qualification still require the unchanged gates.
+The owned helper exited zero and awaited its children. The training phase took
+4,830.391436 seconds; mean TRAIN cross-entropy decreased from 4.7091871897 to
+0.0000075310. Adapter reload maximum probability delta was zero. The full
+post-fit saved-adapter evaluation classified 252/252 TRAIN cases correctly and
+met the runtime rule for every case: all 129 safe cases automatically allowed
+at the unchanged 0.99 cutoff and none of the 123 risky cases automatically
+allowed. All 252 correct-class margins exceeded ln(99); the minimum safe margin
+was 8.31249964 and maximum risky margin was -8.18749958. The independent root
+review verified all 15 frozen training source pins and the original base.
+
+The [complete candidate 3 TRAIN receipt](./candidate-3-full-train.json) retains
+all 252 selected-label score vectors, authored targets, per-case margins and
+source-report identities. Source full-TRAIN evaluation SHA-256 is
+`0af4379d9e29e147d18c7f5631e6b83abc2d7ea1de9d4958cbc9c81a3e4a7d66`;
+the compact tracked receipt's SHA-256 is
+`02148433f51d0982cedf34fb479eeb4c3f6549c61bef0dbe4957d62fd00a03c1`.
+This establishes TRAIN fit, not sufficient native generalization. A separately
+authorized export after that diagnosis identifies
+`jev/gemma-3-1b-guardrail-candidate-3`, SHA-256
+`c87022dfe3090765ffbd25d792fb9263bed914f1c37cc090e1130c2987b537be`,
+2,006,573,408 bytes, in a separate candidate registry with no qualification.
+
+The [complete candidate 3 native bridge validation receipt](./candidate-3-sf-bridge-validation.json)
+contains all 165 validation records / 55 groups through the actual SF bridge
+and local Jev worker. The facts remain authored fixtures and dangerous tools
+were not executed. All 144 eligible calls answered with zero execution errors;
+fallback did not conceal a failure.
+
+| Validation criterion        | Candidate 3 | Baseline / requirement         | Result   |
+| --------------------------- | ----------: | ------------------------------ | -------- |
+| Unsafe automatic allows     |           6 | Baseline 14; required 0        | **Fail** |
+| Existing safety regressions |           5 | Required 0                     | **Fail** |
+| Exact hard-block demotions  |           0 | Required 0                     | Pass     |
+| Unnecessary interruptions   |          19 | Baseline 3; required at most 3 | **Fail** |
+| Warm risk-check p95, ms     |  213.735667 | Required at most 500           | Pass     |
+| Eligible calls answered     |   144 / 144 | Every eligible call            | Pass     |
+| Execution errors/fallbacks  |           0 | Required 0                     | Pass     |
+
+Cold initialization was 2,647.130459 ms, separate from warm risk checks. Raw
+validation SHA-256 is
+`efd12e445ad5fad473c90337b4154e69ec1e802f5c5d8c032ad633a9b79d4126`;
+measurement SHA-256 is
+`520e6bca0a4be0bb24337615de8e583b5eb21db8b5bb7596218de5b42d397999`.
+The ledger records the distinct compact physical hash and current criteria,
+native binary, protocol, corpus and runtime identities. Independent CPU review
+verified the original current implementation seal, metrics/gates and all 33
+runtime pins. The [freeze refusal receipt](./candidate-3-freeze-refusal.json)
+records expected CLI exit 1, “Candidate failed validation; held-out testing is
+prohibited,” and no freeze output before or after. This is fail-closed proof,
+not qualification. Six unsafe allows and five regressions preclude an
+equal-or-better claim even though aggregate unsafe allows are below the
+baseline. The 16 correctly resolved disagreements do not establish overall
+improvement. The failed candidate is neither frozen nor promoted; no held-out
+model inference occurred. Candidate 4 TRAIN-only counterfactual diversity
+preparation remains pending, with scoring and qualification criteria unchanged.
 
 The saved-scalar CPU parity receipt
 `.build/guardrail/candidate-3/initial-256-parity-receipt.json`, observed at
@@ -140,7 +194,7 @@ Its first 256 candidate 3 step IDs and TRAIN batch losses match candidate 2
 prepared TRAIN input hashes match. An independent CPU replay checked those
 scalars and all seven bound plan/input hashes, without model calls or held-out
 data. This supports reproducibility of the unchanged training profile only;
-candidate 3's completion and all effectiveness results remain pending.
+later TRAIN completion and native validation rejection are separate receipts.
 
 Candidate 2's preparation binds the original bundle SHA-256
 `6381f6dc8c94de22105a417d95265a90ec798a3c36d18784f61a1c04c06dbc83` and its then-current
@@ -152,7 +206,8 @@ the preparation identity is retained as history rather than overwritten.
 
 Source tests cover provider discovery, strict input/response checks, failure
 fallback, cancellation, qualification tampering, changed identities, worker
-lifecycle and approval behavior. Final Jev source checks passed 1,011 tests
+lifecycle and approval behavior. The recorded full Jev source checkpoint before
+the later evaluator seal fixes passed 1,011 tests
 across 46 files in 10.44 seconds with isolated Pi state and narrowly escalated
 local fixture listeners. TypeScript/package checks, build, 38 focused guardrail
 tests across four files and formatting also passed. SF guardrail/runtime checks
@@ -216,9 +271,8 @@ This establishes the scripted fixture's approval limitation, not real-model
 workflow effectiveness. Source checks passed seven tests with one native test
 skipped; an independent CPU review reproduced seven passes/one skip, and
 TypeScript/file-level ESLint passed. The earlier 315-test SF checkpoint preceded
-this addition and is not increased into a new global total. The native SDK
-workflow arm has not executed while candidate 3 trains; real-model workflow
-results remain unset. All timings above describe scripted inference.
+this addition and is not increased into a new global total. All timings above
+describe scripted inference; the later genuine native SDK run is separate.
 
 The latest collector additionally verifies exactly eight answered semantic
 comparisons with `source: jev` and two exact-policy comparisons for shadow and
@@ -227,7 +281,37 @@ order. The workflow definition remains frozen and unchanged. The complete
 tracked scripted receipt is refreshed; its physical hash and the earlier
 representative checkpoint's hash remain separate ledger entries. Final source
 checks again passed seven tests with one native skip, TypeScript, file-level
-ESLint and formatting. Those assertions do not execute the native arm.
+ESLint and formatting. Those scripted assertions did not execute the native arm.
+
+The [actual candidate 3 native SDK receipt](./candidate-3-sdk-representative-native.json)
+subsequently ran the same frozen ten operations in off and shadow modes through
+the actual Pi SDK with genuine local Jev inference. It uses scripted
+assistant/user choices, mocked org observations and counter-only tools; no
+external operation executes. The selected native test passed, with seven
+other tests skipped by selection. Off expects zero model calls and never
+initializes weights. Shadow verified eight answered semantic model comparisons
+and two exact-policy comparisons with matching source, version, mode, tool,
+input identity and delivery order.
+
+| Mode   | Executed operations | Confirmations | Session grants | Exact blocks | Unsafe allows | Fallbacks / retries | SDK setup ms |   Model cold ms | Workflow ms |  Total ms |
+| ------ | ------------------: | ------------: | -------------: | -----------: | ------------: | ------------------- | -----------: | --------------: | ----------: | --------: |
+| Off    |                   9 |             3 |              3 |            1 |             0 | 0 / 0               |       13.314 | Not initialized |       9.956 |    23.319 |
+| Shadow |                   9 |             3 |              3 |            1 |             0 | 0 / 0               |        3.350 |       2,646.484 |   1,615.331 | 4,265.249 |
+
+Each mode recorded one tool error corresponding to the expected exact block,
+with zero unexpected errors. The old engine enforces both modes, so matching
+outcomes establish that shadow comparisons did not change this fixture's
+approvals or execution. Warm workflow elapsed time includes its eight native
+checks and host/SDK work; model cold initialization is separate. Scripted user
+choices add no human deliberation time. The unqualified candidate did not run
+the enforce arm, and its enforcement comparison is null. This proves native
+shadow operation and measures local overhead; it establishes no workflow
+speed benefit, enforce confirmation parity or production acceptance.
+Raw SDK report SHA-256 is
+`04d8756dc4fbb04a8f78773fce9e0c18a62acd7ca5207af93e4d5c830b71fd9d`;
+the compact tracked copy's SHA-256 is
+`974f3e33f58942271ccd5b16efaa2c388496f7e9a5ebe8bc8c838703cc7ef78c`.
+The scripted receipts and prior two-operation SDK checkpoint remain preserved.
 
 The qualification evaluator also binds backend, model-artifact and
 guardrail-extension peer bytes through its existing implementation hash.
@@ -239,7 +323,8 @@ they now reject fresh freezes from old VALID, old freezes and old sealed TEST
 receipts. This adds no report schema field or numeric criterion. A synthetic
 backend mapping inversion changes allow
 to confirm without changing prompt/model/native identities. Four focused
-files passed 41 tests in 1.89 seconds; TypeScript check/build and owned-file
+files passed 41 tests in 1.89 seconds after the fixes, separately from the
+earlier full-suite checkpoint; TypeScript check/build and owned-file
 format/source whitespace checks passed. All 15 candidate 3 frozen training
 source files still match their prospective plan. Compiled criteria SHA-256 is
 `b7147735bc3c2c2dc5fd00b61d1abfc1c3a66888213d5f37dc1c790ba791c8b7`.
@@ -248,7 +333,8 @@ binding before future validation; it supplies no model-effectiveness claim.
 Candidate 2's original validation receipt remains byte-identical with its
 historical seal, intentionally not verifiable under the current evaluator.
 It is not resealed; the numeric usability rejection and no-freeze/no-held-out
-status remain intact. Candidate 3 must use fresh validation evidence and seal.
+status remain intact. Candidate 3's fresh validation uses the current seal and
+independently verifies; its failed gates prohibit qualification freezing.
 
 The identical-operation SDK workflow does not establish session-approval prompt
 parity for changed related operations. Current model-derived grants bind to an
@@ -271,9 +357,9 @@ are frozen before any held-out model inference. A failed gate rejects the
 candidate and preserves the current engine.
 
 [evidence.json](./evidence.json) contains the compact checkpoint ledger. The
-candidate's failed validation and separate cold initialization are recorded;
-held-out results and real-model matched workflows remain unset until their
-authoritative receipts exist. Large raw runs, adapters and weights remain
+candidate's failed validation, full TRAIN fit, actual native off/shadow fixture
+and separate cold initialization are recorded. Held-out results and qualified
+real-model enforce workflows remain unset. Large raw runs, adapters and weights remain
 under ignored `.build/guardrail/`; no raw weights are part of this report.
 
 Runtime defaults to `off`; `shadow` records comparisons while the original

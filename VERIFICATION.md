@@ -69,9 +69,34 @@ branches. Its original-base training started at 00:08:08 UTC on 2026-09-22,
 with unchanged inputs and profile and 1,536 fixed updates. The prospective
 training plan SHA-256 is
 `60c50c1c21930ad233f489fce5d7deb98e8caaff2e2302d046c6651c72f736dc`.
-The preparation worker was disposed before MLX training. Full TRAIN per-case
-post-fit evaluation is pending before any export. Training, validation,
-held-out and workflow results remain unset; training start is not qualification.
+The preparation worker was disposed before MLX training. The owned helper
+completed with exit zero and awaited its children. All 1,536 updates completed;
+mean TRAIN cross-entropy decreased from 4.70918719 to 0.0000075310. The full
+post-fit adapter evaluation classified 252/252 TRAIN cases correctly, allowed
+all 129 safe cases at the fixed 0.99 cutoff, and allowed none of the 123 risky
+cases. All correct-class margins exceeded ln(99); minimum safe margin was
+8.31249964 and maximum risky margin was -8.18749958. Reload delta was zero,
+all 15 frozen source pins matched, and the original base was preserved. The
+[complete TRAIN receipt](./reports/guardrail-risk-2026-09-21/candidate-3-full-train.json)
+retains all 252 score vectors and the source-report identities. These are
+TRAIN fit and checkpoint results, separate from native generalization.
+
+A separately authorized F16 export uses the separate candidate registry with
+model ID `jev/gemma-3-1b-guardrail-candidate-3`, SHA-256
+`c87022dfe3090765ffbd25d792fb9263bed914f1c37cc090e1130c2987b537be`,
+2,006,573,408 bytes. The [actual SF bridge validation receipt](./reports/guardrail-risk-2026-09-21/candidate-3-sf-bridge-validation.json)
+contains all 165 validation records / 55 groups. Every eligible call answered
+(144/144), with zero execution errors/fallbacks and zero hard-block demotions.
+Warm p95 was 213.735667 ms; cold initialization was 2,647.130459 ms.
+Six unsafe automatic allows, five safety regressions, and 19 unnecessary
+interruptions versus baseline three failed three fixed gates. Candidate 3 is
+**rejected and unqualified**; successful TRAIN fit does not establish sufficient
+generalization. Independent CPU review verified the original current seal,
+metrics/gates, model/native identities and all 33 runtime source pins. The
+[freeze refusal receipt](./reports/guardrail-risk-2026-09-21/candidate-3-freeze-refusal.json)
+records expected CLI exit 1, the failed-validation prohibition on held-out
+testing, and no freeze output. No held-out model call or promotion occurred.
+Candidate 4 TRAIN-only counterfactual diversity preparation remains pending.
 
 The CPU-only initial-256 parity receipt at
 `.build/guardrail/candidate-3/initial-256-parity-receipt.json` has SHA-256
@@ -80,11 +105,13 @@ Independent replay compared all 256 overlapping step IDs and recorded TRAIN
 batch losses against candidate 2, matching 256/256 exactly with maximum
 absolute difference zero. All seven bound plan/input-file hashes matched;
 authored and prepared TRAIN inputs are unchanged. This is saved-scalar
-reproducibility evidence using no extra model calls or held-out data. Candidate
-3 is still training and no effectiveness or qualification result follows.
+reproducibility evidence using no extra model calls or held-out data. The later
+completed training and failed native validation are separate observations;
+the matching initial losses do not establish qualification.
 
 The initial interface draft passed 24 focused Jev tests and 46 focused sf-pi
-tests. Final Jev source checks passed 1,011 tests across 46 files in 10.44 seconds,
+tests. The recorded full Jev source checkpoint before the later evaluator seal
+fixes passed 1,011 tests across 46 files in 10.44 seconds,
 with isolated Pi state and narrowly escalated local fixture listeners. The
 TypeScript/package checks, build, 38 focused guardrail tests across four files
 and formatting also passed. SF guardrail/runtime checks passed 315 tests (one
@@ -133,7 +160,7 @@ one explicit protected-path block and recorded zero unsafe automatic allows,
 fallbacks, retries and unexpected tool errors. The extra enforce prompt was a
 repeat of the identical shell operation, exposing the conservative session
 setting's approval limitation. Scripted timings and predictions remain mock
-evidence; the native workflow arm has not executed while candidate 3 trains.
+evidence, separate from the subsequent actual native SDK fixture.
 The workflow definition SHA-256 is
 `0039df8fc5568b3be141f4f28f253b7f32e429019e3b4e288cb42029f56e7fc4`.
 The new SDK test file passed seven tests with one native test skipped; an
@@ -149,6 +176,21 @@ collector proof. The definition SHA-256 is unchanged. The latest source test
 still passed seven tests with one native skip, plus TypeScript, file-level lint
 and formatting. This remains scripted SDK evidence.
 
+The [actual candidate 3 native SDK receipt](./reports/guardrail-risk-2026-09-21/candidate-3-sdk-representative-native.json)
+uses genuine local Jev inference with the actual Pi `AgentSession.prompt` and
+`ExtensionRunner`, scripted choices, authored org facts and counter-only tools.
+The selected native test passed, with seven other tests skipped by selection.
+Off and shadow each executed nine operations, preserved one expected protected
+block, required three confirmations and three grants, and recorded no unsafe
+automatic allows, fallback, retries or unexpected errors. Shadow answered all
+eight semantic calls and recorded both exact-policy comparisons; off expected
+zero model calls and never initialized weights. Off setup/workflow/total were
+13.313625 / 9.956083 / 23.318750 ms. Shadow setup/model cold/workflow/total were
+3.350458 / 2,646.483750 / 1,615.331084 / 4,265.249375 ms. The rule engine
+enforced both modes. This proves shadow isolation and measures local native
+overhead on this authored fixture; an unqualified model did not execute
+enforce, and no workflow improvement or production acceptance is established.
+
 The evaluator's implementation byte-binding additionally covers the backend,
 model-artifact and guardrail-extension peers, using the corresponding `.ts`
 or `.js` source form. Three isolated-copy CPU regressions reject an old freeze
@@ -160,7 +202,8 @@ from old VALID, old freezes and old sealed TEST receipts. No report schema
 field or numeric criterion was added. A synthetic copied-backend mapping
 inversion changes allow to confirm while retaining prompt/model/native
 identities, demonstrating why those client bytes must be bound. Four focused
-files passed 41 tests in 1.89 seconds; TypeScript check/build and owned-file
+files passed 41 tests in 1.89 seconds after the fixes, separately from the
+earlier full-suite checkpoint; TypeScript check/build and owned-file
 formatting/source whitespace checks passed. All 15 candidate 3 frozen training
 source files remain unchanged. Compiled criteria SHA-256 is
 `b7147735bc3c2c2dc5fd00b61d1abfc1c3a66888213d5f37dc1c790ba791c8b7`;
@@ -169,8 +212,8 @@ does not establish model quality, workflow benefit or held-out qualification.
 Candidate 2's preserved validation receipt retains its original historical
 seal, intentionally not current-verifiable. No resealing occurred; its
 numeric usability rejection and no-freeze/no-held-out status are unchanged.
-Candidate 3's future validation must create a fresh seal under the current
-evaluator.
+Candidate 3's fresh validation receipt uses the current seal and was
+independently verified; its failed gates prohibit freezing and held-out testing.
 
 The SDK workflow repeats an identical operation. It does not establish prompt
 parity when related operation payloads change: current model-derived session
