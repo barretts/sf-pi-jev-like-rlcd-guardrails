@@ -146,6 +146,8 @@ def validate_c10_checkpoint(plan: dict, receipt: dict, launch: dict) -> None:
     if worker.sha256(campaign_path) != C10_CAMPAIGN_SHA256:
         raise ValueError("C10 campaign changed")
     campaign = document(campaign_path)
+    if launch.get("code_sha256", {}).get("gemma3_fp32.py") != worker.cuda_local_architecture()["helper_sha256"]:
+        raise ValueError("C10 local FP32 architecture helper differs from staged code provenance")
     objective_path = campaign_path.parent.parent / "candidate9/objective-plan-B.json"
     if worker.sha256(objective_path) != cuda_worker.PLAN_SHA256 or plan.get("objective") != document(objective_path):
         raise ValueError("Frozen C10 objective definition changed")
@@ -241,6 +243,7 @@ def run(args: argparse.Namespace) -> dict:
                 "cuda_receipt_sha256": args.receipt_sha256, "cuda_source": receipt, "qualified": False}
     if plan.get("experiment") == "candidate10":
         manifest["local_precision"] = C10_PRECISION
+        manifest["local_architecture"] = worker.cuda_local_architecture()
         manifest["cuda_campaign_sha256"] = C10_CAMPAIGN_SHA256
     worker.write_json(output / "rfdt-manifest.json", manifest)
     rows = worker.read_rows(data, "train")
@@ -265,7 +268,8 @@ def run(args: argparse.Namespace) -> dict:
               "cross_backend_equivalence": comparison}
     if plan.get("experiment") == "candidate10":
         result.update({"cuda_campaign_sha256": C10_CAMPAIGN_SHA256,
-                       "checkpoint_step": plan["steps"], "local_precision": C10_PRECISION})
+                       "checkpoint_step": plan["steps"], "local_precision": C10_PRECISION,
+                       "local_architecture": worker.cuda_local_architecture()})
     worker.write_json(output / "cuda-import-report.json", result)
     return result
 

@@ -396,6 +396,33 @@ def validate_architecture(config: dict[str, Any]) -> None:
         raise ValueError("RFDT starts from the unquantized Google checkpoint")
 
 
+def cuda_local_architecture() -> dict[str, str]:
+    helper = Path(__file__).with_name("gemma3_fp32.py")
+    if not helper.is_file() or helper.is_symlink():
+        raise ValueError("C10 FP32 architecture helper must be a regular file")
+    return {"kind": "hf_fp32_embedding_scale", "helper_sha256": sha256(helper),
+            "embedding_scale_policy": "sqrt_hidden_size_in_fp32"}
+
+
+def install_cuda_local_architecture(model: Any, manifest: dict[str, Any]) -> None:
+    if manifest.get("local_precision") is None:
+        if "local_architecture" in manifest:
+            raise ValueError("Local architecture requires a validated C10 precision profile")
+        return
+    precision = manifest["local_precision"]
+    if (precision != {"base": "float32", "lora": "float32", "attention": "eager", "tf32": False}
+            or manifest.get("cuda_campaign_sha256") != "64ee24b219d43eacbcad725720b42835cd23b083a9bf337661ac088fee538edf"
+            or manifest.get("provenance", {}).get("training_backend") != "torch_cuda"
+            or manifest.get("cuda_source", {}).get("source", {}).get("precision") != precision
+            or manifest.get("cuda_source", {}).get("source", {}).get("campaign_sha256") != manifest.get("cuda_campaign_sha256")
+            or manifest.get("cuda_source", {}).get("saved_adapter_reload", {}).get("ok") is not True):
+        raise ValueError("Unrecognized local CUDA precision profile")
+    if manifest.get("local_architecture") != cuda_local_architecture():
+        raise ValueError("C10 local architecture descriptor or helper checksum changed")
+    from gemma3_fp32 import install_fp32_embedding_scale
+    install_fp32_embedding_scale(model)
+
+
 def load_model(model_dir: Path, adapter: Path | None = None) -> tuple[Any, Any, dict[str, Any]]:
     from mlx_lm import load
 
@@ -403,6 +430,9 @@ def load_model(model_dir: Path, adapter: Path | None = None) -> tuple[Any, Any, 
     validate_architecture(config)
     manifest = validate_adapter(adapter) if adapter is not None else None
     precision = manifest.get("local_precision") if manifest else None
+    if manifest and ("local_architecture" in manifest or precision is not None):
+        if manifest.get("local_architecture") != cuda_local_architecture() or precision is None:
+            raise ValueError("C10 local architecture descriptor or helper checksum changed")
     if precision is not None:
         if (precision != {"base": "float32", "lora": "float32", "attention": "eager", "tf32": False}
                 or manifest.get("cuda_campaign_sha256") != "64ee24b219d43eacbcad725720b42835cd23b083a9bf337661ac088fee538edf"
@@ -424,6 +454,7 @@ def load_model(model_dir: Path, adapter: Path | None = None) -> tuple[Any, Any, 
         # Expand every floating base tensor BEFORE constructing LoRA modules.
         model.update(tree_map(lambda p: p.astype(mx.float32) if mx.issubdtype(p.dtype, mx.floating) else p,
                               model.parameters()))
+        install_cuda_local_architecture(model, manifest)
         load_adapters(model, str(adapter))
     return model, tokenizer, config
 
@@ -1134,6 +1165,7 @@ def fuse_with_progress(args: argparse.Namespace, progress: MemoryProgress) -> di
     # Expand the base before adding LoRA deltas so BF16 rounding cannot erase
     # small trained updates. llama.cpp performs the final explicit F16 conversion.
     model.update(tree_map(lambda parameter: parameter.astype(mx.float32) if mx.issubdtype(parameter.dtype, mx.floating) else parameter, model.parameters()))
+    install_cuda_local_architecture(model, manifest)
     load_adapters(model, str(adapter))
     linears = [(name, module.fuse(dequantize=True)) for name, module in model.named_modules() if hasattr(module, "fuse")]
     if len(linears) != 52:

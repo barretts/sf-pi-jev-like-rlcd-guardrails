@@ -54,7 +54,8 @@ def c10_receipts(step=128):
     launch["stop_total_dedicated_bytes"] = 16_000_000_000
     launch.update({"worker_sha256": plan["source_sha256"], "rfdt_contract_sha256": plan["contract_sha256"],
         "objective_worker_sha256": plan["objective_worker_sha256"],
-        "campaign_sha256": bridge.C10_CAMPAIGN_SHA256})
+        "campaign_sha256": bridge.C10_CAMPAIGN_SHA256,
+        "code_sha256": {"gemma3_fp32.py": bridge.worker.cuda_local_architecture()["helper_sha256"]}})
     return args
 
 
@@ -127,6 +128,8 @@ class CudaImportTests(unittest.TestCase):
                            ("objective_worker_sha256", "f" * 64), ("contract_sha256", "f" * 64)):
             args = c10_receipts(); args[0][key] = value; args[1]["source"] = copy.deepcopy(args[0])
             with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+        args = c10_receipts(); args[4]["code_sha256"]["gemma3_fp32.py"] = "f"*64
+        with self.assertRaises(ValueError): bridge.validate_receipts(*args)
         args = c10_receipts(); args[0]["objective"]["loss"]["margin"] = 999
         args[1]["source"] = copy.deepcopy(args[0])
         with self.assertRaises(ValueError): bridge.validate_receipts(*args)
@@ -185,10 +188,12 @@ class CudaImportTests(unittest.TestCase):
         fake_lm = types.ModuleType("mlx_lm"); fake_lm.load = load
         fake_tuner = types.ModuleType("mlx_lm.tuner.utils")
         fake_tuner.load_adapters = lambda *args: events.append(("adapters", args[1]))
-        modules = {"mlx": types.ModuleType("mlx"), "mlx.core": fake_mx, "mlx.utils": fake_utils,
+        fake_architecture = types.ModuleType("gemma3_fp32")
+        fake_architecture.install_fp32_embedding_scale = lambda value: events.append(("architecture", value))
+        modules = {"gemma3_fp32": fake_architecture,"mlx": types.ModuleType("mlx"), "mlx.core": fake_mx, "mlx.utils": fake_utils,
             "mlx_lm": fake_lm, "mlx_lm.tuner": types.ModuleType("mlx_lm.tuner"),
             "mlx_lm.tuner.utils": fake_tuner}
-        manifest = {"local_precision": bridge.C10_PRECISION, "cuda_campaign_sha256": bridge.C10_CAMPAIGN_SHA256,
+        manifest = {"local_architecture": bridge.worker.cuda_local_architecture(), "local_precision": bridge.C10_PRECISION, "cuda_campaign_sha256": bridge.C10_CAMPAIGN_SHA256,
                     "provenance": {"training_backend": "torch_cuda"},
                     "cuda_source": {"source": {"precision": bridge.C10_PRECISION,
                         "campaign_sha256": bridge.C10_CAMPAIGN_SHA256}, "saved_adapter_reload": {"ok": True}}}
@@ -197,7 +202,16 @@ class CudaImportTests(unittest.TestCase):
                 patch.object(bridge.worker, "validate_adapter", return_value=manifest):
             base = Path(path); (base / "config.json").write_text("{}")
             bridge.worker.load_model(base, base / "adapter")
-        self.assertEqual([event[0] for event in events], ["load", "cast", "update", "adapters"])
+            for change in ("helper_sha256", "embedding_scale_policy", "kind"):
+                invalid = copy.deepcopy(manifest); invalid["local_architecture"][change] = "invalid"
+                with patch.object(bridge.worker, "validate_adapter", return_value=invalid):
+                    with self.assertRaises(ValueError): bridge.worker.load_model(base, base / "adapter")
+            with patch.object(bridge.worker, "validate_adapter", return_value={}):
+                original_events = list(events); events.clear()
+                bridge.worker.load_model(base, base / "adapter")
+                self.assertEqual(events, [("load", str(base / "adapter"))])
+                events[:] = original_events
+        self.assertEqual([event[0] for event in events], ["load", "cast", "update", "architecture", "adapters"])
         self.assertIsNone(events[0][1])
         self.assertEqual(events[1][1], "fp32")
 
