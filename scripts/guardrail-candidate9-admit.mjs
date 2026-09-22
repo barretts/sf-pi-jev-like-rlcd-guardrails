@@ -456,10 +456,13 @@ if (values["overlap-receipt"]) {
         sha(outputFiles["calibration.jsonl"]) &&
       overlap.frozenSources?.c9BlindValidSha256 === blindValid.sourceSha256 &&
       overlap.sourceCommits?.c9BlindValid === blindValid.commit &&
-      ["exact", "same_skeleton", "same_controlled_change"].every(
-        (category) =>
-          !overlap.independentlyReviewedTrainGroups?.[category]?.length,
-      ),
+      overlap.caseCounts?.c9Fit === fitRows.length &&
+      overlap.caseCounts?.c9Calibration === calRows.length &&
+      overlap.caseCounts?.c9BlindValid === 160 &&
+      ["exact", "same_skeleton", "same_controlled_change"].every((category) => {
+        const groups = overlap.independentlyReviewedTrainGroups?.[category];
+        return Array.isArray(groups) && groups.length === 0;
+      }),
     "Independent overlap audit does not accept this exact frozen split",
   );
 }
@@ -502,7 +505,7 @@ const admission = {
       outputFiles["calibration-baseline.json"],
     ),
     hostControlsReceiptSha256: sha(controlsReceiptBytes),
-    overlapAuditReceiptSha256: overlapReceiptSha256,
+    overlapReceiptSha256,
     scriptSha256: sha(await readFile(fileURLToPath(import.meta.url))),
   },
   fit: {
