@@ -1,0 +1,25 @@
+{
+  "purpose": "FIT_only_FP32_cross_backend_precision_diagnosis",
+  "qualified": false,
+  "rows": 327,
+  "max_probability_delta": 0.003747487105925429,
+  "max_margin_delta": 0.09470081329345703,
+  "decisive_sign_flips": 0,
+  "max_probability_delta_limit": 0.05,
+  "decisive_margin": 0.5,
+  "precision_comparison_passed": true,
+  "native_export_checked": false,
+  "calibration_admitted": false,
+  "candidate10_training_started_by_this_evidence": false,
+  "files_sha256": {
+    "c9-bf16-failed-equivalence.json": "4311accc96aee83feb78dcb19b8037ef73ff4c2ab2b5354ac4f7511f17f2b576",
+    "cuda-exit.json": "12b34da73b0c67a0319e6eddbd3582af66e3b558b4d44e4a6860e0cec20d726f",
+    "cuda-launch.json": "b36bc2e0cf995dd0036ab159b6c02062cc56b5c376b634381db05c61f5d173f2",
+    "cuda-margins.jsonl": "a35625378a609419c3d10bece01bc75019e3e8e823044162a2894bb857b0477f",
+    "cuda-memory-summary.json": "cdd40d2abdc61332428b31c287e458412d3fba1ad65ea255377fd314ed15acbe",
+    "cuda-receipt.json": "f7ff5cc3e20a1f214ca6feb86a4dd697caa0988dbeba500dbaa9b5a2bc8c290c",
+    "mlx-exit.json": "12b34da73b0c67a0319e6eddbd3582af66e3b558b4d44e4a6860e0cec20d726f",
+    "mlx-margins.jsonl": "c357155c0c6d94fd36c56c474fc36ecaa1933bc6081ba62a372fe44f1bf10836",
+    "mlx-receipt.json": "dfa7a1c3474b8d85b31309ecabf52b2f00efb6ad3459d5c4be5665f7275470f8"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "qualified": false,
+  "purpose": "FIT_only_FP32_precision_diagnosis",
+  "backend": "mlx",
+  "base_precision": "float32",
+  "lora_precision": "float32",
+  "attention": "mlx_default",
+  "tf32": false,
+  "rows": 327,
+  "elapsed_seconds": 47.374339708010666,
+  "data_sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+  "adapter_sha256": "ee16c403001cafb7e5dc72f99908603901146f582ad3d6559cc85a5ba8fbd8db",
+  "source_sha256": "d92644c6362bde7896dc5b78810290a2a8bcd37e347ccffbb06cba7240b0ea55",
+  "memory": {
+    "peak_memory_bytes": 5045561068
+  }
+}
