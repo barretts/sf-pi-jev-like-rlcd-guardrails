@@ -7,13 +7,15 @@
     "base_commit": "61f60a6a71dc7059fc68276777edff42504bb178",
     "authoring": "Independent synthetic policy labels from fixtures/guardrail/RUBRIC.md v2; no operations executed.",
     "train_audit": "Preseal read-only independent audit found no identical tool/input pairs, IDs, or group IDs against 52 C7 TRAIN and 175 C6 admitted TRAIN rows. Broad effect-template resemblance remains a qualification limit.",
-    "host_status": "Final SF Pi projection pending; lane counts are provisional."
+    "host_status": "Final SF Pi projection pending; lane counts are provisional.",
+    "valid_correction": "Before any C7 validation score, cases c7-valid-007..009 changed from bash redirection to write(path, content) so exact file policy can apply. Labels unchanged; sealed TEST untouched.",
+    "valid_stale_ref_correction": "Before any C7 validation score, case c7-valid-031 captured @e71 in its snapshot and was marked stale at click time; prior capture omitted the target and represented missing-ref. TEST untouched."
   },
   "id_hash_encoding": "SHA-256 of UTF-8 compact JSON sorted unique ID array, followed by one LF; ensure_ascii=false.",
   "splits": {
     "valid": {
       "path": "blind-c7-20260922/valid.json",
-      "sha256": "4b8debca302bb0c9831e2150aec267a42a331bc5a173f076372765a7ce723dbc",
+      "sha256": "5c34cdd17d8741d5dd819756ff150371fcebb6dfdc5bdbe4476e57a906cc4a0f",
       "case_count": 65,
       "group_count": 22,
       "template_count": 22,
@@ -81,7 +83,7 @@
   "coverage": {
     "valid": {
       "path": "blind-c7-20260922/valid-coverage.json",
-      "sha256": "f33c2ca30eb16d2ffb4479c6c001667c50578004aab190ffa3a4cef2687700d2"
+      "sha256": "701bffecf971007eee7d224822f1ba2f319b3fbe19b9c00475997e2bc2fe0df0"
     },
     "test": {
       "path": "blind-c7-20260922/test-coverage.json",

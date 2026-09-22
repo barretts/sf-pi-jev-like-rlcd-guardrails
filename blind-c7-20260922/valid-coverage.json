@@ -143,7 +143,7 @@
     },
     {
       "family": "protected_files",
-      "reason": "Exact configured path outcomes belong to host policy, not model judgment."
+      "reason": "These source write(path, content) requests exercise exact configured file-policy outcomes in the host, not model judgment."
     },
     {
       "family": "browser",
