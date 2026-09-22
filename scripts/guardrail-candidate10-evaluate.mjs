@@ -8,7 +8,7 @@
  * The importer local_architecture must bind the FP32 embedding-scale helper.
  * Required files: campaign,admission,fit,cal,baseline,runManifest,importReport,
  * localPrecision,precisionF16,precisionQ8,modelF16,modelQ8,quantizationManifest,quantizerBinary,
- * model,registry,artifact,nativeBinary,localFitMargins,sourceFitMargins,sourceReceipt,adapter.
+ * model,registry,artifact,nativeBinary,localFitMargins,sourceFitMargins,sourceReceipt,adapter,baselineFreeze.
  */
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -27,10 +27,12 @@ import {
   prepareCandidate9CalibrationRows,
 } from "./guardrail-candidate9-cal-score.mjs";
 import { verifyQuantizerRuntime } from "./guardrail-candidate9-cal-cli.mjs";
-import { runCandidate8HostRows } from "./guardrail-candidate8-host-core.mjs";
+import {
+  candidate8OperationSha256,
+  runCandidate8HostRows,
+} from "./guardrail-candidate8-host-core.mjs";
 import {
   createCandidate9ShadowProvider,
-  verifyCandidate9ValidPopulation,
   verifyCandidate9NonModelRoutes,
 } from "./guardrail-candidate9-valid-eval.mjs";
 import { summarizeCandidate9Valid } from "./guardrail-candidate9-valid-score.mjs";
@@ -46,15 +48,20 @@ const fitSha =
 const calSha =
   "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd";
 const baselineSha =
-  "39f5f409a659d4a6bba0b2b1ed3a83df787df709e46f314ebacf883071bc8e12";
-const baselineScriptSha =
-  "46e412b3d6622d129eb3d4be5e95c04cd020fc16f4609d88930f885d1ca07376";
+  "a4d80d4a24a2e0fa047cf3224a3f670c555512556a5fa21f7fd32a8e6bb75b09";
+export const C10_HOST = Object.freeze({
+  commit: "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a",
+  baselineSha256:
+    "0a23e057fb433fc4ee2ecd42465b377c660db5e024b6a406f6994497eba693b2",
+  freezeSha256:
+    "2f0d16ebcf65e1504b5b740215e59f31aa2e45cd45fc8a21212c86c184e2209f",
+});
 const preparedSha =
   "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3";
 const validSeal = {
   source: "d7d532c2712bf699133971cb82b0b0c5f21cbe5362a5edd07171b532a58f072f",
   manifest: C9_CAL_SOURCE_PINS.blindValidManifestSha256,
-  preflight: "e447ad75c256fbc16f24ab8e192ca0e98b968b853d72017ddaa65c92b78f3884",
+  preflight: "5bf72039c1a2881f9bc1fc9a801e5dff734aa38fffc95d8045d5f14405c24784",
 };
 const requiredFiles = [
   "campaign",
@@ -62,6 +69,7 @@ const requiredFiles = [
   "fit",
   "cal",
   "baseline",
+  "baselineFreeze",
   "runManifest",
   "importReport",
   "localPrecision",
@@ -127,7 +135,8 @@ export function validateC10Manifest(manifest) {
     manifest.files.admission.sha256 !== C9_CAL_SOURCE_PINS.admissionSha256 ||
     manifest.files.fit.sha256 !== fitSha ||
     manifest.files.cal.sha256 !== calSha ||
-    manifest.files.baseline.sha256 !== baselineSha
+    manifest.files.baseline.sha256 !== baselineSha ||
+    manifest.files.baselineFreeze.sha256 !== C10_HOST.freezeSha256
   )
     fail(
       "incomplete frozen campaign, runtime, source, artifact, or VALID manifest pins",
@@ -180,7 +189,7 @@ async function capture(manifest) {
     quantization.quantizer?.runtimeLibraryLinks,
   );
   Object.assign(identities, runtime);
-  if (git(manifest.sfPi, "rev-parse", "HEAD") !== C9_CAL_SOURCE_PINS.hostCommit)
+  if (git(manifest.sfPi, "rev-parse", "HEAD") !== C10_HOST.commit)
     fail("host commit changed");
   try {
     git(manifest.sfPi, "diff", "--quiet", "HEAD");
@@ -196,8 +205,7 @@ async function capture(manifest) {
     ).href
   );
   if (
-    host.calculateJevRiskBaselineIdentity().sha256 !==
-    C9_CAL_SOURCE_PINS.baselineSha256
+    host.calculateJevRiskBaselineIdentity().sha256 !== C10_HOST.baselineSha256
   )
     fail("host baseline changed");
   return identities;
@@ -253,16 +261,19 @@ export function selectC10Cutoff(records, baseline) {
     !Array.isArray(records) ||
     records.length !== 42 ||
     new Set(records.map((row) => row.id)).size !== 42 ||
-    baseline?.purpose !== "candidate9_train_cal_baseline_replay" ||
+    baseline?.purpose !== "candidate10_train_cal_baseline_replay" ||
     baseline.modelCalls !== 0 ||
     baseline.qualification !== false ||
     baseline.externalOperationsExecuted !== 0 ||
     baseline.heldOutTestRead !== false ||
-    baseline.baselineSha256 !== C9_CAL_SOURCE_PINS.baselineSha256 ||
+    baseline.baselineSha256 !== C10_HOST.baselineSha256 ||
     baseline.policySha256 !== C9_CAL_SOURCE_PINS.policySha256 ||
     baseline.calibrationCorpusSha256 !== calSha ||
-    baseline.source?.hostCommit !== C9_CAL_SOURCE_PINS.hostCommit ||
-    baseline.source?.scriptSha256 !== baselineScriptSha ||
+    baseline.source?.hostCommit !== C10_HOST.commit ||
+    baseline.source?.authoredC9BaselineReceiptSha256 !==
+      "39f5f409a659d4a6bba0b2b1ed3a83df787df709e46f314ebacf883071bc8e12" ||
+    baseline.source?.prospectiveHostProjectionSha256 !==
+      "0ebac560090502879b94ee770cb240c3f3df82d63284cea173ee2acf0daa87f0" ||
     baseline.records?.length !== 42
   )
     fail("incomplete independent CAL baseline");
@@ -329,6 +340,72 @@ export function selectC10Cutoff(records, baseline) {
     baselineBenignInterruptions: baselineBenign,
   };
 }
+export function verifyCandidate10ValidPopulation(source, manifest, preflight) {
+  if (
+    source?.schema_version !== "c9.1" ||
+    source.split !== "valid" ||
+    source.cases?.length !== 160 ||
+    manifest?.source?.case_count !== 160 ||
+    manifest.source.group_count !== 80 ||
+    preflight?.version !== 1 ||
+    preflight.mode !== "fake-facts-no-model-no-execution" ||
+    preflight.source_sha256 !== validSeal.source ||
+    preflight.manifest_sha256 !== validSeal.manifest ||
+    preflight.host_commit !== C10_HOST.commit ||
+    preflight.host_baseline_sha256 !== C10_HOST.baselineSha256 ||
+    preflight.default_policy_sha256 !== C9_CAL_SOURCE_PINS.policySha256 ||
+    preflight.status?.length !== 160 ||
+    manifest.inventory?.ids?.length !== 160
+  )
+    fail("sealed population or model-free host identity changed");
+  const groups = new Map();
+  const byId = new Map();
+  let prepared = 0;
+  for (let i = 0; i < source.cases.length; i++) {
+    const row = source.cases[i];
+    const status = preflight.status[i];
+    if (
+      !/^c9-valid-\d{3}$/.test(row?.id ?? "") ||
+      row.id !== manifest.inventory.ids[i] ||
+      row.id !== status?.id ||
+      byId.has(row.id) ||
+      row.group_id !== status.group_id ||
+      row.family !== status.family ||
+      row.expected?.decision !== status.expected ||
+      !["allow", "require_approval", "hard_block"].includes(status.expected) ||
+      !["allow", "confirm", "block"].includes(status.baseline_action) ||
+      !["model_prepared", "rules_fallback", "pre_model_fallback"].includes(
+        status.routing,
+      ) ||
+      !hex(status.policy_sha256) ||
+      status.operation_sha256 !== candidate8OperationSha256(row) ||
+      (status.routing === "model_prepared") !== hex(status.risk_input_sha256) ||
+      (status.routing !== "model_prepared" &&
+        status.risk_input_sha256 !== null) ||
+      (status.expected === "hard_block" &&
+        (status.baseline_action !== "block" ||
+          status.routing !== "rules_fallback"))
+    )
+      fail(`source/preflight row changed: ${row?.id ?? i}`);
+    byId.set(row.id, status);
+    groups.set(row.group_id, (groups.get(row.group_id) ?? 0) + 1);
+    if (status.routing === "model_prepared") {
+      prepared++;
+      if (status.policy_sha256 !== C9_CAL_SOURCE_PINS.policySha256)
+        fail(`prepared policy differs from frozen calibration: ${row.id}`);
+    }
+  }
+  if (
+    groups.size !== 80 ||
+    [...groups.values()].some((size) => size !== 2) ||
+    prepared !== 116 ||
+    preflight.status.filter((row) => row.routing === "pre_model_fallback")
+      .length !== 5
+  )
+    fail("complete pair or prepared-call inventory changed");
+  return byId;
+}
+
 export function assertC10ArtifactPaths(descriptor, files) {
   if (
     descriptor.run_manifest !== files.runManifest.path ||
@@ -372,6 +449,16 @@ export async function evaluateC10(manifest, outputDir) {
     failures: [],
   };
   try {
+    const freeze = await json(manifest.files.baselineFreeze);
+    if (
+      freeze.purpose !== "candidate10_prospective_baseline_freeze" ||
+      freeze.host?.commit !== C10_HOST.commit ||
+      freeze.host?.baselineSha256 !== C10_HOST.baselineSha256 ||
+      freeze.host?.policySha256 !== C9_CAL_SOURCE_PINS.policySha256 ||
+      freeze.equivalence?.calibration?.differingCases !== 0 ||
+      freeze.equivalence?.validation?.differingCases !== 0
+    )
+      fail("prospective baseline freeze changed");
     const before = await capture(manifest);
     const campaign = await json(manifest.files.campaign);
     const run = await json(manifest.files.runManifest);
@@ -677,7 +764,7 @@ export async function evaluateC10(manifest, outputDir) {
     const validSource = await json(manifest.valid.source);
     const validManifest = await json(manifest.valid.manifest);
     const preflight = await json(manifest.valid.preflight);
-    const byId = verifyCandidate9ValidPopulation(
+    const byId = verifyCandidate10ValidPopulation(
       validSource,
       validManifest,
       preflight,
@@ -689,8 +776,8 @@ export async function evaluateC10(manifest, outputDir) {
       corpusSha256: validSeal.source,
       manifestSha256: validSeal.manifest,
       preflightSha256: validSeal.preflight,
-      hostCommit: C9_CAL_SOURCE_PINS.hostCommit,
-      hostBaselineSha256: C9_CAL_SOURCE_PINS.baselineSha256,
+      hostCommit: C10_HOST.commit,
+      hostBaselineSha256: C10_HOST.baselineSha256,
       policySha256: C9_CAL_SOURCE_PINS.policySha256,
       modelSha256: artifact.sha256,
       scoringProtocolSha256: sha(

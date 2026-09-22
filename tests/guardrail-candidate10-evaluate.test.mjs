@@ -1,3 +1,4 @@
+import { candidate8OperationSha256 } from "../scripts/guardrail-candidate8-host-core.mjs";
 import { createHash } from "node:crypto";
 import { strict as assert } from "node:assert";
 import test from "node:test";
@@ -8,6 +9,8 @@ import {
   validateC10Manifest,
   evaluateC10,
   assertC10ArtifactPaths,
+  C10_HOST,
+  verifyCandidate10ValidPopulation,
   verifyC10LocalArchitecture,
 } from "../scripts/guardrail-candidate10-evaluate.mjs";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
@@ -24,19 +27,21 @@ const records = () =>
     elapsedMs: 100,
   }));
 const baseline = (rows) => ({
-  purpose: "candidate9_train_cal_baseline_replay",
+  purpose: "candidate10_train_cal_baseline_replay",
   modelCalls: 0,
   qualification: false,
   heldOutTestRead: false,
   externalOperationsExecuted: 0,
-  baselineSha256: C9_CAL_SOURCE_PINS.baselineSha256,
+  baselineSha256: C10_HOST.baselineSha256,
   policySha256: C9_CAL_SOURCE_PINS.policySha256,
   calibrationCorpusSha256:
     "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
   source: {
-    hostCommit: C9_CAL_SOURCE_PINS.hostCommit,
-    scriptSha256:
-      "46e412b3d6622d129eb3d4be5e95c04cd020fc16f4609d88930f885d1ca07376",
+    hostCommit: C10_HOST.commit,
+    authoredC9BaselineReceiptSha256:
+      "39f5f409a659d4a6bba0b2b1ed3a83df787df709e46f314ebacf883071bc8e12",
+    prospectiveHostProjectionSha256:
+      "0ebac560090502879b94ee770cb240c3f3df82d63284cea173ee2acf0daa87f0",
   },
   records: rows.map((row) => ({
     id: row.id,
@@ -156,6 +161,7 @@ function frozenManifest() {
     "fit",
     "cal",
     "baseline",
+    "baselineFreeze",
     "runManifest",
     "importReport",
     "localPrecision",
@@ -186,7 +192,8 @@ function frozenManifest() {
   files.fit.sha256 =
     "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25";
   files.baseline.sha256 =
-    "39f5f409a659d4a6bba0b2b1ed3a83df787df709e46f314ebacf883071bc8e12";
+    "a4d80d4a24a2e0fa047cf3224a3f670c555512556a5fa21f7fd32a8e6bb75b09";
+  files.baselineFreeze.sha256 = C10_HOST.freezeSha256;
   files.cal.sha256 =
     "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd";
   const runtimeNames = [
@@ -231,7 +238,7 @@ function frozenManifest() {
       preflight: {
         path: "/must-not-open-valid/preflight",
         sha256:
-          "e447ad75c256fbc16f24ab8e192ca0e98b968b853d72017ddaa65c92b78f3884",
+          "5bf72039c1a2881f9bc1fc9a801e5dff734aa38fffc95d8045d5f14405c24784",
       },
     },
   };
@@ -360,4 +367,59 @@ test("actual math helper edits are rejected against the frozen runtime identity"
   } finally {
     await rm(temp, { recursive: true, force: true });
   }
+});
+
+test("C10 prospective baseline population admits new host and rejects old host", () => {
+  const cases = Array.from({ length: 160 }, (_, i) => ({
+    id: `c9-valid-${String(i + 1).padStart(3, "0")}`,
+    group_id: `synthetic-${Math.floor(i / 2)}`,
+    family: "synthetic",
+    fixture: { cwd: "/synthetic" },
+    operation: { tool: "bash", input: { command: `printf ${i}` } },
+    expected: { decision: i >= 158 ? "hard_block" : "allow" },
+  }));
+  const status = cases.map((row, i) => ({
+    id: row.id,
+    group_id: row.group_id,
+    family: row.family,
+    expected: row.expected.decision,
+    baseline_action: i >= 158 ? "block" : "allow",
+    operation_sha256: candidate8OperationSha256(row),
+    routing:
+      i < 116
+        ? "model_prepared"
+        : (i >= 155 && i < 158) || i === 152 || i === 153
+          ? "pre_model_fallback"
+          : "rules_fallback",
+    risk_input_sha256: i < 116 ? "a".repeat(64) : null,
+    policy_sha256: C9_CAL_SOURCE_PINS.policySha256,
+  }));
+  const source = { schema_version: "c9.1", split: "valid", cases };
+  const manifest = {
+    source: { case_count: 160, group_count: 80 },
+    inventory: { ids: cases.map((row) => row.id) },
+  };
+  const preflight = {
+    version: 1,
+    mode: "fake-facts-no-model-no-execution",
+    source_sha256:
+      "d7d532c2712bf699133971cb82b0b0c5f21cbe5362a5edd07171b532a58f072f",
+    manifest_sha256: C9_CAL_SOURCE_PINS.blindValidManifestSha256,
+    host_commit: C10_HOST.commit,
+    host_baseline_sha256: C10_HOST.baselineSha256,
+    default_policy_sha256: C9_CAL_SOURCE_PINS.policySha256,
+    status,
+  };
+  assert.equal(
+    verifyCandidate10ValidPopulation(source, manifest, preflight).size,
+    160,
+  );
+  assert.throws(
+    () =>
+      verifyCandidate10ValidPopulation(source, manifest, {
+        ...preflight,
+        host_commit: C9_CAL_SOURCE_PINS.hostCommit,
+      }),
+    /identity changed/,
+  );
 });
