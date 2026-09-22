@@ -34,3 +34,7 @@ node scripts/guardrail-cuda-export-check.mjs \
 ```
 
 This FIT-only check compares native inference at the final exported precision with the local saved-adapter reference, using the same fixed numerical limits. It saves a failing report if inference or equivalence fails. Model qualification still requires the frozen calibration selector, blind validation, selected-candidate freeze, and held-out TEST gates. Enforcement defaults to off and existing rule fallback remains authoritative until qualification passes.
+
+## Implementation validation
+
+The integrated implementation at `dc5428f` passed TypeScript checking, build, formatting, and the full Jev suite: 57 files, 1,109 tests. Five additional Python import tests passed, covering failed/probe runs, changed source identities, absent optimizer placement evidence, memory-limit violations, and fixed numerical comparison limits. The CLI help exposes the import command. These checks establish the implementation contract; acceptance of the actual CUDA adapter and final exported precision requires the separate receipts described above.
