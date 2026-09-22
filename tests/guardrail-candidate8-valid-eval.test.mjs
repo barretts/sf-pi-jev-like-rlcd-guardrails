@@ -128,6 +128,10 @@ test("recorder is an event seam with no tool execution surface", () => {
   recorder.events.on("provider", (request) => seen.push(request));
   recorder.events.emit("provider", { id: 1 });
   assert.deepEqual(seen, [{ id: 1 }]);
+  assert.equal(typeof recorder.on, "function");
+  recorder.on("session_shutdown", () => seen.push({ shutdown: true }));
+  recorder.events.emit("session_shutdown");
+  assert.deepEqual(seen.at(-1), { shutdown: true });
   assert.equal("registerTool" in recorder, false);
 });
 

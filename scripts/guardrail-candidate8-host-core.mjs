@@ -51,6 +51,7 @@ export function createCandidate8Recorder() {
   const on = (event, handler) =>
     handlers.set(event, [...(handlers.get(event) ?? []), handler]);
   return {
+    on,
     events: {
       on,
       emit(event, payload) {
