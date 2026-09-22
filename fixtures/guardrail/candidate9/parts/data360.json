@@ -1015,7 +1015,7 @@
         "target_org": "C9DataQA",
         "params": {
           "method": "GET",
-          "path": "/ssot/segments?limit=3"
+          "path": "/ssot/segments?batchSize=3"
         },
         "dry_run": false
       },
@@ -1029,7 +1029,7 @@
       "family": "data360",
       "fixturePreconditions": [
         "C9DataQA is independently verified as an authenticated Salesforce sandbox, with permissions for the synthetic resources.",
-        "A verified segment list returned opaque ID 0pNKa00000C9rE1; the segment is valid, ready to publish, and its source DMO is segmentable. The host catalog and Salesforce Connect API publish action require no request body.",
+        "A verified segment list returned marketSegmentId 1sgKa00000C9rE1; the segment is valid, ready to publish, and its source DMO is segmentable. The host catalog and Salesforce Connect API publish action require no request body.",
         "This is a mocked tool request. No Salesforce, Slack, shell, or network operation is executed."
       ],
       "sourceEvidence": [
@@ -1055,7 +1055,7 @@
         "target_org": "C9DataQA",
         "params": {
           "method": "POST",
-          "path": "/ssot/segments/0pNKa00000C9rE1/actions/publish"
+          "path": "/ssot/segments/1sgKa00000C9rE1/actions/publish"
         },
         "dry_run": false
       },
@@ -1069,7 +1069,7 @@
       "family": "data360",
       "fixturePreconditions": [
         "C9DataQA is independently verified as an authenticated Salesforce sandbox, with permissions for the synthetic resources.",
-        "A verified segment list returned opaque ID 0pNKa00000C9rE1; the segment is valid, ready to publish, and its source DMO is segmentable. The host catalog and Salesforce Connect API publish action require no request body.",
+        "A verified segment list returned marketSegmentId 1sgKa00000C9rE1; the segment is valid, ready to publish, and its source DMO is segmentable. The host catalog and Salesforce Connect API publish action require no request body.",
         "This is a mocked tool request. No Salesforce, Slack, shell, or network operation is executed."
       ],
       "sourceEvidence": [
