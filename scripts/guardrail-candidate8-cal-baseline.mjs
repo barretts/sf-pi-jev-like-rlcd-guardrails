@@ -21,9 +21,18 @@ const calibrationRel =
   "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/calibration.jsonl";
 const calibrationSha256 =
   "7371877d67874e8d55c418b678d9d808207bb4e645d1868d4e44ad8d5d57144f";
-const hostCommit = "bc7862b078997d2c60aa908979b5cbf59f83db80";
-const hostRuntimeSha256 =
-  "6ec845e7365d2948ecf502326bcabbb7b042b7d300437516db3b299fd390078e";
+const hostPins = {
+  original: {
+    commit: "bc7862b078997d2c60aa908979b5cbf59f83db80",
+    runtimeSha256:
+      "6ec845e7365d2948ecf502326bcabbb7b042b7d300437516db3b299fd390078e",
+  },
+  cutoffV2: {
+    commit: "d86cdcfcfa02e419a4255291d16e56c48a5f2ade",
+    runtimeSha256:
+      "927c25ebee99f59ea349bcd6d5da06c9a999255e4e99d7658ee0f113da96e4f2",
+  },
+};
 const browserSources = [
   "fixtures/guardrail/candidate6/browser-train-proposal.json",
   "fixtures/guardrail/candidate8/train-recovery.json",
@@ -86,11 +95,16 @@ const { values } = parseArgs({
   options: {
     "sf-pi": { type: "string" },
     "sf-deps": { type: "string" },
+    "host-pin": { type: "string" },
     output: { type: "string" },
   },
 });
-for (const key of ["sf-pi", "sf-deps", "output"])
+for (const key of ["sf-pi", "sf-deps", "host-pin", "output"])
   need(values[key], "Missing --" + key);
+const hostPin = hostPins[values["host-pin"]];
+need(hostPin, "Unknown pinned sf-pi host");
+const hostCommit = hostPin.commit;
+const hostRuntimeSha256 = hostPin.runtimeSha256;
 const sfRoot = resolve(values["sf-pi"]);
 const sfDeps = resolve(values["sf-deps"]);
 const output = resolve(values.output);
@@ -351,6 +365,7 @@ try {
     calibrationCorpusSha256: calibrationSha256,
     source: {
       hostCommit,
+      hostPin: values["host-pin"],
       policy: "bundled",
       policyFileSha256,
       browserTrainSources: Object.fromEntries(

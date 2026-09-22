@@ -95,8 +95,16 @@ reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/cal-baseline-bc7862
 Its receipt SHA-256 is
 1687f120545c9670bca7efd6ee08da9b2ad4332be8761cf0e237f10f98232c5e.
 This is a TRAIN-internal baseline, not a model score. The host runtime
-identity will change when the v2 scoring bridge is added; replay this same
-CAL set on that final host before selecting a cutoff.
+identity changed when the v2 scoring bridge was added. The same 47 requests
+were replayed on final bridge commit
+d86cdcfcfa02e419a4255291d16e56c48a5f2ade, runtime SHA-256
+927c25ebee99f59ea349bcd6d5da06c9a999255e4e99d7658ee0f113da96e4f2.
+The v2 receipt is
+reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/cal-baseline-cutoff-v2.json,
+SHA-256
+59e99e7bfbc810a7b86e14a9d09cd11ec12edf3d7c1ed278d0ee5bdf4e3fc93f.
+All 47 input hashes, actions, and routes matched the earlier replay, with
+zero unknown facts. Cutoff selection must pin this later baseline identity.
 
 The committed source-screen and host-preflight receipts plus the
 projected-train.jsonl copy permit a portable admission replay without
