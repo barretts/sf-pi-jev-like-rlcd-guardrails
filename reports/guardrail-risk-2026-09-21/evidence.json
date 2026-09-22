@@ -57,6 +57,22 @@
     "qualifiesBrowserFamily": false,
     "externalBrowserOrSalesforceOperationsExecuted": false
   },
+  "browserGuardPublicClickPrototype": {
+    "checkout": "/private/tmp/agent-browser-guard-public-click",
+    "branch": "barretts/guarded-public-click-prototype",
+    "commit": "1c3874b067c1bdda7dc4151ddfbfb01a09188c41",
+    "nativeInputTestsPassed": 9,
+    "guardedActionTestsPassed": 5,
+    "parserAndBindingTestsPassed": 6,
+    "fullCliSocketDaemonChromeTestsPassed": 1,
+    "oneUseObservationPathImplemented": true,
+    "semanticActionStabilityProven": false,
+    "atomicClickDeliveryProven": false,
+    "futureSfPiIntegrationRequiresPinnedCliOrCapabilityHandshake": true,
+    "integratedIntoSfPi": false,
+    "qualifiesBrowserFamily": false,
+    "SalesforceOperationsExecuted": false
+  },
   "sealedV3BrowserClickOnlyCoverageAudit": {
     "sealedCorpusSha256": "bb4ed147933c076111b127e6a5433c6ce7ea54cc43befb7d384ddb54681e6309",
     "historicalBaselineSha256": "7668c347e040ae314995c11093e0ee877bd8c2f46c98ed7ac6ccbd6d5d080db0",
@@ -65,6 +81,13 @@
     "pressConfirmModelEligibleByTrainValidationTest": [3, 3, 3],
     "clickOnlyCanMeetCurrentSealedCorpusCoverage": false,
     "heldOutRequestBodiesOrIndividualLabelsInspectedByAgent": false
+  },
+  "laterCodePathAgentHeldOutExposure": {
+    "source": "mixed corpus generator source read during non-browser staged qualification mapping",
+    "individualTestExamplesSeenByThatAgent": true,
+    "agentExcludedFromCorpusAuthoringAndModelSelection": true,
+    "examplesRelayedToDecisionMakingWork": false,
+    "candidate5TestInferenceRun": false
   },
   "candidate5TrainSupplementStructuralScreen": {
     "supplementSha256": "a53936a41c035ae249ef2bda017cc36704be9e37e1ab5f7b6e8ed5e9ef849446",

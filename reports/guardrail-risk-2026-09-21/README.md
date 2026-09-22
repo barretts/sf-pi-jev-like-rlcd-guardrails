@@ -137,6 +137,22 @@ can be spoofed, and mouse/key events are dispatched separately. Dialog
 release and nested focus remain unresolved. Jev and SF Pi do not consume this
 prototype; the current browser coverage and baseline result are unchanged.
 
+A follow-on isolated driver branch at
+`/private/tmp/agent-browser-guard-public-click` (commit `1c3874b`) connects
+`snapshot --guarded-clicks --json` to `click @ref --if-snapshot ID` using a
+one-use daemon-held observation. It passed a full local
+CLI→socket→daemon→Chrome test, nine focused native-input tests, five guarded
+action tests, and six parser/binding tests. It rejects stale and lookalike
+replacement nodes and malformed guard options; checks use Chrome-side DOM/AX
+data before input and again after mouse movement. Review verified fixes for
+unseen snapshot refs, misspelled options, page-world validation and
+mousemove-opened dialog status. The branch is still only a prototype: the
+same node can change what it does, mouse events remain separate, and a
+post-input failure may be indeterminate. It is not installed in SF Pi or
+admitted as browser-model evidence. A future SF Pi integration must pin this
+CLI build or verify its capability: an older CLI can ignore the new option
+and perform an ordinary click.
+
 An aggregate-only audit of the sealed v3 corpus found 18/9/9 risky browser
 click rows in TRAIN/VALIDATION/TEST, but the last admissible baseline marked
 all of them exact policy floors and therefore ineligible for Jev. Its
@@ -154,7 +170,15 @@ training. IDs and group IDs had no collisions with the 381 reserved
 VALIDATION/TEST identities. This is only an identity check: current-host
 eligibility, policy floors and exact/canonical/coarse/semantic operation
 collisions remain unverified without an admissible baseline. No admission
-receipt was generated and no reserved labels or request bodies were reviewed.
+receipt was generated; that rescreen did not display individual reserved labels
+or request bodies.
+
+A later code-path mapping task incidentally opened a mixed corpus generator
+containing individual held-out TEST examples. That agent was excluded from
+corpus authoring, cutoff selection, candidate selection and qualification
+decisions and did not relay those examples to the decision-making work. No
+candidate-5 TEST inference has run. This exposure is recorded so the held-out
+boundary is not overstated.
 
 On rejected candidate-4 weights, a TRAIN-only paired direct-native context
 diagnostic completed 72/72 scores across 18 requests, with identical prompts,
