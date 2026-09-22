@@ -3,7 +3,7 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { lstat, readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { canonical } from "../dist/core.js";
@@ -234,6 +234,11 @@ export async function selectFromPinnedSources(
       calScorerCli: paths.calScorerCli,
       calScorerCore: paths.calScorerCore,
       nativeBinary: paths.nativeBinary,
+      selectorCli: fileURLToPath(import.meta.url),
+      calibrationRuntime: resolve(
+        dirname(fileURLToPath(import.meta.url)),
+        "../dist/guardrail-c9-calibration.js",
+      ),
     },
     expected: scores,
     admission,

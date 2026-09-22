@@ -41,6 +41,25 @@ export async function fixture(arm = "B", options = {}) {
   const nativeBytes = Buffer.from("synthetic native scorer");
   await writeFile(nativeBinary, nativeBytes);
   const nativeBinarySha256 = sha(nativeBytes);
+  const selectorCli = join(
+    root,
+    "scripts/guardrail-candidate9-select-cutoff.mjs",
+  );
+  const artifactVerifier = join(
+    root,
+    "scripts/guardrail-candidate9-artifact-provenance.mjs",
+  );
+  const calibrationRuntime = join(root, "dist/guardrail-c9-calibration.js");
+  const sealedCodeFiles = {
+    ".build/jev-native": nativeBinarySha256,
+    "scripts/guardrail-candidate9-select-cutoff.mjs": sha(
+      await readFile(selectorCli),
+    ),
+    "scripts/guardrail-candidate9-artifact-provenance.mjs": sha(
+      await readFile(artifactVerifier),
+    ),
+    "dist/guardrail-c9-calibration.js": sha(await readFile(calibrationRuntime)),
+  };
   const fitSha256 = sha(fitBytes);
   const fitSource = location("fit.jsonl");
   await writeFile(fitSource, fitBytes);
@@ -182,7 +201,7 @@ export async function fixture(arm = "B", options = {}) {
       pairsSha256: pairSha256,
       familiesSha256: familySha256,
       objectiveSha256: objectivePlanSha256,
-      code: { files: { ".build/jev-native": nativeBinarySha256 } },
+      code: { files: sealedCodeFiles },
     },
   };
   const fitPlanSha256 = await save(
@@ -250,6 +269,8 @@ export async function fixture(arm = "B", options = {}) {
     calScorerCli,
     calScorerCore,
     nativeBinary,
+    selectorCli,
+    calibrationRuntime,
   };
   const expected = {
     arm,

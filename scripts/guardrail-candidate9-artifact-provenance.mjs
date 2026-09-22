@@ -3,6 +3,7 @@ import { constants } from "node:fs";
 import { lstat, open } from "node:fs/promises";
 import { basename, dirname, isAbsolute, join, resolve } from "node:path";
 import { isDeepStrictEqual } from "node:util";
+import { fileURLToPath } from "node:url";
 
 const BASE_MODEL = "google/gemma-3-1b-it";
 const BASE_REVISION = "dcc83ea841ab6100d6b47a070329e1ba4cf78752";
@@ -185,6 +186,9 @@ export async function verifyC9Q8Artifact({
     cliFile,
     coreFile,
     nativeBinaryFile,
+    selectorFile,
+    verifierFile,
+    calibrationRuntimeFile,
   ] = await Promise.all([
     json(locations.artifact),
     json(locations.run),
@@ -195,6 +199,9 @@ export async function verifyC9Q8Artifact({
     regular(paths.calScorerCli, MAX_JSON_BYTES),
     regular(paths.calScorerCore, MAX_JSON_BYTES),
     regular(paths.nativeBinary, 64 * 1_048_576),
+    regular(paths.selectorCli, MAX_JSON_BYTES),
+    regular(fileURLToPath(import.meta.url), MAX_JSON_BYTES),
+    regular(paths.calibrationRuntime, MAX_JSON_BYTES),
   ]);
   checkPin(
     artifactFile.sha256,
@@ -368,6 +375,14 @@ export async function verifyC9Q8Artifact({
       fit.baseGguf?.sha256 === BASE_GGUF_SHA256 &&
       fit.source?.code?.files?.[".build/jev-native"] ===
         nativeBinaryFile.sha256 &&
+      fit.source?.code?.files?.[
+        "scripts/guardrail-candidate9-select-cutoff.mjs"
+      ] === selectorFile.sha256 &&
+      fit.source?.code?.files?.[
+        "scripts/guardrail-candidate9-artifact-provenance.mjs"
+      ] === verifierFile.sha256 &&
+      fit.source?.code?.files?.["dist/guardrail-c9-calibration.js"] ===
+        calibrationRuntimeFile.sha256 &&
       fit.rfdtPreparedSha256 === run.prepared.sha256,
     "C9 FIT plan source pins or schedule changed",
   );

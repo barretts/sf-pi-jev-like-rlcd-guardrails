@@ -7,6 +7,8 @@ import {
   mkdir,
   open,
   readFile,
+  readdir,
+  readlink,
   statfs,
   writeFile,
 } from "node:fs/promises";
@@ -122,6 +124,7 @@ async function sourceIdentity(paths) {
   const tracked = [
     "scripts/guardrail-candidate9-fit.mjs",
     "scripts/guardrail-candidate9-select-cutoff.mjs",
+    "scripts/guardrail-candidate9-artifact-provenance.mjs",
     "src/rfdt.ts",
     "src/core.ts",
     "src/backend.ts",
@@ -151,6 +154,7 @@ async function sourceIdentity(paths) {
     "backend.js",
     "core.js",
     "guardrail.js",
+    "guardrail-c9-calibration.js",
     "models.js",
     "rfdt.js",
   ])
@@ -194,7 +198,44 @@ async function verifyQuantizer(binaryPath, sourceDirectory) {
   } catch {
     fail("C9 Q8 quantizer source is dirty");
   }
-  return { binary, source };
+  const libraryDirectory = dirname(resolve(binaryPath));
+  const entries = (await readdir(libraryDirectory, { withFileTypes: true }))
+    .filter((entry) => entry.name.endsWith(".dylib"))
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+  const runtimeLibraries = {};
+  const runtimeLibraryLinks = {};
+  for (const entry of entries) {
+    const file = resolve(libraryDirectory, entry.name);
+    if (entry.isFile())
+      runtimeLibraries[entry.name] = (await hashArtifact(file)).sha256;
+    else if (entry.isSymbolicLink()) {
+      const target = await readlink(file);
+      if (target !== basename(target) || !target.endsWith(".dylib"))
+        fail("C9 Q8 quantizer library link escapes its adjacent directory");
+      runtimeLibraryLinks[entry.name] = target;
+    } else fail("C9 Q8 quantizer library inventory changed");
+  }
+  if (
+    Object.keys(runtimeLibraries).length !== 8 ||
+    Object.keys(runtimeLibraryLinks).length !== 15 ||
+    Object.values(runtimeLibraryLinks).some(
+      (target) =>
+        !(target in runtimeLibraries) && !(target in runtimeLibraryLinks),
+    )
+  )
+    fail("C9 Q8 quantizer linked-library inventory changed");
+  for (const start of Object.keys(runtimeLibraryLinks)) {
+    const seen = new Set();
+    let current = start;
+    while (current in runtimeLibraryLinks) {
+      if (seen.has(current)) fail("C9 Q8 quantizer library link cycle");
+      seen.add(current);
+      current = runtimeLibraryLinks[current];
+    }
+    if (!(current in runtimeLibraries))
+      fail("C9 Q8 quantizer library link lacks a regular payload");
+  }
+  return { binary, source, runtimeLibraries, runtimeLibraryLinks };
 }
 async function runQuantizer(binary, source, target) {
   await new Promise((resolvePromise, reject) => {
@@ -749,6 +790,17 @@ if (phase === "quantize") {
       if (error?.code !== "ENOENT") throw error;
     }
     await runQuantizer(resolve(values["quantizer-binary"]), f16.file, q8File);
+    const afterQuantization = await verifyQuantizer(
+      values["quantizer-binary"],
+      values["quantizer-source"],
+    );
+    if (
+      canonical(afterQuantization.runtimeLibraries) !==
+        canonical(quantizer.runtimeLibraries) ||
+      canonical(afterQuantization.runtimeLibraryLinks) !==
+        canonical(quantizer.runtimeLibraryLinks)
+    )
+      fail("C9 Q8 quantizer linked libraries changed during export");
     const q8 = await hashArtifact(q8File);
     const outputFile = await open(q8File, "r");
     try {
@@ -785,6 +837,8 @@ if (phase === "quantize") {
         sourceDirectory: quantizer.source,
         sourceRevision: quantizerSourceRevision,
         binarySha256: quantizer.binary.sha256,
+        runtimeLibraries: quantizer.runtimeLibraries,
+        runtimeLibraryLinks: quantizer.runtimeLibraryLinks,
         type: "Q8_0",
         leaveOutputTensorUnquantized: true,
         importanceMatrix: null,
