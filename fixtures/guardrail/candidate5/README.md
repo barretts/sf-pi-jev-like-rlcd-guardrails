@@ -50,6 +50,40 @@ node scripts/guardrail-candidate5-bundle.mjs \
   --receipt .build/guardrail/candidate-5/training-input-bundle-checks.json
 ```
 
+After that receipt reports `trainingReady: true`, prepare from the same
+unchanged inputs and current SF host:
+
+```sh
+npm run train:guardrail -- prepare \
+  --bundle .build/guardrail/candidate-5/training-input-bundle.json \
+  --receipt .build/guardrail/candidate-5/training-input-bundle-checks.json \
+  --corpus /absolute/path/to/final-corpus.json \
+  --baseline /absolute/path/to/final-sf-baseline.json \
+  --baseline-sha256 VERIFIED_BASELINE_SHA256 \
+  --sf-pi /absolute/path/to/sf-pi-candidate5 \
+  --checkpoint /absolute/path/to/models--google--gemma-3-1b-it/snapshots/dcc83ea841ab6100d6b47a070329e1ba4cf78752 \
+  --run .build/guardrail/candidate-5
+```
+
+Preparation rebuilds the bundle and receipt in a private temporary directory
+and requires both files to match byte for byte. A hand-written
+`trainingReady: true` flag or a matching self-issued hash is insufficient.
+Keep the original admission files and source inputs together for review.
+Before training, freeze the prepared TRAIN/VALIDATION files and the empty TEST
+file in a prospective plan:
+
+```sh
+node scripts/guardrail-prospective-plan.mjs \
+  --run .build/guardrail/candidate-5 \
+  --bundle .build/guardrail/candidate-5/training-input-bundle.json
+npm run train:guardrail -- train --run .build/guardrail/candidate-5
+```
+
+The training command checks the prospective plan against the current prepared
+files and repeats the source admission rebuild before any optimizer call.
+Export also repeats admission verification. Neither command reads a held-out
+TEST label.
+
 Do not run this command until the sf-pi baseline passes its full coverage
 checks. The current host sends browser clicks and key presses to rules fallback
 because it cannot verify live reference, focus, and page evidence at scoring
@@ -65,9 +99,10 @@ The bundle receipt reports per-family labels, strict-screen holds, and
 `trainingReady`; a balanced bundle is still only a training input, not a
 qualified model. Human label review and live API acceptance remain separate.
 For candidate 5, RFDT preparation is permitted only from this builder's
-explicit `trainingReady: true` bundle after a sealed revised corpus, matching
-sf-pi baseline, and full admission check. The current v3 corpus cannot produce
-a qualifying bundle; omission of the field is not a candidate-5 approval.
+explicit `trainingReady: true` bundle and matching receipt after a sealed
+revised corpus, matching sf-pi baseline, and full admission check. The current
+v3 corpus cannot produce a qualifying bundle; omission of the field is not a
+candidate-5 approval.
 
 The following proposals are deliberately absent: Tooling `executeAnonymous`
 because it overlaps reserved Anonymous Apex semantics; an AgentScript
