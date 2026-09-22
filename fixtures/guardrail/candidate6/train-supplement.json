@@ -2,7 +2,7 @@
   "version": 1,
   "status": "TRAIN-only source proposal; not admitted to the trainable bundle or qualification corpus",
   "rubric": "operation-policy-v2",
-  "sfPiSourceCommit": "e456e1c9c7c0c9b97ccb08f4084558e5cbcd7a8c",
+  "sfPiSourceCommit": "dd97a1a9165a89cdb7ff5b2d0c84d2bbf3843277",
   "review": "Machine-authored operation-policy labels and mocked fixture facts require human review, final-host eligibility, and reserved-split collision screening. No external tool or model call was made.",
   "cases": [
     {

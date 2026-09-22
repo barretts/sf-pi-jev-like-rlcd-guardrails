@@ -33,7 +33,7 @@ JSON and a fresh output directory under `.build/guardrail`:
 ```sh
 node scripts/guardrail-candidate6-supplement-preflight.mjs \
   --sf-pi "$SF_PI" --sf-deps "$SF_DEPS" \
-  --supplement-sha256 9437cef2872fcba123b4f6b7a5fc720e14f53779b748cdf38ad52307ea5aec53 \
+  --supplement-sha256 f6bcd88d9dc546db1f7f7236db55ad5559c82fce3643f18af2d316a9419a2443 \
   --output-dir .build/guardrail/candidate-6-supplement-preflight-NEW
 ```
 
@@ -43,10 +43,4 @@ it writes an 18-row RFDT TRAIN JSONL and a source-bound receipt with
 `trainingReady: false`. The preflight never executes a fixture request or calls
 a model. Its failure tests cover a changed source hash and an exact policy floor.
 
-For the pinned JSON above and sf-pi commit `e456e1c9c7c0c9b97ccb08f4084558e5cbcd7a8c`, the local preflight reached
-the model input on all 18 requests with no floor or input mutation. This
-eligibility must be rechecked if either source changes. Blind split collision
-screening remains outstanding, as does human review of labels and fixture
-preconditions. The current preflight receipt is local evidence only: a source
-backed request and a correct policy label are not measured model predictions or
-qualification.
+For the pinned JSON above and sf-pi commit `dd97a1a9165a89cdb7ff5b2d0c84d2bbf3843277`, the fresh [host preflight](../../.build/guardrail/candidate-6-supplement-preflight-dd97a1a/receipt.json) reached the model input on all 18 requests with no policy floor or fallback. Its dataset SHA-256 is `1976ec21b7e7c3fec3d76d635a754d2db8c620ae0f8c206719adc919992cfeeb`; receipt SHA-256 is `d61128c1ed102b738d1e96ca7256a05ae63a428488e1ca30dc752700c800d7b1`. This eligibility must be rechecked if either source changes. Request-only blind split collision screens have zero matches on the prospective drafts, but do not prove semantic independence. Human review of labels and live fixture preconditions remains outstanding. A source-backed request and a rubric label are not measured model predictions or qualification.
