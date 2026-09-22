@@ -1,0 +1,171 @@
+{
+  "adjudicatedReplayCount": 0,
+  "auditor": {
+    "commit": "184c9a470a357e1981323d835fa7ebf3f2ee5ea5",
+    "scriptSha256": "27115bdaf14f24cb10d956a01904678dd63a5d1fbc66cfbce693acafd4605b59",
+    "selfTest": "passed"
+  },
+  "c9BlindValidMechanicalPairs": {
+    "cal": {
+      "conservativeNearCandidate": 14,
+      "effectSignature": 0,
+      "exactOriginalOperation": 0,
+      "group": 0,
+      "id": 0,
+      "normalizedOperation": 0,
+      "template": 0
+    },
+    "fit": {
+      "conservativeNearCandidate": 72,
+      "effectSignature": 0,
+      "exactOriginalOperation": 0,
+      "group": 0,
+      "id": 0,
+      "normalizedOperation": 0,
+      "template": 0
+    },
+    "source": {
+      "conservativeNearCandidate": 31,
+      "effectSignature": 0,
+      "exactOriginalOperation": 0,
+      "group": 0,
+      "id": 0,
+      "normalizedOperation": 0,
+      "template": 0
+    }
+  },
+  "caseCounts": {
+    "c9BlindValid": 160,
+    "c9Calibration": 42,
+    "c9Fit": 327,
+    "c9TrainSource": 178,
+    "spentC8Valid": 96
+  },
+  "frozenSources": {
+    "c9BlindValidSha256": "d7d532c2712bf699133971cb82b0b0c5f21cbe5362a5edd07171b532a58f072f",
+    "c9CalibrationSha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
+    "c9FitSha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+    "c9TrainSourceSha256": "c19cfc20cb13e80e8fe05c3c01ea9085078b9b38ba887f9f60033db0409e3434",
+    "sfPiPolicySha256": "e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347",
+    "sfPiRuntimeSha256": "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421",
+    "spentC8ValidSha256": "83c6568bca079f1148feb92ee2b2ecc87f72cfc0d2466ac4838b58cec6bb2714"
+  },
+  "independentlyReviewedTrainGroups": {
+    "broad_family_only": [
+      "c5-draft-canvas-file-info-vs-delete",
+      "c5-draft-data360-transform-validate-vs-create",
+      "c5-soql-proposal-cli-count-vs-contact-disclosure",
+      "c6-aug-contact-bounded-vs-broad-pii",
+      "c6-supp-soql-cli-lead-deleted-rows",
+      "c8-remote-metadata-vs-script",
+      "c9-canvas-file-info-vs-channel-write-access",
+      "c9-canvas-file-info-vs-user-owner-access",
+      "c9-canvas-file-info-vs-user-write-access",
+      "c9-canvas-info-vs-delete-canvas",
+      "c9-canvas-info-vs-replace-entire",
+      "c9-canvas-info-vs-revoke-channel-access",
+      "c9-data360-action-list-vs-create",
+      "c9-data360-mapping-list-vs-create",
+      "c9-data360-transform-validate-vs-create",
+      "c9-shell-remote-head-vs-upload",
+      "c9-soql-contact-count-vs-bulk",
+      "train-agentscript-user-status",
+      "train-agentscript-versions",
+      "train-apex-log-latest",
+      "train-apex-test-discover",
+      "train-apex-test-run",
+      "train-soql-bounded-contact"
+    ],
+    "exact": [],
+    "same_controlled_change": [],
+    "same_skeleton": []
+  },
+  "manualAdjudication": {
+    "c9ConservativeNearPairsClassifiedBroadOnly": 117,
+    "c9ConservativeNearPairsReviewed": 117,
+    "c9ConservativeNearPairsUnreviewed": 0,
+    "criteria": "Disqualify an exact original operation, materially identical request or command skeleton, or replay of the same controlled risk change. Shared action/topic/object family alone is broad-family when operation arguments, target scope, or write subaction differ.",
+    "crossToolAndControlledRiskSweep": "complete",
+    "sharedFamiliesReviewed": [
+      "Apex",
+      "AgentScript",
+      "browser commit",
+      "Data 360",
+      "protected files",
+      "Salesforce CLI",
+      "shell and herdr_pane",
+      "Slack Canvas",
+      "SOQL"
+    ]
+  },
+  "overlapFree": true,
+  "previousRejection": {
+    "additionalRemovedTrainGroups": [
+      "c7-rsync-dry-run-vs-prune",
+      "c7-user-query-bounded-vs-broad",
+      "c8-credential-key-vs-value",
+      "c8-find-inventory-vs-delete",
+      "c8-soql-sample-vs-disclose",
+      "c9-canvas-list-vs-create-standalone",
+      "c9-pane-git-clean-preview-vs-prune",
+      "train-data360-raw-rest-read",
+      "train-shell-remote-pipe",
+      "v2-train-data360-raw-create-product-stream",
+      "v2-train-slack-canvas-create"
+    ],
+    "receiptSha256": "d984cd4f1f4178a590d540640e5ecd0579a8ea3fdfca75d0bc0b79aeabc95963"
+  },
+  "proofLimits": [
+    "The receipt proves split-overlap adjudication for these exact frozen source, FIT, CAL, and blind VALID bytes; it does not establish model accuracy, latency, or production acceptance.",
+    "Conservative lexical near matches include false positives and were manually adjudicated; exact/effect signatures alone do not establish split purity.",
+    "Spent C8 VALID was compared as a diagnostic only. Its mechanical overlaps remain visible above; no C8 independence claim is made.",
+    "No C8 held-out TEST body or model score was read for this audit.",
+    "This receipt contains no blind VALID case text, labels, or IDs."
+  ],
+  "purpose": "Independent C9 pre-fit overlap audit; TRAIN-visible aggregate and TRAIN group IDs only",
+  "reviewCompleteness": "exhaustive_adjudication",
+  "reviewedGroupCounts": {
+    "broadFamilyOnly": 23,
+    "exact": 0,
+    "sameControlledChange": 0,
+    "sameSkeleton": 0
+  },
+  "schemaVersion": "jev.guardrail.overlap-audit.v1",
+  "sourceCommits": {
+    "c9BlindValid": "67cad37ce02aa4932a17016cb4ae2edccd20d9b9",
+    "c9Train": "6d6ac962221fe35889a92345b17e0508b39d23cc",
+    "sfPiHost": "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a",
+    "spentC8ValidLastSource": "8468aae48da651a9d0c2299f216e39ae554e76c1"
+  },
+  "spentC8ValidMechanicalPairs": {
+    "cal": {
+      "conservativeNearCandidate": 21,
+      "effectSignature": 5,
+      "exactOriginalOperation": 0,
+      "group": 0,
+      "id": 0,
+      "normalizedOperation": 0,
+      "template": 0
+    },
+    "fit": {
+      "conservativeNearCandidate": 128,
+      "effectSignature": 12,
+      "exactOriginalOperation": 0,
+      "group": 0,
+      "id": 0,
+      "normalizedOperation": 0,
+      "template": 0
+    },
+    "source": {
+      "conservativeNearCandidate": 83,
+      "effectSignature": 14,
+      "exactOriginalOperation": 0,
+      "group": 0,
+      "id": 0,
+      "normalizedOperation": 0,
+      "template": 0
+    }
+  },
+  "status": "accepted_pre_fit_overlap",
+  "version": 1
+}
