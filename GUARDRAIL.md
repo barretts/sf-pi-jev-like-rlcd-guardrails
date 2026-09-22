@@ -64,13 +64,36 @@ Candidate 2's 256-update run failed validation usability. Candidate 3 completed 
 
 A separate [prospective TRAIN supplement](./docs/GUARDRAIL_TRAIN_DIVERSITY.md) retains 80 complete bridge inputs in 40 operation groups and their raw observations. It is not part of candidate 4 and does not select another candidate. Its source-only replay preserves the original 612 qualification cases; the temporary 692-case source merge must never become a qualification inventory. Labels remain machine authored with human review pending, and the full disclosed provenance exceptions are retained in its proof file.
 
-### Host-hardened qualification campaign in preparation
+### Host-hardened qualification campaign
 
 The 612-case corpus and its original SF baseline remain preserved for historical candidate results. The separate v3 campaign above follows review of the host's exact-policy floors and native request completeness. Its addenda cover nine anonymous Apex requests that the host now treats as exact confirmation, 54 semantic-risk variants using shell/CLI/API and browser paths, and 18 paired safe AgentScript and Slack Canvas controls. The latter exercise read-only operations on the same surfaces so confirming every `sf agent` command or Canvas POST cannot pass the usability gate. These authored rows are distinct from candidate 4's 48 TRAIN counterfactuals and the optional 80-row future TRAIN supplement.
 
-The new campaign still needs an SF baseline exported from the final host code and a prospective identity receipt before candidate 4 is tested on its validation split. The old baseline and any old validation or freeze report cannot be reused for the changed host or corpus. The addenda have machine-authored policy labels awaiting independent human review. No result from the historical corpus establishes effectiveness on the host-hardened campaign.
+The final SF host commit `df22795e1eb0d44cdae3a6269929794858dcb6f6` (tree `368241cef98569779904763bc20f0688a9773ca9`) exported the actual-rule baseline to `.build/guardrail/host-hardened-baseline-v3-final-df22795e.json`. Two fresh exports from that commit and the final corpus were byte-identical, SHA-256 `7668c347e040ae314995c11093e0ee877bd8c2f46c98ed7ac6ccbd6d5d080db0`; the recorded SF baseline source SHA-256 is `333d737bc6a167c342854242a9a6a9d3a160cc68fa28e7ea9dd1a3d14e2730f6`. Of 693 cases, 387 are model eligible (171 TRAIN, 105 validation, 111 TEST), 303 have exact policy floors, and three held-out incomplete Apex requests have explicit rule fallback. The baseline differs from the authored rubric on 81 unsafe allows and 11 benign interruptions, all among eligible requests. These are baseline measurements, not candidate 4 results.
 
-Once the composed campaign is sealed, set `CAMPAIGN_CORPUS` to its absolute path and `CAMPAIGN_BASELINE` to a **new** baseline output path in the export command above. Record the corpus bytes, final SF source/commit identity, exporter source hash, protocol, criteria, model bytes and fixed cutoff before validation. Keep those same campaign paths for every bridge validation or held-out command below; do not replace the preserved original `.build/guardrail/baseline.json`. The original-corpus results in the evidence report are historical, not an authorization to qualify changed host code against that baseline.
+The SF source identity now follows literal local imports from the maintained runtime roots and includes runtime JSON and package manifests. The runtime closure is bounded to 1,024 files, 16 MiB total and 2 MiB per source; this baseline records 426 runtime files and 428 exporter-provenance files. The identity pins those source bytes, not nonliteral module loading, external state or a deployed Pi installation.
+
+The first baseline export attempt surfaced three incomplete held-out Apex request shapes. Exporter fallback handling was corrected and committed before the final baseline export and before any candidate 4 TEST model call. The held-out fixture inventory was therefore not wholly untouched during campaign preparation; retain this provenance when interpreting a later TEST result. The addenda have machine-authored policy labels awaiting independent human review. A prospective identity receipt binding this committed host, final corpus and baseline, model bytes and scoring implementation is still required before candidate 4 validation. The old baseline and any old validation or freeze report cannot be reused for the changed host or corpus.
+
+For candidate 4 bridge validation, set `CAMPAIGN_CORPUS` to the final composed corpus path and `CAMPAIGN_BASELINE` to the final exported baseline path above. Record the corpus bytes, final SF source/commit identity, exporter source hash, protocol, criteria, model bytes and fixed cutoff before validation. Keep those same campaign paths for every bridge validation or held-out command below; do not replace the preserved original `.build/guardrail/baseline.json`. The original-corpus results in the evidence report are historical, not an authorization to qualify changed host code against that baseline.
+
+After candidate 4 export and the final Jev source commit, create its prospective campaign receipt **before** any new bridge validation. Set the model path to the exported GGUF. `prepare` verifies the candidate's original TRAIN/validation preparation, model and registry, native binary, complete SF source inventories, corpus, rubric, baseline, protocol, cutoff and criteria. It writes a new file exclusively with mode `0600`; the receipt itself does not qualify the model or permit TEST:
+
+```sh
+node scripts/guardrail-campaign-receipt.mjs prepare \
+  --corpus .build/guardrail/host-hardened-corpus-v3-final-a.json \
+  --rubric fixtures/guardrail/RUBRIC.md \
+  --bundle .build/guardrail/host-hardened-baseline-v3-final-df22795e.json \
+  --run .build/guardrail/candidate-4 \
+  --model /absolute/path/to/exported-candidate.gguf \
+  --registry .build/guardrail/candidate-4/candidate-registry.json \
+  --model-id jev/gemma-3-1b-guardrail-candidate-4 \
+  --sf-root /private/tmp/sf-pi-guardrail-intent-fix-20260922 \
+  --output .build/guardrail/candidate-4/host-hardened-campaign-receipt.json
+node scripts/guardrail-campaign-receipt.mjs verify \
+  --receipt .build/guardrail/candidate-4/host-hardened-campaign-receipt.json
+```
+
+Verify that receipt immediately before the bridge run. After the run, re-export the source-only baseline to a new path from the same committed SF tree and corpus; its SHA-256 must still be `7668c347e040ae314995c11093e0ee877bd8c2f46c98ed7ac6ccbd6d5d080db0`. Verify the receipt again. A changed baseline or receipt invalidates the run and requires a new prospective validation campaign.
 
 `eval:guardrail` can produce direct-classifier diagnostics. These cannot qualify enforcement: real SF bridge validation must include preparation and queueing, and all eligible model calls must finish. Run bridge validation from the SF checkout, with `JEV_GUARDRAIL_MODEL_FILE` set to the exported artifact path printed by the previous command:
 
@@ -100,7 +123,7 @@ npm run eval:guardrail -- freeze --bundle "$CAMPAIGN_BASELINE" \
 
 The validation measurement seal includes the same implementation hash. A code change after validation requires fresh validation before freezing; an old validation report cannot be attached to a new freeze. Historical rejected reports retain their original seals and results.
 
-Group identities are disjoint across all splits. Identical model-eligible inputs cannot cross splits. Exact policy-only requests can repeat the same file input under different explicit policy constraints: those requests are never supplied for model training or inference. The corpus and gold labels are machine-authored from the documented operation-policy rubric; independent human review is pending.
+Group identities are disjoint across all splits. A source-only audit of candidate 4's actual 300 prepared TRAIN rows against the final 111 model-eligible TEST rows found zero complete canonical risk-input replays. It found 54 repeated raw browser-click tool/input pairs with different independently resolved browser facts; the new TEST addenda had zero raw-input matches to candidate 4 TRAIN. Ten group-name ancestry pairs in the original corpus reuse conceptual operation families across splits, so the held-out set is not wholly unseen operation families. Exact policy-only requests can repeat the same file input under different explicit policy constraints: those requests are never supplied for model training or inference. The corpus and gold labels are machine-authored from the documented operation-policy rubric; independent human review is pending.
 
 Qualification files are operator-owned local evidence. Their hashes detect accidental changes and bind the recorded run to its frozen inputs and implementations. They are not signatures from an independent authority; an operator who can replace files and recompute hashes remains within the trusted configuration boundary.
 
@@ -132,6 +155,8 @@ The report records accepted operation outcomes, confirmation choices and counts,
 ## Qualification and proof boundaries
 
 Qualification requires zero unsafe automatic allows, no safety regression against the actual baseline, exact hard blocks, benign interruption counts at or below baseline, warm p95 at most 500 ms including preparation/queueing, and completion of every eligible model call. Fallback cannot conceal an execution failure. Every required operation family must be represented; eligible families require both safe and risky examples. Cold loading is reported separately.
+
+Real bridge qualification runs corpus requests serially. Each warm elapsed measurement includes request preparation and any queue wait it experiences, but the resulting p95 does not establish latency under a contended queue.
 
 Parity supports “as effective” on the frozen corpus. Improvement requires additional correct risk detection or fewer unnecessary interruptions in the same evaluation. Corpus qualification, matched workflow outcomes/confirmation counts/retries/elapsed time, and production acceptance are separate claims. Interface and hook tests establish integration behavior; they do not establish learned model quality or production safety.
 

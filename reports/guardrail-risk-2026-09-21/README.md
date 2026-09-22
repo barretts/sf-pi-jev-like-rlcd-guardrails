@@ -23,14 +23,17 @@ cannot establish the required safety, interruption or latency gates.
 
 The SF host review identified operations that require exact confirmation even
 when an input appears read-like. The current integration worktree at
-`/private/tmp/sf-pi-guardrail-intent-fix-20260922` keeps the existing Guardrail
-hook as sole enforcement owner and is tightening native request completeness,
+`/private/tmp/sf-pi-guardrail-intent-fix-20260922`, commit
+`df22795e1eb0d44cdae3a6269929794858dcb6f6` (tree
+`368241cef98569779904763bc20f0688a9773ca9`), keeps the existing Guardrail
+hook as sole enforcement owner. It has tightened native request completeness,
 exact Apex and other native operation floors, and shell/API execution-intent
 handling. Incomplete action-specific requests and unresolved facts use the
 existing rules. Model-derived confirmations remain one-attempt and are bound to
 the complete operation, policy, model and scoring protocol; exact rule-owned
-session grants remain separate. This worktree is still being checked and is not
-the old pinned SF integration patch documented below.
+session grants remain separate. The earlier five-email patch checkpoint below
+is historical; the retained patch has since been regenerated from committed
+host source.
 
 The original 612-case corpus and baseline are preserved as historical evidence
 for candidates 1–3 and candidate 4's training plan. The separate v3 source
@@ -47,19 +50,58 @@ The semantic variants exercise realistic CLI, API, SOQL and browser paths that
 remain model eligible after exact host floors; the safe controls challenge
 broad confirmation heuristics on the same surfaces. The addenda are machine
 authored under the explicit operation-policy rubric, with independent human
-label review pending. Composition alone does not seal the campaign: the final
-host baseline and prospective qualification identity are still pending. The
-earlier 690-case source preview passed coverage and found 387 model-eligible
-requests, including its 18 safe controls. The 690-case corpus and that preview
-baseline are superseded by the revised rubric and 693-case corpus; those counts
-must not be used as current eligibility or qualification evidence. The
-superseded previews made no candidate 4 model calls. The SF baseline must be regenerated
-after the final source commit.
+label review pending. The 690-case corpus and its baseline preview are
+superseded; those previews made no candidate 4 model calls.
+
+Two fresh baseline exports from the committed SF host and final composed corpus
+were byte-identical. The retained baseline is
+`.build/guardrail/host-hardened-baseline-v3-final-df22795e.json`, SHA-256
+`7668c347e040ae314995c11093e0ee877bd8c2f46c98ed7ac6ccbd6d5d080db0`.
+Its recorded SF baseline source SHA-256 is
+`333d737bc6a167c342854242a9a6a9d3a160cc68fa28e7ea9dd1a3d14e2730f6`.
+The actual rule engine ran with authored generic org/browser observations and
+mocked execution; no requested external operation ran. The baseline contains
+693 cases and 231 groups. It has 387 model-eligible requests, 303 exact policy
+floors, and three explicit incomplete-request rule fallbacks, all in TEST.
+
+The source identity now closes over literal local imports from maintained
+runtime roots and includes runtime JSON and package manifests. Its runtime
+inventory has 426 files and the exporter provenance inventory has 428. The
+runtime traversal is limited to 1,024 files, 16 MiB total and 2 MiB per
+source. This binds recorded source bytes; it does not prove nonliteral module
+loading, external state or activation of a deployed Pi installation.
+
+| Split         |   Cases | Model eligible | Baseline unsafe allows | Baseline benign interruptions |
+| ------------- | ------: | -------------: | ---------------------: | ----------------------------: |
+| TRAIN         |     312 |            171 |                     23 |                             3 |
+| Validation    |     192 |            105 |                     29 |                             3 |
+| Held-out TEST |     189 |            111 |                     29 |                             5 |
+| **Total**     | **693** |        **387** |                 **81** |                        **11** |
+
+The 92 baseline disagreements are against machine-authored policy labels, not
+candidate 4 predictions or measured population failure rates. The first
+baseline export attempt exposed three incomplete held-out Apex request shapes.
+Exporter fallback handling was corrected and committed before the final
+baseline export and before any candidate 4 TEST model call. The held-out set
+was therefore not wholly untouched during campaign preparation. The final
+committed campaign and this disclosure must stay attached to any later TEST
+result; independent human label review remains pending.
+
+A source-only split-isolation audit compared candidate 4's actual 300 prepared
+TRAIN rows with the final 111 model-eligible TEST rows. It found zero complete
+canonical risk-input replays. There are 54 repeated raw browser-click
+tool/input pairs, each with different independently resolved browser facts;
+the new TEST addenda have zero raw-input matches to candidate 4 TRAIN. The
+original corpus has ten group-name ancestry pairs that reuse conceptual
+operation families across splits. A later held-out result may therefore claim
+new contexts and syntax, but not wholly unseen operation families. This audit
+made no TEST model predictions.
 
 Before any candidate 4 validation on the new campaign, the final corpus bytes,
-rubric source, host commit and source hash, baseline export, exporter source
-hash and its recorded source-inventory hash, model bytes, prompt/scoring
-protocol, 0.99 cutoff and qualification criteria must be recorded together.
+rubric source, committed host and source hash, exported baseline and exporter
+source-inventory hash, model bytes, prompt/scoring protocol, 0.99 cutoff and
+qualification criteria must be recorded together in a prospective identity
+receipt.
 The current freeze command requires `--sfRoot` and verifies the executing SF
 exporter against that recorded provenance. Validation selects or rejects the
 candidate. Only a passing
@@ -67,6 +109,16 @@ candidate can be frozen before the held-out TEST calls; failed validation must
 leave the existing engine active. The old `0f31a950...` SF baseline, the
 original-corpus results below, source tests, scripted SDK tests and native
 shadow results cannot be relabeled as host-hardened model qualification.
+
+After model export and the final Jev source commit, the
+[`guardrail-campaign-receipt.mjs` preflight](../../GUARDRAIL.md)
+must create and verify an exclusive mode-`0600` receipt before bridge
+validation. It pins the model, original prepared TRAIN/validation run, corpus,
+rubric, baseline, SF import-closed source inventories, scorer and criteria; it
+does not qualify the model or authorize TEST. After the bridge run, a fresh
+source-only baseline export from the same committed host and corpus must match
+SHA-256 `7668c347e040ae314995c11093e0ee877bd8c2f46c98ed7ac6ccbd6d5d080db0`,
+and the receipt must still verify.
 
 The v2 draft source-only baseline preview contained 672 cases, 224 groups and
 89 baseline/gold disagreements (78 unsafe baseline allows and 11 unnecessary
@@ -149,11 +201,11 @@ general classifier remains unchanged. The separate guardrail candidate uses
 RFDT pipeline. No excluded model lineage, derivative, teacher or fallback is
 introduced.
 
-The SF integration's final local source checkpoint is
+An earlier SF integration source checkpoint is
 `e09085fd1a05cc836b2f377325aea33f9ced1cf1`; it has not been pushed. Its tree is
 `ef7b70ad1f107ec989ac783f68883815338e6a91`. The
-[baseline-bound integration patch](../../integrations/sf-pi-guardrail/0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch)
-retains its filename and contains five email patches: initial integration
+then-retained baseline-bound integration patch contained five email patches:
+initial integration
 `beaa11c0`, workflow proof `24546444`, ADR0052 clarification `eab0eac6`,
 semantic-call completeness checks `38899055`, and normal driver startup in
 the SDK harness at the final checkpoint above.
@@ -163,8 +215,10 @@ with 175,031 bytes. Splitting and sequentially applying all five to baseline
 store reproduced every intermediate and final tree. The real SF index and all
 1,749 tracked checkout files remained unchanged. Runtime
 baseline SHA-256 stays `0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45`.
-This proves patch delivery integrity; it does not activate a Pi host or publish
-the integration.
+This historical check proved that patch's delivery integrity; it did not
+activate a Pi host or publish the integration. The current retained patch and
+its verified source tree are documented in the
+[integration README](../../integrations/sf-pi-guardrail/README.md).
 
 The [operation-policy rubric](../../fixtures/guardrail/RUBRIC.md) supplies gold
 independently of the current engine. Labels are machine authored from inspected
@@ -565,6 +619,10 @@ uncalibrated score ≥0.99. Validation alone selects a candidate; its weights,
 protocol, cutoff, case inventory, criteria, native binary and runtime baseline
 are frozen before any held-out model inference. A failed gate rejects the
 candidate and preserves the current engine.
+
+Real bridge qualification runs corpus requests serially. Warm elapsed includes
+request preparation and any queue wait encountered, but its p95 does not prove
+latency under a contended queue.
 
 [evidence.json](./evidence.json) contains the compact checkpoint ledger. The
 candidate's failed validation, full TRAIN fit, actual native off/shadow fixture

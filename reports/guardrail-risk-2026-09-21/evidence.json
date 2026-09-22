@@ -142,6 +142,61 @@
     "provenanceSourceSha256": "9be02dd9dc4eac5e15286cf883bd7452f6699bd8402740c7e86fdda22e3bbdd8",
     "claimBoundary": "Finite authored local corpus only; not a production failure rate."
   },
+  "hostHardenedV3Baseline": {
+    "scope": "Separate committed host-hardened campaign; historical original-corpus baseline and candidate results above remain unchanged.",
+    "sfPiCheckout": "/private/tmp/sf-pi-guardrail-intent-fix-20260922",
+    "sfPiCommit": "df22795e1eb0d44cdae3a6269929794858dcb6f6",
+    "sfPiTree": "368241cef98569779904763bc20f0688a9773ca9",
+    "corpus": {
+      "file": ".build/guardrail/host-hardened-corpus-v3-final-a.json",
+      "sha256": "bb4ed147933c076111b127e6a5433c6ce7ea54cc43befb7d384ddb54681e6309",
+      "rubricVersion": "operation-policy-v2",
+      "rubricSourceSha256": "cad1720e8ee31c153985ee98af010671d323917c0ef30c7ebd61c3832b318ae6",
+      "cases": 693,
+      "groups": 231,
+      "labels": "Machine-authored operation-policy labels; independent human review pending."
+    },
+    "baseline": {
+      "file": ".build/guardrail/host-hardened-baseline-v3-final-df22795e.json",
+      "sha256": "7668c347e040ae314995c11093e0ee877bd8c2f46c98ed7ac6ccbd6d5d080db0",
+      "identicalFreshExports": 2,
+      "baselineSourceSha256": "333d737bc6a167c342854242a9a6a9d3a160cc68fa28e7ea9dd1a3d14e2730f6",
+      "provenanceSourceSha256": "2b2706ca4ced35d1a7b6e8adbc6cb427141ea548d4dd9ce1c0984eeacffec907",
+      "executingExporterSha256": "3659d2267835074ef4d1177f5944b7cfe5d7eed3bbeb5428e2a26675ddc9dbd0",
+      "runtimeSourceInventoryFiles": 426,
+      "exporterProvenanceSourceInventoryFiles": 428,
+      "sourceInventoryBoundary": "Literal local static/dynamic imports and requires from maintained roots plus runtime JSON and package manifests; runtime traversal capped at 1,024 files, 16 MiB total and 2 MiB per source. Pins recorded source bytes, not nonliteral module loading, external state or deployed activation.",
+      "mockedExecution": true,
+      "hostFacts": "Authored generic org and browser observations; actual source independently resolves each full raw request.",
+      "modelEligible": 387,
+      "exactPolicyFloors": 303,
+      "incompleteInputRuleFallbacks": 3,
+      "unsafeAllows": 81,
+      "benignInterruptions": 11,
+      "goldDisagreements": 92,
+      "splits": {
+        "train": { "cases": 312, "modelEligible": 171, "unsafeAllows": 23, "benignInterruptions": 3 },
+        "validation": { "cases": 192, "modelEligible": 105, "unsafeAllows": 29, "benignInterruptions": 3 },
+        "test": { "cases": 189, "modelEligible": 111, "unsafeAllows": 29, "benignInterruptions": 5, "incompleteInputRuleFallbacks": 3 }
+      }
+    },
+    "heldOutProvenance": "Initial baseline export surfaced three incomplete TEST Apex request shapes. Exporter fallback handling was corrected and committed before final baseline export and before any candidate 4 TEST model call; the held-out fixture inventory was not wholly untouched during preparation.",
+    "splitIsolationAudit": {
+      "scope": "Source-only comparison of actual candidate 4 prepared TRAIN rows with final model-eligible TEST rows; no TEST model predictions.",
+      "candidate4PreparedTrainRows": 300,
+      "modelEligibleTestRows": 111,
+      "completeCanonicalRiskInputReplays": 0,
+      "rawBrowserClickToolInputRepeatsWithDifferentResolvedFacts": 54,
+      "newTestAddendaRawInputMatchesToCandidate4Train": 0,
+      "originalCorpusCrossSplitGroupNameAncestryPairs": 10,
+      "claimBoundary": "Held-out operations include changed contexts and syntax, not wholly unseen conceptual operation families."
+    },
+    "candidate4ModelValidation": "pending",
+    "candidate4ModelTest": "not run",
+    "prospectiveCampaignIdentityReceipt": "pending",
+    "realBridgeLatencyBoundary": "Corpus requests run serially. Warm elapsed includes preparation and any queue wait encountered; p95 does not prove latency under a contended queue.",
+    "claimBoundary": "Rule baseline on a finite machine-authored corpus only; no model effectiveness, held-out qualification, workflow parity or production acceptance claim."
+  },
   "training": {
     "baseModel": "google/gemma-3-1b-it",
     "baseRevision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
