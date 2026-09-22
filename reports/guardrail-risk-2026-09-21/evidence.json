@@ -43,6 +43,15 @@
     "qualifiesBrowserFamily": false,
     "externalBrowserOrSalesforceOperationsExecuted": false
   },
+  "sealedV3BrowserClickOnlyCoverageAudit": {
+    "sealedCorpusSha256": "bb4ed147933c076111b127e6a5433c6ce7ea54cc43befb7d384ddb54681e6309",
+    "historicalBaselineSha256": "7668c347e040ae314995c11093e0ee877bd8c2f46c98ed7ac6ccbd6d5d080db0",
+    "clickExpectedConfirmByTrainValidationTest": [18, 9, 9],
+    "clickConfirmModelEligibleByTrainValidationTest": [0, 0, 0],
+    "pressConfirmModelEligibleByTrainValidationTest": [3, 3, 3],
+    "clickOnlyCanMeetCurrentSealedCorpusCoverage": false,
+    "heldOutRequestBodiesOrIndividualLabelsInspectedByAgent": false
+  },
   "candidate5TrainSupplementStructuralScreen": {
     "supplementSha256": "a53936a41c035ae249ef2bda017cc36704be9e37e1ab5f7b6e8ed5e9ef849446",
     "authoredTrainRows": 40,
@@ -253,6 +262,22 @@
       "runtimeSurfaceChecksPassed": 31,
       "sourceCheck": "passed",
       "lint": "passed",
+      "modelQualification": false
+    },
+    "currentSfSourceChecks": {
+      "sfPiCommit": "5e2ee1e3073ad17d47ec6ce3510234e522b1a188",
+      "sfPiTree": "7368f83a0108b7c602d9f7cc1fa6d3886928391a",
+      "focusedGuardrailTestsPassed": 362,
+      "focusedGuardrailTestsSkipped": 2,
+      "runtimeSurfaceChecksPassed": 31,
+      "sourceCheck": "passed",
+      "focusedLint": "passed",
+      "formatCheck": "passed",
+      "catalogCheck": "passed",
+      "fullRepositoryTestsPassed": 4351,
+      "fullRepositoryTestsFailed": 34,
+      "fullRepositoryUnhandledErrors": 7,
+      "fullRepositoryResult": "failed; some environment failures and other causes unconfirmed",
       "modelQualification": false
     },
     "jevSourceChecksAfterTrainingReadinessGuard": {

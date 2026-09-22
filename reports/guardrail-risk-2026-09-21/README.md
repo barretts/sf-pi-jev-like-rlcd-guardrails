@@ -27,7 +27,7 @@ These are new source identities, not a relaxation of the p95 or safety gates.
 Prior validation and SDK diagnostics cannot qualify this source. The default
 is still `off`, and no candidate-5 model has been trained or qualified.
 
-The final Jev source suite passed 1,048 tests in 48 files. SF Pi's focused
+At the 750 ms checkpoint, Jev passed 1,048 tests in 48 files. SF Pi's focused
 suite passed 361 tests with two skipped, 31 runtime-surface checks passed, and
 source check and lint passed. Jev commit `68bcb8c` retained the
 [integration patch](../../integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch)
@@ -90,7 +90,7 @@ The strict baseline diagnostic was repeated on SF Pi `40ba11d` with
 the sealed 693-case v3 corpus (SHA-256
 `bb4ed147933c076111b127e6a5433c6ce7ea54cc43befb7d384ddb54681e6309`).
 Seven exporter tests passed; the coverage test failed on the same six
-browser family/split gaps. No baseline file was written. The current runtime
+browser family/split gaps. No baseline file was written. The SF `40ba11d` runtime
 baseline source SHA-256 is
 `7c047635954f884fe0c04fa29a6a44590044e64408598078d9f7045baa30a433`.
 The source-pinned TRAIN supplement still names the earlier SF `3070408`
@@ -99,9 +99,10 @@ SF Pi `5e2ee1e` subsequently kept the existing direct `agent-browser` shell
 confirmation as an exact floor even when Jev predicts allow. The focused
 Guardrail suite passed 362 tests (two skipped), the runtime-surface suite
 passed 31, and type, focused lint, formatting and catalog checks passed. The
-full repository suite had 34 failures in unrelated extensions, including
-sandbox permission errors, and is not a pass. Repeating the sealed-corpus
-strict diagnostic on `5e2ee1e` again passed seven exporter tests and failed
+full repository suite had 34 failures across other extensions, including
+sandbox permission errors and failures not yet diagnosed; it is not a pass.
+Repeating the sealed-corpus strict diagnostic on `5e2ee1e` again passed seven
+exporter tests and failed
 only the same six browser coverage checks; no baseline was written. Its new
 runtime source SHA-256 is
 `5e125efa9d840317c1f974b844a50aff35dca1279b8835e3339f17439092b69c`.
@@ -120,6 +121,15 @@ the normal snapshot and CLI do not carry the guard, the page-world hit check
 can be spoofed, and mouse/key events are dispatched separately. Dialog
 release and nested focus remain unresolved. Jev and SF Pi do not consume this
 prototype; the current browser coverage and baseline result are unchanged.
+
+An aggregate-only audit of the sealed v3 corpus found 18/9/9 risky browser
+click rows in TRAIN/VALIDATION/TEST, but the last admissible baseline marked
+all of them exact policy floors and therefore ineligible for Jev. Its
+model-eligible risky browser rows were presses (3/3/3). A guarded click-only
+driver would still require separately reviewed, non-floor risky click cases
+in all three splits, or guarded press support, before it can close the
+qualification gate. Existing exact floors cannot be reclassified to create
+coverage. No held-out request bodies or individual labels were displayed.
 
 A structural rescreen of the current TRAIN supplement (SHA-256
 `a53936a41c035ae249ef2bda017cc36704be9e37e1ab5f7b6e8ed5e9ef849446`)
