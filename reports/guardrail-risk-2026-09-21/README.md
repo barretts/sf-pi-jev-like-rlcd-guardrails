@@ -53,6 +53,17 @@ not establish the cause of native context failure. This is an operational
 fallback observation, not a valid latency or model-quality measurement. A
 passing native normal-startup proof remains pending under an uncontended setup.
 
+One bounded direct init of the same candidate 3 GGUF and native binary
+reproduced the failure in 297 ms. The
+[diagnostic receipt](./candidate-3-metal-context-diagnostic.json) preserves
+the native error and stderr tail: model weights loaded, then Metal failed to
+create a command queue and llama.cpp could not initialize its backend context.
+The context requested 49,152 tokens; prepared candidate 4 TRAIN and validation
+prompts have maxima of 751 and 752 tokens respectively. The command-queue
+error is the observed immediate mechanism, not proof that context size, the
+sandbox, or concurrent training caused it. No candidate 4 source or model was
+changed for this diagnostic.
+
 The updated optional native SDK harness now registers the real general Jev
 driver and awaits that normal binding/startup path, with no manual provider
 warmup. Seven actual SF source cases passed with the native arm skipped, plus

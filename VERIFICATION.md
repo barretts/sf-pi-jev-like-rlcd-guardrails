@@ -275,7 +275,11 @@ outcomes matched. The complete failed-attempt receipt is retained under
 `reports/guardrail-risk-2026-09-21/candidate-3-normal-startup-failed.json`.
 Concurrent jobs do not establish the failure cause, and this result supplies
 no native latency or qualification evidence. A passing uncontended native
-startup run remains necessary.
+startup run remains necessary. A bounded direct init of the same candidate 3
+artifact and native binary reproduced the error in 297 ms: llama.cpp loaded
+the model, then Metal failed to create a command queue. The retained
+`candidate-3-metal-context-diagnostic.json` contains the response and stderr
+tail. It does not identify why Metal could not create that queue.
 
 The [prospective TRAIN diversity supplement](./docs/GUARDRAIL_TRAIN_DIVERSITY.md)
 retains 80 exact seven-field bridge inputs in 40 groups, 40 allow and 40 confirm,

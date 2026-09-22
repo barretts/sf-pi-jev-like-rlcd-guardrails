@@ -72,6 +72,18 @@
     "shadowOutcomeAndApprovalParityWithOff": true,
     "riskWorkerFinalState": "cold",
     "riskWorkerLastError": "Context initialization failed",
+    "directNativeDiagnostic": {
+      "file": "reports/guardrail-risk-2026-09-21/candidate-3-metal-context-diagnostic.json",
+      "sha256": "9ff82d399f982c6831519d0ae7d36241df960848547bd22e9581165625e8ac67",
+      "sameNativeBinaryAndModelAsPassingCandidate3Bridge": true,
+      "elapsedMs": 297.154083,
+      "nativeResponse": "Context initialization failed",
+      "stderrImmediateMechanism": "Metal failed to create command queue; backend context allocation failed",
+      "requestedContextTokens": 49152,
+      "candidate4PreparedTrainMaxPromptTokens": 751,
+      "candidate4PreparedValidationMaxPromptTokens": 752,
+      "rootCauseEstablished": false
+    },
     "resourceContentionCauseEstablished": false,
     "nativeNormalStartupPassed": false,
     "modelQualification": false
