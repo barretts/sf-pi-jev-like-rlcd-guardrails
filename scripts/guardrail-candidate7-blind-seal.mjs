@@ -80,6 +80,8 @@ export async function verifyCandidate7BlindMetadata({
       valid.case_count > 0 &&
       Number.isSafeInteger(valid.group_count) &&
       valid.group_count > 0 &&
+      Number.isSafeInteger(valid.template_count) &&
+      valid.template_count > 0 &&
       Array.isArray(valid.group_ids) &&
       valid.group_ids.every(identifier) &&
       Array.isArray(valid.template_ids) &&
@@ -90,6 +92,8 @@ export async function verifyCandidate7BlindMetadata({
       test.case_count > 0 &&
       Number.isSafeInteger(test.group_count) &&
       test.group_count > 0 &&
+      Number.isSafeInteger(test.template_count) &&
+      test.template_count > 0 &&
       isHash(test.group_ids_sha256) &&
       isHash(test.template_ids_sha256) &&
       JSON.stringify(Object.keys(test).sort()) ===
@@ -99,6 +103,7 @@ export async function verifyCandidate7BlindMetadata({
             "sha256",
             "case_count",
             "group_count",
+            "template_count",
             "group_ids_sha256",
             "template_ids_sha256",
           ].sort(),
@@ -127,6 +132,7 @@ export async function verifyCandidate7BlindMetadata({
       groups.every(identifier) &&
       templates.every(identifier) &&
       new Set(groups).size === valid.group_count &&
+      new Set(templates).size === valid.template_count &&
       identifierHash(groups) === valid.group_ids_sha256 &&
       identifierHash(templates) === valid.template_ids_sha256 &&
       JSON.stringify([...new Set(groups)].sort()) ===
@@ -141,11 +147,13 @@ export async function verifyCandidate7BlindMetadata({
     validSha256: valid.sha256,
     validCaseCount: valid.case_count,
     validGroupCount: valid.group_count,
+    validTemplateCount: valid.template_count,
     testSeal: {
       path: test.path,
       sha256: test.sha256,
       caseCount: test.case_count,
       groupCount: test.group_count,
+      templateCount: test.template_count,
       groupIdsSha256: test.group_ids_sha256,
       templateIdsSha256: test.template_ids_sha256,
     },

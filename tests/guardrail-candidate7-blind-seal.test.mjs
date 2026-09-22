@@ -37,6 +37,7 @@ async function fixture() {
         sha256: sha(valid),
         case_count: 1,
         group_count: 1,
+        template_count: 1,
         group_ids: ["g1"],
         template_ids: ["t1"],
         group_ids_sha256: idsSha(["g1"]),
@@ -47,6 +48,7 @@ async function fixture() {
         sha256: sha("sealed-test-bytes-not-present\n"),
         case_count: 2,
         group_count: 1,
+        template_count: 1,
         group_ids_sha256: sha("opaque-group-ids"),
         template_ids_sha256: sha("opaque-template-ids"),
       },
@@ -97,6 +99,7 @@ test("prefreeze metadata check succeeds without a TEST file or labels", async ()
       "sha256",
       "caseCount",
       "groupCount",
+      "templateCount",
       "groupIdsSha256",
       "templateIdsSha256",
     ]);
