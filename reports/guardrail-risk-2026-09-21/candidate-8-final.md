@@ -130,6 +130,17 @@ policy authority. The `tool_call` hook still owns confirmation, session
 grants, revocation, audit, and the only execution path. Missing or invalid
 model output returns to the existing engine with a recorded reason.
 
+The reviewed C8 qualifier prototype binds scored outcomes, scores, call
+counts, and timing to raw host-report bytes and would bind held-out gold and
+original operations to sealed TEST source bytes. C8 failed VALID before a
+separate model-free TEST baseline could be sealed, so its frozen
+`independentTestBaselineSealSha256` is `null` and the independent-baseline
+gate is permanently false for this candidate. The inert stub measurement
+sketch has purpose `candidate8_stub_measurement_only` and `qualified: false`;
+the normal Jev verifier rejects it. Synthetic tamper tests exercise these
+bindings, but no TEST body was opened and no real enforce-path latency or
+approval outcome was measured for C8.
+
 The final-host [fake-provider shadow replay](./candidate-8-final-host-shadow-evidence/README.md)
 ran all 96 VALID requests with 59/59 fake provider answers, six explicit
 pre-model fallbacks, three exact blocks, and no external operations. It
@@ -139,13 +150,15 @@ VALID run then used that same bridge in shadow mode with mocked execution.
 Its observed decision counts are not a live Salesforce, Slack, or browser
 workflow outcome.
 
-The integrated Jev delivery branch passed TypeScript checking, build,
-formatting, the full Jev suite (54 files, 1,090 tests), and 19 focused Node
-checks (three optional checks skipped). The SHA inventories for the run,
-TRAIN-CAL, final-host fake shadow, real VALID, and historical v2 shadow bundles
-all verified. Separate sf-pi hook and runtime checks exercise the integration
-source; source tests and stubbed hook behavior do not establish model safety
-or production acceptance.
+The final Jev delivery branch passed TypeScript checking, build, formatting,
+the full suite (54 files, 1,094 tests), 19 focused Node checks (three optional
+checks skipped), and ten synthetic qualifier tests. The final sf-pi host
+passed 34 Guardrail test files (427 tests, two skipped), 31 runtime-surface
+tests, TypeScript checking, formatting, generated-catalog checks, and targeted
+Guardrail ESLint. The SHA inventories for the run, TRAIN-CAL, final-host fake
+shadow, real VALID, and historical v2 shadow bundles all verified. Source
+tests and stubbed hook behavior establish integration behavior, not local-model
+qualification or production acceptance.
 
 ## Disposition and limits
 

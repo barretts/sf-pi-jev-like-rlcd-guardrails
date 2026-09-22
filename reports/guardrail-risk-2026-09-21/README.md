@@ -1,5 +1,19 @@
 # Guardrail risk replacement evidence, 2026-09-21
 
+## Candidate 8 prospective VALID outcome, 2026-09-22
+
+The [Candidate 8 delivery report](./candidate-8-final.md) and
+[complete per-case VALID receipt](./candidate-8-valid-real-256-evidence/report.json)
+preserve the 256-update Gemma training, TRAIN-CAL cutoff freeze, independent
+96-case VALID comparison, fallback reasons, timing, and final sf-pi host patch.
+The model's shadow action had five unsafe automatic allows (one regression
+against the existing engine), 17 unnecessary interruptions versus one for the
+baseline, and 57 usable predictions from 59 eligible calls. Two calls crossed
+the 750 ms deadline; full-path warm p95 was 534.085 ms. Candidate 8 **failed**
+prospective selection. Its TEST payload was not opened or scored, there is no
+qualifying receipt, and enforcement remains off. The qualifier prototype's
+independent TEST baseline gate is false for this rejected candidate.
+
 ## Candidate 7 prospective VALID outcome, 2026-09-22
 
 The [Candidate 7 delivery report](./candidate-7-final.md) and
@@ -49,7 +63,7 @@ reduced benign interruptions to **16** and warm p95 to **549.9 ms**, but it
 automatically allowed `find ... -delete` and `git reset --hard HEAD` where the
 baseline required confirmation. It matched 44/62 expected actions versus
 57/62 for the baseline. **Both trained candidates failed selection.** No
-further model experiments were started after the 256-step score.
+further model experiments were started in that C6 campaign after the 256-step score.
 The [preview-session input gap](./candidate-6-input-gap.md) also makes one
 simulated/live pair indistinguishable to the current model apart from random
 session IDs; this needs a host-owned execution-mode fact or code-owned check

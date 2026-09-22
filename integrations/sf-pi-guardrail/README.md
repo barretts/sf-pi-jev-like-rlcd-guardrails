@@ -15,7 +15,9 @@ qualification path that requires a passing held-out receipt. **The patch is
 not model qualification.** The [C8 VALID report](../../reports/guardrail-risk-2026-09-21/candidate-8-final.md)
 rejected the model on safety, benign-interruption, call-completion, and
 deadline gates. TEST was not opened. Keep `SF_GUARDRAIL_JEV_MODE` at its
-default `off` outside an isolated shadow replay.
+default `off` outside an isolated shadow replay. The C8 verifier's independent
+TEST baseline seal is intentionally absent after failed VALID, so it cannot
+qualify this candidate; its inert stub sketch is not an enforcement receipt.
 
 | Artifact                 | Pinned identity                                                    |
 | ------------------------ | ------------------------------------------------------------------ |
