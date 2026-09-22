@@ -2,7 +2,89 @@
   "version": 1,
   "date": "2026-09-21",
   "purpose": "Separate local guardrail semantic-risk candidate; preserve exact policy and existing Pi approval/audit enforcement.",
-  "checkpointStatus": "candidate_4_rejected_host_hardened_native_validation",
+  "checkpointStatus": "candidate_5_preparation_blocked_on_browser_coverage_org_fallback_and_label_review",
+  "candidate5Preparation": {
+    "scope": "Version-2 source and corpus preparation; candidate 4 remains the latest model evaluated on the real bridge",
+    "jevCheckout": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922",
+    "sfPiCheckout": "/private/tmp/sf-pi-guardrail-candidate5-20260922",
+    "riskInputVersion": 2,
+    "scoringProtocolSha256": "cd315082c885b8326a6aef10424cd8b386d00aa59f8",
+    "sourceCommits": {
+      "jevProtocol": "019da47b0f9dfdf37294cc293e7bbabb661677b5",
+      "sfFreshBrowserPage": "3a169e3709b9de121a4218987b7e7e65f87645fd",
+      "jevExplicitBrowserFallback": "7ac260d0e7f0426017e17aa3c61a04cf1e599d20",
+      "sfExplicitBrowserFallback": "4528db59658b412c16924d80062325eebb689bd9"
+    },
+    "directFamilyRubricTimingDiagnostic": {
+      "scope": "VALID-only direct native timing using rejected candidate-4 F16 weights and older version-1 host inputs; no SF preparation, queueing, policy execution or version-2 page facts",
+      "path": "/private/tmp/simple-jev-ts-guardrail-risk-20260921/.build/guardrail/candidate-4/host-hardened-native-profile-validation-family-diagnostic.json",
+      "sha256": "031d757472c75ef306624366e81bdd9cb982579ff7f63c48e5eb30a3a46d2445",
+      "modelSha256": "9d6c21487a85c2aad86fa169f8ba816620529b01d993e5a13b09d89ebc047f1b",
+      "eligibleCalls": 105,
+      "completed": 105,
+      "errors": 0,
+      "medianPromptTokens": 395,
+      "totalMsP95": 430.116742,
+      "nativeEvaluateOver500": 0,
+      "candidate5SafetyOrBridgeLatencyEstablished": false
+    },
+    "version2V3BaselineExport": {
+      "status": "rejected_strict_browser_model_eligible_coverage",
+      "sealedCorpusCases": 693,
+      "browserPressRowsMissingFreshPageFacts": 27,
+      "coverageGapSplits": ["train", "validation", "test"],
+      "explicitRulesFallbackCommitted": true,
+      "admissibleTrainingOrQualificationBundle": false
+    },
+    "unresolvedOrgFactReview": {
+      "finding": "Guessed or unresolved Salesforce org facts could be model eligible for org-sensitive requests",
+      "requiredRepair": "Matching SF-host and Jev-evaluator rules fallback before another bundle is admitted",
+      "proposedUnknownOrgTrainRowsHeld": 4,
+      "statusAtThisCheckpoint": "repair_pending"
+    },
+    "proposedV4Corpus": {
+      "status": "rejected_label_review",
+      "reason": "Some browser shortcut outcomes depend on selection, focus or layout facts absent from the requests",
+      "sealed": false
+    },
+    "proposedNewHeldOutFixture": {
+      "status": "automatic_approval_review_rejected_before_freeze",
+      "reason": "Potential contamination of held-out evaluation",
+      "written": false,
+      "usedForModelEvaluation": false,
+      "distinctFromV4LabelReview": true
+    },
+    "version2PiSdkShadowDiagnostic": {
+      "scope": "Actual Pi SDK with old rejected candidate-4 weights, mocked facts and counter-only tools; no external operations or enforce mode",
+      "path": ".build/guardrail/candidate-5-diagnostic/c4-weights-sdk-v2.json",
+      "sha256": "709fd9d1c541e365515c76605de76b6dc4f32d7b04dc47cf1dc0b87947149566",
+      "riskModuleSha256": "57b5f63d7790908e4bf9c34b40de4bdad8c79ca0b0bccd0a5994d8e288167f1c",
+      "sdkTestsPassed": 8,
+      "sdkTestsFailed": 0,
+      "offAndShadowEach": {
+        "executedOutcomes": 9,
+        "exactBlocks": 1,
+        "confirmations": 3,
+        "retries": 0
+      },
+      "shadowSemanticModelChecks": { "completed": 4, "expected": 4 },
+      "shadowComparisons": 10,
+      "shadowExactPolicyChecks": 6,
+      "shadowFallbacks": 0,
+      "modelBackedComparisonElapsedMs": [147.74, 127.18, 125.63, 125.96],
+      "comparisonTimingScope": "Four representative bash checks including real hook overhead; insufficient for warm p95 qualification",
+      "shadowColdInitializationMs": 21449.644042,
+      "shadowTenCallWorkflowMs": 530.879875,
+      "approvalAndOutcomeParityWithOff": true,
+      "candidate5ModelEffectivenessOrWarmP95Established": false
+    },
+    "candidate5TrainingCompleted": false,
+    "candidate5BridgeValidationCompleted": false,
+    "candidate5HeldOutModelCalls": 0,
+    "candidate5Qualified": false,
+    "defaultEnforcementMode": "off",
+    "existingRuleEngineActive": true
+  },
   "currentJevSourceChecks": {
     "typeCheck": "passed",
     "format": "passed",
@@ -1195,7 +1277,7 @@
     "representativeSdkShadowApprovalParityObserved": true,
     "representativeSdkScriptedEnforceApprovalParityObserved": false,
     "representativeSdkNativeComparisonCompleted": true,
-    "currentCandidate": "jev/gemma-3-1b-guardrail-candidate-4",
+    "currentCandidate": null,
     "validationSafetyRegressionGatePassed": false,
     "candidate3FullTrainPostFitCompleted": true,
     "candidate3TrainFitAtFixedCutoffObserved": true,

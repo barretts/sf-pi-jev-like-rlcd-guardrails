@@ -13,7 +13,59 @@ model checks. No held-out model calls, qualified enforce, overall improvement
 or production acceptance claim is made. Candidate 3's earlier rejection and
 candidate 2's usability rejection remain preserved below.
 
-## Current host-hardened campaign checkpoint, 2026-09-22
+## Candidate 5 preparation checkpoint, 2026-09-22
+
+Jev commit `019da47` introduced risk-input version 2 with an original-tool-name
+family rubric; SF Pi commit `3a169e37` bound browser-press risk to fresh host
+snapshot page facts. The later Jev `7ac260d` and SF Pi `4528db59` fixes record
+missing browser-page facts as an explicit rules fallback. The SF hook remains
+the enforcement owner, and the operator default is `off`. The earlier
+candidate-4 model, receipt, baseline and rejection cannot qualify this changed
+protocol. No candidate-5 model has been trained, bridge-validated, tested on
+held-out cases or qualified for enforcement.
+
+A direct VALID-only native timing diagnostic used **candidate 4's rejected F16
+weights** with a shorter tool-family rubric and older version-1 host inputs.
+All 105 eligible prompts completed, with total p95 430.12 ms and no native
+evaluation over 500 ms. The [family-diagnostic receipt](/private/tmp/simple-jev-ts-guardrail-risk-20260921/.build/guardrail/candidate-4/host-hardened-native-profile-validation-family-diagnostic.json)
+has SHA-256 `031d757472c75ef306624366e81bdd9cb982579ff7f63c48e5eb30a3a46d2445`.
+It omits SF request preparation, queueing and policy execution, and its inputs
+do not include version-2 browser-page facts. This is timing diagnosis, not a
+candidate-5 safety result or a warm bridge latency pass.
+
+The first version-2 SF export of the sealed 693-case v3 corpus did not pass
+strict browser model-eligible risk coverage. Twenty-seven browser-press rows
+lacked the fresh page facts that version 2 requires, leaving a coverage gap in
+TRAIN, validation and TEST. The fallback fixes make that gap explicit; they do
+not make the old export an admissible candidate-5 bundle. A separate review
+found that guessed or unresolved Salesforce org facts could still be model
+eligible on org-sensitive requests. SF-host and Jev-evaluator rules fallback
+repairs are required before another bundle can be admitted; four proposed
+unknown-org TRAIN rows remain held. The pre-repair SDK diagnostic below is
+historical integration evidence only. A proposed v4
+browser revision then failed label review: some shortcut outcomes depend on
+selection, focus or layout state that the requests do not independently
+establish. No revised corpus has been sealed. Separately, automatic approval
+review rejected a proposed new held-out fixture **before freeze** because it
+could contaminate held-out evaluation; that fixture was neither written nor
+used. The label-review rejection and the automatic approval rejection are
+distinct. No candidate-5 RFDT preparation or TEST model call followed.
+
+An actual version-2 Pi SDK off/shadow diagnostic used the **old, rejected
+candidate-4 weights** and stubbed, counter-only tools. Eight SDK tests passed.
+Each mode had nine executed outcomes and one exact block, with three
+confirmations and zero retries. Shadow completed four of four semantic model
+checks and recorded ten comparisons, including six exact-policy checks, with
+zero fallback. It preserved the off mode's approvals and outcomes. Its cold
+startup was 21,449.6 ms; all ten shadow workflow calls took 530.9 ms. The
+four model-backed comparison times, including hook overhead, were 147.74,
+127.18, 125.63 and 125.96 ms; six exact-policy comparisons bypassed the model.
+The [local diagnostic receipt](../../.build/guardrail/candidate-5-diagnostic/c4-weights-sdk-v2.json)
+records the mocked facts and operations. It proves this local integration path
+can execute and compare in shadow without external operations. It makes no
+candidate-5 model effectiveness, enforce-mode, held-out, or warm p95 claim.
+
+## Candidate 4 host-hardened campaign checkpoint, 2026-09-22
 
 Candidate 4 completed training from its prospectively frozen original Google
 Gemma 3 1B base and 300 TRAIN / 144 validation / zero TEST prepared rows. The
