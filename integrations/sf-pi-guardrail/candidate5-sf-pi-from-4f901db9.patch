@@ -11,7 +11,7 @@ index 898b0e862ed664d247d4883d6c8270f538b78f7f..51b7da79285a5e2b976fed810a81e9d1
  
  # Security scan reports
 diff --git a/catalog/index.json b/catalog/index.json
-index fe4232ae85bd69ab6675e8f8819360560845605e..f29dbc0fd840c062ebbb61394f4997dd63cb3e38 100644
+index fe4232ae85bd69ab6675e8f8819360560845605e..06bcd161290e597758441523c47b3132b53a7f8b 100644
 --- a/catalog/index.json
 +++ b/catalog/index.json
 @@ -226,7 +226,7 @@
@@ -60,7 +60,7 @@ index fe4232ae85bd69ab6675e8f8819360560845605e..f29dbc0fd840c062ebbb61394f4997dd
      "hasReadme": true,
      "hasTests": true,
 -    "srcLoc": 5673
-+    "srcLoc": 7048
++    "srcLoc": 7056
    },
    {
      "id": "sf-herdr",
@@ -1027,7 +1027,7 @@ index db37337bd533af1a56260e6719ba48ed11520f1b..44faa75f9c128ad5d940342829a907f8
    are global Pi settings under `sfPi.guardrail`; project-local weakening is
    deferred with project-local rule overrides. Adding either means plumbing
 diff --git a/extensions/sf-guardrail/README.md b/extensions/sf-guardrail/README.md
-index 27bba377eedf0bd686f33323566213932a58de01..54202a7b8a9126accf3c71e3f982ee16615e2174 100644
+index 27bba377eedf0bd686f33323566213932a58de01..4a3ecdb13f84c1b672182d4f5cfe26c51e4cf0c1 100644
 --- a/extensions/sf-guardrail/README.md
 +++ b/extensions/sf-guardrail/README.md
 @@ -20,11 +20,20 @@ fail-closed behavior, session approval memory, and audit path:
@@ -1051,7 +1051,7 @@ index 27bba377eedf0bd686f33323566213932a58de01..54202a7b8a9126accf3c71e3f982ee16
  - `/sf-guardrail grants` — list legacy persisted grants if present.
  - `/sf-guardrail settings` — open routine preferences.
  - `/sf-guardrail aliases` — edit aliases that receive production-level policy.
-@@ -51,6 +60,101 @@ Process-level automation controls are explicit:
+@@ -51,6 +60,102 @@ Process-level automation controls are explicit:
  
  Neither path bypasses hard blocks.
  
@@ -1141,9 +1141,10 @@ index 27bba377eedf0bd686f33323566213932a58de01..54202a7b8a9126accf3c71e3f982ee16
 +
 +Qualification requires zero unsafe automatic allows, no safety regression or
 +hard-block weakening, unnecessary confirmations and blocks at or below the
-+current engine's baseline, warm p95 at or below 500 ms, no warm risk check
-+exceeding the hard 750 ms deadline, and completion of every eligible model
-+call. The operating ideal is warm p95 below 500 ms. Expected outcomes come
++current engine's baseline, warm p95 strictly below 750 ms, every eligible warm
++risk check strictly below the 750 ms deadline, and completion of every eligible
++model call. The operating ideal is warm p95 strictly below 500 ms; it is
++reported separately from the qualification gates. Expected outcomes come
 +from an explicit operation-policy rubric; disagreement with the old engine
 +alone is not a model error. Candidate selection uses validation groups only.
 +Weights, prompt, cutoff, and criteria are frozen before the held-out test.
@@ -1153,7 +1154,7 @@ index 27bba377eedf0bd686f33323566213932a58de01..54202a7b8a9126accf3c71e3f982ee16
  ## Safety and Data Boundaries
  
  - Interactive confirms offer Allow once, Allow for this session, or Block.
-@@ -62,17 +166,29 @@ Neither path bypasses hard blocks.
+@@ -62,17 +167,29 @@ Neither path bypasses hard blocks.
    and requires a separate production/unknown-org opt-in.
  - Strictly validated temporary-directory cleanup can be auto-allowed; other
    dangerous commands are confirmed or hard-blocked according to rule behavior.
@@ -1184,7 +1185,7 @@ index 27bba377eedf0bd686f33323566213932a58de01..54202a7b8a9126accf3c71e3f982ee16
  ## Troubleshooting
  
  **Production confirms fire for a sandbox:** Inspect `/sf-guardrail audit` to see
-@@ -90,6 +206,23 @@ operator control and retain the audit output; hard blocks remain active.
+@@ -90,6 +207,23 @@ operator control and retain the audit output; hard blocks remain active.
  **Audit is empty after resume:** Decisions belong to the active session file.
  Confirm that the resumed branch is the one that recorded the decision.
  
@@ -1399,10 +1400,10 @@ index d96bfc0df37d67fd989d461c8b66457d8d945e72..28b1863395965385cafaa980fbb4f727
      }
 diff --git a/extensions/sf-guardrail/lib/jev-risk.ts b/extensions/sf-guardrail/lib/jev-risk.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..c4ae71f6bbb8728a7636beaede8950b2ebfb71bd
+index 0000000000000000000000000000000000000000..e70ab30ce4d9778dd59fbf2af2f822ca917b05c0
 --- /dev/null
 +++ b/extensions/sf-guardrail/lib/jev-risk.ts
-@@ -0,0 +1,1080 @@
+@@ -0,0 +1,1088 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +/** Optional local risk classification; the existing tool_call owns enforcement. */
 +import { createHash } from "node:crypto";
@@ -2313,6 +2314,7 @@ index 0000000000000000000000000000000000000000..c4ae71f6bbb8728a7636beaede8950b2
 +  let evaluation: Promise<Prediction> | undefined;
 +  let signal: AbortSignal | undefined;
 +  let aborted: (() => void) | undefined;
++  let result: { decision?: ClassifiedDecision; comparison?: JevRiskComparison } | undefined;
 +  const browserClickFallback = (
 +    facts: JevRiskInput["facts"]["browserRef"],
 +  ): { decision?: ClassifiedDecision; comparison: JevRiskComparison } => {
@@ -2389,12 +2391,12 @@ index 0000000000000000000000000000000000000000..c4ae71f6bbb8728a7636beaede8950b2
 +    const riskInput = await Promise.race([prepareJevRiskInput(input, baseline), abortPromise]);
 +    signal.throwIfAborted();
 +    const inputSha256 = digest(riskInput);
-+    if (performance.now() - start > JEV_RISK_DEADLINE_MS)
++    if (performance.now() - start >= JEV_RISK_DEADLINE_MS)
 +      throw new Error("Jev risk preparation exceeded deadline");
 +    evaluation = Promise.resolve(provider.evaluate(riskInput, signal));
 +    const prediction = await Promise.race([evaluation, abortPromise]);
 +    signal.throwIfAborted();
-+    if (performance.now() - start > JEV_RISK_DEADLINE_MS)
++    if (performance.now() - start >= JEV_RISK_DEADLINE_MS)
 +      throw new Error("Jev risk evaluation exceeded deadline");
 +    if (
 +      provider.protocolSha256 !== protocolSha256 ||
@@ -2413,7 +2415,7 @@ index 0000000000000000000000000000000000000000..c4ae71f6bbb8728a7636beaede8950b2
 +      prediction.allowScore > 1 ||
 +      !Number.isFinite(prediction.elapsedMs) ||
 +      prediction.elapsedMs < 0 ||
-+      prediction.elapsedMs > JEV_RISK_DEADLINE_MS ||
++      prediction.elapsedMs >= JEV_RISK_DEADLINE_MS ||
 +      !Number.isSafeInteger(prediction.inputTokens) ||
 +      prediction.inputTokens < 1 ||
 +      (prediction.action === "allow" && prediction.allowScore < 0.99) ||
@@ -2430,7 +2432,7 @@ index 0000000000000000000000000000000000000000..c4ae71f6bbb8728a7636beaede8950b2
 +      riskInput,
 +    );
 +    signal.throwIfAborted();
-+    if (performance.now() - start > JEV_RISK_DEADLINE_MS)
++    if (performance.now() - start >= JEV_RISK_DEADLINE_MS)
 +      throw new Error("Jev risk decision preparation exceeded deadline");
 +    Object.assign(comparison, {
 +      source: "jev",
@@ -2442,7 +2444,8 @@ index 0000000000000000000000000000000000000000..c4ae71f6bbb8728a7636beaede8950b2
 +      allowScore: prediction.allowScore,
 +      reason: prediction.reason,
 +    });
-+    return { decision: mode === "shadow" ? baseline : decision, comparison };
++    result = { decision: mode === "shadow" ? baseline : decision, comparison };
++    return result;
 +  } catch (error) {
 +    comparison.reason = errorReason(
 +      error,
@@ -2453,9 +2456,15 @@ index 0000000000000000000000000000000000000000..c4ae71f6bbb8728a7636beaede8950b2
 +    // An explicit operational fallback preserves the existing safety layer.
 +    return { decision: baseline, comparison };
 +  } finally {
-+    comparison.elapsedMs = performance.now() - start;
 +    if (aborted && signal) signal.removeEventListener("abort", aborted);
 +    void evaluation?.catch(() => {});
++    comparison.elapsedMs = performance.now() - start;
++    if (result && comparison.source === "jev" && comparison.elapsedMs >= JEV_RISK_DEADLINE_MS) {
++      comparison.source = "rules_fallback";
++      comparison.actual = comparison.baseline;
++      comparison.reason = `Jev risk decision exceeded the ${JEV_RISK_DEADLINE_MS} ms deadline`;
++      result.decision = baseline;
++    }
 +  }
 +}
 +
@@ -6393,10 +6402,10 @@ index 0000000000000000000000000000000000000000..172974cb68c751a4b1768ba666335255
 +});
 diff --git a/extensions/sf-guardrail/tests/jev-risk.test.ts b/extensions/sf-guardrail/tests/jev-risk.test.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..c776014da9afef87cdfba50dc12c7fa69d05dc85
+index 0000000000000000000000000000000000000000..fbe21c194595915e577f8d1e0f7e0b9d3512ff1c
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/jev-risk.test.ts
-@@ -0,0 +1,736 @@
+@@ -0,0 +1,761 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +import { createHash } from "node:crypto";
 +import { afterEach, describe, it, expect, vi } from "vitest";
@@ -7032,7 +7041,7 @@ index 0000000000000000000000000000000000000000..c776014da9afef87cdfba50dc12c7fa6
 +    const evaluate = reportedLate.evaluate;
 +    reportedLate.evaluate = async (value) => ({
 +      ...(await evaluate(value)),
-+      elapsedMs: JEV_RISK_DEADLINE_MS + 1,
++      elapsedMs: JEV_RISK_DEADLINE_MS,
 +    });
 +    const invalid = await evaluateJevRisk(pi(reportedLate), input(), baseline, {
 +      mode: "enforce",
@@ -7042,6 +7051,31 @@ index 0000000000000000000000000000000000000000..c776014da9afef87cdfba50dc12c7fa6
 +      source: "rules_fallback",
 +      reason: "Invalid, incomplete or late Jev risk prediction",
 +    });
++  });
++  it("rejects a model decision when final bookkeeping crosses the deadline", async () => {
++    const startedAt = performance.now();
++    const readings = [1, 2, 3, 749.9, 750].map((elapsed) => startedAt + elapsed);
++    const now = vi
++      .spyOn(performance, "now")
++      .mockImplementation(() => readings.shift() ?? startedAt + JEV_RISK_DEADLINE_MS);
++    try {
++      const model = provider("allow");
++      const result = await evaluateJevRisk(pi(model), input(), baseline, {
++        mode: "enforce",
++        startedAt,
++      });
++      expect(model.evaluate).toHaveBeenCalledOnce();
++      expect(result.decision).toBe(baseline);
++      expect(result.comparison).toMatchObject({
++        source: "rules_fallback",
++        actual: "confirm",
++        reason: `Jev risk decision exceeded the ${JEV_RISK_DEADLINE_MS} ms deadline`,
++      });
++      expect(result.comparison?.elapsedMs).toBeCloseTo(JEV_RISK_DEADLINE_MS, 6);
++      expect(readings).toHaveLength(0);
++    } finally {
++      now.mockRestore();
++    }
 +  });
 +  it("includes preparation in the deadline and rejects identity changes or revoked qualification", async () => {
 +    const expired = provider("allow");

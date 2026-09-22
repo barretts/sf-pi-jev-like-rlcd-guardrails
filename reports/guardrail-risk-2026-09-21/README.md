@@ -17,15 +17,19 @@ candidate 2's usability rejection remain preserved below.
 
 SF Pi commit `40ba11d` (tree `0b5f973115696887838150f768f89a810cd1f995`)
 and Jev source commit `51a9f7c` set a **750 ms hard deadline per warm risk call**.
-The qualification limit remains **warm p95 at most 500 ms**, including request
-preparation and queueing, and every eligible model call must complete. The
-prospective candidate-5 criteria SHA-256 is
-`c654224157b3185dc15c26eb32f5de3e8a68d465e07b504e86f25e4e07e7e53c`;
+At that checkpoint, qualification still required warm p95 at most 500 ms.
+The revised prospective candidate-5 criteria require every eligible warm
+risk check to finish **in under 750 ms**, including the existing-rule baseline
+lookup, request preparation and queueing. Warm p95 from 500 ms to under 750 ms
+can qualify if all safety, usability, coverage and model-completion gates pass;
+**sub-500 ms p95 is the reported ideal**. The revised prospective criteria
+SHA-256 is `a4395defa588d2be1df02b89102473c0467073348aad7e89fd3cdc4dc1779ad0`;
 the scoring protocol SHA-256 is
 `b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e`.
-These are new source identities, not a relaxation of the p95 or safety gates.
-Prior validation and SDK diagnostics cannot qualify this source. The default
-is still `off`, and no candidate-5 model has been trained or qualified.
+The latency criterion and source identity changed; the safety and usability
+gates remain. Prior validation and SDK diagnostics cannot qualify this
+revision. The default is still `off`, and no candidate-5 model has been trained
+or qualified.
 
 At the 750 ms checkpoint, Jev passed 1,048 tests in 48 files. SF Pi's focused
 suite passed 361 tests with two skipped, 31 runtime-surface checks passed, and
@@ -33,10 +37,10 @@ source check and lint passed. Jev commit `68bcb8c` retained the
 [integration patch](../../integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch)
 at that checkpoint. Jev `6f279ab` refreshed it after the direct browser CLI
 floor, and `25bccf8` refreshed it after passive pre-click evidence. The current
-patch is 325,998 bytes, SHA-256
-`a84f6b554bc67f3ba7f0384a15bee17f5b70f215ee64698b3f6ee471fc97edb4`.
-Fresh application from SF base `4f901db9` reproduced `74e53da` and tree
-`0f8cdffab1361b44a7a2917271603d8db14ef8d5` exactly. This is
+patch is 327,559 bytes, SHA-256
+`ee02a6e44a0089c0f15c5952202289b9a5df73c502207657fcf3f273f4d645e5`.
+Fresh application from SF base `4f901db9` reproduced `a6cf833b` and tree
+`8343991b046553655a628fd5905ac3608a4e4d03` exactly. This is
 source-delivery proof; it does not show installation or model effectiveness.
 
 The first sandboxed Pi SDK run did **not** complete its
@@ -121,6 +125,37 @@ seven checks and failed the same six browser gaps. Its current runtime source SH
 `7f1a5f546fcf2ad87a69111abdde058bc42a542947a294375662b54317bba1ff`.
 The change improves existing browser execution but does not admit Jev browser
 decisions.
+
+The full suite on the same committed C5 host then exited zero with
+`env -u NO_COLOR TERM=xterm-256color npm test -- --testTimeout=10000`:
+605 files passed, one skipped; 4,387 tests passed, 41 skipped. The
+[SF full-suite log](/private/tmp/sf-pi-c5-74e53dac-full-npm-test-10s-20260922.log)
+has SHA-256 `19c8a9026a5be3602e47c9310f5d0d60b4a33883869010d21730af77cccb4f8b`.
+This adds a full-suite result to the focused checks on `74e53da`; the
+separate `5e2ee1e` full-suite result above remains historical. It does not
+resolve the strict browser coverage failure or qualify candidate 5.
+
+The current SF integration commit `a6cf833b` rejects a Jev decision when
+final comparison bookkeeping crosses the 750 ms deadline. Its
+[full-suite log](/private/tmp/sf-pi-c5-final-full-npm-test-10s-20260922.log)
+records 4,388 passed, 41 skipped and zero failed tests in 605 passing files
+(SHA-256 `6f0f09990212067144d1dfd22f8dc5848c6952a85c1a14a30a410bbd6bbbf89e`).
+The runtime-surface suite passed 31/31, and catalog, type, format and focused
+lint checks passed. A strict v3 diagnostic on that exact commit passed seven
+exporter checks and failed the same six browser safe/risky coverage checks;
+it wrote to `/dev/null` and produced no admissible baseline. The current
+runtime source SHA-256 is
+`877e13ccddeaab031bbb86e7a84bb966c14185480916430234c157e30802acc2`.
+This is source and harness evidence, not candidate-5 model qualification.
+
+An [inactive SF guarded-click adapter draft](/private/tmp/sf-pi-guarded-browser-adapter-20260922)
+is committed separately at `47857822`. Nine stubbed tests and runtime-surface
+checks pass, but the live guardrail hook and browser tools do not import it.
+Automatic approval review rejected live `sf_browser_click` wiring because it
+could act in an authenticated Salesforce session while browser scope and
+driver races remain unresolved. The draft does not alter browser eligibility
+or close the qualification coverage gap.
+
 The browser tool sends a separate native click or press after Guardrail's
 hook, and the native driver may resolve a stale element ref to another node
 with the same role and name. A sound browser-model path needs a guarded
@@ -333,22 +368,31 @@ on the qualification corpus.
 
 ## Candidate-5 warm deadline update, 2026-09-22
 
-The next candidate-5 campaign uses a **750 ms hard deadline for each warm risk
-check**. Qualification still requires **warm p95 ≤500 ms**, including request
-preparation and queueing; strictly below 500 ms is preferred. All eligible
-calls still must complete with model results; fallback or timeout
-cannot hide an incomplete call. Zero unsafe automatic allows, no regression to
-existing protections, exact hard blocks, unnecessary interruptions at or below
-baseline, and safe/risky coverage in every required eligible family remain
-mandatory. The browser family coverage gap still prevents an admissible
-candidate-5 bundle and no candidate-5 model has been trained or tested.
+The next candidate-5 campaign requires **each eligible warm risk check to
+finish in under 750 ms**, including the existing-rule baseline lookup, request
+preparation and queueing. Warm p95 from 500 ms to under 750 ms can qualify;
+strictly below 500 ms is the reported ideal. Every eligible call must return
+a model result, so fallback or timeout cannot hide an incomplete call. Zero
+unsafe automatic allows, no
+regression to existing protections, exact hard blocks, unnecessary
+interruptions at or below baseline, and safe/risky coverage in every required
+eligible family remain mandatory. The browser family coverage gap still
+prevents an admissible candidate-5 bundle, and no candidate-5 model has been
+trained or tested.
 
-This is a prospective change to the runtime; the p95 pass criterion remains
-500 ms. It does not regrade candidate 4's historical result or turn its
-rejected validation into a qualification: candidate 4 also failed safety,
-usability and complete-execution gates. Changes to the implementation identity
-invalidate earlier validation, freeze and held-out receipts. New validation
-must pass all gates before freezing or held-out model inference.
+The SF hook starts the 750 ms timer before resolving its existing-rule
+baseline. Baseline lookup counts against the risk-check budget, but the timer
+cannot interrupt that lookup. A slow lookup can therefore make total hook wall
+time exceed 750 ms before rule fallback returns. A model result arriving after
+the deadline is rejected, and a lookup that exhausts the budget leaves no
+time for a model call.
+
+This revises the prospective p95 criterion and does not regrade candidate 4's
+historical result or turn its rejected validation into a qualification:
+candidate 4 also failed safety, usability and complete-execution gates.
+Changes to the criteria and implementation identity invalidate earlier
+validation, freeze and held-out receipts. New validation must pass all gates
+before freezing or held-out model inference.
 
 ## Candidate 4 host-hardened campaign checkpoint, 2026-09-22
 

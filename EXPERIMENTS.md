@@ -2,16 +2,30 @@
 
 ## Current experiment: replace sf-guardrail semantic risk detection
 
-The current goal is a separate local Jev guardrail candidate that is as effective
-as, or more effective than, sf-guardrail's semantic risk detector. Safety and
-usability are measured together: no unsafe automatic allows, no weakening of
+Candidate 5 uses the user-approved timing criterion: each eligible warm SF
+bridge call must finish strictly before 750 ms, including request preparation
+and queueing, and warm p95 must be strictly below 750 ms. Warm p95 strictly
+below 500 ms is an ideal recorded in the result, not a passing requirement.
+Cold initialization remains a separate measurement. Safety, usability,
+complete-call, freeze, and held-out gates remain required. This new criterion
+does not qualify candidate 5 or revise earlier candidate results.
+The candidate 5 Jev and SF Pi worktrees are
+`/private/tmp/simple-jev-ts-guardrail-candidate5-20260922` and
+`/private/tmp/sf-pi-guardrail-candidate5-20260922`.
+
+### Historical candidates 1–4
+
+The goal of these earlier rounds was a separate local Jev guardrail candidate
+that is as effective as, or more effective than, sf-guardrail's semantic risk
+detector. Safety and
+usability were measured together: no unsafe automatic allows, no weakening of
 exact policy, and no increase in unnecessary confirmations or blocks. The
 existing sf-pi `tool_call` hook retains approval, session and audit ownership.
 
-Work is isolated on `barretts/jev-guardrail-risk` in
+This earlier work was isolated on `barretts/jev-guardrail-risk` in
 `/private/tmp/simple-jev-ts-guardrail-risk-20260921` and
 `/private/tmp/sf-pi-guardrail-risk-20260921`, based on Jev `95c0b50` and sf-pi
-`4f901db9`. This experiment preserves the default general classifier and uses a
+`4f901db9`. These rounds preserved the default general classifier and used a
 fresh reviewed `google/gemma-3-1b-it` base through the existing RFDT pipeline.
 The model-lineage exclusion below continues to apply to students, derivatives,
 teachers, fallbacks and test fixtures.
@@ -40,15 +54,16 @@ The actual baseline engine measured 30 unsafe allows and 17 unnecessary
 interruptions on these fixed labels, producing 47 disagreements. These are
 corpus-specific baseline observations, not a production failure-rate estimate.
 
-Candidate selection uses validation only. A passing candidate must freeze its
+Candidate selection used validation only. A passing candidate had to freeze its
 weights, prompt/protocol, 0.99 cutoff, runtime/baseline identities, exact case
-inventory and criteria before held-out inference. Qualification requires zero
+inventory and criteria before held-out inference. Qualification required zero
 unsafe allows, zero safety regressions, zero exact-block demotions, unnecessary
 interruptions at or below the baseline, every eligible model call completed
-without error, and warm p95 at most 500 ms including preparation and queueing.
-The real SF bridge measures host preparation and baseline resolution inside
-that deadline; cold model initialization is reported separately. Fallbacks are
-execution failures for qualification and cannot make a candidate pass.
+without error, and warm p95 at most 500 ms including preparation and queueing
+under the historical candidate 4 gate. The real SF bridge measured host
+preparation and baseline resolution inside that deadline; cold model
+initialization was reported separately. Fallbacks were execution failures for
+qualification and could not make a candidate pass.
 
 | Guardrail round                      | Observed status                                                                                                                                                       | Decision                                                                                                     |
 | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -120,8 +135,9 @@ validation bytes. Root reviewed all 21 source pins before the first model call.
 The original base, default RFDT settings and 1,536 fixed updates remain the
 same; nominal mean TRAIN presentations per row change from 48.7619 to 40.96.
 The original 612-case qualification inventory and all criteria remain unchanged.
-TRAIN fit, export, native validation, held-out and enforce results are pending;
-training start supplies no accuracy forecast or qualification claim.
+At that checkpoint TRAIN fit, export, native validation, held-out and enforce
+results were pending; training start supplied no accuracy forecast or
+qualification claim.
 
 An independent CPU comparison of saved batch-loss scalars found exact parity
 for candidate 3's first 256 updates against candidate 2: 256/256 step IDs and

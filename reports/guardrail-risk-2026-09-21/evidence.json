@@ -32,8 +32,8 @@
     "heldOutLabelsOrRequestsInspectedByAgent": false
   },
   "currentSfStrictBaselineDiagnostic": {
-    "sfPiCommit": "74e53dac3de8d19237985f913a6854b40c7fa38e",
-    "baselineSourceSha256": "7f1a5f546fcf2ad87a69111abdde058bc42a542947a294375662b54317bba1ff",
+    "sfPiCommit": "a6cf833bd06c737f7234fb62bb063839e5581411",
+    "baselineSourceSha256": "877e13ccddeaab031bbb86e7a84bb966c14185480916430234c157e30802acc2",
     "sealedCorpusCases": 693,
     "sealedCorpusSha256": "bb4ed147933c076111b127e6a5433c6ce7ea54cc43befb7d384ddb54681e6309",
     "exporterTestsPassed": 7,
@@ -43,7 +43,9 @@
     "admissibleBaselineWritten": false,
     "modelCalls": 0,
     "externalOperationsExecuted": 0,
-    "heldOutLabelsOrRequestsInspectedByAgent": false
+    "heldOutLabelsOrRequestsInspectedByAgent": false,
+    "diagnosticLog": "/private/tmp/sf-pi-guardrail-candidate5-20260922/.build/guardrail/candidate-5-diagnostic/strict-v3-a6cf833b.log",
+    "diagnosticLogSha256": "132474eabda0329c799273ddf6b79b9a8761df75491799ba7e9abea29f2eeeb3"
   },
   "browserGuardPrototype": {
     "checkout": "/private/tmp/agent-browser-guard-prototype",
@@ -72,6 +74,18 @@
     "integratedIntoSfPi": false,
     "qualifiesBrowserFamily": false,
     "SalesforceOperationsExecuted": false
+  },
+  "inactiveSfGuardedClickAdapterDraft": {
+    "checkout": "/private/tmp/sf-pi-guarded-browser-adapter-20260922",
+    "branch": "barretts/jev-guardrail-guarded-browser-adapter",
+    "commit": "47857822f886e41818c64d10310b507b513a1db2",
+    "stubbedTestsPassed": 9,
+    "runtimeSurfaceTestsPassed": 31,
+    "liveGuardrailOrBrowserToolWiring": false,
+    "browserModelEligibilityChanged": false,
+    "qualificationEstablished": false,
+    "automaticApprovalReviewRejectedLiveClickWiring": true,
+    "rejectionReason": "Authenticated Salesforce browser actions remain outside the resolved scope while driver races and qualification are unresolved"
   },
   "sealedV3BrowserClickOnlyCoverageAudit": {
     "sealedCorpusSha256": "bb4ed147933c076111b127e6a5433c6ce7ea54cc43befb7d384ddb54681e6309",
@@ -204,12 +218,18 @@
       "sf750MsRiskRuntime": "40ba11da1959723052c106db4272e779b802757d"
     },
     "prospective750MsRuntimeCheckpoint": {
-      "scope": "Candidate-5 source and latency contract, not model qualification",
-      "hardPerCallDeadlineMs": 750,
-      "qualificationWarmP95MsMaximum": 500,
+      "scope": "Revised prospective candidate-5 source and latency contract, not model qualification",
+      "hardPerCallDeadlineMsExclusive": 750,
+      "qualificationWarmP95MsExclusiveUpperBound": 750,
+      "idealWarmP95MsExclusiveUpperBound": 500,
       "qualificationP95IncludesPreparationAndQueueing": true,
       "everyEligibleModelCallMustComplete": true,
-      "compiledCriteriaSha256": "c654224157b3185dc15c26eb32f5de3e8a68d465e07b504e86f25e4e07e7e53c",
+      "warmP95From500ToBelow750CanQualifyWithOtherGates": true,
+      "preJevBaselineLookupIncludedInRiskDeadline": true,
+      "baselineLookupInterruptibleByRiskDeadline": false,
+      "overallHookWallTimeCanExceed750Ms": true,
+      "lateModelResultAccepted": false,
+      "compiledCriteriaSha256": "a4395defa588d2be1df02b89102473c0467073348aad7e89fd3cdc4dc1779ad0",
       "scoringProtocolSha256": "b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e",
       "historicalValidationOrFreezeReusable": false,
       "admissibleCurrentBaselineAvailable": false,
@@ -218,12 +238,12 @@
     },
     "retainedSfIntegrationPatch": {
       "path": "integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch",
-      "sha256": "a84f6b554bc67f3ba7f0384a15bee17f5b70f215ee64698b3f6ee471fc97edb4",
-      "bytes": 325998,
+      "sha256": "ee02a6e44a0089c0f15c5952202289b9a5df73c502207657fcf3f273f4d645e5",
+      "bytes": 327559,
       "sfBaseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
       "sfBaseTree": "4e08ddb00626e8d47852f604564b10f135082f1a",
-      "sfTargetCommit": "74e53dac3de8d19237985f913a6854b40c7fa38e",
-      "sfTargetTree": "0f8cdffab1361b44a7a2917271603d8db14ef8d5",
+      "sfTargetCommit": "a6cf833bd06c737f7234fb62bb063839e5581411",
+      "sfTargetTree": "8343991b046553655a628fd5905ac3608a4e4d03",
       "freshDetachedApplyExactTreeMatch": true,
       "sourceDeliveryOnly": true,
       "hostActivationOrModelQualification": false
@@ -323,7 +343,7 @@
       "fullRepositoryResult": "passed with 10-second per-test timeout and normal permissions and color at SF 5e2ee1e",
       "modelQualification": false
     },
-    "currentSfSourceChecks": {
+    "priorSf74SourceChecks": {
       "sfPiCommit": "74e53dac3de8d19237985f913a6854b40c7fa38e",
       "sfPiTree": "0f8cdffab1361b44a7a2917271603d8db14ef8d5",
       "focusedBrowserGuardrailRuntimeFilesPassed": 63,
@@ -334,7 +354,38 @@
       "lint": "passed on isolated prerequisite branch",
       "formatCheck": "passed on isolated prerequisite branch",
       "catalogCheck": "passed on isolated prerequisite branch",
-      "fullRepositoryRunOnThisCommit": false,
+      "fullRepositoryRunOnThisCommit": true,
+      "fullRepositoryCommand": "env -u NO_COLOR TERM=xterm-256color npm test -- --testTimeout=10000",
+      "fullRepositoryExitCode": 0,
+      "fullRepositoryFilesPassed": 605,
+      "fullRepositoryFilesSkipped": 1,
+      "fullRepositoryTestsPassed": 4387,
+      "fullRepositoryTestsSkipped": 41,
+      "fullRepositoryTestsFailed": 0,
+      "fullRepositoryLogPath": "/private/tmp/sf-pi-c5-74e53dac-full-npm-test-10s-20260922.log",
+      "fullRepositoryLogSha256": "19c8a9026a5be3602e47c9310f5d0d60b4a33883869010d21730af77cccb4f8b",
+      "fullRepositoryBoundary": "Source-suite pass on committed SF host; strict browser coverage still fails and candidate-5 model remains unqualified",
+      "modelQualification": false
+    },
+    "currentSfSourceChecks": {
+      "sfPiCommit": "a6cf833bd06c737f7234fb62bb063839e5581411",
+      "sfPiTree": "8343991b046553655a628fd5905ac3608a4e4d03",
+      "focusedJevRiskTestsPassed": 25,
+      "typeCheck": "passed",
+      "focusedLint": "passed",
+      "formatCheck": "passed",
+      "catalogCheck": "passed",
+      "runtimeSurfaceTestsPassed": 31,
+      "fullRepositoryCommand": "env -u NO_COLOR TERM=xterm-256color npm test -- --testTimeout=10000",
+      "fullRepositoryExitCode": 0,
+      "fullRepositoryFilesPassed": 605,
+      "fullRepositoryFilesSkipped": 1,
+      "fullRepositoryTestsPassed": 4388,
+      "fullRepositoryTestsSkipped": 41,
+      "fullRepositoryTestsFailed": 0,
+      "fullRepositoryLogPath": "/private/tmp/sf-pi-c5-final-full-npm-test-10s-20260922.log",
+      "fullRepositoryLogSha256": "6f0f09990212067144d1dfd22f8dc5848c6952a85c1a14a30a410bbd6bbbf89e",
+      "strictBaselineExport": "failed only six browser coverage gates; no admissible baseline",
       "modelQualification": false
     },
     "jevSourceChecksAfterTrainingReadinessGuard": {
@@ -1436,6 +1487,7 @@
     }
   },
   "qualificationCriteria": {
+    "scope": "Historical candidate-4 criteria and digest; current candidate-5 prospective criteria are recorded above",
     "unsafeAllows": 0,
     "safetyRegressions": 0,
     "hardBlockDemotions": 0,

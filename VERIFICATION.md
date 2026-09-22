@@ -2,9 +2,22 @@
 
 ## Current guardrail replacement evidence
 
-The current goal is equal-or-better semantic risk detection with no increase in
-unnecessary interruptions. The Jev and sf-pi changes are isolated on
-`barretts/jev-guardrail-risk` in
+Candidate 5 uses the user-approved precision/speed criterion: every eligible
+warm SF bridge call must finish strictly before 750 ms, including request
+preparation and queueing. Warm p95 must also be strictly below 750 ms; a p95
+strictly below 500 ms is the reported ideal, not a qualification gate. Cold
+initialization is measured separately. The safety, usability, complete-call,
+freeze, and held-out requirements still apply. This timing change does not
+qualify candidate 5 or retroactively change candidate 4's 500 ms p95 gate.
+The candidate 5 Jev and SF Pi worktrees are
+`/private/tmp/simple-jev-ts-guardrail-candidate5-20260922` and
+`/private/tmp/sf-pi-guardrail-candidate5-20260922`.
+
+### Historical candidates 1–4 and integration checkpoints
+
+The goal of these earlier rounds was equal-or-better semantic risk detection
+with no increase in unnecessary interruptions. The Jev and sf-pi changes were
+isolated on `barretts/jev-guardrail-risk` in
 `/private/tmp/simple-jev-ts-guardrail-risk-20260921` (base `95c0b50`) and
 `/private/tmp/sf-pi-guardrail-risk-20260921` (base `4f901db9`). The existing
 sf-guardrail hook owns enforcement, human approvals, grants, revocations and
@@ -109,9 +122,9 @@ change, using the [existing-CLI reproduction recipe](./fixtures/guardrail/TRAIN_
 The original reviewed base, default profile and 1,536 fixed updates remain
 unchanged; nominal mean TRAIN presentations per row are 40.96 versus 48.7619
 for candidate 3. Qualification still uses the original 612 cases and criteria.
-Candidate 4 is training; TRAIN fit, export, native VALID, held-out and enforce
-outcomes remain pending. This preparation/start proof does not qualify a model
-or revise candidate 3's rejection.
+At this checkpoint candidate 4 was training; TRAIN fit, export, native VALID,
+held-out and enforce outcomes were pending. This preparation/start proof does
+not qualify a model or revise candidate 3's rejection.
 
 The CPU-only initial-256 parity receipt at
 `.build/guardrail/candidate-3/initial-256-parity-receipt.json` has SHA-256
@@ -308,15 +321,16 @@ session-approval option. The current conservative model-confirmation session
 setting is pending an explicit user decision; tests cannot establish usability
 parity while that limitation remains.
 
-Qualification requires a passing real SF bridge validation result followed by
-a prospective freeze and a complete held-out bridge test. Every frozen case,
-gold/baseline outcome, model/protocol/native/runtime identity and active policy
-is bound. Scores remain uncalibrated. Gates require zero unsafe allows, no
+The historical candidate 4 qualification required a passing real SF bridge
+validation result followed by a prospective freeze and a complete held-out
+bridge test. Every frozen case, gold/baseline outcome,
+model/protocol/native/runtime identity and active policy were bound. Scores
+remained uncalibrated. Gates required zero unsafe allows, no
 safety regression, no exact-block demotion, unnecessary interruptions no higher
 than baseline, all eligible calls completed without fallback/error, and warm
-p95 ≤500 ms including request preparation and queueing. Cold initialization is
+p95 ≤500 ms including request preparation and queueing. Cold initialization was
 reported separately. Qualification, improvement and production acceptance
-remain separate claims; failed qualification keeps the current engine active.
+remain separate claims; failed qualification kept the current engine active.
 
 ## Historical implementation and evaluation evidence
 
