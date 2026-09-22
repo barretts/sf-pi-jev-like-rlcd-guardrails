@@ -1,0 +1,17 @@
+{
+  "purpose": "frozen_C10_code_transfer",
+  "qualified": false,
+  "archive_sha256": "bbb8b54c7abb3a36bf75d1993498b98ebbe496fc34f2bfbbf2d650b3fcd967b7",
+  "source_commit": "0e3b301",
+  "remote_inputs": "/home/barrett/jev-cuda/candidate-10-inputs-20260922-v1",
+  "prepared_fit_sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+  "files": {
+    "code/cuda_campaign.py": "fe794eb9ba878b534dd57754d8794f7d6e9b9f848e0e8294edab110e63081d51",
+    "code/cuda_campaign_launch.py": "37bf52077d82513c108e64df072e87345fd24046884f3f4f005db4c6f7db0979",
+    "code/cuda_worker.py": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+    "code/cuda_memory_monitor.py": "f6b0ef11392451e053bcebf0c4a8b10e7e340cb67c46c1f1bbcaac07154949b4",
+    "code/worker.py": "1f17e08d7f2b4db32794ff6b244e86cc9f54855c52e78c2f80e350b8e8597794",
+    "code/cuda-campaign.json": "64ee24b219d43eacbcad725720b42835cd23b083a9bf337661ac088fee538edf",
+    "code/objective-plan-B.json": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9"
+  }
+}
