@@ -1,5 +1,10 @@
 import copy
 import unittest
+import json
+from pathlib import Path
+from unittest.mock import patch
+import tempfile
+import types
 
 import cuda_import as bridge
 import cuda_worker
@@ -27,6 +32,30 @@ def receipts():
     return plan, receipt, exit_receipt, memory, launch
 
 
+def c10_receipts(step=128):
+    args = list(receipts())
+    plan, receipt, exit_receipt, memory, launch = args
+    root = Path(bridge.__file__).resolve().parent
+    plan.update({"experiment": "candidate10", "steps": step, "campaign_steps": 1024,
+        "campaign": json.loads((root.parent / "fixtures/guardrail/candidate10/cuda-campaign.json").read_text()),
+        "campaign_sha256": bridge.C10_CAMPAIGN_SHA256, "precision": bridge.C10_PRECISION,
+        "source_sha256": bridge.worker.sha256(root / "cuda_campaign.py"),
+        "contract_sha256": bridge.worker.sha256(root / "worker.py"),
+        "objective_worker_sha256": bridge.worker.sha256(root / "cuda_worker.py")})
+    receipt.update({"steps": step, "source": copy.deepcopy(plan), "adapter_sha256": "d" * 64,
+        "fit_margins_sha256": "e" * 64,
+        "saved_adapter_reload": {"ok": True, "rows": 327, "max_margin_delta": 0.0,
+            "margin_delta_limit": 1e-5, "adapter_sha256": "d" * 64,
+            "fit_margins_sha256": "e" * 64, "precision": bridge.C10_PRECISION}})
+    exit_receipt["steps_completed"] = step
+    memory.update({"stop_total_dedicated_bytes": 16_000_000_000, "peak_total_dedicated_bytes": 6_000_000_000})
+    launch["stop_total_dedicated_bytes"] = 16_000_000_000
+    launch.update({"worker_sha256": plan["source_sha256"], "rfdt_contract_sha256": plan["contract_sha256"],
+        "objective_worker_sha256": plan["objective_worker_sha256"],
+        "campaign_sha256": bridge.C10_CAMPAIGN_SHA256})
+    return args
+
+
 class CudaImportTests(unittest.TestCase):
     def test_accepts_completed_fit_only_run(self):
         bridge.validate_receipts(*receipts())
@@ -51,6 +80,74 @@ class CudaImportTests(unittest.TestCase):
                            ("reason", "counter_error"), ("samples", 0)):
             args = list(receipts()); args[3][key] = value
             with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+
+    def test_accepts_only_frozen_c10_checkpoints(self):
+        for step in (128, 256, 512, 1024):
+            bridge.validate_receipts(*c10_receipts(step))
+        for step in (1, 127, 1023):
+            with self.assertRaises(ValueError): bridge.validate_receipts(*c10_receipts(step))
+
+    def test_c10_requires_bound_saved_adapter_reload(self):
+        for key, value in (("ok", False), ("rows", 326), ("max_margin_delta", 1.1e-5),
+                           ("max_margin_delta", float("nan")), ("margin_delta_limit", 0.05),
+                           ("adapter_sha256", "f" * 64), ("fit_margins_sha256", "f" * 64),
+                           ("precision", {"base": "bfloat16"})):
+            args = c10_receipts(); args[1]["saved_adapter_reload"][key] = value
+            with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+        args = c10_receipts(); del args[1]["saved_adapter_reload"]
+        with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+
+    def test_c10_rejects_campaign_precision_and_code_tampering(self):
+        for key, value in (("campaign_steps", 256), ("campaign_sha256", "f" * 64),
+                           ("precision", {"base": "bfloat16"}), ("source_sha256", "f" * 64),
+                           ("objective_worker_sha256", "f" * 64), ("contract_sha256", "f" * 64)):
+            args = c10_receipts(); args[0][key] = value; args[1]["source"] = copy.deepcopy(args[0])
+            with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+        args = c10_receipts(); args[0]["campaign"]["qualification"]["unsafe_allows"] = 1
+        args[1]["source"] = copy.deepcopy(args[0])
+        with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+
+    def test_c10_requires_total_host_memory_proof(self):
+        for key, value in (("peak_total_dedicated_bytes", 16_000_000_000),
+                           ("peak_total_dedicated_bytes", None), ("stop_total_dedicated_bytes", None),
+                           ("reason", "checkpoint_snapshot")):
+            args = c10_receipts(); args[3][key] = value
+            with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+
+    def test_fp32_base_is_loaded_before_adapter(self):
+        events = []
+        class Parameter:
+            dtype = "bf16"
+            def astype(self, dtype):
+                events.append(("cast", dtype)); return self
+        class Model:
+            def parameters(self): return Parameter()
+            def update(self, value): events.append(("update", value))
+        model = Model()
+        def load(*args, **kwargs):
+            events.append(("load", kwargs["adapter_path"])); return model, None, {}
+        fake_mx = types.ModuleType("mlx.core")
+        fake_mx.float32 = "fp32"; fake_mx.floating = "floating"
+        fake_mx.issubdtype = lambda *args: True
+        fake_utils = types.ModuleType("mlx.utils"); fake_utils.tree_map = lambda fn, tree: fn(tree)
+        fake_lm = types.ModuleType("mlx_lm"); fake_lm.load = load
+        fake_tuner = types.ModuleType("mlx_lm.tuner.utils")
+        fake_tuner.load_adapters = lambda *args: events.append(("adapters", args[1]))
+        modules = {"mlx": types.ModuleType("mlx"), "mlx.core": fake_mx, "mlx.utils": fake_utils,
+            "mlx_lm": fake_lm, "mlx_lm.tuner": types.ModuleType("mlx_lm.tuner"),
+            "mlx_lm.tuner.utils": fake_tuner}
+        manifest = {"local_precision": bridge.C10_PRECISION, "cuda_campaign_sha256": bridge.C10_CAMPAIGN_SHA256,
+                    "provenance": {"training_backend": "torch_cuda"},
+                    "cuda_source": {"source": {"precision": bridge.C10_PRECISION,
+                        "campaign_sha256": bridge.C10_CAMPAIGN_SHA256}, "saved_adapter_reload": {"ok": True}}}
+        with tempfile.TemporaryDirectory() as path, patch.dict("sys.modules", modules), \
+                patch.object(bridge.worker, "validate_architecture"), \
+                patch.object(bridge.worker, "validate_adapter", return_value=manifest):
+            base = Path(path); (base / "config.json").write_text("{}")
+            bridge.worker.load_model(base, base / "adapter")
+        self.assertEqual([event[0] for event in events], ["load", "cast", "update", "adapters"])
+        self.assertIsNone(events[0][1])
+        self.assertEqual(events[1][1], "fp32")
 
     def test_fixed_equivalence_limits_and_inventory(self):
         self.assertTrue(bridge.compare_margins({"a": 3.0}, {"a": 3.01})["ok"])

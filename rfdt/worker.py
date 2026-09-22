@@ -401,14 +401,30 @@ def load_model(model_dir: Path, adapter: Path | None = None) -> tuple[Any, Any, 
 
     config = json.loads((model_dir / "config.json").read_text())
     validate_architecture(config)
-    if adapter is not None:
-        validate_adapter(adapter)
+    manifest = validate_adapter(adapter) if adapter is not None else None
+    precision = manifest.get("local_precision") if manifest else None
+    if precision is not None:
+        if (precision != {"base": "float32", "lora": "float32", "attention": "eager", "tf32": False}
+                or manifest.get("cuda_campaign_sha256") != "64ee24b219d43eacbcad725720b42835cd23b083a9bf337661ac088fee538edf"
+                or manifest.get("provenance", {}).get("training_backend") != "torch_cuda"
+                or manifest.get("cuda_source", {}).get("source", {}).get("precision") != precision
+                or manifest.get("cuda_source", {}).get("source", {}).get("campaign_sha256") != manifest.get("cuda_campaign_sha256")
+                or manifest.get("cuda_source", {}).get("saved_adapter_reload", {}).get("ok") is not True):
+            raise ValueError("Unrecognized local CUDA precision profile")
     model, tokenizer, config = load(
         str(model_dir),
-        adapter_path=str(adapter) if adapter else None,
+        adapter_path=str(adapter) if adapter and precision is None else None,
         return_config=True,
         trust_remote_code=False,
     )
+    if precision is not None:
+        import mlx.core as mx
+        from mlx.utils import tree_map
+        from mlx_lm.tuner.utils import load_adapters
+        # Expand every floating base tensor BEFORE constructing LoRA modules.
+        model.update(tree_map(lambda p: p.astype(mx.float32) if mx.issubdtype(p.dtype, mx.floating) else p,
+                              model.parameters()))
+        load_adapters(model, str(adapter))
     return model, tokenizer, config
 
 

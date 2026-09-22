@@ -15,6 +15,9 @@ import shutil
 import worker
 import cuda_worker
 
+C10_CAMPAIGN_SHA256 = "64ee24b219d43eacbcad725720b42835cd23b083a9bf337661ac088fee538edf"
+C10_PRECISION = {"base": "float32", "lora": "float32", "attention": "eager", "tf32": False}
+
 MAX_PROBABILITY_DELTA = 0.05
 DECISIVE_MARGIN = 0.5
 
@@ -26,13 +29,22 @@ def document(path: Path) -> dict:
 
 
 def validate_receipts(plan: dict, receipt: dict, exit_receipt: dict, memory: dict, launch: dict) -> None:
-    if (plan.get("mode") != "train" or plan.get("steps") != 256
-            or receipt.get("mode") != "train" or receipt.get("steps") != 256
+    c10 = plan.get("experiment") == "candidate10"
+    steps = plan.get("steps")
+    if c10:
+        validate_c10_checkpoint(plan, receipt, launch)
+        total = memory.get("peak_total_dedicated_bytes")
+        if (memory.get("stop_total_dedicated_bytes") != 16_000_000_000
+                or launch.get("stop_total_dedicated_bytes") != 16_000_000_000
+                or type(total) is not int or not 0 < total < 16_000_000_000):
+            raise ValueError("C10 shared-host total dedicated memory proof is missing or exceeded")
+    if (plan.get("mode") != "train" or (steps not in (128, 256, 512, 1024) if c10 else steps != 256)
+            or receipt.get("mode") != "train" or receipt.get("steps") != steps
             or receipt.get("qualified") is not False
             or receipt.get("adapter_changed") is not True
-            or exit_receipt.get("ok") is not True or exit_receipt.get("steps_completed") != 256
+            or exit_receipt.get("ok") is not True or exit_receipt.get("steps_completed") != steps
             or receipt.get("source") != plan):
-        raise ValueError("CUDA import requires a completed, changed, unqualified 256-step training run")
+        raise ValueError("CUDA import requires a completed, changed, unqualified frozen training checkpoint")
     expected = {"train": cuda_worker.TRAIN_SHA256, "pairs": cuda_worker.PAIR_SHA256,
                 "families": cuda_worker.FAMILY_SHA256, "plan": cuda_worker.PLAN_SHA256,
                 "base": cuda_worker.BASE_HASHES}
@@ -61,6 +73,29 @@ def validate_receipts(plan: dict, receipt: dict, exit_receipt: dict, memory: dic
     peak = receipt.get("memory", {}).get("peak_reserved_bytes")
     if type(peak) is not int or not 0 < peak <= plan.get("allocator_cap_bytes", 0) <= 6_500_000_000:
         raise ValueError("CUDA allocator peak/cap does not satisfy the 8 GB contract")
+
+
+def validate_c10_checkpoint(plan: dict, receipt: dict, launch: dict) -> None:
+    campaign_path = Path(__file__).resolve().parent.parent / "fixtures/guardrail/candidate10/cuda-campaign.json"
+    if worker.sha256(campaign_path) != C10_CAMPAIGN_SHA256:
+        raise ValueError("C10 campaign changed")
+    campaign = document(campaign_path)
+    if (plan.get("campaign") != campaign or plan.get("campaign_sha256") != C10_CAMPAIGN_SHA256
+            or plan.get("campaign_steps") != 1024 or plan.get("precision") != C10_PRECISION
+            or launch.get("campaign_sha256") != C10_CAMPAIGN_SHA256
+            or launch.get("objective_worker_sha256") != plan.get("objective_worker_sha256")
+            or plan.get("source_sha256") != worker.sha256(Path(__file__).with_name("cuda_campaign.py"))
+            or plan.get("contract_sha256") != worker.sha256(Path(worker.__file__))
+            or plan.get("objective_worker_sha256") != worker.sha256(Path(cuda_worker.__file__))):
+        raise ValueError("Frozen C10 campaign, precision, or code identity changed")
+    proof = receipt.get("saved_adapter_reload", {})
+    delta = proof.get("max_margin_delta")
+    if (proof.get("ok") is not True or proof.get("rows") != 327
+            or proof.get("adapter_sha256") != receipt.get("adapter_sha256")
+            or proof.get("fit_margins_sha256") != receipt.get("fit_margins_sha256")
+            or proof.get("precision") != C10_PRECISION or proof.get("margin_delta_limit") != 1e-5
+            or type(delta) not in (int, float) or not math.isfinite(delta) or not 0 <= delta <= 1e-5):
+        raise ValueError("C10 checkpoint lacks exact original CUDA saved-adapter reload proof")
 
 
 def probability(margin: float) -> float:
@@ -127,6 +162,9 @@ def run(args: argparse.Namespace) -> dict:
                                "lineage": "Google Gemma 3", "training_backend": "torch_cuda"},
                 "adapter_sha256": receipt["adapter_sha256"], "training_data_sha256": cuda_worker.TRAIN_SHA256,
                 "cuda_receipt_sha256": args.receipt_sha256, "cuda_source": receipt, "qualified": False}
+    if plan.get("experiment") == "candidate10":
+        manifest["local_precision"] = C10_PRECISION
+        manifest["cuda_campaign_sha256"] = C10_CAMPAIGN_SHA256
     worker.write_json(output / "rfdt-manifest.json", manifest)
     rows = worker.read_rows(data, "train")
     model, tokenizer, _ = worker.load_model(base, output)
@@ -148,6 +186,9 @@ def run(args: argparse.Namespace) -> dict:
               "cuda_receipt_sha256": args.receipt_sha256, "cuda_source": receipt,
               "local_fit_margins_sha256": worker.sha256(local_margins),
               "cross_backend_equivalence": comparison}
+    if plan.get("experiment") == "candidate10":
+        result.update({"cuda_campaign_sha256": C10_CAMPAIGN_SHA256,
+                       "checkpoint_step": plan["steps"], "local_precision": C10_PRECISION})
     worker.write_json(output / "cuda-import-report.json", result)
     return result
 
