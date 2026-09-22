@@ -145,8 +145,17 @@ def semantic_text(operation: dict, family: str) -> str:
             action = inp.get("operation", inp.get("action", ""))
         return SCREEN.canonical({"action": action, "canvas_id": inp.get("canvas_id")})
     if family == "salesforce-apex":
-        body = "\n".join(command.splitlines()[1:]) if shell else inp.get("code", inp.get("apex", ""))
-        return re.sub(r"\s+", " ", str(body).strip()).lower()
+        if shell:
+            body = "\n".join(command.splitlines()[1:])
+            if body.strip():
+                return re.sub(r"\s+", " ", body.strip()).lower()
+            return SCREEN.shell_effect(command)
+        body = inp.get("code", inp.get("apex", inp.get("body", "")))
+        return SCREEN.canonical({
+            "action": inp.get("action", inp.get("operation")),
+            "target_org": inp.get("target_org"),
+            "body": re.sub(r"\s+", " ", str(body).strip()).lower(),
+        })
     if family.startswith("shell"):
         if family == "shell-http":
             return SCREEN.shell_http_effect(words, command)
@@ -267,6 +276,9 @@ def self_test() -> None:
     direct_rest = {"tool": "data360_api", "input": {"params": {"method": "DELETE", "path": "/services/data/v66.0/ssot/data-streams/A"}}}
     assert case_family("bash", shell_rest["input"]) == case_family("data360_api", direct_rest["input"])
     assert semantic_text(shell_rest, "data360-rest") == semantic_text(direct_rest, "data360-rest")
+    apex_status = {"tool": "sf_apex", "input": {"action": "status", "target_org": "dev"}}
+    apex_run = {"tool": "sf_apex", "input": {"action": "anon.run", "target_org": "dev"}}
+    assert semantic_text(apex_status, "salesforce-apex") != semantic_text(apex_run, "salesforce-apex")
     try:
         parse_source("x=/tmp/a@" + "A" * 64)
     except ValueError:
