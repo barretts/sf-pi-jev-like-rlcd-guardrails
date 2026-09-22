@@ -105,7 +105,10 @@ session startup for exact `shadow` and `enforce` opt-in modes. Default `off`
 stays lazy. Startup failures remain recorded in provider status and retain the
 existing SF fallback. API embeddings must await `AgentSession.bindExtensions`
 before tool execution; creating a session alone does not start extensions.
-Cold startup is separate from the 500 ms warm check budget. Headless embeddings
+Cold startup is separate from the 750 ms per-call warm deadline. Qualification
+still requires warm p95 at most 500 ms, including preparation and queueing;
+strictly below 500 ms is preferred. A timed-out eligible call fails
+qualification even when the measured p95 meets the limit. Headless embeddings
 can inspect the returned Jev runtime's `guardrailRisk.status()` after binding;
 the slash commands use a UI notification surface with no headless output.
 
