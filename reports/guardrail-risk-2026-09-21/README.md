@@ -32,10 +32,11 @@ suite passed 361 tests with two skipped, 31 runtime-surface checks passed, and
 source check and lint passed. Jev commit `68bcb8c` retained the
 [integration patch](../../integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch)
 at that checkpoint. Jev `6f279ab` refreshed it after the direct browser CLI
-floor: the current patch is 319,144 bytes, SHA-256
-`5bc6dc989bb3cc961bc204036f6dd64434ef06e4969a7da8f0e96965bf1c66dc`.
-Fresh application from SF base `4f901db9` reproduced `5e2ee1e` and tree
-`7368f83a0108b7c602d9f7cc1fa6d3886928391a` exactly. This is
+floor, and `25bccf8` refreshed it after passive pre-click evidence. The current
+patch is 325,998 bytes, SHA-256
+`a84f6b554bc67f3ba7f0384a15bee17f5b70f215ee64698b3f6ee471fc97edb4`.
+Fresh application from SF base `4f901db9` reproduced `74e53da` and tree
+`0f8cdffab1361b44a7a2917271603d8db14ef8d5` exactly. This is
 source-delivery proof; it does not show installation or model effectiveness.
 
 The first sandboxed Pi SDK run did **not** complete its
@@ -98,14 +99,28 @@ commit; changing that pin alone cannot create an admissible baseline.
 SF Pi `5e2ee1e` subsequently kept the existing direct `agent-browser` shell
 confirmation as an exact floor even when Jev predicts allow. The focused
 Guardrail suite passed 362 tests (two skipped), the runtime-surface suite
-passed 31, and type, focused lint, formatting and catalog checks passed. The
-full repository suite had 34 failures across other extensions, including
-sandbox permission errors and failures not yet diagnosed; it is not a pass.
+passed 31, and type, focused lint, formatting and catalog checks passed. A
+sandboxed full-suite attempt had 34 failures. With normal permissions and
+color, the default 5-second timeout left two unrelated tests timing out under
+full-suite load; both passed on an isolated rerun. The corrected full
+`npm test -- --testTimeout=10000` run passed 4,385 tests with 41 skipped and
+no failures on SF `5e2ee1e`. This is a source-check result, not model
+qualification.
 Repeating the sealed-corpus strict diagnostic on `5e2ee1e` again passed seven
 exporter tests and failed
 only the same six browser coverage checks; no baseline was written. Its new
 runtime source SHA-256 is
 `5e125efa9d840317c1f974b844a50aff35dca1279b8835e3339f17439092b69c`.
+SF Pi `74e53da` then made automatic pre-click evidence passive: screenshot and
+URL remain, but no overlay dismissal, scroll or viewport resize occurs before
+the click. Fifteen focused tests, type, lint, format, catalog and runtime
+surface checks passed on its isolated source branch. On the cherry-picked C5
+host, 63 focused SF Browser, Guardrail and runtime-surface files passed (514
+tests passed, two skipped). The sealed-corpus strict diagnostic again passed
+seven checks and failed the same six browser gaps. Its current runtime source SHA-256 is
+`7f1a5f546fcf2ad87a69111abdde058bc42a542947a294375662b54317bba1ff`.
+The change improves existing browser execution but does not admit Jev browser
+decisions.
 The browser tool sends a separate native click or press after Guardrail's
 hook, and the native driver may resolve a stale element ref to another node
 with the same role and name. A sound browser-model path needs a guarded
