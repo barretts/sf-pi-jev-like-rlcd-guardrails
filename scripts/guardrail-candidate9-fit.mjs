@@ -255,6 +255,7 @@ async function verifyInputs(values) {
       admission.source?.c9SourceSha256,
       admission.source?.pairsSha256,
       admission.source?.familiesSha256,
+      admission.source?.overlapReceiptSha256,
       admission.source?.hostControlsReceiptSha256,
       admission.source?.calibrationBaselineReceiptSha256,
       admission.fit?.sha256,
@@ -264,6 +265,10 @@ async function verifyInputs(values) {
     fail("C9 FIT/CAL admission is incomplete or changed");
   if (values["blind-valid-manifest-sha256"] !== c9BlindValidManifestSha256)
     fail("replacement prospective C9 VALID seal is required before FIT");
+  if (
+    values["overlap-receipt-sha256"] !== admission.source.overlapReceiptSha256
+  )
+    fail("independent overlap receipt differs from admitted source");
   const [
     fitRaw,
     calRaw,
@@ -271,6 +276,7 @@ async function verifyInputs(values) {
     familyRaw,
     objectiveRaw,
     blindRaw,
+    overlapRaw,
     controlsRaw,
     calBaselineRaw,
   ] = await Promise.all([
@@ -283,6 +289,7 @@ async function verifyInputs(values) {
       values["blind-valid-manifest"],
       values["blind-valid-manifest-sha256"],
     ),
+    pinned(values["overlap-receipt"], values["overlap-receipt-sha256"]),
     pinned(values["host-controls"], admission.source.hostControlsReceiptSha256),
     pinned(
       values["cal-baseline"],
@@ -430,6 +437,26 @@ async function verifyInputs(values) {
     !pin(blind.inventory?.groups_sha256)
   )
     fail("blind C9 VALID seal is absent or belongs to another host");
+  const overlap = JSON.parse(overlapRaw);
+  if (
+    overlap.version !== 1 ||
+    overlap.schemaVersion !== "jev.guardrail.overlap-audit.v1" ||
+    overlap.reviewCompleteness !== "exhaustive_adjudication" ||
+    overlap.overlapFree !== true ||
+    overlap.adjudicatedReplayCount !== 0 ||
+    overlap.frozenSources?.c9TrainSourceSha256 !==
+      admission.source.c9SourceSha256 ||
+    overlap.frozenSources?.c9FitSha256 !== admission.fit.sha256 ||
+    overlap.frozenSources?.c9CalibrationSha256 !==
+      admission.calibration.sha256 ||
+    overlap.frozenSources?.c9BlindValidSha256 !== c9BlindValidSourceSha256 ||
+    overlap.sourceCommits?.c9BlindValid !==
+      "67cad37ce02aa4932a17016cb4ae2edccd20d9b9" ||
+    overlap.caseCounts?.c9Fit !== fit.length ||
+    overlap.caseCounts?.c9Calibration !== cal.length ||
+    overlap.caseCounts?.c9BlindValid !== blind.source.case_count
+  )
+    fail("independent C9 TRAIN/VALID split-overlap audit did not pass");
   if (!values["sf-pi"] || !values["sf-pi"].startsWith("/"))
     fail("absolute final sf-pi checkout required");
   await verifyHost(resolve(values["sf-pi"]), admission);
@@ -460,6 +487,7 @@ async function verifyInputs(values) {
     objectiveSha256: sha(objectiveRaw),
     blindValidManifestSha256: values["blind-valid-manifest-sha256"],
     blindValidSourceSha256: blind.source.sha256,
+    overlapReceiptSha256: values["overlap-receipt-sha256"],
     hostCommit: admission.source.hostCommit,
     hostRuntimeSha256: admission.source.hostRuntimeSha256,
     arm: values.arm,
@@ -549,6 +577,8 @@ const { values, positionals } = parseArgs({
       "objective-plan",
       "blind-valid-manifest",
       "blind-valid-manifest-sha256",
+      "overlap-receipt",
+      "overlap-receipt-sha256",
       "host-controls",
       "host-controls-script",
       "cal-baseline",
@@ -576,6 +606,7 @@ for (const name of [
   "families",
   "objective-plan",
   "blind-valid-manifest",
+  "overlap-receipt",
   "host-controls",
   "host-controls-script",
   "cal-baseline",
