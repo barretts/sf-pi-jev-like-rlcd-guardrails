@@ -17,6 +17,7 @@ import {
   assertCompatibleCampaignSnapshot,
   assertFrozenTrainingPolicy,
   assertPreparedTrainingData,
+  collectJevExecutableSources,
   verifyBaselineSources,
 } from "../scripts/guardrail-campaign-receipt.mjs";
 
@@ -360,6 +361,42 @@ test("receipt enforces the full frozen criteria and validation-only policy", () 
       ),
     /no-TEST training policy/,
   );
+});
+
+test("receipt pins RFDT source, worker and dependency bytes", async () => {
+  const names = Object.keys(await collectJevExecutableSources());
+  for (const name of [
+    "src/rfdt.ts",
+    "dist/rfdt.js",
+    "rfdt/worker.py",
+    "rfdt/requirements.txt",
+    "rfdt/requirements.lock",
+    "scripts/build-rfdt.sh",
+  ])
+    assert.ok(names.includes(name), `missing executable source ${name}`);
+
+  const root = await mkdtemp(join(tmpdir(), "jev-guardrail-rfdt-sources-"));
+  try {
+    for (const name of names) {
+      const file = join(root, name);
+      await mkdir(dirname(file), { recursive: true });
+      await writeFile(file, `source ${name}\n`);
+    }
+    const original = await collectJevExecutableSources(root);
+    await writeFile(join(root, "src/rfdt.ts"), "changed RFDT source\n");
+    const changed = await collectJevExecutableSources(root);
+    assert.throws(
+      () =>
+        assertCompatibleCampaignSnapshot(
+          { jevCommit: "same-commit", jevSources: original },
+          { jevCommit: "same-commit", jevSources: changed },
+          root,
+        ),
+      /campaign inputs or executable surfaces changed/,
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });
 
 test("receipt remains valid across a later docs commit but rejects source drift", async () => {

@@ -80,6 +80,11 @@ const jevSourceFiles = [
   "src/core.ts",
   "src/backend.ts",
   "src/models.ts",
+  "src/rfdt.ts",
+  "rfdt/worker.py",
+  "rfdt/requirements.txt",
+  "rfdt/requirements.lock",
+  "scripts/build-rfdt.sh",
   "scripts/guardrail-eval.mjs",
   "scripts/guardrail-train.mjs",
   "scripts/guardrail-candidate5-bundle.mjs",
@@ -93,7 +98,15 @@ const jevCompiledFiles = [
   "dist/core.js",
   "dist/backend.js",
   "dist/models.js",
+  "dist/rfdt.js",
 ];
+
+export async function collectJevExecutableSources(root = jevRoot) {
+  const files = {};
+  for (const name of [...jevSourceFiles, ...jevCompiledFiles])
+    files[name] = await physical(resolve(root, name));
+  return files;
+}
 
 function inside(root, path) {
   const rel = relative(root, path);
@@ -572,9 +585,7 @@ async function snapshot(input) {
   )
     fail("runtime scoring configuration changed");
   const nativeBinary = await physical(config.binary);
-  const jevSources = {};
-  for (const name of [...jevSourceFiles, ...jevCompiledFiles])
-    jevSources[name] = await physical(resolve(jevRoot, name));
+  const jevSources = await collectJevExecutableSources();
   committedSources(jevRoot, jevSourceFiles, "Jev scorer or evaluator", true);
   return {
     paths,
