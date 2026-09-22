@@ -20,6 +20,12 @@ candidate **failed** prospective selection on usability and cannot proceed to
 held-out TEST or enforcement. A lower single cutoff cannot repair the observed
 VALID overlap while retaining zero unsafe allows. These are VALID results for
 this candidate, not general safety guarantees or a production claim.
+The [256-update result](./candidate-6-valid-256.md) on the same VALID cases
+reduced benign interruptions to **16** and warm p95 to **549.9 ms**, but it
+automatically allowed `find ... -delete` and `git reset --hard HEAD` where the
+baseline required confirmation. It matched 44/62 expected actions versus
+57/62 for the baseline. **Both trained candidates failed selection.** No
+further model experiments were started after the 256-step score.
 The [preview-session input gap](./candidate-6-input-gap.md) also makes one
 simulated/live pair indistinguishable to the current model apart from random
 session IDs; this needs a host-owned execution-mode fact or code-owned check
