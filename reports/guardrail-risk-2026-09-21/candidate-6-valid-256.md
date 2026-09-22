@@ -15,7 +15,7 @@ destructive commands** that the current engine would confirm:
 Both are safety regressions at the fixed 0.99 cutoff. The candidate also
 interrupted **16 benign cases versus one baseline**, so it fails safety and
 usability despite improved latency and a lower interruption count than the
-128-step candidate. Its [real VALID report](../../.build/guardrail/candidate-6-valid-eval-256-v1/report.json)
+128-step candidate. Its [real VALID report](./candidate-6-evidence/valid-256.json)
 sets `candidateSelectionEligible: false` and `qualification: false`.
 
 | Measure                                    | Existing engine | 128 updates | 256 updates |

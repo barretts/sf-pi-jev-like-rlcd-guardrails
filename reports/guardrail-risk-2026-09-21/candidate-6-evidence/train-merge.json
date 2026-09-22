@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "purpose": "candidate6_nonqualifying_research_train_handoff",
+  "qualification": false,
+  "trainingReady": false,
+  "humanLabelReviewed": false,
+  "modelCalls": 0,
+  "externalOperationsExecuted": 0,
+  "prepareRfdtCalls": 0,
+  "rows": {
+    "train": 186,
+    "historicalDiagnosticValidation": 96,
+    "prospectiveBlindValidation": 0,
+    "test": 0,
+    "groups": 94
+  },
+  "selection": {
+    "mode": "validation_only",
+    "historicalValidationRole": "diagnostic_only_not_candidate_selection",
+    "prospectiveSelectionSplit": "sealed_c6_valid_v4_not_in_dataset",
+    "heldOutSplit": "sealed_c6_test_v3_not_in_dataset",
+    "trainingInput": "train.jsonl_only_after_further_admission",
+    "historicalDiagnosticInput": "separate_not_for_candidate_selection"
+  },
+  "splitIsolation": {
+    "blindRequestOnlyScreen": {
+      "valid": {
+        "collisions": {
+          "canonical": {
+            "cross_pairs": 0,
+            "shared_keys": 0
+          },
+          "exact": {
+            "cross_pairs": 0,
+            "shared_keys": 0
+          },
+          "groups": {
+            "cross_pairs": 0,
+            "shared_keys": 0
+          },
+          "same_effect": {
+            "cross_pairs": 0,
+            "shared_keys": 0
+          },
+          "templates": {
+            "cross_pairs": 0,
+            "shared_keys": 0
+          }
+        },
+        "left_count": 186,
+        "right_count": 62
+      },
+      "test": {
+        "collisions": {
+          "canonical": {
+            "cross_pairs": 0,
+            "shared_keys": 0
+          },
+          "exact": {
+            "cross_pairs": 0,
+            "shared_keys": 0
+          },
+          "groups": {
+            "cross_pairs": 0,
+            "shared_keys": 0
+          },
+          "same_effect": {
+            "cross_pairs": 0,
+            "shared_keys": 0
+          },
+          "templates": {
+            "cross_pairs": 0,
+            "shared_keys": 0
+          }
+        },
+        "left_count": 186,
+        "right_count": 55
+      }
+    },
+    "blindByteSealsVerified": true,
+    "semanticDisjointnessProven": false,
+    "blindLabelsUsed": false,
+    "blindRowsEmitted": false
+  },
+  "source": {
+    "mergeScriptSha256": "19a5f56fe55dad6234ed59bb38cc8a0d003add768744b17c8e3e10080d647403",
+    "correctedDataset": {
+      "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-dev-corrections-v5-20260922/merged-train-validation.jsonl",
+      "sha256": "cb50f35f9d0eedf7c366b5093d216839b26c1c7a7103902b81a368addd8a5f09"
+    },
+    "correctionReceipt": {
+      "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-dev-corrections-v5-20260922/receipt.json",
+      "sha256": "9a7867c2c0a1ca906666a88704819c71abb1f0fd5849e7b14ccd84942f87e3e3"
+    },
+    "correctedHostReceipt": {
+      "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-corrected-host-preflight-v3-20260922/receipt.json",
+      "sha256": "62917d095a69c7a27e64da59b9d256c2221c2967764e3a626a5f00252de3a0f7"
+    },
+    "supplementDataset": {
+      "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-supplement-preflight-dd97a1a/train.jsonl",
+      "sha256": "1976ec21b7e7c3fec3d76d635a754d2db8c620ae0f8c206719adc919992cfeeb"
+    },
+    "supplementReceipt": {
+      "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-supplement-preflight-dd97a1a/receipt.json",
+      "sha256": "d61128c1ed102b738d1e96ca7256a05ae63a428488e1ca30dc752700c800d7b1"
+    },
+    "supplementFixtureSha256": "f6bcd88d9dc546db1f7f7236db55ad5559c82fce3643f18af2d316a9419a2443",
+    "proposalDataset": {
+      "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-proposal-projection-20260922-dd97a1a-v2/train.jsonl",
+      "sha256": "8e8ab3fcb0215fe728a1426777e94ebd30486992c11f9a5261d1b2d25ca48c09"
+    },
+    "proposalReceipt": {
+      "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-proposal-projection-20260922-dd97a1a-v2/receipt.json",
+      "sha256": "4cba69e932c83723e3e03248a03d546145e73410b56333c552a4ab7367f6b3df"
+    },
+    "augmentationFixtureSha256": "c8538642a18468d5e4607bd650a5dbd8c728791f142ed6496e74434ec7e92409",
+    "browserFixtureSha256": "0066675417d3e6ffeb16af14f9e2571b23eb435f4b52a947ab5cc2c33b681a8d",
+    "proposalProjectionScriptSha256": "1d7bcccf6894cd6298e36fad6ae50b8e8730aaf0d1f708b57bff03b92e87b393",
+    "c5MergedDatasetSha256": "f97050f508c45c16bf14b8c68aae50cf51e43404056bffe25cb91dd1365983ea",
+    "c5MergeReceiptSha256": "0df13b4af10c9dae48248f23b10953fc66bafbd02cb1231a75e96dec5ce86a10",
+    "screenScriptSha256": "d410122a9c9b4c87da008c66447185b6ada3c5efcd9f36d72556e8dac975b0db",
+    "blindSchemaSha256": "e204e21d086bf4a4bebee0c7c14440ea83ed9509228ec3cab03ba3d55202c376",
+    "blindValid": {
+      "manifestSha256": "4696aee64fe8e91cbc3fb471e80bb1c741223314ee98841d3c276e911f916de7",
+      "dataSha256": "b172cc2c07188c206209e4be1a770fc0cb7484539b770ea0d021d14c30f5dd87",
+      "caseCount": 62
+    },
+    "blindTest": {
+      "manifestSha256": "249311991301cf25252f7563b89fcccc59949442debd97099baaa7c551788249",
+      "dataSha256": "82cfe17e0fa4bb4ce397f60e0d8479fe9ad0d1aa7aa71807b39b69113ad359c9",
+      "caseCount": 55
+    },
+    "sfPiCommit": "dd97a1a9165a89cdb7ff5b2d0c84d2bbf3843277",
+    "sfPiRuntimeSha256": "7d8c068bf02725b1f5ad7d77349a4144390ab0f1a6e531bc28f89af8270154c4",
+    "scorerDistributionSha256": "451e617f598d2b2e6bb5a708b3725f6b0cf3bde129cfc2a7ef7d1915618c34e2",
+    "scorerProtocolSha256": "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
+    "rfdtBaseModel": "google/gemma-3-1b-it",
+    "rfdtBaseRevision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752"
+  },
+  "datasets": {
+    "train": {
+      "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-research-merge-20260922-final/train.jsonl",
+      "sha256": "c88ca08e60f9a846a3b13aecd9a2290eef4993d08c9bb89e4ab869c05b83fe27",
+      "split": "train"
+    },
+    "historicalDiagnostic": {
+      "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-research-merge-20260922-final/historical-diagnostic-valid.jsonl",
+      "sha256": "b2cc9b6f9457dda9e2aaa01ba9099b9367f8d71d52e604a3c2183f99f1cd15c0",
+      "split": "validation",
+      "candidateSelectionAllowed": false
+    }
+  }
+}

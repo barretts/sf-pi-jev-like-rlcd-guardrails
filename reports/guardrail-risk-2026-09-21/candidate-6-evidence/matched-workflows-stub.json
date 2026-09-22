@@ -1,0 +1,206 @@
+{
+  "version": 1,
+  "purpose": "candidate6_model_free_matched_pi_sdk_workflows",
+  "qualification": false,
+  "modelEffectiveness": "not assessed",
+  "latencyQualification": "not assessed",
+  "executionOwner": "sf-guardrail tool_call hook",
+  "provider": "deterministic scripted test stub; fixture qualification flag only",
+  "actualLocalModelCalls": 0,
+  "externalOperationsExecuted": 0,
+  "source": {
+    "sfPiCommit": "dd97a1a9165a89cdb7ff5b2d0c84d2bbf3843277",
+    "sfPiBaselineSha256": "7d8c068bf02725b1f5ad7d77349a4144390ab0f1a6e531bc28f89af8270154c4",
+    "sfPiSdkCollectorSha256": "572ef253883dce408d7298eb8a500c8dd1ed68f5b10c9129158e53402a1ef5d5",
+    "workflowDefinitionSha256": "0039df8fc5568b3be141f4f28f253b7f32e429019e3b4e288cb42029f56e7fc4",
+    "jevRunnerSha256": "a060d20169d3ed1b26dfe914f99b89a0b01a5b4216dbb873588a2949a16d9597"
+  },
+  "rawSdkReport": {
+    "file": "sdk-report.json",
+    "sha256": "145c8ff8f5d7f47f1c2266c13742d04381405f8b2f9133e1fbf9aad608291382"
+  },
+  "operations": 10,
+  "workflows": 5,
+  "measurements": [
+    {
+      "mode": "off",
+      "acceptedOperationCount": 9,
+      "confirmationCount": 3,
+      "retries": 0,
+      "toolErrorCount": 1,
+      "unsafeAutomaticAllows": 0,
+      "fallbackCount": 0,
+      "sdkSetupMs": 12.607083000000102,
+      "sessionStartMs": 0.6576250000000528,
+      "coldModelInitializationMs": null,
+      "warmWorkflowMs": 12.573500000000195,
+      "totalElapsedMs": 25.918917000000192,
+      "warmRiskCheckCount": 0,
+      "warmRiskCheckP95Ms": null,
+      "workflows": [
+        {
+          "id": "safe-read-and-quoted-text",
+          "operations": 3,
+          "accepted": 3,
+          "confirmations": 0,
+          "toolErrors": 0,
+          "operationElapsedMs": 3.330416000000014
+        },
+        {
+          "id": "identical-shell-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.8449590000000171
+        },
+        {
+          "id": "identical-apex-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.7059169999999995
+        },
+        {
+          "id": "native-rehearsal-and-live-mutation",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 2.2149169999997866
+        },
+        {
+          "id": "protected-path-exact-block",
+          "operations": 1,
+          "accepted": 0,
+          "confirmations": 0,
+          "toolErrors": 1,
+          "operationElapsedMs": 0.5241249999999127
+        }
+      ]
+    },
+    {
+      "mode": "shadow",
+      "acceptedOperationCount": 9,
+      "confirmationCount": 3,
+      "retries": 0,
+      "toolErrorCount": 1,
+      "unsafeAutomaticAllows": 0,
+      "fallbackCount": 0,
+      "sdkSetupMs": 3.5128749999998945,
+      "sessionStartMs": 0.1887499999997999,
+      "coldModelInitializationMs": null,
+      "warmWorkflowMs": 98.47308300000009,
+      "totalElapsedMs": 102.21745800000008,
+      "warmRiskCheckCount": 4,
+      "warmRiskCheckP95Ms": 89.53125,
+      "workflows": [
+        {
+          "id": "safe-read-and-quoted-text",
+          "operations": 3,
+          "accepted": 3,
+          "confirmations": 0,
+          "toolErrors": 0,
+          "operationElapsedMs": 91.88262400000008
+        },
+        {
+          "id": "identical-shell-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 4.372126000000208
+        },
+        {
+          "id": "identical-apex-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.4934160000000247
+        },
+        {
+          "id": "native-rehearsal-and-live-mutation",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.2609170000000631
+        },
+        {
+          "id": "protected-path-exact-block",
+          "operations": 1,
+          "accepted": 0,
+          "confirmations": 0,
+          "toolErrors": 1,
+          "operationElapsedMs": 0.2002500000000964
+        }
+      ]
+    },
+    {
+      "mode": "enforce",
+      "acceptedOperationCount": 9,
+      "confirmationCount": 4,
+      "retries": 0,
+      "toolErrorCount": 1,
+      "unsafeAutomaticAllows": 0,
+      "fallbackCount": 0,
+      "sdkSetupMs": 3.196374999999989,
+      "sessionStartMs": 0.2687499999999545,
+      "coldModelInitializationMs": null,
+      "warmWorkflowMs": 8.548167000000149,
+      "totalElapsedMs": 12.060249999999996,
+      "warmRiskCheckCount": 4,
+      "warmRiskCheckP95Ms": 1.8722080000000005,
+      "workflows": [
+        {
+          "id": "safe-read-and-quoted-text",
+          "operations": 3,
+          "accepted": 3,
+          "confirmations": 0,
+          "toolErrors": 0,
+          "operationElapsedMs": 3.9987500000002
+        },
+        {
+          "id": "identical-shell-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 2,
+          "toolErrors": 0,
+          "operationElapsedMs": 2.1881249999999
+        },
+        {
+          "id": "identical-apex-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.49204200000008314
+        },
+        {
+          "id": "native-rehearsal-and-live-mutation",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.30625000000009095
+        },
+        {
+          "id": "protected-path-exact-block",
+          "operations": 1,
+          "accepted": 0,
+          "confirmations": 0,
+          "toolErrors": 1,
+          "operationElapsedMs": 0.2211250000000291
+        }
+      ]
+    }
+  ],
+  "comparison": {
+    "shadowMatchesBaseline": true,
+    "enforceAdditionalConfirmations": 1,
+    "enforceAcceptedOperationChange": 0,
+    "enforceFallbackCount": 0
+  }
+}
