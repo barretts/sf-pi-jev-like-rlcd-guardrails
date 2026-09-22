@@ -80,6 +80,46 @@ resumed. The [committed aggregate](./candidate-5-v3-split-research-summary.json)
 retains request-free source, coverage and split counts separately from the
 private corpus and receipts.
 
+### Completed RFDT research run and artifact
+
+A new 256-step RFDT run finished from the pinned original Google Gemma 3 1B base
+using 167 corrected TRAIN examples for updates, 96 validation examples only
+for internal scoring, and zero TEST examples in the research set, SHA-256
+`f97050f508c45c16bf14b8c68aae50cf51e43404056bffe25cb91dd1365983ea`.
+The [training report](../../.build/guardrail/candidate-5-research-split-8c6b9f7-20260922/rfdt-256/training-report.json)
+records initial loss 7.972326 and final loss 0.018392, changed adapter weights,
+checkpoint reload with maximum probability delta 0, and 74/96 (77.1%) correct
+selected labels on **internal validation**. This is a training-pipeline result.
+It does not measure the SF hook's allow/confirm decisions, safety regressions,
+unnecessary interruptions, completion rate, or warm latency.
+
+The private F16 GGUF for
+`jev/gemma-3-1b-guardrail-c5-research-256` is 2,006,573,408 bytes with
+SHA-256 `3f8e4f3b3896512d950d91626b7c06898d2dc57f7c5c1a946e9be784ec814160`.
+The [artifact receipt](../../.build/guardrail/candidate-5-research-split-8c6b9f7-20260922/rfdt-256/research-artifact-receipt.json)
+records artifact and separate research-registry verification, ties the model to
+the corrected dataset, and confirms no held-out TEST use or official admission.
+After verifier recheck, the rebuildable 3.8 GiB fused safetensors intermediate
+was removed; the adapter, GGUF, run manifest, registry, and receipts remain.
+The [cleanup receipt](../../.build/guardrail/candidate-5-research-split-8c6b9f7-20260922/rfdt-256/FUSED-INTERMEDIATE-REMOVED.json)
+records the removal.
+
+Post-training review identified six invalid TRAIN exemplars: three variants of
+`sf org generate password -o ProdOrg` treated as production operations even
+though Salesforce documents the command as
+[scratch-org-only](https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_org_generate_password.html),
+and three sandbox record updates using the ten-character `001EXAMPLE` value
+as a Salesforce record ID. Salesforce IDs are
+[15 or 18 characters](https://help.salesforce.com/s/articleView?id=How-to-convert-a-15-character-id-to-a-18-character-id-1327109385626&language=en_US&type=1).
+These examples are still part of the research bytes and must be corrected
+before a new candidate campaign. At this checkpoint an unrelated Metal worker
+occupied the device,
+so no real SF bridge model evaluation had run. The strict browser effect-boundary
+and safe/risky family-coverage gates remain open. There is no held-out TEST
+evaluation, qualification, enforce-mode approval, or effectiveness claim;
+the existing engine remains active. This research candidate is rejected for
+qualification in its current form regardless of any later timing result.
+
 ## Candidate 5 750 ms runtime checkpoint, 2026-09-22
 
 SF Pi commit `40ba11d` (tree `0b5f973115696887838150f768f89a810cd1f995`)
@@ -132,8 +172,8 @@ has SHA-256 `909636678283a3a3e006f377720017ff96298d375b9b6b3b39b8b6c6c81d61a3`.
 Four representative model-backed calls do not establish the qualification
 corpus's warm p95, and old weights do not establish candidate-5 accuracy.
 Browser clicks and presses still use the existing rules. The earlier strict
-v3 diagnostic failed browser coverage, and no admissible candidate-5 baseline,
-training, validation or held-out test result exists.
+v3 diagnostic failed browser coverage. At that checkpoint, no admissible
+candidate-5 baseline, training, validation or held-out test result existed.
 
 ## Candidate 5 training admission and latency diagnostics, 2026-09-22
 
@@ -151,8 +191,9 @@ are proposed TRAIN inputs, not an admitted bundle or qualified model.
 
 The pinned original Google Gemma 3 1B snapshot passed the RFDT Metal doctor
 check (`training_ready: true`); ignored symlinks in this worktree point to the
-existing RFDT environment and native build. No candidate-5 RFDT preparation,
-training, export or model qualification has occurred. The current v3 strict
+existing RFDT environment and native build. At that checkpoint, no
+candidate-5 RFDT preparation, training, export or model qualification had
+occurred. The current v3 strict
 baseline still has six browser safe/risk eligibility gaps across TRAIN,
 VALIDATION and TEST. The builder's sealed-corpus and SF-source pins have not
 been loosened to manufacture a ready result, so a positive admitted-bundle
@@ -391,7 +432,8 @@ revised corpus has been sealed. Separately, automatic approval review rejected
 a proposed new held-out fixture **before freeze** because it could contaminate
 held-out evaluation; that fixture was neither written nor
 used. The label-review rejection and the automatic approval rejection are
-distinct. No candidate-5 RFDT preparation or TEST model call followed.
+distinct. At that checkpoint, no candidate-5 RFDT preparation or TEST model
+call had followed.
 
 The candidate-5 bundle builder intentionally pins the old v3 corpus SHA.
 Jev commit `2b0e9f2` binds its source inventory to SF `3070408` and keeps that
