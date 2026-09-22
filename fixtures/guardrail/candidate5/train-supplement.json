@@ -833,7 +833,8 @@
       "sourceEvidence": [
         "docs/GUARDRAIL_TRAIN_DIVERSITY.md",
         "docs/GUARDRAIL_TRAIN_DIVERSITY_PROOF.json",
-        "fixtures/guardrail/train-diversity-source.json"
+        "fixtures/guardrail/train-diversity-source.json",
+        "https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_data_delete_record.html"
       ]
     },
     {
@@ -855,7 +856,8 @@
       "sourceEvidence": [
         "docs/GUARDRAIL_TRAIN_DIVERSITY.md",
         "docs/GUARDRAIL_TRAIN_DIVERSITY_PROOF.json",
-        "fixtures/guardrail/train-diversity-source.json"
+        "fixtures/guardrail/train-diversity-source.json",
+        "https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_data_delete_record.html"
       ]
     },
     {
