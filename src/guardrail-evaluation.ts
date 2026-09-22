@@ -162,7 +162,9 @@ const knownInputFallback = (value: unknown): value is string =>
     value ===
       "Incomplete Jev browser facts: fresh reference lacks observed label or role" ||
     value ===
-      "Fresh last-observed browser page unavailable before model check");
+      "Fresh last-observed browser page unavailable before model check" ||
+    value ===
+      "Jev Salesforce org identity unverified; using Safety Kernel fallback");
 const fileSha256 = (value: Buffer | string) =>
   createHash("sha256").update(value).digest("hex");
 

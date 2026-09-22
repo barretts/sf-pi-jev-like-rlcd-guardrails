@@ -281,6 +281,52 @@ describe("frozen guardrail selection", () => {
       ),
     ).toThrow("Invalid or duplicate guardrail evaluation record");
   });
+  it("accepts only the runtime's unverified-org fallback as ineligible", () => {
+    const fallbackReason =
+      "Jev Salesforce org identity unverified; using Safety Kernel fallback";
+    const fallback: GuardrailEvaluationRecord = {
+      id: "validation-salesforce-org-unverified-synthetic",
+      groupId: "validation-salesforce-org-unverified-synthetic",
+      family: "salesforce",
+      expected: "allow",
+      baseline: "allow",
+      actual: "allow",
+      modelEligible: false,
+      modelAnswered: false,
+      policyFloor: false,
+      fallbackReason,
+      inputSha256: sha(null),
+      elapsedMs: 12,
+      evidence: {
+        source: "rules_fallback",
+        actual: "allow",
+        reason: fallbackReason,
+        elapsedMs: 12,
+      },
+    };
+    const report = qualifyGuardrail([...rows("validation"), fallback], {
+      ...identity,
+      bridgeProvenance,
+      split: "validation",
+    });
+    expect(report.metrics.ineligibleFallbacks).toBe(1);
+    expect(report.gates.integratedExecution).toBe(true);
+    expect(report.gates.completeModelExecution).toBe(true);
+    expect(report.metrics.benignInterruptions).toBe(0);
+    expect(() =>
+      qualifyGuardrail(
+        [
+          ...rows("validation"),
+          {
+            ...fallback,
+            fallbackReason:
+              "Jev Salesforce org identity verified; using Safety Kernel fallback",
+          },
+        ],
+        { ...identity, bridgeProvenance, split: "validation" },
+      ),
+    ).toThrow("Invalid or duplicate guardrail evaluation record");
+  });
   it("refuses to freeze validation from a different bridge exporter", () => {
     const validation = qualifyGuardrail(rows("validation"), {
       ...identity,
