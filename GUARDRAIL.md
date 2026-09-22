@@ -4,20 +4,20 @@ The objective is equal or better semantic risk detection with no additional unne
 
 The [Candidate 7 evidence bundle](./reports/guardrail-risk-2026-09-21/candidate-7-evidence/manifest.json) retains the complete per-case VALID receipts, TRAIN provenance, and artifact registry hashes. The baseline-bound [sf-pi patch](./integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch) reproduces the scored host. Large model binaries remain local and hash-pinned. The preceding [Candidate 6 delivery report](./reports/guardrail-risk-2026-09-21/candidate-6-final.md) is retained for comparison.
 
-Candidate 8 has completed its separate 256-update paired-margin fit, exported
-the pinned local Gemma model, answered all 47 TRAIN-CAL requests, and frozen a
+Candidate 8 completed its separate 256-update paired-margin fit, exported the
+pinned local Gemma model, answered all 47 TRAIN-CAL requests, and froze a
 TRAIN-selected cutoff of `0.9967565871733567` on committed sf-pi host
-`bdbf6292`. Those are training and calibration results, not a prospective
-effectiveness score. On TRAIN-CAL, the selected cutoff made 14 unnecessary
-confirmations versus zero for the existing engine; this warning does not
-waive the independent VALID gate. The [pre-VALID freeze](./reports/guardrail-risk-2026-09-21/candidate-8-prevalid-freeze.md)
-records the model hash, scores, cutoff, host and policy identities. The
-[Candidate 8 host patch](./integrations/sf-pi-guardrail/candidate8-sf-pi-from-4f901db9.patch)
-reconstructs that exact sf-pi source from baseline `4f901db9`. It includes
-sf-pi ADR 0118, which permits an optional, qualified semantic provider while
-keeping exact policy, approval, session, and audit handling in the existing
-hook. The patch and freeze do not qualify the model; C8 VALID and held-out TEST
-model results are still pending at this checkpoint. Keep enforcement off.
+`bdbf6292`. Its prospective 96-case VALID replay then **rejected** the model:
+five unsafe automatic allows, including one regression against the current
+engine; 17 unnecessary interruptions versus one for the baseline; and two
+eligible calls that exceeded the 750 ms deadline. The [complete C8 report](./reports/guardrail-risk-2026-09-21/candidate-8-final.md)
+and [raw per-case evidence](./reports/guardrail-risk-2026-09-21/candidate-8-valid-real-256-evidence/report.json)
+preserve those outcomes. The [pre-VALID freeze](./reports/guardrail-risk-2026-09-21/candidate-8-prevalid-freeze.md)
+records the model, cutoff, host, and policy identities as they stood before
+that score. The [Candidate 8 host patch](./integrations/sf-pi-guardrail/candidate8-sf-pi-from-4f901db9.patch)
+reconstructs the exact sf-pi source from baseline `4f901db9` and includes
+ADR 0118's optional-provider decision. The TEST payload remains sealed, no
+qualification receipt exists, and enforcement stays off.
 
 The risk classifier uses complete original tool input and independently resolved org/browser facts. Existing rule classifications, reasons and risk labels are excluded from the model request. Selected next-token logits score `allow` and `confirm`; the historical v1/C7 protocol used a fixed 0.99 allow cutoff, while C8's v2 shadow protocol uses its frozen TRAIN-CAL cutoff. Exact file protections, hard blocks, custom policy, explicit overrides and validated temporary cleanup remain code-owned.
 

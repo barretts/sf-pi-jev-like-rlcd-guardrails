@@ -10,11 +10,12 @@ uses no Jev implementation imports: it discovers one versioned provider through
 
 The [Candidate 8 baseline-bound patch](./candidate8-sf-pi-from-4f901db9.patch)
 reconstructs the committed sf-pi host used for Candidate 8's frozen TRAIN-CAL
-cutoff and intended prospective VALID comparison. The host contains the
-precommitted fail-closed qualification verifier and an enforcement path that
-requires a passing held-out receipt. **The patch itself is not model
-qualification.** No C8 VALID or TEST model result is claimed here; leave
-`SF_GUARDRAIL_JEV_MODE` at its default `off` outside an isolated shadow replay.
+cutoff and prospective VALID comparison. The host contains a fail-closed
+qualification path that requires a passing held-out receipt. **The patch is
+not model qualification.** The [C8 VALID report](../../reports/guardrail-risk-2026-09-21/candidate-8-final.md)
+rejected the model on safety, benign-interruption, call-completion, and
+deadline gates. TEST was not opened. Keep `SF_GUARDRAIL_JEV_MODE` at its
+default `off` outside an isolated shadow replay.
 
 | Artifact                 | Pinned identity                                                    |
 | ------------------------ | ------------------------------------------------------------------ |
@@ -165,8 +166,8 @@ the comparison and the actual rule-owned outcome. Leave
 `JEV_GUARDRAIL_C8_QUALIFICATION` unset until a passing, model-and-host-bound
 held-out report exists; the final host falls back to the existing engine if
 qualification is absent or invalid. See [GUARDRAIL.md](../../GUARDRAIL.md)
-and the [C8 pre-VALID freeze](../../reports/guardrail-risk-2026-09-21/candidate-8-prevalid-freeze.md)
-for the current proof boundary. The C7 patch above remains available for
+and the [C8 final report](../../reports/guardrail-risk-2026-09-21/candidate-8-final.md)
+for the measured rejection and proof boundary. The C7 patch above remains available for
 reproducing its rejected models' historical evaluation.
 
 ## Historical candidate 4 integration
