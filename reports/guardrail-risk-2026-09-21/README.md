@@ -18,11 +18,33 @@ candidate 2's usability rejection remain preserved below.
 Jev commit `019da47` introduced risk-input version 2 with an original-tool-name
 family rubric; SF Pi commit `3a169e37` bound browser-press risk to fresh host
 snapshot page facts. The later Jev `7ac260d` and SF Pi `4528db59` fixes record
-missing browser-page facts as an explicit rules fallback. The SF hook remains
-the enforcement owner, and the operator default is `off`. The earlier
+missing browser-page facts as an explicit rules fallback. SF Pi `fa2b37a`
+strengthened page-evidence invalidation after browser actions, and `530c024`
+then placed **all browser presses on the existing rules before the provider**;
+the exporter marks them model-ineligible. The SF hook remains the enforcement
+owner, and the operator default is `off`. The earlier
 candidate-4 model, receipt, baseline and rejection cannot qualify this changed
 protocol. No candidate-5 model has been trained, bridge-validated, tested on
 held-out cases or qualified for enforcement.
+
+After the all-press fallback commit, 476 focused SF browser and guardrail tests
+passed with two skipped, all 31 runtime-surface checks passed, and source check
+and lint passed. These verify source behavior and the fallback boundary, not
+candidate-5 model effectiveness. The final baseline-bound integration patch is
+retained as
+[`candidate5-sf-pi-from-4f901db9.patch`](../../integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch)
+in Jev commit `8f0f124` (SHA-256
+`5f5385614dfd6f2979288283073108d9fcabb3acf5f1f881e1c4d8eb458eb500`).
+It exactly reproduced SF commit `530c024` and tree
+`184b5561531398ecf3b630f7daf6290dce9670e5` from the pinned SF base
+`4f901db9`; exact patch replay is source-delivery evidence, not activation or
+model qualification.
+
+The Jev source suite passed on an authorized loopback-enabled rerun: 48 files
+and 1,046 tests, with `npm run check` also passing. The initial sandbox-only
+attempt failed 18 local-server tests because `127.0.0.1` listen returned
+`EPERM`; that environment failure is retained rather than counted as a model
+result. Source checks do not establish candidate-5 risk accuracy.
 
 A direct VALID-only native timing diagnostic used **candidate 4's rejected F16
 weights** with a shorter tool-family rubric and older version-1 host inputs.
@@ -37,19 +59,35 @@ The first version-2 SF export of the sealed 693-case v3 corpus did not pass
 strict browser model-eligible risk coverage. Twenty-seven browser-press rows
 lacked the fresh page facts that version 2 requires, leaving a coverage gap in
 TRAIN, validation and TEST. The fallback fixes make that gap explicit; they do
-not make the old export an admissible candidate-5 bundle. A separate review
-found that guessed or unresolved Salesforce org facts could still be model
-eligible on org-sensitive requests. SF-host and Jev-evaluator rules fallback
-repairs are required before another bundle can be admitted; four proposed
-unknown-org TRAIN rows remain held. The pre-repair SDK diagnostic below is
-historical integration evidence only. A proposed v4
+not make the old export an admissible candidate-5 bundle. Even with the later
+page invalidation fix, all-press fallback keeps strict browser model-eligible
+risk coverage red. The strict v3 baseline diagnostic at SF commit `530c024`
+passed six subtests and failed one coverage subtest solely on `browser:risk` in
+TRAIN, validation and TEST. Its output was `/dev/null`; it produced no
+admissible baseline. A separate review found that guessed or unresolved Salesforce org facts could still be model
+eligible on org-sensitive requests. SF Pi commit `1128194e` sends those
+requests to rules fallback, Jev `993f7d4` recognizes that reason, and
+`52b6cf8` holds four proposed unknown-org TRAIN rows from model input. The
+pre-repair SDK diagnostic below is historical integration evidence only. A proposed v4
 browser revision then failed label review: some shortcut outcomes depend on
 selection, focus or layout state that the requests do not independently
-establish. No revised corpus has been sealed. Separately, automatic approval
-review rejected a proposed new held-out fixture **before freeze** because it
+establish. The host's last-snapshot freshness means cache age at most 120
+seconds; the post-score comparison detects cache changes, not live focus or
+layout. Admissible browser tests need independently observed and reverified
+focus/page facts at execution, or reviewed focus-independent semantics. No
+revised corpus has been sealed. Separately, automatic approval review rejected
+a proposed new held-out fixture **before freeze** because it
 could contaminate held-out evaluation; that fixture was neither written nor
 used. The label-review rejection and the automatic approval rejection are
 distinct. No candidate-5 RFDT preparation or TEST model call followed.
+
+The candidate-5 bundle builder intentionally pins the old v3 corpus SHA.
+After a legitimate revised browser corpus is reviewed and sealed, its new
+source hash must be pinned explicitly before training; loosening the current
+pin would erase the admission boundary. Jev `3c08a56` makes RFDT preparation
+reject candidate-5 bundles unless the builder records `trainingReady: true`;
+six focused readiness tests and source check/format passed. No current bundle
+has passed the strict browser coverage gate.
 
 An actual version-2 Pi SDK off/shadow diagnostic used the **old, rejected
 candidate-4 weights** and stubbed, counter-only tools. Eight SDK tests passed.
@@ -64,6 +102,20 @@ The [local diagnostic receipt](../../.build/guardrail/candidate-5-diagnostic/c4-
 records the mocked facts and operations. It proves this local integration path
 can execute and compare in shadow without external operations. It makes no
 candidate-5 model effectiveness, enforce-mode, held-out, or warm p95 claim.
+
+A final-source repeat on SF commit `530c024` and the current Jev distribution
+passed 10/10 SDK tests. It still used the rejected candidate-4 F16 weights,
+mocked facts and counter-only tools. Off and shadow each had nine executed
+outcomes, one exact block, three confirmations and zero retries. Shadow
+completed four of four model-backed checks and six exact-policy comparisons,
+with no fallback and the same outcomes and approvals as off. Its model-backed
+comparison times were 137.80, 125.46, 123.79 and 123.98 ms; all ten calls
+took 515.31 ms after a 2,591.47 ms cached cold startup. The
+[final-source SDK receipt](../../.build/guardrail/candidate-5-diagnostic/c4-weights-sdk-v2-530c024d.json)
+has SHA-256 `fcda7711e45c3805ef62e7bbbfbdb0d30616ccfb38675b3f8354066cc39f7a10`.
+The earlier 21.45-second cold startup is a separate observation. These two
+mocked shadow runs establish integration execution, not candidate-5 safety,
+enforcement or a warm p95 across the qualification corpus.
 
 ## Candidate 4 host-hardened campaign checkpoint, 2026-09-22
 

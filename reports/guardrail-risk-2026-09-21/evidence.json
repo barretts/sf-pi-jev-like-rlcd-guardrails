@@ -2,7 +2,7 @@
   "version": 1,
   "date": "2026-09-21",
   "purpose": "Separate local guardrail semantic-risk candidate; preserve exact policy and existing Pi approval/audit enforcement.",
-  "checkpointStatus": "candidate_5_preparation_blocked_on_browser_coverage_org_fallback_and_label_review",
+  "checkpointStatus": "candidate_5_preparation_blocked_on_browser_coverage_and_label_review",
   "candidate5Preparation": {
     "scope": "Version-2 source and corpus preparation; candidate 4 remains the latest model evaluated on the real bridge",
     "jevCheckout": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922",
@@ -13,7 +13,67 @@
       "jevProtocol": "019da47b0f9dfdf37294cc293e7bbabb661677b5",
       "sfFreshBrowserPage": "3a169e3709b9de121a4218987b7e7e65f87645fd",
       "jevExplicitBrowserFallback": "7ac260d0e7f0426017e17aa3c61a04cf1e599d20",
-      "sfExplicitBrowserFallback": "4528db59658b412c16924d80062325eebb689bd9"
+      "sfExplicitBrowserFallback": "4528db59658b412c16924d80062325eebb689bd9",
+      "sfUnverifiedOrgFallback": "1128194eb2a6e9fcb372651902be5f063b886330",
+      "sfPageEvidenceInvalidation": "fa2b37a2d32b814ed4b7dbc18af7e383519d4a2e",
+      "sfAllBrowserPressRulesFallback": "530c024dd99ddf98e9819967924b5be179d61082",
+      "jevUnverifiedOrgFallback": "993f7d49963a7f725e2110500a5eb9f6f7725cba",
+      "jevHeldUnknownOrgRowsAndBundle": "52b6cf801534749b8548620adbf9eb4891f43189",
+      "jevTrainingReadinessGuard": "3c08a56b1621bcd549716a56edf029395261629d",
+      "jevFinalSafeHostSourcePin": "b1267379090c3124f15da6efa1a0b68651726131",
+      "jevRetainedSfIntegrationPatch": "8f0f1246fc7df87fd5a970337b0e6a64a5d2a32f"
+    },
+    "retainedSfIntegrationPatch": {
+      "path": "integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch",
+      "sha256": "5f5385614dfd6f2979288283073108d9fcabb3acf5f1f881e1c4d8eb458eb500",
+      "bytes": 311302,
+      "sfBaseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
+      "sfBaseTree": "4e08ddb00626e8d47852f604564b10f135082f1a",
+      "sfTargetCommit": "530c024dd99ddf98e9819967924b5be179d61082",
+      "sfTargetTree": "184b5561531398ecf3b630f7daf6290dce9670e5",
+      "freshDetachedApplyExactTreeMatch": true,
+      "sourceDeliveryOnly": true,
+      "hostActivationOrModelQualification": false
+    },
+    "sfSourceChecksAfterUnverifiedOrgFallback": {
+      "focusedGuardrailTestsPassed": 355,
+      "focusedGuardrailTestsSkipped": 2,
+      "sdkTestsPassed": 9,
+      "sdkTestsSkipped": 1,
+      "runtimeSurfaceChecksPassed": 31,
+      "sourceCheck": "passed",
+      "lint": "passed",
+      "uniformFullSuiteGreen": false,
+      "fullSuiteBoundary": "Unrelated full-suite environment failures"
+    },
+    "sfSourceChecksAfterAllBrowserPressFallback": {
+      "sfPiCommit": "530c024dd99ddf98e9819967924b5be179d61082",
+      "sfPiTree": "184b5561531398ecf3b630f7daf6290dce9670e5",
+      "focusedBrowserAndGuardrailTestsPassed": 476,
+      "focusedBrowserAndGuardrailTestsSkipped": 2,
+      "runtimeSurfaceChecksPassed": 31,
+      "sourceCheck": "passed",
+      "lint": "passed",
+      "modelQualification": false
+    },
+    "jevSourceChecksAfterTrainingReadinessGuard": {
+      "focusedReadinessTestsPassed": 6,
+      "focusedReadinessTestsFailed": 0,
+      "sourceCheck": "passed",
+      "format": "passed"
+    },
+    "jevCurrentSourceSuite": {
+      "sandboxOnlyAttempt": {
+        "localServerTestsFailed": 18,
+        "error": "listen EPERM 127.0.0.1"
+      },
+      "authorizedLoopbackRerun": {
+        "filesPassed": 48,
+        "testsPassed": 1046,
+        "testsFailed": 0
+      },
+      "npmRunCheck": "passed",
+      "candidate5ModelEffectivenessEstablished": false
     },
     "directFamilyRubricTimingDiagnostic": {
       "scope": "VALID-only direct native timing using rejected candidate-4 F16 weights and older version-1 host inputs; no SF preparation, queueing, policy execution or version-2 page facts",
@@ -34,18 +94,40 @@
       "browserPressRowsMissingFreshPageFacts": 27,
       "coverageGapSplits": ["train", "validation", "test"],
       "explicitRulesFallbackCommitted": true,
+      "allBrowserPressRulesFallbackCommitted": true,
+      "allBrowserPressModelEligibleOnCurrentHost": false,
+      "strictBrowserCoverageStillRed": true,
       "admissibleTrainingOrQualificationBundle": false
+    },
+    "finalSfStrictV3BaselineDiagnostic": {
+      "sfPiCommit": "530c024dd99ddf98e9819967924b5be179d61082",
+      "subtestsPassed": 6,
+      "subtestsFailed": 1,
+      "failedGate": "Strict model-eligible browser:risk coverage in TRAIN, validation and TEST",
+      "otherStrictGaps": 0,
+      "output": "/dev/null",
+      "admissibleBaselineProduced": false
     },
     "unresolvedOrgFactReview": {
       "finding": "Guessed or unresolved Salesforce org facts could be model eligible for org-sensitive requests",
-      "requiredRepair": "Matching SF-host and Jev-evaluator rules fallback before another bundle is admitted",
+      "sfHostFallbackCommit": "1128194eb2a6e9fcb372651902be5f063b886330",
+      "jevEvaluatorFallbackCommit": "993f7d49963a7f725e2110500a5eb9f6f7725cba",
       "proposedUnknownOrgTrainRowsHeld": 4,
-      "statusAtThisCheckpoint": "repair_pending"
+      "statusAtThisCheckpoint": "host_and_evaluator_fallback_fixed_train_rows_held"
     },
     "proposedV4Corpus": {
       "status": "rejected_label_review",
       "reason": "Some browser shortcut outcomes depend on selection, focus or layout facts absent from the requests",
+      "snapshotFactBoundary": "Cached snapshot age at most 120 seconds; post-score recheck catches cache changes but does not establish live focus or layout",
+      "admissionPath": "Independently observe and reverify focus, or use focus-independent browser semantics",
       "sealed": false
+    },
+    "bundleBuilderSourcePin": {
+      "current": "Old reviewed v3 corpus SHA-256",
+      "nextControlledStep": "Explicitly re-pin to a new reviewed and sealed browser corpus source SHA-256 before C5 training",
+      "loosenCurrentPin": false,
+      "rfdtPreparationRequiresTrainingReadyTrue": true,
+      "admittedBundleAvailable": false
     },
     "proposedNewHeldOutFixture": {
       "status": "automatic_approval_review_rejected_before_freeze",
@@ -58,6 +140,7 @@
       "scope": "Actual Pi SDK with old rejected candidate-4 weights, mocked facts and counter-only tools; no external operations or enforce mode",
       "path": ".build/guardrail/candidate-5-diagnostic/c4-weights-sdk-v2.json",
       "sha256": "709fd9d1c541e365515c76605de76b6dc4f32d7b04dc47cf1dc0b87947149566",
+      "sfPiCommitAtRun": "4528db59658b412c16924d80062325eebb689bd9",
       "riskModuleSha256": "57b5f63d7790908e4bf9c34b40de4bdad8c79ca0b0bccd0a5994d8e288167f1c",
       "sdkTestsPassed": 8,
       "sdkTestsFailed": 0,
@@ -75,6 +158,31 @@
       "comparisonTimingScope": "Four representative bash checks including real hook overhead; insufficient for warm p95 qualification",
       "shadowColdInitializationMs": 21449.644042,
       "shadowTenCallWorkflowMs": 530.879875,
+      "approvalAndOutcomeParityWithOff": true,
+      "candidate5ModelEffectivenessOrWarmP95Established": false
+    },
+    "finalSourcePiSdkShadowDiagnostic": {
+      "scope": "Actual Pi SDK at final SF 530c024 with current Jev distribution and old rejected candidate-4 F16 weights; mocked facts, counter-only tools, off/shadow only",
+      "path": ".build/guardrail/candidate-5-diagnostic/c4-weights-sdk-v2-530c024d.json",
+      "sha256": "fcda7711e45c3805ef62e7bbbfbdb0d30616ccfb38675b3f8354066cc39f7a10",
+      "sfPiCommit": "530c024dd99ddf98e9819967924b5be179d61082",
+      "riskModuleSha256": "57b5f63d7790908e4bf9c34b40de4bdad8c79ca0b0bccd0a5994d8e288167f1c",
+      "sdkTestsPassed": 10,
+      "sdkTestsFailed": 0,
+      "offAndShadowEach": {
+        "executedOutcomes": 9,
+        "exactBlocks": 1,
+        "confirmations": 3,
+        "retries": 0
+      },
+      "shadowSemanticModelChecks": { "completed": 4, "expected": 4 },
+      "shadowExactPolicyChecks": 6,
+      "shadowComparisons": 10,
+      "shadowFallbacks": 0,
+      "modelBackedComparisonElapsedMs": [137.8, 125.46, 123.79, 123.98],
+      "shadowColdInitializationMs": 2591.465458,
+      "shadowTenCallWorkflowMs": 515.30675,
+      "coldStartupComparisonBoundary": "Cached final-source run; earlier pre-repair run observed 21,449.6 ms",
       "approvalAndOutcomeParityWithOff": true,
       "candidate5ModelEffectivenessOrWarmP95Established": false
     },
