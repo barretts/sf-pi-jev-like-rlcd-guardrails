@@ -1,0 +1,252 @@
+{
+  "launch.json": {
+    "purpose": "candidate9_cuda_fit_only_experiment",
+    "mode": "probe",
+    "started_at": "2026-09-22T20:05:00.971180+00:00",
+    "worker_pid": 7082,
+    "watchdog_pid": 7081,
+    "inputs": "/home/barrett/jev-cuda/c9-b-cuda-20260922-1938-inputs-v3",
+    "run_root": "/home/barrett/jev-cuda/c9-b-cuda-probe-20260922-v3",
+    "prepared_fit_sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+    "plan_sha256": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+    "worker_sha256": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+    "watchdog_sha256": "52fa2f33ae7b24dfd67c67bbf38393d4d1772c13d917035e12435039d7845365",
+    "rfdt_contract_sha256": "54e4fd0fe9d804bd45a856ee304893a9352fcdea7bacfa0d187707ddbbbc4550",
+    "baseline_dedicated_bytes": 568717312,
+    "baseline_shared_bytes": 29532160,
+    "hard_budget_bytes": 8000000000,
+    "allocator_cap_bytes": 6500000000,
+    "qualification": false,
+    "worker_command": [
+      "/home/barrett/.venvs/jev-cuda-20260922/bin/python",
+      "/home/barrett/jev-cuda/c9-b-cuda-20260922-1938-inputs-v3/code/cuda_worker.py",
+      "--mode",
+      "probe",
+      "--base",
+      "/home/barrett/jev-cuda/c9-b-cuda-20260922-1938-inputs-v3/base",
+      "--train",
+      "/home/barrett/jev-cuda/c9-b-cuda-20260922-1938-inputs-v3/fit/prepared-train.jsonl",
+      "--pairs",
+      "/home/barrett/jev-cuda/c9-b-cuda-20260922-1938-inputs-v3/fit/pairs.json",
+      "--pairs-sha256",
+      "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+      "--families",
+      "/home/barrett/jev-cuda/c9-b-cuda-20260922-1938-inputs-v3/fit/families.json",
+      "--families-sha256",
+      "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+      "--plan",
+      "/home/barrett/jev-cuda/c9-b-cuda-20260922-1938-inputs-v3/code/objective-plan-B.json",
+      "--plan-sha256",
+      "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+      "--output",
+      "/home/barrett/jev-cuda/c9-b-cuda-probe-20260922-v3/run",
+      "--steps",
+      "1",
+      "--budget-bytes",
+      "8000000000",
+      "--allocator-cap-bytes",
+      "6500000000"
+    ],
+    "watchdog_command": [
+      "/home/barrett/.venvs/jev-cuda-20260922/bin/python",
+      "/home/barrett/jev-cuda/c9-b-cuda-20260922-1938-inputs-v3/code/cuda_memory_monitor.py",
+      "--pid-file",
+      "/home/barrett/jev-cuda/c9-b-cuda-probe-20260922-v3/worker.pid",
+      "--worker",
+      "/home/barrett/jev-cuda/c9-b-cuda-20260922-1938-inputs-v3/code/cuda_worker.py",
+      "--run-dir",
+      "/home/barrett/jev-cuda/c9-b-cuda-probe-20260922-v3/run",
+      "--output",
+      "/home/barrett/jev-cuda/c9-b-cuda-probe-20260922-v3/memory.jsonl",
+      "--adapter-tag",
+      "luid_0x00000000_0x00013f43_phys_0",
+      "--baseline-dedicated-bytes",
+      "568717312",
+      "--baseline-shared-bytes",
+      "29532160",
+      "--hard-budget-bytes",
+      "8000000000",
+      "--stop-dedicated-delta-bytes",
+      "7500000000",
+      "--shared-growth-limit-bytes",
+      "128000000",
+      "--interval-seconds",
+      "2"
+    ]
+  },
+  "run/plan.json": {
+    "mode": "probe",
+    "objective": {
+      "version": 2,
+      "purpose": "candidate9_train_only",
+      "arm": "B",
+      "objective": "guardrail_train_balanced_symmetric_v1",
+      "pair_manifest_sha256": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+      "family_manifest_sha256": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+      "loss": {
+        "ce_weight": 1.0,
+        "anchor_weight": 1.0,
+        "anchor_margin": 2.0,
+        "pair_weight": 0.5,
+        "pair_margin": 4.0
+      },
+      "sampler": {
+        "pair_fraction": 0.5,
+        "row_label_order": [
+          "allow",
+          "confirm"
+        ],
+        "family_policy": "round_robin_within_label_or_pair",
+        "item_policy": "shuffled_round_robin",
+        "seed": 42
+      },
+      "steps": 256,
+      "cutoff_status": "unset_requires_c9_train_cal_hard_veto_before_valid",
+      "validation_rows_passed_to_training": 0,
+      "test_rows_passed_to_training": 0
+    },
+    "inputs": {
+      "train": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+      "pairs": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+      "families": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+      "plan": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+      "base": {
+        "model.safetensors": "3d4ef8d71c14db7e448a09ebe891cfb6bf32c57a9b44499ae0d1c098e48516b6",
+        "config.json": "19cb5d28c97778271ba2b3c3df47bf76bdd6706724777a2318b3522230afe91e",
+        "tokenizer.json": "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795"
+      }
+    },
+    "source_sha256": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+    "contract_sha256": "54e4fd0fe9d804bd45a856ee304893a9352fcdea7bacfa0d187707ddbbbc4550",
+    "steps": 1,
+    "budget_bytes": 8000000000,
+    "allocator_cap_bytes": 6500000000,
+    "backend": "torch_cuda_experimental_not_qualified",
+    "precision": {
+      "base": "bfloat16",
+      "lora": "float32",
+      "selected_projection": "bfloat16_then_float32_margin"
+    }
+  },
+  "run/receipt.json": {
+    "qualified": false,
+    "mode": "probe",
+    "steps": 1,
+    "initial_objective": 13.481168403452855,
+    "final_objective": 7.120188803342253,
+    "initial_row_loss": 15.230392276028619,
+    "final_row_loss": 7.147616909574172,
+    "adapter_changed": true,
+    "adapter_sha256": "5b293f629b4e23014777d1464edaca54c63d301e283bdbe454e6677678477323",
+    "fit_margins_sha256": "0bc1e93c66ca3ea98683d58c5651a22fd69154db0f953c378eb4375b39006ba9",
+    "sampler_counts": {
+      "pair:data360": 1,
+      "pair:herdr_pane": 1,
+      "pair:shell": 1,
+      "pair:soql": 1,
+      "row:allow:apex": 1,
+      "row:allow:browser": 1,
+      "row:confirm:agentscript": 1,
+      "row:confirm:apex": 1
+    },
+    "sampler_draws": 8,
+    "prompt_parity": {
+      "rows_checked": 327,
+      "labels_checked": 654,
+      "rendered_prompt_tokens": true,
+      "answer_label_boundaries": true,
+      "add_special_tokens": false,
+      "template_version": "v2"
+    },
+    "pre_step_placement": {
+      "parameters": 444,
+      "buffers": 5,
+      "gradients": 104
+    },
+    "post_step_placement": {
+      "parameters": 444,
+      "buffers": 5,
+      "gradients": 0,
+      "optimizer_tensors": 208
+    },
+    "memory": {
+      "allocated_bytes": 2093517824,
+      "reserved_bytes": 2260729856,
+      "peak_allocated_bytes": 2189920768,
+      "peak_reserved_bytes": 2260729856,
+      "cuda_free_bytes": 13657702400,
+      "cuda_total_bytes": 17175019520,
+      "cuda_free_delta_bytes": 2304770048
+    },
+    "source": {
+      "mode": "probe",
+      "objective": {
+        "version": 2,
+        "purpose": "candidate9_train_only",
+        "arm": "B",
+        "objective": "guardrail_train_balanced_symmetric_v1",
+        "pair_manifest_sha256": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+        "family_manifest_sha256": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+        "loss": {
+          "ce_weight": 1.0,
+          "anchor_weight": 1.0,
+          "anchor_margin": 2.0,
+          "pair_weight": 0.5,
+          "pair_margin": 4.0
+        },
+        "sampler": {
+          "pair_fraction": 0.5,
+          "row_label_order": [
+            "allow",
+            "confirm"
+          ],
+          "family_policy": "round_robin_within_label_or_pair",
+          "item_policy": "shuffled_round_robin",
+          "seed": 42
+        },
+        "steps": 256,
+        "cutoff_status": "unset_requires_c9_train_cal_hard_veto_before_valid",
+        "validation_rows_passed_to_training": 0,
+        "test_rows_passed_to_training": 0
+      },
+      "inputs": {
+        "train": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+        "pairs": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+        "families": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+        "plan": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+        "base": {
+          "model.safetensors": "3d4ef8d71c14db7e448a09ebe891cfb6bf32c57a9b44499ae0d1c098e48516b6",
+          "config.json": "19cb5d28c97778271ba2b3c3df47bf76bdd6706724777a2318b3522230afe91e",
+          "tokenizer.json": "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795"
+        }
+      },
+      "source_sha256": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+      "contract_sha256": "54e4fd0fe9d804bd45a856ee304893a9352fcdea7bacfa0d187707ddbbbc4550",
+      "steps": 1,
+      "budget_bytes": 8000000000,
+      "allocator_cap_bytes": 6500000000,
+      "backend": "torch_cuda_experimental_not_qualified",
+      "precision": {
+        "base": "bfloat16",
+        "lora": "float32",
+        "selected_projection": "bfloat16_then_float32_margin"
+      }
+    }
+  },
+  "run/exit.json": {
+    "ok": true,
+    "steps_completed": 1,
+    "elapsed_seconds": 57.35557824100033
+  },
+  "memory.summary.json": {
+    "worker_pid": 7082,
+    "reason": "worker_exit",
+    "samples": 15,
+    "sampling_interval_seconds": 2.0,
+    "peak_dedicated_delta_bytes": 2430164992,
+    "peak_shared_delta_bytes": 71303168,
+    "hard_budget_bytes": 8000000000,
+    "stop_dedicated_delta_bytes": 7500000000,
+    "shared_growth_limit_bytes": 128000000
+  }
+}
