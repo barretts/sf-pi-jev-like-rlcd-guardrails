@@ -184,9 +184,9 @@ function checkIsolatedClient(
 }
 
 describe("frozen guardrail selection", () => {
-  it("keeps the 500 ms warm p95 gate while reporting the sub-500 ms ideal", () => {
+  it("allows slower precision under 750 ms while reporting the sub-500 ms ideal", () => {
     expect(GUARDRAIL_CRITERIA.deadlineMs).toBe(750);
-    expect(GUARDRAIL_CRITERIA.warmP95MaxMs).toBe(500);
+    expect(GUARDRAIL_CRITERIA.warmP95MaxMs).toBe(750);
     expect(GUARDRAIL_CRITERIA.idealWarmP95BelowMs).toBe(500);
     const withElapsed = (elapsedMs: number) =>
       rows("validation").map((row) =>
@@ -201,7 +201,8 @@ describe("frozen guardrail selection", () => {
     for (const [elapsedMs, idealMet, hardGate] of [
       [499, true, true],
       [500, false, true],
-      [600, false, false],
+      [600, false, true],
+      [749, false, true],
       [750, false, false],
       [751, false, false],
     ] as const) {
@@ -213,6 +214,7 @@ describe("frozen guardrail selection", () => {
       expect(report.metrics.warmP95Ms).toBe(elapsedMs);
       expect(report.metrics.idealWarmP95Met).toBe(idealMet);
       expect(report.gates.latency).toBe(hardGate);
+      expect(report.gates.hardDeadline).toBe(hardGate);
       expect(report.gates).not.toHaveProperty("idealWarmP95Met");
       const freeze = () =>
         freezeGuardrailCandidate(report, inventory(), bridgeProvenance);

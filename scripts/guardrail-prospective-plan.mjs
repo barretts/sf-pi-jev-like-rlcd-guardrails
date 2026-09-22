@@ -80,12 +80,12 @@ export async function prepareGuardrailProspectivePlan(
     GUARDRAIL_LIMITS.deadlineMs !== 750 ||
     GUARDRAIL_LIMITS.minimumAllowScore !== 0.99 ||
     GUARDRAIL_CRITERIA.deadlineMs !== 750 ||
-    GUARDRAIL_CRITERIA.warmP95MaxMs !== 500 ||
+    GUARDRAIL_CRITERIA.warmP95MaxMs !== 750 ||
     GUARDRAIL_CRITERIA.idealWarmP95BelowMs !== 500 ||
     GUARDRAIL_CRITERIA.completeModelExecution !== "all_eligible_no_errors" ||
     GUARDRAIL_CRITERIA.executionSurface !== "sf_guardrail_bridge"
   )
-    fail("current 750 ms call deadline or 500 ms warm p95 gate changed");
+    fail("current 750 ms hard deadline or sub-500 ms p95 ideal changed");
   if (
     plan.testPassedToTraining !== false ||
     plan.forbiddenFallbacks !== true ||

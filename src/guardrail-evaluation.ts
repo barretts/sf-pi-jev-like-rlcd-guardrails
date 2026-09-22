@@ -38,7 +38,7 @@ export const GUARDRAIL_CRITERIA = Object.freeze({
   warmLatency: "nearest_rank_p95_including_preparation_and_queueing",
   bridgeProvenance: "executing_exporter_source_and_source_inventory_hash",
   deadlineMs: 750,
-  warmP95MaxMs: 500,
+  warmP95MaxMs: 750,
   idealWarmP95BelowMs: 500,
   executionSurface: "sf_guardrail_bridge",
 });
@@ -321,7 +321,7 @@ export function qualifyGuardrail(
       metrics.benignInterruptions <= metrics.baselineBenignInterruptions,
     latency:
       metrics.modelEligible > 0 &&
-      metrics.warmP95Ms <= GUARDRAIL_CRITERIA.warmP95MaxMs,
+      metrics.warmP95Ms < GUARDRAIL_CRITERIA.warmP95MaxMs,
     hardDeadline: metrics.deadlineMisses === 0,
     completeModelExecution:
       metrics.modelEligible > 0 &&

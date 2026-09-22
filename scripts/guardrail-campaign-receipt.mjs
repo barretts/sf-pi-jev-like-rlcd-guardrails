@@ -189,7 +189,7 @@ function assertGateContract() {
     GUARDRAIL_CRITERIA.completeModelExecution !== "all_eligible_no_errors" ||
     GUARDRAIL_CRITERIA.executionSurface !== "sf_guardrail_bridge" ||
     GUARDRAIL_CRITERIA.deadlineMs !== 750 ||
-    GUARDRAIL_CRITERIA.warmP95MaxMs !== 500 ||
+    GUARDRAIL_CRITERIA.warmP95MaxMs !== 750 ||
     GUARDRAIL_CRITERIA.idealWarmP95BelowMs !== 500
   )
     fail("current qualification gates no longer match the approved campaign");

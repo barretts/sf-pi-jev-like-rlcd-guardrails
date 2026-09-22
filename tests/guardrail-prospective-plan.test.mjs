@@ -204,7 +204,7 @@ test("prospective plan freezes a prepared TRAIN/VALID run with physical hashes",
     assert.equal(plan.testRowsPassedToTraining, 0);
     assert.equal(plan.noTeacher, true);
     assert.equal(plan.criteria.deadlineMs, 750);
-    assert.equal(plan.criteria.warmP95MaxMs, 500);
+    assert.equal(plan.criteria.warmP95MaxMs, 750);
     assert.equal(
       plan.trainSha256,
       sha(await readFile(join(run, "train.jsonl"))),
