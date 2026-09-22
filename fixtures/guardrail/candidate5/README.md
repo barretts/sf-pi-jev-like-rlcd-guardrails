@@ -113,3 +113,56 @@ facts and uses rules fallback;
 and a distinct browser VALIDATION preview/activation pair because of reserved
 semantic overlap and unresolved preview-data sensitivity. No held-out TEST
 request or label appears in this supplement or its resulting bundle.
+
+## Separate TRAIN-only RFDT systems smoke
+
+`scripts/guardrail-candidate5-train-smoke.mjs` prepares a **non-qualifying**
+research input from the 40 pinned, source-authored TRAIN supplement rows. It
+replays each row through the current sf-pi Safety Kernel and risk-input builder
+using the bundle builder's mocked org-fact setup. It requires a version-2,
+model-eligible input with no exact policy floor, retains the nine intact
+allow/confirm groups, and excludes the four held unknown-org rows. It does not
+read a baseline, admission bundle, validation row, or held-out TEST row. It
+does not invoke a model or execute any authored tool request. The output and
+receipt are written to new private files outside the official candidate-5 run.
+
+The script requires a read-only installed `node_modules` tree for sf-pi's
+imports; it resolves dependencies from that tree without writing into the
+sf-pi worktree. On this machine the sibling Jev checkout has the needed
+dependencies. From the candidate-5 Jev checkout:
+
+Choose a fresh `SMOKE` directory for each attempt; existing outputs are never
+overwritten.
+
+```sh
+SF_PI=/private/tmp/sf-pi-guardrail-candidate5-20260922
+SF_DEPS=/Users/bsonntag/code/simple-jev-ts/node_modules
+CHECKPOINT=/Users/bsonntag/code/simple-jev-ts/.build/hf-session-1_s2hbhu/home/hub/models--google--gemma-3-1b-it/snapshots/dcc83ea841ab6100d6b47a070329e1ba4cf78752
+SMOKE=.build/guardrail/candidate-5-train-smoke-20260922
+node scripts/guardrail-candidate5-train-smoke.mjs \
+  --sf-pi "$SF_PI" --sf-deps "$SF_DEPS" --checkpoint "$CHECKPOINT" \
+  --output "$SMOKE/input.jsonl" --receipt "$SMOKE/receipt.json"
+```
+
+Only after checking the receipt and dataset hash, the generic RFDT API can run
+an eight-update GPU systems experiment in a fresh research directory. Its
+native preparation compiles the TRAIN prompts from the original Gemma GGUF;
+the optimization uses the verified original Google HF checkpoint. No export,
+held-out evaluation, or candidate approval is part of this smoke:
+
+```sh
+JEV_DEVICE=metal JEV_MODEL_FILE="$PWD/models/gemma-3-1b-it-f16.gguf" \
+  node dist/cli.js rfdt prepare --input "$SMOKE/input.jsonl" \
+  --output-dir "$SMOKE/rfdt" --template v2
+HF_HUB_OFFLINE=1 JEV_RFDT_PYTHON="$PWD/.build/rfdt-venv/bin/python" \
+  node dist/cli.js rfdt train --run "$SMOKE/rfdt" --steps 8 \
+  --model-path "$CHECKPOINT"
+```
+
+The receipt explicitly says `qualification: false`,
+`officialCandidate5Admission: false`, and
+`reservedSplitScreenedInThisRun: false`. This smoke tests whether the current
+runtime can prepare and optimize these reviewed TRAIN examples; it cannot
+replace the browser-family corpus, full split screening, final-host baseline,
+ready admission receipt, or candidate-5 qualification path above. The generic
+RFDT trainer does not enforce those guardrail-specific gates.
