@@ -1,42 +1,36 @@
 # Guardrail risk replacement evidence, 2026-09-21
 
-## Candidate 6 source and host checkpoint, 2026-09-22
+## Candidate 6 prospective VALID outcome, 2026-09-22
 
-Candidate 5 remains rejected on its own internal validation diagnostic. The
-separate Candidate 6 campaign has **not trained or evaluated a model**. Its
-[corrected development pool](./candidate-6-corrections.md) contains 158 TRAIN,
-96 historical diagnostic VALID, and zero TEST rows. A separate
-[TRAIN-only supplement](../../fixtures/guardrail/candidate6/README.md) adds
-18 source-reviewed requests in eight matched groups. The model-free sf-pi
-replays matched all 158 corrected TRAIN and 96 historical VALID requests, and
-all 18 supplement requests, to complete model inputs without a policy floor or
-fallback. These results verify request preparation under mocked facts, not
-labels, model behavior, or actual tool effects.
+Candidate 5 remains rejected. Candidate 6 trained a separate 128-update model
+from the original Google Gemma 3 1B checkpoint on **175 admitted TRAIN rows**.
+Its RFDT preparation included zero internal validation and zero TEST rows. The
+real local GGUF answered all 37 model-prepared calls in the independently
+authored, 62-case prospective VALID v4 set through sf-pi's shadow risk bridge.
+The remaining cases used 14 exact policy floors, eight ineligible tool paths,
+and three explicit pre-model fallbacks. Host facts and tool execution were
+mocked. The held-out TEST v3 set remains sealed and unscored.
 
+The [Candidate 6 VALID report](./candidate-6-valid-128.md) records **zero unsafe
+automatic allows and zero safety regressions**, but **23 benign interruptions
+versus one for the current engine**. Its warm p95 was 684.5 ms, all 37 calls
+answered, and no call exceeded the 750 ms hard deadline. The candidate matched
+the rubric's action in 39/62 cases; the current engine matched 57/62. This
+candidate **failed** prospective selection on usability and cannot proceed to
+held-out TEST or enforcement. A lower single cutoff cannot repair the observed
+VALID overlap while retaining zero unsafe allows. These are VALID results for
+this candidate, not general safety guarantees or a production claim.
+The [preview-session input gap](./candidate-6-input-gap.md) also makes one
+simulated/live pair indistinguishable to the current model apart from random
+session IDs; this needs a host-owned execution-mode fact or code-owned check
+before a new qualification campaign.
+
+The source and split corrections remain in the [Candidate 6 development
+record](./candidate-6-corrections.md) and [TRAIN-only supplement](../../fixtures/guardrail/candidate6/README.md).
 The [independently authored blind campaign](../../blind-c6-20260922/README.md)
-currently seals 54 VALID v3 and 47 TEST v2 cases. Request-only screens found
-zero exact, canonical, group, template, or same-effect cross-split matches
-after withholding a quoted-text TRAIN pair and a destructive Git TRAIN group.
-This mechanical screen and independent near-replay review reduce known
-leakage; they do not prove population-level split independence. The held-out
-TEST labels and model outcomes remain closed.
-
-The [VALID-only sf-pi host preflight](../../.build/guardrail/candidate-6-valid-host-preflight-v3-20260922-b/receipt.json)
-replayed all 54 exact requests with mocked facts and no model or external tool
-execution. The current engine allowed 27, confirmed 22, and blocked five.
-Against the authored rubric, it allowed two approval-required requests and
-confirmed one safe request; all five hard blocks required the cases' declared
-custom `behavior:block` policy overrides, since the bundled rules default to
-confirmation. Thirty VALID cases reached the complete Jev input, 14 were exact
-policy floors, eight file tools were ineligible, and two used stated browser or
-org-fact fallback. All ten authored families have safe and risky cases, but
-only five have both sides among model-prepared calls. This is an explicit
-coverage limit, especially for browser effects; do not treat the 54-case
-inventory as 54 model evaluations.
-
-Candidate 6 has no trained weights, selected cutoff, native model bridge
-validation, latency result, freeze, held-out model test, or qualification.
-The default remains `off`, and the existing guardrail engine remains active.
+documents its split boundaries and limitations. No Candidate 6 freeze,
+held-out model score, or qualification exists. The default remains `off`, and
+the existing guardrail engine remains active.
 
 This report separates source/interface proof, Pi SDK execution with scripted
 or actual native inference, RFDT training, qualification and production
