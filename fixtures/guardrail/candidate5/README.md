@@ -51,8 +51,9 @@ node scripts/guardrail-candidate5-bundle.mjs \
 ```
 
 Do not run this command until the sf-pi baseline passes its full coverage
-checks. The current host sends browser presses to rules fallback because it
-cannot verify the live focused element and page at scoring and execution.
+checks. The current host sends browser clicks and key presses to rules fallback
+because it cannot verify live reference, focus, and page evidence at scoring
+and execution.
 That leaves the v3 browser risk coverage gate unmet. A revised, source-pinned
 qualification corpus and baseline are required before training; a proposed v4
 browser addendum was held because page facts do not establish focus or layout.

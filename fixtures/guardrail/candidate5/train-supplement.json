@@ -3,7 +3,7 @@
   "status": "source-authored TRAIN supplement; admission must be rechecked against pinned v2 sf-pi baseline",
   "rubric": "operation-policy-v2",
   "baseCorpusSha256": "bb4ed147933c076111b127e6a5433c6ce7ea54cc43befb7d384ddb54681e6309",
-  "sfPiCommit": "530c024dd99ddf98e9819967924b5be179d61082",
+  "sfPiCommit": "3070408136ff0a9da3cc2ced095cf64741b2b12f",
   "review": "Machine-authored operation-policy labels and mocked host facts; no external operation or model call.",
   "holds": [
     "Tooling executeAnonymous overlaps reserved Apex semantically.",
