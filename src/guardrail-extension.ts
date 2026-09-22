@@ -15,6 +15,10 @@ import {
 import { verifyArtifact, hashArtifact } from "./models.js";
 import { verifyGuardrailQualification } from "./guardrail-evaluation.js";
 import {
+  C8_BASE_PROTOCOL_SHA256,
+  verifyC8Calibration,
+} from "./guardrail-calibration.js";
+import {
   GUARDRAIL_LIMITS,
   GUARDRAIL_PROTOCOL_SHA256,
   GUARDRAIL_PROVIDER_EVENT,
@@ -52,6 +56,10 @@ export function registerGuardrailProvider(
 ) {
   const env = options.env ?? process.env;
   const config = guardrailConfig(env);
+  const calibrationPath = env.JEV_GUARDRAIL_CALIBRATION;
+  const calibrationSha256 = env.JEV_GUARDRAIL_CALIBRATION_SHA256;
+  const calibrated =
+    calibrationPath !== undefined || calibrationSha256 !== undefined;
   interface Runtime {
     controller: AbortController;
     backend?: InferenceAdapter;
@@ -60,6 +68,10 @@ export function registerGuardrailProvider(
     modelSha256: string | null;
     qualified: boolean;
     qualificationBaselineSha256: string | null;
+    minimumAllowScore: number | null;
+    scoringProtocolSha256: string | null;
+    calibrationPolicySha256: string | null;
+    calibrationBaselineSha256: string | null;
     backendGeneration: number | null;
     ready: boolean;
   }
@@ -81,6 +93,10 @@ export function registerGuardrailProvider(
       modelSha256: null,
       qualified: false,
       qualificationBaselineSha256: null,
+      minimumAllowScore: null,
+      scoringProtocolSha256: null,
+      calibrationPolicySha256: null,
+      calibrationBaselineSha256: null,
       backendGeneration: null,
       ready: false,
     };
@@ -100,6 +116,19 @@ export function registerGuardrailProvider(
     runtime.warming = (async () => {
       await waitFor(retirement, runtime.controller.signal);
       assertCurrent(runtime);
+      if (calibrated && qualificationPath !== undefined)
+        throw new Error(
+          "C8 TRAIN calibration cannot inherit a C7 qualification receipt",
+        );
+      if (
+        calibrated &&
+        (!calibrationPath ||
+          !calibrationSha256 ||
+          !/^[a-f0-9]{64}$/.test(calibrationSha256))
+      )
+        throw new Error(
+          "C8 calibration requires a file and operator-pinned SHA-256",
+        );
       if (
         qualificationPath !== undefined &&
         (!qualificationSha256 || !/^[a-f0-9]{64}$/.test(qualificationSha256))
@@ -121,7 +150,7 @@ export function registerGuardrailProvider(
         options.createBackend?.(config) ?? new NativeBackend(config);
       runtime.classifier ??= new Classifier(config, runtime.backend);
       const binaryBeforeWarmup =
-        qualificationPath !== undefined
+        qualificationPath !== undefined || calibrated
           ? await hashArtifact(config.binary, runtime.controller.signal)
           : undefined;
       // Reset/disposal interrupts waiting even if a test adapter ignores disposal.
@@ -164,6 +193,41 @@ export function registerGuardrailProvider(
         qualificationBaselineSha256 = qualification.baselineSourceSha256;
         qualified = true;
       }
+      if (calibrated) {
+        const raw = await readQualification(
+          calibrationPath!,
+          runtime.controller.signal,
+        );
+        if (
+          createHash("sha256").update(raw).digest("hex") !== calibrationSha256
+        )
+          throw new Error(
+            "C8 calibration SHA-256 does not match the operator pin",
+          );
+        const binary = await hashArtifact(
+          config.binary,
+          runtime.controller.signal,
+        );
+        if (
+          binary.sha256 !== binaryBeforeWarmup!.sha256 ||
+          binary.size !== binaryBeforeWarmup!.size
+        )
+          throw new Error(
+            "Guardrail scoring binary changed during C8 calibration warmup",
+          );
+        const receipt = verifyC8Calibration(
+          JSON.parse(raw.toString("utf8")),
+          artifact.sha256,
+          binary.sha256,
+        );
+        runtime.minimumAllowScore = receipt.minimumAllowScore;
+        runtime.scoringProtocolSha256 = receipt.scoringProtocolSha256;
+        runtime.calibrationPolicySha256 = receipt.input.policySha256;
+        runtime.calibrationBaselineSha256 = receipt.input.baselineSha256;
+        // TRAIN calibration permits shadow comparison. Held-out qualification
+        // remains a separate gate before this provider may enforce decisions.
+        qualified = false;
+      }
       assertCurrent(runtime);
       if (
         runtime.backend instanceof NativeBackend &&
@@ -194,9 +258,13 @@ export function registerGuardrailProvider(
   };
 
   const provider: GuardrailRiskProvider = {
-    version: 1,
+    version: calibrated ? 2 : 1,
     id: "jev",
-    protocolSha256: GUARDRAIL_PROTOCOL_SHA256,
+    get protocolSha256() {
+      return calibrated
+        ? (current?.scoringProtocolSha256 ?? C8_BASE_PROTOCOL_SHA256)
+        : GUARDRAIL_PROTOCOL_SHA256;
+    },
     get modelSha256() {
       return enabled() ? (current?.modelSha256 ?? null) : null;
     },
@@ -212,6 +280,24 @@ export function registerGuardrailProvider(
     },
     get qualificationBaselineSha256() {
       return enabled() ? (current?.qualificationBaselineSha256 ?? null) : null;
+    },
+    get minimumAllowScore() {
+      return calibrated && enabled()
+        ? (current?.minimumAllowScore ?? null)
+        : null;
+    },
+    get calibrationSha256() {
+      return calibrated && enabled() ? calibrationSha256 : null;
+    },
+    get calibrationPolicySha256() {
+      return calibrated && enabled()
+        ? (current?.calibrationPolicySha256 ?? null)
+        : null;
+    },
+    get calibrationBaselineSha256() {
+      return calibrated && enabled()
+        ? (current?.calibrationBaselineSha256 ?? null)
+        : null;
     },
     async evaluate(input, signal) {
       const start = performance.now();
@@ -260,6 +346,9 @@ export function registerGuardrailProvider(
         safe,
         config.modelId,
         AbortSignal.any([callerSignal, runtime.controller.signal]),
+        calibrated
+          ? (runtime.minimumAllowScore ?? NaN)
+          : GUARDRAIL_LIMITS.minimumAllowScore,
       );
       assertCurrent(runtime);
       if (
@@ -297,7 +386,9 @@ export function registerGuardrailProvider(
     modelSha256: provider.modelSha256,
     qualified: provider.qualified,
     qualificationBaselineSha256: provider.qualificationBaselineSha256,
-    protocolSha256: GUARDRAIL_PROTOCOL_SHA256,
+    protocolSha256: provider.protocolSha256,
+    minimumAllowScore: provider.minimumAllowScore,
+    calibrationSha256: provider.calibrationSha256,
     state: stopped
       ? "disposed"
       : !enabled()
@@ -305,7 +396,9 @@ export function registerGuardrailProvider(
         : current?.warming
           ? "warming"
           : (current?.classifier?.status.state ?? "cold"),
-    calibration: "uncalibrated",
+    calibration: calibrated
+      ? "train_selected_cutoff_unqualified"
+      : "uncalibrated",
     lastError,
   });
   const reset = () => {

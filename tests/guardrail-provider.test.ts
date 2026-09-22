@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -13,13 +14,18 @@ import {
   guardrailConfig,
   registerGuardrailProvider,
 } from "../src/guardrail-extension.js";
-import { GUARDRAIL_PROVIDER_EVENT } from "../src/guardrail.js";
-import { verifyArtifact } from "../src/models.js";
+import {
+  GUARDRAIL_PROTOCOL_SHA256,
+  GUARDRAIL_PROVIDER_EVENT,
+} from "../src/guardrail.js";
+import { selectC8Calibration } from "../src/guardrail-calibration.js";
+import { hashArtifact, verifyArtifact } from "../src/models.js";
 import { registerExtension } from "../src/extension.js";
 
 vi.mock("../src/models.js", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../src/models.js")>()),
   verifyArtifact: vi.fn(),
+  hashArtifact: vi.fn(),
 }));
 
 const input = {
@@ -29,6 +35,7 @@ const input = {
   facts: {},
 };
 const verified = vi.mocked(verifyArtifact);
+const hashed = vi.mocked(hashArtifact);
 function artifact(sha256 = "a".repeat(64)) {
   return { id: "google/gemma-3-1b-it", sha256 } as Awaited<
     ReturnType<typeof verifyArtifact>
@@ -188,6 +195,82 @@ describe("guardrail worker ownership", () => {
     expect(providers.providers).toHaveLength(1);
     expect(verified).not.toHaveBeenCalled();
     expect(createBackend).not.toHaveBeenCalled();
+  });
+
+  it("loads a pinned TRAIN-selected C8 threshold for shadow scoring without qualification", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "jev-c8-provider-"));
+    const receiptPath = join(directory, "train-cutoff.json");
+    const pin = (value: string) => value.repeat(64);
+    hashed.mockResolvedValue({ sha256: pin("b"), size: 123 });
+    const receipt = selectC8Calibration({
+      version: 1,
+      purpose: "candidate8_train_calibration_only",
+      modelSha256: pin("a"),
+      nativeBinarySha256: pin("b"),
+      promptProtocolSha256: GUARDRAIL_PROTOCOL_SHA256,
+      baselineSha256: pin("c"),
+      policySha256: pin("d"),
+      baselineReceiptSha256: pin("e"),
+      admissionSha256: pin("f"),
+      fitSha256: pin("1"),
+      calibrationCorpusSha256: pin("2"),
+      fitGroups: ["fit"],
+      cases: [
+        { id: "safe", groupId: "cal", expected: "allow" },
+        { id: "risk", groupId: "cal", expected: "confirm" },
+      ],
+      records: [
+        {
+          id: "safe",
+          groupId: "cal",
+          expected: "allow",
+          baseline: "allow",
+          gate: "prepared",
+          modelAnswered: true,
+          allowScore: 0.99,
+          inputSha256: pin("3"),
+          elapsedMs: 20,
+        },
+        {
+          id: "risk",
+          groupId: "cal",
+          expected: "confirm",
+          baseline: "allow",
+          gate: "prepared",
+          modelAnswered: true,
+          allowScore: 0.8,
+          inputSha256: pin("4"),
+          elapsedMs: 21,
+        },
+      ],
+    });
+    const bytes = JSON.stringify(receipt);
+    await writeFile(receiptPath, bytes);
+    const extension = registerGuardrailProvider(harness().pi, {
+      env: {
+        JEV_GUARDRAIL_CALIBRATION: receiptPath,
+        JEV_GUARDRAIL_CALIBRATION_SHA256: createHash("sha256")
+          .update(bytes)
+          .digest("hex"),
+      },
+      createBackend: backend,
+    });
+    try {
+      await extension.warmup();
+      expect(extension.provider).toMatchObject({
+        version: 2,
+        qualified: false,
+        minimumAllowScore: receipt.minimumAllowScore,
+        protocolSha256: receipt.scoringProtocolSha256,
+      });
+      expect((await extension.provider.evaluate(input)).action).toBe("allow");
+      expect(extension.status().calibration).toBe(
+        "train_selected_cutoff_unqualified",
+      );
+    } finally {
+      await extension.dispose();
+      await rm(directory, { recursive: true, force: true });
+    }
   });
 
   it("releases its own warm worker on disable and creates a fresh one after re-enable", async () => {

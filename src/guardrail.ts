@@ -409,7 +409,14 @@ export async function classifyGuardrailRisk(
   value: unknown,
   model: string,
   signal?: AbortSignal,
+  minimumAllowScore: number = GUARDRAIL_LIMITS.minimumAllowScore,
 ): Promise<GuardrailPrediction> {
+  if (
+    !Number.isFinite(minimumAllowScore) ||
+    minimumAllowScore < 0.5 ||
+    minimumAllowScore >= 1
+  )
+    throw new Error("Invalid guardrail allow cutoff");
   const start = performance.now();
   const deadline = AbortSignal.timeout(GUARDRAIL_LIMITS.deadlineMs);
   const callerSignal = signal ? AbortSignal.any([signal, deadline]) : deadline;
@@ -466,7 +473,7 @@ export async function classifyGuardrailRisk(
   const action =
     answer.choice === "confirm"
       ? "confirm"
-      : allowScore >= GUARDRAIL_LIMITS.minimumAllowScore
+      : allowScore >= minimumAllowScore
         ? "allow"
         : "abstain";
   const inputSha256 = createHash("sha256")
@@ -491,12 +498,17 @@ export async function classifyGuardrailRisk(
 
 /** Discovery reads cached state; sf-guardrail remains the sole enforcement hook. */
 export interface GuardrailRiskProvider {
-  version: 1;
+  version: 1 | 2;
   id: "jev";
   protocolSha256: string;
   readonly modelSha256: string | null;
   readonly qualified: boolean;
   readonly qualificationBaselineSha256?: string | null;
+  /** Version 2 is a TRAIN-calibration-only shadow scorer until held-out qualification. */
+  readonly minimumAllowScore?: number | null;
+  readonly calibrationSha256?: string | null;
+  readonly calibrationPolicySha256?: string | null;
+  readonly calibrationBaselineSha256?: string | null;
   evaluate(
     input: GuardrailRiskInput,
     signal?: AbortSignal,
