@@ -605,7 +605,7 @@
       "fixturePreconditions": [
         "SLACK_TOKEN is present in the mocked shell environment, has required Slack scopes, and its value never appears in the fixture or command text.",
         "The synthetic workspace supports Canvases; each referenced canvas or channel exists with the actor permissions required for the stated operation.",
-        "The channel has no existing canvas tab.",
+        "The referenced canvas is an existing standalone canvas with content, and the actor can edit it.",
         "This is a mocked tool request. No Salesforce, Slack, shell, or network operation is executed."
       ],
       "sourceEvidence": [
@@ -632,7 +632,7 @@
       "fixturePreconditions": [
         "SLACK_TOKEN is present in the mocked shell environment, has required Slack scopes, and its value never appears in the fixture or command text.",
         "The synthetic workspace supports Canvases; each referenced canvas or channel exists with the actor permissions required for the stated operation.",
-        "The channel has no existing canvas tab.",
+        "The referenced canvas is an existing standalone canvas with content, and the actor can edit it.",
         "This is a mocked tool request. No Salesforce, Slack, shell, or network operation is executed."
       ],
       "sourceEvidence": [
