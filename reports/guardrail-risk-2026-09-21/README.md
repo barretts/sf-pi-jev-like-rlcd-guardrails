@@ -11,7 +11,23 @@ regressions, 15 unnecessary interruptions versus baseline three, and only
 outcomes and approval counts, but shadow completed only two of four semantic
 model checks. No held-out model calls, qualified enforce, overall improvement
 or production acceptance claim is made. Candidate 3's earlier rejection and
-candidate 2's usability rejection remain preserved below.
+candidate 2's usability rejection remain preserved below. Their fused exports,
+diagnostic quantization scratch and F16 GGUF files were removed after the
+2026-09-22 cleanup; adapters, manifests, hashes and evaluation receipts remain.
+
+The current SF Pi integration is `44820d21` (tree
+`eaa5b6e042ce28e98a3f1cf47c47125d1188775a`). Its bundled rules now
+confirm unresolved-org mutating REST requests and wrapped Salesforce data
+imports. The Guardrail suite passed 374 tests with two skipped; the strict v3
+diagnostic passed seven tests and failed only the six browser safe/risk
+eligibility checks across TRAIN, validation and TEST. It wrote no admissible
+baseline. A separate, explicitly nonqualifying TRAIN-only smoke used the
+reviewed 40-row candidate-5 supplement with mocked host facts, zero browser,
+validation or TEST rows, and the original Google Gemma 3 1B base. Eight RFDT
+updates finished in 63.62 seconds; loss fell from 6.493761 to 0.676923,
+adapter weights changed and reload passed. This proves local training mechanics
+on that narrow input, not model effectiveness or candidate-5 admission. The
+browser execution contract and full qualification remain open.
 
 ## Candidate 5 750 ms runtime checkpoint, 2026-09-22
 
@@ -28,7 +44,7 @@ the scoring protocol SHA-256 is
 `b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e`.
 The latency criterion and source identity changed; the safety and usability
 gates remain. Prior validation and SDK diagnostics cannot qualify this
-revision. The default is still `off`, and no candidate-5 model has been trained
+revision. The default is still `off`, and no admitted candidate-5 model has been trained
 or qualified.
 
 At the 750 ms checkpoint, Jev passed 1,048 tests in 48 files. SF Pi's focused
@@ -37,10 +53,10 @@ source check and lint passed. Jev commit `68bcb8c` retained the
 [integration patch](../../integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch)
 at that checkpoint. Jev `6f279ab` refreshed it after the direct browser CLI
 floor, and `25bccf8` refreshed it after passive pre-click evidence. The current
-patch is 327,559 bytes, SHA-256
-`ee02a6e44a0089c0f15c5952202289b9a5df73c502207657fcf3f273f4d645e5`.
-Fresh application from SF base `4f901db9` reproduced `a6cf833b` and tree
-`8343991b046553655a628fd5905ac3608a4e4d03` exactly. This is
+patch is 336,134 bytes, SHA-256
+`3af9588b029a5e9113b0f981ddd8252a7a2ed9efa35a622b28b29913dacfdd9f`.
+Fresh application from SF base `4f901db9` reproduced `44820d21` and tree
+`eaa5b6e042ce28e98a3f1cf47c47125d1188775a` exactly. This is
 source-delivery proof; it does not show installation or model effectiveness.
 
 The first sandboxed Pi SDK run did **not** complete its
@@ -135,7 +151,7 @@ This adds a full-suite result to the focused checks on `74e53da`; the
 separate `5e2ee1e` full-suite result above remains historical. It does not
 resolve the strict browser coverage failure or qualify candidate 5.
 
-The current SF integration commit `a6cf833b` rejects a Jev decision when
+The earlier SF integration commit `a6cf833b` rejects a Jev decision when
 final comparison bookkeeping crosses the 750 ms deadline. Its
 [full-suite log](/private/tmp/sf-pi-c5-final-full-npm-test-10s-20260922.log)
 records 4,388 passed, 41 skipped and zero failed tests in 605 passing files
@@ -252,7 +268,7 @@ marks both tool families model-ineligible; Jev `7f2bce1` recognizes the
 conservative click fallback. The SF hook remains the enforcement
 owner, and the operator default is `off`. The earlier
 candidate-4 model, receipt, baseline and rejection cannot qualify this changed
-protocol. No candidate-5 model has been trained, bridge-validated, tested on
+protocol. No admitted candidate-5 model has been trained, bridge-validated, tested on
 held-out cases or qualified for enforcement.
 
 After the click-and-press fallback commit, 479 focused SF browser and
@@ -377,7 +393,7 @@ unsafe automatic allows, no
 regression to existing protections, exact hard blocks, unnecessary
 interruptions at or below baseline, and safe/risky coverage in every required
 eligible family remain mandatory. The browser family coverage gap still
-prevents an admissible candidate-5 bundle, and no candidate-5 model has been
+prevents an admissible candidate-5 bundle, and no admitted candidate-5 model has been
 trained or tested.
 
 The SF hook starts the 750 ms timer before resolving its existing-rule

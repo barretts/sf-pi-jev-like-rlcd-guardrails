@@ -11,7 +11,7 @@ index 898b0e862ed664d247d4883d6c8270f538b78f7f..51b7da79285a5e2b976fed810a81e9d1
  
  # Security scan reports
 diff --git a/catalog/index.json b/catalog/index.json
-index fe4232ae85bd69ab6675e8f8819360560845605e..06bcd161290e597758441523c47b3132b53a7f8b 100644
+index fe4232ae85bd69ab6675e8f8819360560845605e..f64223c59624a8d0810898932d618465d5f2d4ee 100644
 --- a/catalog/index.json
 +++ b/catalog/index.json
 @@ -226,7 +226,7 @@
@@ -60,7 +60,7 @@ index fe4232ae85bd69ab6675e8f8819360560845605e..06bcd161290e597758441523c47b3132
      "hasReadme": true,
      "hasTests": true,
 -    "srcLoc": 5673
-+    "srcLoc": 7056
++    "srcLoc": 7064
    },
    {
      "id": "sf-herdr",
@@ -1027,10 +1027,17 @@ index db37337bd533af1a56260e6719ba48ed11520f1b..44faa75f9c128ad5d940342829a907f8
    are global Pi settings under `sfPi.guardrail`; project-local weakening is
    deferred with project-local rule overrides. Adding either means plumbing
 diff --git a/extensions/sf-guardrail/README.md b/extensions/sf-guardrail/README.md
-index 27bba377eedf0bd686f33323566213932a58de01..4a3ecdb13f84c1b672182d4f5cfe26c51e4cf0c1 100644
+index 27bba377eedf0bd686f33323566213932a58de01..73a5654074b598f40b8bce394dd3bed7d839a288 100644
 --- a/extensions/sf-guardrail/README.md
 +++ b/extensions/sf-guardrail/README.md
-@@ -20,11 +20,20 @@ fail-closed behavior, session approval memory, and audit path:
+@@ -17,14 +17,27 @@ fail-closed behavior, session approval memory, and audit path:
+ - **Native-tool gate** classifies known durable mutations from Agent Script,
+   Data 360, Apex, Slack, SOQL, and SF Browser surfaces.
+ 
++The org-aware gate checks supported command wrappers such as `env` and confirms
++Salesforce data imports and mutating REST methods for production or unresolved
++orgs. REST `GET` requests and bounded data queries remain read-only.
++
  Intent flags such as `allow_mutation`, `allow_confirmed`, or `mutation=true` aid
  classification but never become approval.
  
@@ -1051,7 +1058,7 @@ index 27bba377eedf0bd686f33323566213932a58de01..4a3ecdb13f84c1b672182d4f5cfe26c5
  - `/sf-guardrail grants` — list legacy persisted grants if present.
  - `/sf-guardrail settings` — open routine preferences.
  - `/sf-guardrail aliases` — edit aliases that receive production-level policy.
-@@ -51,6 +60,102 @@ Process-level automation controls are explicit:
+@@ -51,6 +64,102 @@ Process-level automation controls are explicit:
  
  Neither path bypasses hard blocks.
  
@@ -1154,7 +1161,7 @@ index 27bba377eedf0bd686f33323566213932a58de01..4a3ecdb13f84c1b672182d4f5cfe26c5
  ## Safety and Data Boundaries
  
  - Interactive confirms offer Allow once, Allow for this session, or Block.
-@@ -62,17 +167,29 @@ Neither path bypasses hard blocks.
+@@ -62,17 +171,29 @@ Neither path bypasses hard blocks.
    and requires a separate production/unknown-org opt-in.
  - Strictly validated temporary-directory cleanup can be auto-allowed; other
    dangerous commands are confirmed or hard-blocked according to rule behavior.
@@ -1185,7 +1192,7 @@ index 27bba377eedf0bd686f33323566213932a58de01..4a3ecdb13f84c1b672182d4f5cfe26c5
  ## Troubleshooting
  
  **Production confirms fire for a sandbox:** Inspect `/sf-guardrail audit` to see
-@@ -90,6 +207,23 @@ operator control and retain the audit output; hard blocks remain active.
+@@ -90,6 +211,23 @@ operator control and retain the audit output; hard blocks remain active.
  **Audit is empty after resume:** Decisions belong to the active session file.
  Confirm that the resumed branch is the one that recorded the decision.
  
@@ -1210,7 +1217,7 @@ index 27bba377eedf0bd686f33323566213932a58de01..4a3ecdb13f84c1b672182d4f5cfe26c5
  
  <!-- GENERATED:file-structure:start -->
 diff --git a/extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json b/extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json
-index 5e738d3694360a91d4cf25b80b575a17bb085f55..81c11c7bdfbd6fadeaae0b6d3ecf7b6df739cedc 100644
+index 5e738d3694360a91d4cf25b80b575a17bb085f55..38e856ab09abb7b5226564c644e52bd58d081778 100644
 --- a/extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json
 +++ b/extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json
 @@ -196,6 +196,11 @@
@@ -1225,6 +1232,49 @@ index 5e738d3694360a91d4cf25b80b575a17bb085f55..81c11c7bdfbd6fadeaae0b6d3ecf7b6d
        {
          "id": "base64-decode-to-shell",
          "pattern": "base64-decode-to-shell",
+@@ -464,22 +469,39 @@
+       },
+       {
+         "id": "sf-org-api-destructive-prod",
+-        "description": "sf org api with destructive HTTP method on production",
++        "description": "sf org api with mutating HTTP method on production",
+         "match": {
+           "tool": "bash",
+           "ast": {
+             "cmd": "sf",
+             "subCmd": ["org", "api"],
+             "flagIn": {
+-              "--method": ["DELETE", "PATCH", "PUT"]
++              "--method": ["POST", "PUT", "PATCH", "DELETE"]
+             }
+           }
+         },
+         "whenOrgType": ["production"],
+         "action": "confirm",
+-        "confirmMessage": "Call PRODUCTION org {orgAlias} REST API with destructive HTTP method?\n\n  {command}",
++        "confirmMessage": "Call PRODUCTION org {orgAlias} REST API with a mutating HTTP method?\n\n  {command}",
+         "enabled": true
+       },
++      {
++        "id": "sf-api-rest-mutate-prod",
++        "description": "sf api request rest with mutating HTTP method on production",
++        "match": {
++          "tool": "bash",
++          "ast": {
++            "cmd": "sf",
++            "subCmd": ["api", "request", "rest"],
++            "flagIn": {
++              "--method": ["POST", "PUT", "PATCH", "DELETE"]
++            }
++          }
++        },
++        "whenOrgType": ["production"],
++        "action": "confirm",
++        "confirmMessage": "Call PRODUCTION org {orgAlias} REST API with a mutating HTTP method?\n\n  {command}"
++      },
+       {
+         "id": "sf-data-create-prod",
+         "description": "sf data create record/file targeting production",
 diff --git a/extensions/sf-guardrail/index.ts b/extensions/sf-guardrail/index.ts
 index 276ac7d92e864ca8421c4958af40d3ababf62ac0..16b66c9b2312a928bdd9621e842d0f65934b8795 100644
 --- a/extensions/sf-guardrail/index.ts
@@ -2533,6 +2583,37 @@ index 6068114e984bbc4e9c81b2b1f2094cc8a71587ab..73e1e147a805cf29b8cce0b6321550a6
      action.endsWith(".sample") ||
      action.endsWith(".count") ||
      action.endsWith(".validate") ||
+diff --git a/extensions/sf-guardrail/lib/org-aware-gate.ts b/extensions/sf-guardrail/lib/org-aware-gate.ts
+index 39e7705bbc9b962c7ab02057cbd9205eed462684..f1dabd80aca04bf0737ed9f8984d025dc1039a77 100644
+--- a/extensions/sf-guardrail/lib/org-aware-gate.ts
++++ b/extensions/sf-guardrail/lib/org-aware-gate.ts
+@@ -7,6 +7,7 @@
+  * First fire wins; the Safety Kernel stops iterating.
+  */
+ import { matches, tokenize } from "./bash-ast.ts";
++import { unwrapExecutionWrapper } from "./command-gate.ts";
+ import type { OrgContext } from "./org-context.ts";
+ import type { OrgAwareRule } from "./types.ts";
+ 
+@@ -21,9 +22,17 @@ export function evaluateOrgAware(
+   rules: OrgAwareRule[],
+   org: OrgContext,
+ ): OrgAwareOutcome | undefined {
+-  const tokens = tokenize(command);
++  let tokens = tokenize(command);
+   if (!tokens) return undefined;
+ 
++  // Resolve the same supported wrappers used for target-org detection, while
++  // retaining the original command in the decision and approval envelope.
++  for (let depth = 0; depth < 4; depth += 1) {
++    const nested = unwrapExecutionWrapper(tokens);
++    if (!nested) break;
++    tokens = nested;
++  }
++
+   for (const rule of rules) {
+     if (rule.enabled === false) continue;
+     if (!rule.whenOrgType.includes(org.type)) continue;
 diff --git a/extensions/sf-guardrail/lib/org-context.ts b/extensions/sf-guardrail/lib/org-context.ts
 index e6999c10408b30038f5c0c3fe68424d6cdfff593..5fe7467638f2d92e247c4ef2687a5e9c1f7169ca 100644
 --- a/extensions/sf-guardrail/lib/org-context.ts
@@ -2990,6 +3071,18 @@ index d4d595dc9bf441dbaba79c985539bb3a203cd64a..f81c1e359eefa701ff2d91863d5a2a73
    it("confirms base64 decode piped to shell", () => {
      expect(evaluateCommand("echo abc | base64 -d | bash", gate)?.matched.id).toBe(
        "base64-decode-to-shell",
+diff --git a/extensions/sf-guardrail/tests/config.test.ts b/extensions/sf-guardrail/tests/config.test.ts
+index fd91bdc6f110575ccd584ede7cc42fb78eed1881..58cbc9e9376dcc13ae634185a932ded2dc818621 100644
+--- a/extensions/sf-guardrail/tests/config.test.ts
++++ b/extensions/sf-guardrail/tests/config.test.ts
+@@ -62,6 +62,7 @@ describe("bundled defaults", () => {
+         "sf-apex-run-prod",
+         "sf-data-mutate-prod",
+         "sf-org-api-destructive-prod",
++        "sf-api-rest-mutate-prod",
+       ]),
+     );
+   });
 diff --git a/extensions/sf-guardrail/tests/guardrail-corpus.test.ts b/extensions/sf-guardrail/tests/guardrail-corpus.test.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..4a570b68079117c2be922c2494f7373c657765ea
@@ -4586,10 +4679,10 @@ index 0000000000000000000000000000000000000000..479d6b8f671bb44e82faed22f7a6c5c1
 +});
 diff --git a/extensions/sf-guardrail/tests/jev-risk-org-facts.test.ts b/extensions/sf-guardrail/tests/jev-risk-org-facts.test.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..5d00e1c43d0b5e4e0182db990b4766e8858eb991
+index 0000000000000000000000000000000000000000..0e40e63ec63de660bd2075a2ae79bd6b6ffdf129
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/jev-risk-org-facts.test.ts
-@@ -0,0 +1,385 @@
+@@ -0,0 +1,434 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +import { createHash } from "node:crypto";
 +import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -4879,6 +4972,55 @@ index 0000000000000000000000000000000000000000..5d00e1c43d0b5e4e0182db990b4766e8
 +      expect(seen).toHaveLength(0);
 +    },
 +  );
++
++  it.each([
++    {
++      name: "REST POST in bash",
++      toolName: "bash",
++      input: {
++        command:
++          "sf api request rest services/data/v66.0/sobjects/Account --method POST --target-org UnknownTarget",
++      },
++    },
++    {
++      name: "REST POST in herdr_pane.run",
++      toolName: "herdr_pane",
++      input: {
++        action: "run",
++        pane: "ops",
++        command:
++          "sf api request rest services/data/v66.0/sobjects/Account --method POST --target-org UnknownTarget",
++      },
++    },
++    {
++      name: "env-wrapped data import",
++      toolName: "bash",
++      input: {
++        command: "env LANG=C sf data import tree --files accounts.json --target-org UnknownTarget",
++      },
++    },
++  ])("keeps the code-owned confirm on $name when Jev falls back", async ({ toolName, input }) => {
++    const safetyInput: SafetyKernelInput = {
++      toolName,
++      input,
++      cwd: "/project",
++      config: readBundledConfig(),
++    };
++    const baseline = await evaluateSafety(safetyInput);
++    expect(baseline).toMatchObject({ action: "confirm", orgResolutionGuessed: true });
++    const seen: JevRiskInput[] = [];
++    const result = await evaluateJevRisk(pi(provider(seen, "allow")), safetyInput, baseline, {
++      mode: "enforce",
++    });
++    expect(result.decision).toBe(baseline);
++    expect(result.comparison).toMatchObject({
++      source: "rules_fallback",
++      baseline: "confirm",
++      actual: "confirm",
++      reason: "Jev Salesforce org identity unverified; using Safety Kernel fallback",
++    });
++    expect(seen).toHaveLength(0);
++  });
 +
 +  it("leaves a benign Salesforce read on the old allow path when org identity is unverified", async () => {
 +    const input = request("sf data query -q 'SELECT Id FROM Account' -o UnknownTarget");
@@ -7301,6 +7443,92 @@ index 0000000000000000000000000000000000000000..9f0e27cfce26248a2d2a0e6792060956
 +      expect(after.sources[file]).toBe(before.sources[file]);
 +  });
 +});
+diff --git a/extensions/sf-guardrail/tests/safety-kernel-contract.test.ts b/extensions/sf-guardrail/tests/safety-kernel-contract.test.ts
+index b4c16229c26f43767e81cf9ad497e0f3f469782c..7ed059719cd8a6850f6533e572dd0cd12bafa5cc 100644
+--- a/extensions/sf-guardrail/tests/safety-kernel-contract.test.ts
++++ b/extensions/sf-guardrail/tests/safety-kernel-contract.test.ts
+@@ -631,6 +631,81 @@ describe("Safety Kernel — orgAwareGate (Tier 2)", () => {
+     expect(decision).toBeUndefined();
+   });
+ 
++  it.each([
++    [
++      "bash",
++      'sf api request rest services/data/v66.0/sobjects/Account --method POST --body \'{"Name":"Example"}\' --target-org Unknown',
++      "sf-api-rest-mutate-prod",
++    ],
++    [
++      "herdr_pane",
++      'sf api request rest services/data/v66.0/sobjects/Account --method POST --body \'{"Name":"Example"}\' --target-org Unknown',
++      "sf-api-rest-mutate-prod",
++    ],
++    [
++      "bash",
++      "env LANG=C sf data import tree --files accounts.json --target-org Unknown",
++      "sf-data-mutate-prod",
++    ],
++    [
++      "bash",
++      "env TZ=UTC sf data import tree --files accounts.json --target-org Unknown",
++      "sf-data-mutate-prod",
++    ],
++    [
++      "bash",
++      "sf org api /services/data/v66.0/sobjects/Account --method POST -o Unknown",
++      "sf-org-api-destructive-prod",
++    ],
++  ] as const)("confirms unknown-org mutation through %s: %s", async (toolName, command, ruleId) => {
++    mockedEnv = env("Unknown", "unknown");
++    const decision = await evaluateSafety({
++      toolName,
++      input: toolName === "herdr_pane" ? { action: "run", pane: "ops", command } : { command },
++      cwd: "/project",
++      config: readBundledConfig(),
++    });
++
++    expect(decision).toMatchObject({
++      feature: "orgAwareGate",
++      action: "confirm",
++      ruleId,
++      orgResolutionGuessed: true,
++      orgType: "production",
++    });
++    expect(decision?.approvalScope?.riskTier).toBe("org_sensitive_exact");
++  });
++
++  it.each([
++    "sf api request rest services/data/v66.0/sobjects/Account/describe --method GET --target-org Unknown",
++    "env LANG=C sf data query --query 'SELECT Id FROM Account LIMIT 5' --target-org Unknown",
++  ])("allows bounded unknown-org reads: %s", async (command) => {
++    mockedEnv = env("Unknown", "unknown");
++    const decision = await evaluateSafety({
++      toolName: "bash",
++      input: { command },
++      cwd: "/project",
++      config: readBundledConfig(),
++    });
++
++    expect(decision).toBeUndefined();
++  });
++
++  it("keeps a verified sandbox REST write outside the production rule", async () => {
++    mockedEnv = env("DevInt", "sandbox");
++    const decision = await evaluateSafety({
++      toolName: "bash",
++      input: {
++        command:
++          "sf api request rest services/data/v66.0/sobjects/Account --method POST --target-org DevInt",
++      },
++      cwd: "/project",
++      config: readBundledConfig(),
++    });
++
++    expect(decision).toBeUndefined();
++  });
++
+   it("confirms additional Salesforce mutations on production", async () => {
+     mockedEnv = env("Prod", "production");
+     const config = readBundledConfig();
 diff --git a/extensions/sf-guardrail/tests/safety-kernel.test.ts b/extensions/sf-guardrail/tests/safety-kernel.test.ts
 index d3a4232a9303ee1f7d2b74f37b4fa9bac66d4e39..71f642a7fd59c957c60d8a2da47e9a2d7a668605 100644
 --- a/extensions/sf-guardrail/tests/safety-kernel.test.ts

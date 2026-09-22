@@ -154,7 +154,7 @@ held-out evaluation, or candidate approval is part of this smoke:
 JEV_DEVICE=metal JEV_MODEL_FILE="$PWD/models/gemma-3-1b-it-f16.gguf" \
   node dist/cli.js rfdt prepare --input "$SMOKE/input.jsonl" \
   --output-dir "$SMOKE/rfdt" --template v2
-HF_HUB_OFFLINE=1 JEV_RFDT_PYTHON="$PWD/.build/rfdt-venv/bin/python" \
+HF_HUB_OFFLINE=1 JEV_RFDT_PYTHON=/Users/bsonntag/code/simple-jev-ts/.build/rfdt-venv/bin/python \
   node dist/cli.js rfdt train --run "$SMOKE/rfdt" --steps 8 \
   --model-path "$CHECKPOINT"
 ```
@@ -166,3 +166,12 @@ runtime can prepare and optimize these reviewed TRAIN examples; it cannot
 replace the browser-family corpus, full split screening, final-host baseline,
 ready admission receipt, or candidate-5 qualification path above. The generic
 RFDT trainer does not enforce those guardrail-specific gates.
+
+The eight-update local smoke completed on 2026-09-22 using dataset SHA-256
+`a3f19d40ae1caf6312d39ee0cbdd8451b4c1b893ac469cf57a015056b25344cf`.
+Its prepared branches were 40 TRAIN / zero validation / zero TEST. The original
+Gemma 3 1B base changed adapter weights, reduced loss from 6.493761 to
+0.676923, and passed checkpoint reload in 63.62 seconds. A second source
+projection on clean SF commit `44820d21` produced identical dataset bytes;
+the earlier projection had already seen those SF changes before commit. These
+are systems and source-replay results only, not candidate qualification.
