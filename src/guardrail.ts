@@ -128,10 +128,11 @@ export const GUARDRAIL_PROTOCOL_SHA256 = createHash("sha256")
         unsupported: "reject",
       },
       browserPage: {
-        toolName: "sf_browser_press",
+        toolNames: ["sf_browser_click", "sf_browser_press"],
         status: "fresh",
         url: "http(s) origin plus pathname only",
         snapshotSha256: "lowercase hex SHA-256",
+        clickRef: "fresh labeled ref with matching snapshot SHA-256",
       },
       limits: GUARDRAIL_LIMITS,
       labels: ["allow", "confirm"],
@@ -342,7 +343,12 @@ export function validateGuardrailInput(value: unknown): GuardrailRiskInput {
   }
   if (
     safe.toolName === "sf_browser_click" &&
-    (!ref || typeof safe.input.ref !== "string" || !safe.input.ref.trim())
+    (!ref ||
+      ref.status !== "fresh" ||
+      !page ||
+      ref.snapshotSha256 !== page.snapshotSha256 ||
+      typeof safe.input.ref !== "string" ||
+      !safe.input.ref.trim())
   )
     fail();
   if (
@@ -358,7 +364,12 @@ export function validateGuardrailInput(value: unknown): GuardrailRiskInput {
     (typeof safe.input.key !== "string" || !safe.input.key.trim() || !page)
   )
     fail();
-  if (safe.toolName !== "sf_browser_press" && page) fail();
+  if (
+    safe.toolName !== "sf_browser_press" &&
+    safe.toolName !== "sf_browser_click" &&
+    page
+  )
+    fail();
   guardrailRiskFamily(safe as GuardrailRiskInput);
   return safe as GuardrailRiskInput;
 }

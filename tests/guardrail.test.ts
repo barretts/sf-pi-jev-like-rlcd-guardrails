@@ -86,7 +86,19 @@ describe("guardrail risk classification", () => {
       [
         "sf_browser_click",
         { ref: "@e1" },
-        { browserRef: { status: "stale" } },
+        {
+          browserRef: {
+            status: "fresh",
+            role: "button",
+            label: "Open details",
+            snapshotSha256: "a".repeat(64),
+          },
+          browserPage: {
+            status: "fresh",
+            url: "https://example.my.salesforce.com/lightning/page/home",
+            snapshotSha256: "a".repeat(64),
+          },
+        },
         "browser",
       ],
     ] as const;
@@ -212,22 +224,50 @@ describe("guardrail risk classification", () => {
         facts: { orgs: [{ type: "unknown", guessed: true }] },
       }).facts.orgs,
     ).toHaveLength(1);
-    for (const status of ["fresh", "stale", "missing"])
-      expect(
+    const click = {
+      ...input,
+      toolName: "sf_browser_click",
+      input: { ref: "@e1" },
+      facts: {
+        browserRef: {
+          status: "fresh",
+          role: "button",
+          label: "Cancel",
+          snapshotSha256: "a".repeat(64),
+        },
+        browserPage: {
+          status: "fresh",
+          url: "https://example.my.salesforce.com/lightning/page/home",
+          snapshotSha256: "a".repeat(64),
+        },
+      },
+    };
+    expect(validateGuardrailInput(click).facts.browserRef?.status).toBe(
+      "fresh",
+    );
+    for (const status of ["stale", "missing"])
+      expect(() =>
         validateGuardrailInput({
-          ...input,
-          toolName: "sf_browser_click",
-          input: { ref: "@e1" },
+          ...click,
           facts: {
-            browserRef: {
-              status,
-              role: "button",
-              label: "Cancel",
-              snapshotSha256: "a".repeat(64),
-            },
+            ...click.facts,
+            browserRef: { ...click.facts.browserRef, status },
           },
-        }).facts.browserRef?.status,
-      ).toBe(status);
+        }),
+      ).toThrow("incomplete");
+    for (const facts of [
+      { browserRef: click.facts.browserRef },
+      {
+        ...click.facts,
+        browserPage: {
+          ...click.facts.browserPage,
+          snapshotSha256: "b".repeat(64),
+        },
+      },
+    ])
+      expect(() => validateGuardrailInput({ ...click, facts })).toThrow(
+        "incomplete",
+      );
     expect(() =>
       validateGuardrailInput({
         ...input,

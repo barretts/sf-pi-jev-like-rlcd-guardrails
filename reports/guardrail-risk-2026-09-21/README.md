@@ -154,7 +154,11 @@ The [artifact receipt](../../.build/guardrail/candidate-5-research-split-8c6b9f7
 records artifact and separate research-registry verification, ties the model to
 the corrected dataset, and confirms no held-out TEST use or official admission.
 After verifier recheck, the rebuildable 3.8 GiB fused safetensors intermediate
-was removed; the adapter, GGUF, run manifest, registry, and receipts remain.
+was removed. On September 22, the rejected 1.9 GiB GGUF export was also
+removed after its hash was verified and no process had it open. The adapter,
+run manifest, registry, and receipts remain; a new GGUF export is required
+before another model check. The [export-removal receipt](../../.build/guardrail/candidate-5-research-split-8c6b9f7-20260922/rfdt-256/REBUILDABLE-EXPORT-REMOVED.json)
+records the exact removed artifact.
 The [cleanup receipt](../../.build/guardrail/candidate-5-research-split-8c6b9f7-20260922/rfdt-256/FUSED-INTERMEDIATE-REMOVED.json)
 records the removal.
 
