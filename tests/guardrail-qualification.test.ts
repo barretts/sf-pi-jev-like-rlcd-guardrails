@@ -127,13 +127,15 @@ function checkIsolatedClient(
       const freeze = evaluation.freezeGuardrailCandidate(validation, data.inventory);
       report = evaluation.qualifyGuardrail(data.test, { ...data.identity, split: "test", freeze });
     }
-    let freezeError, receiptError;
+    let freezeError, receiptError, validationFreezeError;
     try { evaluation.assertGuardrailFreeze(report.freeze, data.identity, data.inventory); }
     catch (error) { freezeError = error.message; }
     try { evaluation.verifyGuardrailQualification(report, data.identity.modelSha256, data.identity.nativeBinarySha256); }
     catch (error) { receiptError = error.message; }
+    try { evaluation.freezeGuardrailCandidate(report.freeze.validation, data.inventory); }
+    catch (error) { validationFreezeError = error.message; }
     process.stdout.write(JSON.stringify({
-      report, probe, freezeError, receiptError,
+      report, probe, freezeError, receiptError, validationFreezeError,
       criteriaSha256: evaluation.GUARDRAIL_CRITERIA_SHA256,
       protocolSha256: guardrail.GUARDRAIL_PROTOCOL_SHA256
     }));
@@ -159,6 +161,7 @@ function checkIsolatedClient(
     probe: { action: string };
     freezeError?: string;
     receiptError?: string;
+    validationFreezeError?: string;
     criteriaSha256: string;
     protocolSha256: string;
   };
@@ -260,7 +263,7 @@ describe("frozen guardrail selection", () => {
     }
   });
   it.each(["backend", "models", "guardrail-extension"])(
-    "invalidates a sealed freeze and receipt when copied %s scoring-client bytes change",
+    "invalidates old validation, freeze and receipt when copied %s scoring-client bytes change",
     async (changedModule) => {
       const directory = await mkdtemp(
         join(tmpdir(), "jev-guardrail-client-binding-"),
@@ -291,6 +294,7 @@ describe("frozen guardrail selection", () => {
         expect(before.report.qualified).toBe(true);
         expect(before.freezeError).toBeUndefined();
         expect(before.receiptError).toBeUndefined();
+        expect(before.validationFreezeError).toBeUndefined();
         expect(before.probe.action).toBe("allow");
         const path = join(directory, `${changedModule}.js`);
         const original = await readFile(path, "utf8");
@@ -323,6 +327,7 @@ describe("frozen guardrail selection", () => {
         expect(after.criteriaSha256).not.toBe(before.criteriaSha256);
         expect(after.freezeError).toContain("held-out execution is prohibited");
         expect(after.receiptError).toBeDefined();
+        expect(after.validationFreezeError).toBeDefined();
       } finally {
         await rm(directory, { recursive: true, force: true });
       }

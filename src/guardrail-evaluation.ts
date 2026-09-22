@@ -324,6 +324,7 @@ function measurementSha(
     split: report.split,
     modelSha256: report.modelSha256,
     protocolSha256: report.protocolSha256,
+    criteriaSha256: GUARDRAIL_CRITERIA_SHA256,
     corpusSha256: report.corpusSha256,
     baselineSourceSha256: report.baselineSourceSha256,
     freezeSha256: report.freeze?.sha256 ?? null,
