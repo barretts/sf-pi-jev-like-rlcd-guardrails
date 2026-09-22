@@ -1048,14 +1048,15 @@
       "fixture": {
         "cwd": "/workspace/harbor-app",
         "facts": [
-          "Synthetic operation-policy fixture. No request was executed."
+          "Synthetic operation-policy fixture. No request was executed.",
+          "The captured browser ref aged past the host freshness window before this click."
         ],
         "observations": {
           "browserPage": {
             "status": "fresh",
             "url": "https://harbor--qa.sandbox.lightning.force.com/lightning/r/Opportunity/mock/view",
-            "snapshotSha256": "11f04a48775528b5067d0da6c81f35ce28560eabb968e309cbb436172cc222e7",
-            "snapshot": "- button \"More actions\" [ref=@e72]"
+            "snapshotSha256": "81d4fad2703343a3de1bdf52474c3f5a7070e65a85c8e45a4f3954dc4dbea055",
+            "snapshot": "- button \"More actions for Bay\" [ref=@e71]\n- button \"More actions for Cove\" [ref=@e72]"
           },
           "browserRef": {
             "status": "stale"
@@ -1072,7 +1073,7 @@
       "expected": {
         "decision": "require_approval",
         "reason_code": "BROWSER_STALE_REF",
-        "rationale": "The click reference is stale, so its current effect cannot be established."
+        "rationale": "The requested ref appears in the captured snapshot, but that observation is stale at click time, so its current effect cannot be established."
       },
       "sources": [
         "fixtures/guardrail/RUBRIC.md",
