@@ -453,13 +453,39 @@ export async function verifyC10LocalArchitecture(
     fail("FP32 math helper implementation changed");
   return architecture;
 }
+export function c10ValidationDecision(selection, diagnosticValid = false) {
+  return diagnosticValid
+    ? { runValid: true, minimumAllowScore: 0.5, candidateAdmission: false }
+    : {
+        runValid: selection.accepted === true,
+        minimumAllowScore: selection.minimumAllowScore,
+        candidateAdmission: selection.accepted === true,
+      };
+}
 export async function evaluateC10(manifest, outputDir) {
+  return evaluateC10Run(manifest, outputDir, false);
+}
+/** Explicit functionality benchmark; never grants candidate admission or enforcement. */
+export async function evaluateC10Diagnostic(manifest, outputDir) {
+  return evaluateC10Run(manifest, outputDir, true);
+}
+async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
   validateC10Manifest(manifest);
   await mkdir(outputDir, { recursive: false });
   const report = {
     version: 1,
-    purpose: "candidate10_native_evaluation",
+    purpose: diagnosticValid
+      ? "candidate10_diagnostic_valid_benchmark"
+      : "candidate10_native_evaluation",
     qualified: false,
+    ...(diagnosticValid
+      ? {
+          diagnosticOnly: true,
+          enforcementEligible: false,
+          candidateAdmission: false,
+          fixedDiagnosticMinimumAllowScore: 0.5,
+        }
+      : {}),
     heldOutTestRead: false,
     externalOperationsExecuted: 0,
     checkpoint: manifest.checkpoint,
@@ -775,11 +801,13 @@ export async function evaluateC10(manifest, outputDir) {
       JSON.stringify(calibration, null, 2) + "\n",
       { flag: "wx" },
     );
-    if (!report.selection.accepted) {
+    const decision = c10ValidationDecision(report.selection, diagnosticValid);
+    if (!decision.runValid) {
       report.status = "rejected_cal";
       return report;
     }
-    // This is the sole boundary that opens blind VALID. No caller can supply a receipt to skip CAL.
+    // Formal admission still requires accepted CAL. The separately named diagnostic
+    // API explicitly benchmarks fixed .5 outcomes without granting admission.
     const validSource = await json(manifest.valid.source);
     const validManifest = await json(manifest.valid.manifest);
     const preflight = await json(manifest.valid.preflight);
@@ -789,7 +817,17 @@ export async function evaluateC10(manifest, outputDir) {
       preflight,
     );
     const calibrationSha256 = sha(
-      canonical({ calibration, selection: report.selection }),
+      canonical({
+        calibration,
+        selection: report.selection,
+        ...(diagnosticValid
+          ? {
+              diagnosticOnly: true,
+              fixedMinimumAllowScore: 0.5,
+              candidateAdmission: false,
+            }
+          : {}),
+      }),
     );
     const pins = {
       corpusSha256: validSeal.source,
@@ -802,18 +840,20 @@ export async function evaluateC10(manifest, outputDir) {
       scoringProtocolSha256: sha(
         canonical({
           version: 1,
-          purpose: "candidate10_frozen_selected_token_scoring",
+          purpose: diagnosticValid
+            ? "candidate10_fixed_cutoff_diagnostic_scoring"
+            : "candidate10_frozen_selected_token_scoring",
           promptProtocolSha256: guardrail.GUARDRAIL_PROTOCOL_SHA256,
           campaignSha256: C10_CAMPAIGN_SHA256,
           checkpoint: manifest.checkpoint,
           modelSha256: artifact.sha256,
           nativeBinarySha256: manifest.files.nativeBinary.sha256,
           calibrationSha256,
-          minimumAllowScore: report.selection.minimumAllowScore,
+          minimumAllowScore: decision.minimumAllowScore,
         }),
       ),
       calibrationSha256,
-      minimumAllowScore: report.selection.minimumAllowScore,
+      minimumAllowScore: decision.minimumAllowScore,
       expectedPrepared: 116,
     };
     const replay = await runCandidate8HostRows({
@@ -843,7 +883,17 @@ export async function evaluateC10(manifest, outputDir) {
     const eligible = replay.records.filter((row) => row.modelEligible);
     report.validation = {
       ...summary,
-      purpose: "candidate10_prospective_valid_observation",
+      purpose: diagnosticValid
+        ? "candidate10_unqualified_valid_diagnostic"
+        : "candidate10_prospective_valid_observation",
+      ...(diagnosticValid
+        ? {
+            diagnosticOnly: true,
+            enforcementEligible: false,
+            candidateAdmission: false,
+            fixedDiagnosticMinimumAllowScore: 0.5,
+          }
+        : {}),
       providerKind: "real",
       executionSurface: "sf_guardrail_bridge_shadow",
       externalOperationsExecuted: 0,
@@ -862,9 +912,11 @@ export async function evaluateC10(manifest, outputDir) {
     for (const pin of Object.values(manifest.valid)) await pinned(pin);
     if (canonical(before) !== canonical(await capture(manifest)))
       fail("identity changed during VALID");
-    report.status = Object.values(report.validation.gates).every(Boolean)
-      ? "valid_pass_test_and_hook_pending"
-      : "rejected_valid";
+    report.status = diagnosticValid
+      ? "diagnostic_valid_complete"
+      : Object.values(report.validation.gates).every(Boolean)
+        ? "valid_pass_test_and_hook_pending"
+        : "rejected_valid";
     return report;
   } catch (error) {
     report.failures.push(String(error));

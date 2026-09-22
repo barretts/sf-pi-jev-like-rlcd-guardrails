@@ -12,6 +12,7 @@ import {
   C10_HOST,
   verifyCandidate10ValidPopulation,
   verifyC10PreparedInputs,
+  c10ValidationDecision,
   verifyC10LocalArchitecture,
 } from "../scripts/guardrail-candidate10-evaluate.mjs";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
@@ -462,5 +463,28 @@ test("real prepareRfdt manifest separates dataset source identity from compiled 
         compiledTrainSha,
       ),
     /FIT source/,
+  );
+});
+
+test("formal CAL veto remains authoritative while separate diagnostic uses fixed .5 only", () => {
+  const veto = { accepted: false, minimumAllowScore: 0.99 };
+  assert.deepEqual(c10ValidationDecision(veto), {
+    runValid: false,
+    minimumAllowScore: 0.99,
+    candidateAdmission: false,
+  });
+  assert.deepEqual(c10ValidationDecision(veto, true), {
+    runValid: true,
+    minimumAllowScore: 0.5,
+    candidateAdmission: false,
+  });
+  assert.deepEqual(
+    c10ValidationDecision({ accepted: true, minimumAllowScore: 0.8 }),
+    { runValid: true, minimumAllowScore: 0.8, candidateAdmission: true },
+  );
+  assert.equal(
+    c10ValidationDecision({ accepted: true, minimumAllowScore: 0.8 }, true)
+      .candidateAdmission,
+    false,
   );
 });
