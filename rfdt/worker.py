@@ -399,26 +399,68 @@ def validate_architecture(config: dict[str, Any]) -> None:
 def cuda_local_architecture() -> dict[str, str]:
     helper = Path(__file__).with_name("gemma3_fp32.py")
     if not helper.is_file() or helper.is_symlink():
-        raise ValueError("C10 FP32 architecture helper must be a regular file")
+        raise ValueError("CUDA FP32 architecture helper must be a regular file")
     return {"kind": "hf_fp32_embedding_scale", "helper_sha256": sha256(helper),
             "embedding_scale_policy": "sqrt_hidden_size_in_fp32"}
 
 
-def install_cuda_local_architecture(model: Any, manifest: dict[str, Any]) -> None:
+def validate_cuda_local_profile(manifest: dict[str, Any]) -> None:
     if manifest.get("local_precision") is None:
         if "local_architecture" in manifest:
-            raise ValueError("Local architecture requires a validated C10 precision profile")
+            raise ValueError("Local architecture requires a validated CUDA precision profile")
         return
     precision = manifest["local_precision"]
+    source = manifest.get("cuda_source", {}).get("source", {})
+    campaign_sha = manifest.get("cuda_campaign_sha256")
     if (precision != {"base": "float32", "lora": "float32", "attention": "eager", "tf32": False}
-            or manifest.get("cuda_campaign_sha256") != "64ee24b219d43eacbcad725720b42835cd23b083a9bf337661ac088fee538edf"
             or manifest.get("provenance", {}).get("training_backend") != "torch_cuda"
-            or manifest.get("cuda_source", {}).get("source", {}).get("precision") != precision
-            or manifest.get("cuda_source", {}).get("source", {}).get("campaign_sha256") != manifest.get("cuda_campaign_sha256")
+            or source.get("precision") != precision
+            or source.get("campaign_sha256") != campaign_sha
             or manifest.get("cuda_source", {}).get("saved_adapter_reload", {}).get("ok") is not True):
         raise ValueError("Unrecognized local CUDA precision profile")
+    if source.get("experiment") == "candidate11":
+        import c11_cuda_campaign as campaign_module
+        import cuda_worker as objective
+        campaign_path = Path(__file__).resolve().parent.parent / "fixtures/guardrail/candidate11/cuda-campaign-327-fit.json"
+        campaign = campaign_module.load_campaign(campaign_path)
+        objective_path = campaign_path.parent.parent / "candidate9/objective-plan-B.json"
+        source_definition = json.loads(objective.exact_file(objective_path, objective.PLAN_SHA256))
+        definition = {**source_definition, "purpose": "candidate11_train_only",
+                      "sampler": campaign["sampler"], "steps": campaign["steps"]}
+        receipt = manifest["cuda_source"]
+        proof = receipt.get("saved_adapter_reload", {})
+        delta = proof.get("max_margin_delta")
+        if (campaign_sha != campaign_module.CAMPAIGN_SHA256 or source.get("campaign") != campaign
+                or source.get("source_objective_plan") != source_definition or source.get("objective") != definition
+                or source.get("initialization") != campaign["initialization"]
+                or source.get("campaign_steps") != campaign["steps"] or source.get("steps") not in campaign["checkpoints"]
+                or source.get("mode") != "train"
+                or source.get("inputs") != {"train": objective.TRAIN_SHA256, "pairs": objective.PAIR_SHA256,
+                    "families": objective.FAMILY_SHA256, "plan": objective.PLAN_SHA256, "base": objective.BASE_HASHES}
+                or manifest.get("training_data_sha256") != objective.TRAIN_SHA256
+                or source.get("checkpoint_step") != source.get("steps")
+                or receipt.get("steps") != source.get("steps") or receipt.get("checkpoint_step") != source.get("steps")
+                or receipt.get("mode") != "train" or receipt.get("qualified") is not False
+                or receipt.get("adapter_sha256") != manifest.get("adapter_sha256")
+                or proof.get("adapter_sha256") != manifest.get("adapter_sha256")
+                or proof.get("fit_margins_sha256") != receipt.get("fit_margins_sha256")
+                or proof.get("rows") != 327 or proof.get("precision") != precision or proof.get("margin_delta_limit") != 1e-5
+                or type(delta) not in (int, float) or not math.isfinite(delta) or not 0 <= delta <= 1e-5
+                or source.get("sampler_source_sha256") != campaign["source_sha256"]["c11_fit_sampler.py"]
+                or source.get("source_sha256") != sha256(Path(campaign_module.__file__))
+                or source.get("contract_sha256") != sha256(Path(__file__))
+                or source.get("objective_worker_sha256") != sha256(Path(objective.__file__))):
+            raise ValueError("Unrecognized local C11 campaign or source identity")
+    elif campaign_sha != "64ee24b219d43eacbcad725720b42835cd23b083a9bf337661ac088fee538edf":
+        raise ValueError("Unrecognized local CUDA precision profile")
     if manifest.get("local_architecture") != cuda_local_architecture():
-        raise ValueError("C10 local architecture descriptor or helper checksum changed")
+        raise ValueError("CUDA local architecture descriptor or helper checksum changed")
+
+
+def install_cuda_local_architecture(model: Any, manifest: dict[str, Any]) -> None:
+    validate_cuda_local_profile(manifest)
+    if manifest.get("local_precision") is None:
+        return
     from gemma3_fp32 import install_fp32_embedding_scale
     install_fp32_embedding_scale(model)
 
@@ -430,17 +472,8 @@ def load_model(model_dir: Path, adapter: Path | None = None) -> tuple[Any, Any, 
     validate_architecture(config)
     manifest = validate_adapter(adapter) if adapter is not None else None
     precision = manifest.get("local_precision") if manifest else None
-    if manifest and ("local_architecture" in manifest or precision is not None):
-        if manifest.get("local_architecture") != cuda_local_architecture() or precision is None:
-            raise ValueError("C10 local architecture descriptor or helper checksum changed")
-    if precision is not None:
-        if (precision != {"base": "float32", "lora": "float32", "attention": "eager", "tf32": False}
-                or manifest.get("cuda_campaign_sha256") != "64ee24b219d43eacbcad725720b42835cd23b083a9bf337661ac088fee538edf"
-                or manifest.get("provenance", {}).get("training_backend") != "torch_cuda"
-                or manifest.get("cuda_source", {}).get("source", {}).get("precision") != precision
-                or manifest.get("cuda_source", {}).get("source", {}).get("campaign_sha256") != manifest.get("cuda_campaign_sha256")
-                or manifest.get("cuda_source", {}).get("saved_adapter_reload", {}).get("ok") is not True):
-            raise ValueError("Unrecognized local CUDA precision profile")
+    if manifest:
+        validate_cuda_local_profile(manifest)
     model, tokenizer, config = load(
         str(model_dir),
         adapter_path=str(adapter) if adapter and precision is None else None,

@@ -26,6 +26,8 @@
     "rfdt/cuda_import.py",
     "rfdt/gemma3_fp32.py",
     "rfdt/cuda_campaign.py",
+    "rfdt/c11_cuda_campaign.py",
+    "rfdt/c11_fit_sampler.py",
     "rfdt/cuda_campaign_launch.py",
     "rfdt/cuda_memory_monitor.py",
     "rfdt/cuda_launch.py",

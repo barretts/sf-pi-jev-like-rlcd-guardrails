@@ -12,7 +12,7 @@ import cuda_worker as objective
 import worker as contract
 import c11_fit_sampler as fit_sampler
 
-CAMPAIGN_SHA256 = "93c63bdac764074dda94a4e58bc44e438ad731f7cb7b8c98154e5eb7b929a0f6"
+CAMPAIGN_SHA256 = "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd"
 
 
 def load_campaign(path):

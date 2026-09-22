@@ -70,7 +70,7 @@
     "seed": 42
   },
   "source_sha256": {
-    "worker.py": "9f767c59595749cef061cb1a9e5cdb0047bb4d5a1f32cc302cdc5f9460da9288",
+    "worker.py": "24d608084f09763033e8fbf9b2a5ac01c31a1e18281e1c53b5cd1d2dd5de56ff",
     "cuda_worker.py": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
     "c11_fit_sampler.py": "846b022a3d624a8104fb9908c5f66e10eb53a9cdd2014f09b0b277e406370b03"
   }
