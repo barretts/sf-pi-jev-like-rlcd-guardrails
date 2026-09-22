@@ -29,23 +29,39 @@ const buildRoot = resolve(root, ".build/guardrail");
 const source = Object.freeze({
   corrected: resolve(
     root,
-    ".build/guardrail/candidate-6-dev-corrections-v4-20260922/merged-train-validation.jsonl",
+    ".build/guardrail/candidate-6-dev-corrections-v5-20260922/merged-train-validation.jsonl",
   ),
   correctionReceipt: resolve(
     root,
-    ".build/guardrail/candidate-6-dev-corrections-v4-20260922/receipt.json",
+    ".build/guardrail/candidate-6-dev-corrections-v5-20260922/receipt.json",
   ),
   correctedHostReceipt: resolve(
     root,
-    ".build/guardrail/candidate-6-corrected-host-preflight-v2-20260922/receipt.json",
+    ".build/guardrail/candidate-6-corrected-host-preflight-v3-20260922/receipt.json",
   ),
   supplement: resolve(
     root,
-    ".build/guardrail/candidate-6-supplement-preflight-20260922-c/train.jsonl",
+    ".build/guardrail/candidate-6-supplement-preflight-dd97a1a/train.jsonl",
   ),
   supplementReceipt: resolve(
     root,
-    ".build/guardrail/candidate-6-supplement-preflight-20260922-c/receipt.json",
+    ".build/guardrail/candidate-6-supplement-preflight-dd97a1a/receipt.json",
+  ),
+  proposal: resolve(
+    root,
+    ".build/guardrail/candidate-6-proposal-projection-20260922-dd97a1a-v2/train.jsonl",
+  ),
+  proposalReceipt: resolve(
+    root,
+    ".build/guardrail/candidate-6-proposal-projection-20260922-dd97a1a-v2/receipt.json",
+  ),
+  augmentationFixture: resolve(
+    root,
+    "fixtures/guardrail/candidate6/train-augmentation.json",
+  ),
+  browserFixture: resolve(
+    root,
+    "fixtures/guardrail/candidate6/browser-train-proposal.json",
   ),
   supplementFixture: resolve(
     root,
@@ -59,48 +75,59 @@ const source = Object.freeze({
     root,
     ".build/guardrail/candidate-5-research-split-e456e1c9-20260922/merge-receipt.json",
   ),
-  validManifest: resolve(root, "blind-c6-20260922/c6-valid-v3.manifest.json"),
-  validData: resolve(root, "blind-c6-20260922/c6-valid-v3.json"),
-  testManifest: resolve(root, "blind-c6-20260922/c6-test-v2.manifest.json"),
-  testData: resolve(root, "blind-c6-20260922/c6-test-v2.json"),
-  blindSchema: resolve(root, "blind-c6-20260922/c6-case.schema.json"),
+  validManifest: resolve(root, "blind-c6-20260922/c6-valid-v4.manifest.json"),
+  validData: resolve(root, "blind-c6-20260922/c6-valid-v4.json"),
+  testManifest: resolve(root, "blind-c6-20260922/c6-test-v3.manifest.json"),
+  testData: resolve(root, "blind-c6-20260922/c6-test-v3.json"),
+  blindSchema: resolve(root, "blind-c6-20260922/c6-case-v2.schema.json"),
   screen: resolve(root, "blind-c6-20260922/screen-c6.py"),
 });
 const pin = Object.freeze({
   corrected: "cb50f35f9d0eedf7c366b5093d216839b26c1c7a7103902b81a368addd8a5f09",
   correctionReceipt:
-    "cd2a59d1a6592335a53b38e45c9fd6d9f8d70dc7fd19e86e0920ac0e4effdc07",
+    "9a7867c2c0a1ca906666a88704819c71abb1f0fd5849e7b14ccd84942f87e3e3",
   correctedHostReceipt:
-    "75b78042480944231ecb59edbdde8daba8d0a9008c7c751a981d4a38ba7a5aab",
+    "62917d095a69c7a27e64da59b9d256c2221c2967764e3a626a5f00252de3a0f7",
   supplement:
     "1976ec21b7e7c3fec3d76d635a754d2db8c620ae0f8c206719adc919992cfeeb",
   supplementReceipt:
-    "f280b4bc41ffd571697b1360fbfba4e6092dbaf0e3fe421c3431c675e43dcdea",
+    "d61128c1ed102b738d1e96ca7256a05ae63a428488e1ca30dc752700c800d7b1",
   supplementFixture:
-    "9437cef2872fcba123b4f6b7a5fc720e14f53779b748cdf38ad52307ea5aec53",
+    "f6bcd88d9dc546db1f7f7236db55ad5559c82fce3643f18af2d316a9419a2443",
+  proposal: "8e8ab3fcb0215fe728a1426777e94ebd30486992c11f9a5261d1b2d25ca48c09",
+  proposalReceipt:
+    "4cba69e932c83723e3e03248a03d546145e73410b56333c552a4ab7367f6b3df",
+  augmentationFixture:
+    "c8538642a18468d5e4607bd650a5dbd8c728791f142ed6496e74434ec7e92409",
+  browserFixture:
+    "0066675417d3e6ffeb16af14f9e2571b23eb435f4b52a947ab5cc2c33b681a8d",
   c5Merged: "f97050f508c45c16bf14b8c68aae50cf51e43404056bffe25cb91dd1365983ea",
   c5MergeReceipt:
     "0df13b4af10c9dae48248f23b10953fc66bafbd02cb1231a75e96dec5ce86a10",
   validManifest:
-    "02554224fbad8055fdb2a03aadd256d63748121a5eb4ba53ffd58fa4fa45b079",
-  validData: "da14b83047094971dfe5083a5ea2fd437c01a44600ce9d9a196cb6dd62287905",
+    "4696aee64fe8e91cbc3fb471e80bb1c741223314ee98841d3c276e911f916de7",
+  validData: "b172cc2c07188c206209e4be1a770fc0cb7484539b770ea0d021d14c30f5dd87",
   testManifest:
-    "dbac9247e7df67e70bd8ace9a9e0e15bd382379f344ff3d1a7be7b2b4dff1543",
-  testData: "7a0fa5fca18fbcffb5824011884359ceccfa139a42480499b2197a26bb3fc9d1",
+    "249311991301cf25252f7563b89fcccc59949442debd97099baaa7c551788249",
+  testData: "82cfe17e0fa4bb4ce397f60e0d8479fe9ad0d1aa7aa71807b39b69113ad359c9",
   blindSchema:
-    "99847a1a8377c2e4cb887f6fbe5d5010f60b8f7eb5fd846c943bd6167be10e12",
-  screen: "7f13eaffb1ece2066351343c8f7b486973de471e4e40065be4e3560245168122",
-  sfPiCommit: "e456e1c9c7c0c9b97ccb08f4084558e5cbcd7a8c",
+    "e204e21d086bf4a4bebee0c7c14440ea83ed9509228ec3cab03ba3d55202c376",
+  screen: "d410122a9c9b4c87da008c66447185b6ada3c5efcd9f36d72556e8dac975b0db",
+  sfPiCommit: "dd97a1a9165a89cdb7ff5b2d0c84d2bbf3843277",
   sfPiRuntime:
-    "b1dd0309a789b30c98a7d14a01d843fc3ab199d1542d023ce97c10cbcd2a9e7d",
+    "7d8c068bf02725b1f5ad7d77349a4144390ab0f1a6e531bc28f89af8270154c4",
   scorerDistribution:
-    "1f33e5f22604ed1421a14e7c703d6b777fa08930d14467f08f2f6c2acbc23fe9",
+    "451e617f598d2b2e6bb5a708b3725f6b0cf3bde129cfc2a7ef7d1915618c34e2",
   correctionScript:
-    "d354dfb7cf0ca07463691eb04bff188ff13f8d4402418347d0353472afc33782",
+    "cea39cfe8140e6289de07e33ff61c740fc113a2ce1f975700b92262ad68386c7",
   correctedHostScript:
-    "94ea7770ca014e2491aad723bd4d5762b79b90434559abfe4575290f6ad93824",
+    "c74e31141b7f8787a0c2042fab0be59c8ecd1ce377914439c0644e134e3c6afe",
   supplementPreflightScript:
     "2ea7c998afa242e5021b78da48957aa75c998e6ea4a0818568ced03a4bd2b129",
+  proposalProjectionScript:
+    "1d7bcccf6894cd6298e36fad6ae50b8e8730aaf0d1f708b57bff03b92e87b393",
+  c5ScoringProtocol:
+    "b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e",
 });
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const canonical = (value) =>
@@ -153,7 +180,8 @@ export function validateResearchRows(rows, allowedSplits) {
       !allowedSplits.includes(row.split) ||
       row.request?.model !== RFDT_BASE_MODEL ||
       row.request?.state?.version !== 2 ||
-      row.request?.state?.toolName?.startsWith("sf_browser_") ||
+      (row.request?.state?.toolName?.startsWith("sf_browser_") &&
+        row.request.state.toolName !== "sf_browser_click") ||
       row.request?.options?.template_version !== "v2" ||
       row.request?.questions?.length !== 1 ||
       row.request.questions[0]?.id !== "risk" ||
@@ -185,10 +213,15 @@ export function validateResearchRows(rows, allowedSplits) {
   return { ids, groups, inputs, splits };
 }
 
-export function partitionResearchRows(correctedRows, supplementRows) {
+export function partitionResearchRows(
+  correctedRows,
+  supplementRows,
+  proposalRows,
+) {
   const trainRows = [
     ...correctedRows.filter((row) => row.split === "train"),
     ...supplementRows,
+    ...proposalRows,
   ];
   const historicalDiagnosticRows = correctedRows.filter(
     (row) => row.split === "validation",
@@ -198,9 +231,9 @@ export function partitionResearchRows(correctedRows, supplementRows) {
     "validation",
   ]);
   if (
-    trainRows.length !== 176 ||
+    trainRows.length !== 186 ||
     historicalDiagnosticRows.length !== 96 ||
-    train.splits.train !== 176 ||
+    train.splits.train !== 186 ||
     historical.splits.validation !== 96 ||
     [...train.groups.keys()].some((group) => historical.groups.has(group)) ||
     [...train.ids].some((id) => historical.ids.has(id)) ||
@@ -210,10 +243,11 @@ export function partitionResearchRows(correctedRows, supplementRows) {
   return { trainRows, historicalDiagnosticRows };
 }
 
-function requireReceiptChain(correction, host, supplement) {
+function requireReceiptChain(correction, host, supplement, proposal) {
   const c = correction.source;
   const h = host.source;
   const s = supplement.source;
+  const p = proposal.source;
   if (
     correction.purpose !==
       "nonqualifying_candidate6_corrected_development_pool" ||
@@ -231,7 +265,8 @@ function requireReceiptChain(correction, host, supplement) {
     c?.input !== source.c5Merged ||
     c.inputSha256 !== pin.c5Merged ||
     c.scriptSha256 !== pin.correctionScript ||
-    c.scoringProtocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
+    c.scoringProtocolSha256 !== pin.c5ScoringProtocol ||
+    correction.output.scoringProtocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
     host.purpose !== "candidate6_corrected_development_host_preflight" ||
     host.qualification !== false ||
     host.trainingReady !== false ||
@@ -273,19 +308,55 @@ function requireReceiptChain(correction, host, supplement) {
     s?.supplementFile !== source.supplementFixture ||
     s.supplementSha256 !== pin.supplementFixture ||
     s.preparationScriptSha256 !== pin.supplementPreflightScript ||
+    proposal.purpose !==
+      "candidate6_proposal_train_only_model_free_projection" ||
+    proposal.qualification !== false ||
+    proposal.trainingReady !== false ||
+    proposal.blindSplitScreened !== false ||
+    proposal.humanLabelReviewed !== false ||
+    proposal.mockedHostFacts !== true ||
+    proposal.modelCalls !== 0 ||
+    proposal.externalOperationsExecuted !== 0 ||
+    proposal.browserInputsDispatched !== 0 ||
+    proposal.trainRows !== 10 ||
+    proposal.trainGroups !== 5 ||
+    proposal.validationRows !== 0 ||
+    proposal.testRows !== 0 ||
+    proposal.labels?.allow !== 5 ||
+    proposal.labels?.confirm !== 5 ||
+    proposal.baselineActions?.allow !== 10 ||
+    proposal.baselineActions?.confirm !== 0 ||
+    proposal.baselineActions?.block !== 0 ||
+    proposal.dataset?.file !== source.proposal ||
+    proposal.dataset.sha256 !== pin.proposal ||
+    p?.augmentationSha256 !== pin.augmentationFixture ||
+    p.browserProposalSha256 !== pin.browserFixture ||
+    p.preparationScriptSha256 !== pin.proposalProjectionScript ||
     h.sfPiCommit !== pin.sfPiCommit ||
     s.sfPiCommit !== pin.sfPiCommit ||
+    p.sfPiCommit !== pin.sfPiCommit ||
     h.sfPiRuntimeSha256 !== pin.sfPiRuntime ||
     s.sfPiRuntimeSha256 !== pin.sfPiRuntime ||
+    p.sfPiRuntimeSha256 !== pin.sfPiRuntime ||
     h.scorerProtocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
     s.scorerProtocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
+    p.scorerProtocolSha256 !== GUARDRAIL_PROTOCOL_SHA256 ||
     h.scorerDistributionSha256 !== pin.scorerDistribution ||
     s.scorerDistributionSha256 !== pin.scorerDistribution ||
+    p.scorerDistributionSha256 !== pin.scorerDistribution ||
     h.rfdtBaseModel !== RFDT_BASE_MODEL ||
     s.rfdtBaseModel !== RFDT_BASE_MODEL ||
+    p.rfdtBaseModel !== RFDT_BASE_MODEL ||
     h.rfdtBaseRevision !== RFDT_BASE_REVISION ||
     s.rfdtBaseRevision !== RFDT_BASE_REVISION ||
-    h.sfDependenciesDirectory !== s.sfDependenciesDirectory
+    p.rfdtBaseRevision !== RFDT_BASE_REVISION ||
+    h.sfDependenciesDirectory !== s.sfDependenciesDirectory ||
+    h.sfDependenciesDirectory !== p.sfDependenciesDirectory ||
+    h.sfPackageLockSha256 !== p.sfPackageLockSha256 ||
+    h.sfPackageLockSha256 !== s.sfPackageLockSha256 ||
+    s.sfDependenciesLockSha256 !== p.sfDependenciesLockSha256 ||
+    h.mockDiscoveryStubSha256 !== p.mockDiscoveryStubSha256 ||
+    h.mockDiscoveryStubSha256 !== s.mockDiscoveryStubSha256
   )
     throw new Error(
       "C6 source receipt chain or nonqualification status changed",
@@ -336,6 +407,8 @@ function screenAgainstBlind(right, manifest, rightCount) {
       source.corrected,
       "--left-append",
       source.supplement,
+      "--left-append",
+      source.proposal,
       "--left-split",
       "train",
       "--right",
@@ -346,7 +419,7 @@ function screenAgainstBlind(right, manifest, rightCount) {
     { cwd: root, encoding: "utf8", maxBuffer: 8192 },
   );
   const report = JSON.parse(stdout);
-  assertAggregateScreen(report, 176, rightCount);
+  assertAggregateScreen(report, 186, rightCount);
   return report;
 }
 
@@ -377,17 +450,23 @@ async function main() {
     correctedHostReceiptBytes,
     supplementBytes,
     supplementReceiptBytes,
+    proposalBytes,
+    proposalReceiptBytes,
   ] = await Promise.all([
     readPinned("corrected"),
     readPinned("correctionReceipt"),
     readPinned("correctedHostReceipt"),
     readPinned("supplement"),
     readPinned("supplementReceipt"),
+    readPinned("proposal"),
+    readPinned("proposalReceipt"),
   ]);
   const [
     c5MergedBytes,
     c5MergeReceiptBytes,
     supplementFixtureBytes,
+    augmentationFixtureBytes,
+    browserFixtureBytes,
     screenBytes,
     schemaBytes,
     validManifestBytes,
@@ -396,6 +475,8 @@ async function main() {
     readPinned("c5Merged"),
     readPinned("c5MergeReceipt"),
     readPinned("supplementFixture"),
+    readPinned("augmentationFixture"),
+    readPinned("browserFixture"),
     readPinned("screen"),
     readPinned("blindSchema"),
     readPinned("validManifest"),
@@ -404,7 +485,8 @@ async function main() {
   const correction = JSON.parse(correctionReceiptBytes);
   const correctedHost = JSON.parse(correctedHostReceiptBytes);
   const supplement = JSON.parse(supplementReceiptBytes);
-  requireReceiptChain(correction, correctedHost, supplement);
+  const proposal = JSON.parse(proposalReceiptBytes);
+  requireReceiptChain(correction, correctedHost, supplement, proposal);
   // The sealed data files are hashed as opaque byte streams here. Only the
   // request-only screen process parses them, and it prints aggregate counts.
   const validManifest = JSON.parse(validManifestBytes);
@@ -414,9 +496,9 @@ async function main() {
     "valid",
     source.validData,
     pin.validData,
-    54,
+    62,
   );
-  assertBlindManifest(testManifest, "test", source.testData, pin.testData, 47);
+  assertBlindManifest(testManifest, "test", source.testData, pin.testData, 55);
   if (
     (await hashFile(source.validData)) !== pin.validData ||
     (await hashFile(source.testData)) !== pin.testData
@@ -438,6 +520,7 @@ async function main() {
     correctionScriptBytes,
     correctedHostScriptBytes,
     supplementScriptBytes,
+    proposalScriptBytes,
     selfBytes,
   ] = await Promise.all([
     readFile(resolve(root, "dist/guardrail.js")),
@@ -452,6 +535,9 @@ async function main() {
     readFile(
       resolve(root, "scripts/guardrail-candidate6-supplement-preflight.mjs"),
     ),
+    readFile(
+      resolve(root, "scripts/guardrail-candidate6-proposal-projection.mjs"),
+    ),
     readFile(fileURLToPath(import.meta.url)),
   ]);
   if (
@@ -463,7 +549,8 @@ async function main() {
     sha(correctionScriptBytes) !== pin.correctionScript ||
     sha(correctedHostScriptBytes) !== pin.correctedHostScript ||
     sha(supplementScriptBytes) !== pin.supplementPreflightScript ||
-    GUARDRAIL_PROTOCOL_SHA256 !== correction.source.scoringProtocolSha256 ||
+    sha(proposalScriptBytes) !== pin.proposalProjectionScript ||
+    GUARDRAIL_PROTOCOL_SHA256 !== correction.output.scoringProtocolSha256 ||
     RFDT_BASE_MODEL !== "google/gemma-3-1b-it"
   )
     throw new Error(
@@ -474,17 +561,28 @@ async function main() {
     "corrected C6 development pool",
   );
   const supplementRows = parseJsonl(supplementBytes, "C6 TRAIN supplement");
+  const proposalRows = parseJsonl(proposalBytes, "C6 TRAIN proposals");
   const base = validateResearchRows(correctedRows, ["train", "validation"]);
   const extra = validateResearchRows(supplementRows, ["train"]);
+  const proposals = validateResearchRows(proposalRows, ["train"]);
   if (
     correctedRows.length !== 254 ||
     base.splits.train !== 158 ||
     base.splits.validation !== 96 ||
     supplementRows.length !== 18 ||
     extra.splits.train !== 18 ||
+    proposalRows.length !== 10 ||
+    proposals.splits.train !== 10 ||
     [...extra.ids].some((id) => base.ids.has(id)) ||
     [...extra.groups.keys()].some((group) => base.groups.has(group)) ||
-    [...extra.inputs].some((input) => base.inputs.has(input))
+    [...extra.inputs].some((input) => base.inputs.has(input)) ||
+    [...proposals.ids].some((id) => base.ids.has(id) || extra.ids.has(id)) ||
+    [...proposals.groups.keys()].some(
+      (group) => base.groups.has(group) || extra.groups.has(group),
+    ) ||
+    [...proposals.inputs].some(
+      (input) => base.inputs.has(input) || extra.inputs.has(input),
+    )
   )
     throw new Error(
       "C6 TRAIN supplement overlaps or changes corrected development pool",
@@ -492,16 +590,17 @@ async function main() {
   const { trainRows, historicalDiagnosticRows } = partitionResearchRows(
     correctedRows,
     supplementRows,
+    proposalRows,
   );
   const merged = validateResearchRows(
     [...trainRows, ...historicalDiagnosticRows],
     ["train", "validation"],
   );
   if (
-    merged.splits.train !== 176 ||
+    merged.splits.train !== 186 ||
     merged.splits.validation !== 96 ||
     merged.splits.test !== 0 ||
-    merged.groups.size !== 89
+    merged.groups.size !== 94
   )
     throw new Error(
       "C6 merged RFDT TRAIN / historical VALID group counts changed",
@@ -509,12 +608,12 @@ async function main() {
   const validScreen = screenAgainstBlind(
     source.validData,
     source.validManifest,
-    54,
+    62,
   );
   const testScreen = screenAgainstBlind(
     source.testData,
     source.testManifest,
-    47,
+    55,
   );
   if (
     (await hashFile(source.validData)) !== pin.validData ||
@@ -525,11 +624,16 @@ async function main() {
     sha(await readFile(source.screen)) !== pin.screen ||
     sha(await readFile(source.corrected)) !== pin.corrected ||
     sha(await readFile(source.supplement)) !== pin.supplement ||
+    sha(await readFile(source.proposal)) !== pin.proposal ||
     sha(await readFile(source.correctionReceipt)) !== pin.correctionReceipt ||
     sha(await readFile(source.correctedHostReceipt)) !==
       pin.correctedHostReceipt ||
     sha(await readFile(source.supplementReceipt)) !== pin.supplementReceipt ||
+    sha(await readFile(source.proposalReceipt)) !== pin.proposalReceipt ||
     sha(await readFile(source.supplementFixture)) !== pin.supplementFixture ||
+    sha(await readFile(source.augmentationFixture)) !==
+      pin.augmentationFixture ||
+    sha(await readFile(source.browserFixture)) !== pin.browserFixture ||
     sha(await readFile(fileURLToPath(import.meta.url))) !== sha(selfBytes)
   )
     throw new Error(
@@ -557,17 +661,17 @@ async function main() {
     externalOperationsExecuted: 0,
     prepareRfdtCalls: 0,
     rows: {
-      train: 176,
+      train: 186,
       historicalDiagnosticValidation: 96,
       prospectiveBlindValidation: 0,
       test: 0,
-      groups: 89,
+      groups: 94,
     },
     selection: {
       mode: "validation_only",
       historicalValidationRole: "diagnostic_only_not_candidate_selection",
-      prospectiveSelectionSplit: "sealed_c6_valid_v3_not_in_dataset",
-      heldOutSplit: "sealed_c6_test_v2_not_in_dataset",
+      prospectiveSelectionSplit: "sealed_c6_valid_v4_not_in_dataset",
+      heldOutSplit: "sealed_c6_test_v3_not_in_dataset",
       trainingInput: "train.jsonl_only_after_further_admission",
       historicalDiagnosticInput: "separate_not_for_candidate_selection",
     },
@@ -595,6 +699,14 @@ async function main() {
         sha256: pin.supplementReceipt,
       },
       supplementFixtureSha256: pin.supplementFixture,
+      proposalDataset: { file: source.proposal, sha256: pin.proposal },
+      proposalReceipt: {
+        file: source.proposalReceipt,
+        sha256: pin.proposalReceipt,
+      },
+      augmentationFixtureSha256: sha(augmentationFixtureBytes),
+      browserFixtureSha256: sha(browserFixtureBytes),
+      proposalProjectionScriptSha256: sha(proposalScriptBytes),
       c5MergedDatasetSha256: sha(c5MergedBytes),
       c5MergeReceiptSha256: sha(c5MergeReceiptBytes),
       screenScriptSha256: sha(screenBytes),
@@ -602,12 +714,12 @@ async function main() {
       blindValid: {
         manifestSha256: pin.validManifest,
         dataSha256: pin.validData,
-        caseCount: 54,
+        caseCount: 62,
       },
       blindTest: {
         manifestSha256: pin.testManifest,
         dataSha256: pin.testData,
-        caseCount: 47,
+        caseCount: 55,
       },
       sfPiCommit: sfCommit,
       sfPiRuntimeSha256: sfRuntimeSha256,

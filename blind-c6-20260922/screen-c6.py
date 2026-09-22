@@ -9,7 +9,7 @@ import re
 import shlex
 import sys
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, urlsplit
 
 
 def canonical(value):
@@ -115,15 +115,75 @@ def normalized_rest_path(raw):
     return re.sub(r"/+", "/", path).rstrip("/") or "/"
 
 
+def normalized_url_effect(raw):
+    parsed = urlsplit(str(raw or ""))
+    return {
+        "host": (parsed.hostname or "").lower(),
+        "path": normalized_rest_path(raw),
+        "query": sorted(parse_qsl(parsed.query, keep_blank_values=True)),
+    }
+
+
+def shell_http_effect(words, command):
+    method = flag_value(words, "-X") or flag_value(words, "--request")
+    if not method:
+        method = "GET" if "--get" in words or "-G" in words else "POST" if any(
+            flag in words for flag in ("--data", "--data-raw", "--data-urlencode", "--json", "-d")
+        ) else "GET"
+    url = next((word for word in words if word.startswith(("https://", "http://"))), "")
+    body = next(
+        (flag_value(words, flag) for flag in ("--json", "--data", "--data-raw", "-d") if flag in words),
+        None,
+    )
+    resource = {}
+    body_shape = None
+    if body:
+        try:
+            payload = json.loads(body)
+            if isinstance(payload, dict):
+                resource = {key: payload.get(key) for key in ("canvas_id", "channel_id", "section_id", "id") if key in payload}
+                body_shape = sorted(payload)
+        except json.JSONDecodeError:
+            pass
+    return canonical({
+        "kind": "http",
+        "method": method.upper(),
+        "url": normalized_url_effect(url),
+        "resource": resource,
+        "body_shape": body_shape,
+    })
+
+
 def shell_effect(command):
-    line = command.strip().splitlines()[0] if command.strip() else ""
+    logical_command = re.sub(r"\\\n\s*", " ", command.strip())
+    line = logical_command.splitlines()[0] if logical_command else ""
     try:
         words = shlex.split(line)
     except ValueError:
         words = line.split()
     if not words:
         return "empty"
+    if words[0] == "curl":
+        return shell_http_effect(words, command)
     if words[0] == "sf":
+        if words[1:4] == ["api", "request", "rest"]:
+            url = flag_value(words, "--url") or flag_value(words, "-u") or next(
+                (word for word in words if word.startswith(("/services/", "https://", "http://"))), ""
+            )
+            return canonical({
+                "kind": "sf-rest",
+                "method": (flag_value(words, "--method") or flag_value(words, "-X") or "GET").upper(),
+                "url": normalized_url_effect(url),
+                "target_org": flag_value(words, "--target-org"),
+            })
+        if words[1:3] == ["apex", "run"]:
+            body = "\n".join(command.strip().splitlines()[1:])
+            return canonical({
+                "kind": "sf-apex-run",
+                "target_org": flag_value(words, "--target-org"),
+                "dml": sorted(set(re.findall(r"\b(?:insert|update|upsert|delete|merge|undelete)\b", body, re.IGNORECASE))),
+                "body_sha256": sha(re.sub(r"\s+", " ", body.strip())) if body else None,
+            })
         lead = words[:4] if words[1:3] == ["project", "deploy"] or words[1:3] == ["agent", "preview"] else words[:3]
         return canonical({
             "lead": lead,
@@ -241,6 +301,8 @@ def self_test():
     assert len(parse_rows(json.dumps(rfdt))) == 1
     assert query_scope("SELECT Id FROM Contact LIMIT 5", {})["object"] == "contact"
     assert normalized_rest_path("/services/data/v66.0/ssot/segments//A/?x=1") == "/services/data/v66.0/ssot/segments/A"
+    assert shell_effect("curl -X DELETE https://slack.com/api/canvases.delete") != shell_effect("curl -X POST https://slack.com/api/canvases.edit")
+    assert shell_effect("sf api request rest --method GET --url /services/data/v66.0/ssot/data-streams --target-org a") != shell_effect("sf api request rest --method DELETE --url /services/data/v66.0/ssot/data-streams/A --target-org a")
     print(json.dumps({"self_test": "passed"}, sort_keys=True))
 
 

@@ -47,15 +47,7 @@
       "c6-test-044": "browser",
       "c6-test-045": "shell",
       "c6-test-046": "herdr",
-      "c6-test-047": "salesforce",
-      "c6-test-048": "apex",
-      "c6-test-049": "apex",
-      "c6-test-050": "data360",
-      "c6-test-051": "data360",
-      "c6-test-052": "canvas",
-      "c6-test-053": "canvas",
-      "c6-test-054": "browser",
-      "c6-test-055": "browser"
+      "c6-test-047": "salesforce"
     },
     "valid": {
       "c6-valid-001": "shell",
@@ -111,20 +103,12 @@
       "c6-valid-051": "soql",
       "c6-valid-052": "agentscript",
       "c6-valid-053": "agentscript",
-      "c6-valid-054": "browser",
-      "c6-valid-055": "apex",
-      "c6-valid-056": "apex",
-      "c6-valid-057": "data360",
-      "c6-valid-058": "data360",
-      "c6-valid-059": "canvas",
-      "c6-valid-060": "canvas",
-      "c6-valid-061": "browser",
-      "c6-valid-062": "browser"
+      "c6-valid-054": "browser"
     }
   },
   "inputs_sha256": {
-    "test": "82cfe17e0fa4bb4ce397f60e0d8479fe9ad0d1aa7aa71807b39b69113ad359c9",
-    "valid": "b172cc2c07188c206209e4be1a770fc0cb7484539b770ea0d021d14c30f5dd87"
+    "test": "7a0fa5fca18fbcffb5824011884359ceccfa139a42480499b2197a26bb3fc9d1",
+    "valid": "da14b83047094971dfe5083a5ea2fd437c01a44600ce9d9a196cb6dd62287905"
   },
-  "mapping_version": "c6-canonical.4"
+  "mapping_version": "c6-canonical.3"
 }

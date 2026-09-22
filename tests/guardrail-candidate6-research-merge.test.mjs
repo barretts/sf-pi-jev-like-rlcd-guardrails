@@ -16,12 +16,16 @@ import {
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const corrected = resolve(
   root,
-  ".build/guardrail/candidate-6-dev-corrections-v4-20260922/merged-train-validation.jsonl",
+  ".build/guardrail/candidate-6-dev-corrections-v5-20260922/merged-train-validation.jsonl",
 );
 const script = resolve(root, "scripts/guardrail-candidate6-research-merge.mjs");
 const supplement = resolve(
   root,
-  ".build/guardrail/candidate-6-supplement-preflight-20260922-c/train.jsonl",
+  ".build/guardrail/candidate-6-supplement-preflight-dd97a1a/train.jsonl",
+);
+const proposal = resolve(
+  root,
+  ".build/guardrail/candidate-6-proposal-projection-20260922-dd97a1a-v2/train.jsonl",
 );
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const jsonl = (path) =>
@@ -53,21 +57,24 @@ test("RFDT requests must regenerate exactly and IDs and inputs must be unique", 
 test("TRAIN and historical diagnostics remain separate and cannot cross splits", () => {
   const correctedRows = jsonl(corrected);
   const supplementRows = jsonl(supplement);
+  const proposalRows = jsonl(proposal);
   const { trainRows, historicalDiagnosticRows } = partitionResearchRows(
     correctedRows,
     supplementRows,
+    proposalRows,
   );
-  assert.equal(trainRows.length, 176);
+  assert.equal(trainRows.length, 186);
   assert.equal(historicalDiagnosticRows.length, 96);
   assert.ok(trainRows.every((row) => row.split === "train"));
   assert.ok(
     historicalDiagnosticRows.every((row) => row.split === "validation"),
   );
   assert.throws(() =>
-    partitionResearchRows(correctedRows, [
-      ...supplementRows,
-      historicalDiagnosticRows[0],
-    ]),
+    partitionResearchRows(
+      correctedRows,
+      [...supplementRows, historicalDiagnosticRows[0]],
+      proposalRows,
+    ),
   );
 });
 
@@ -80,16 +87,16 @@ test("request-only screen rejects missing or nonzero collision aggregates", () =
   );
   assert.doesNotThrow(() =>
     assertAggregateScreen(
-      { left_count: 176, right_count: 47, collisions: zero },
-      176,
-      47,
+      { left_count: 186, right_count: 55, collisions: zero },
+      186,
+      55,
     ),
   );
   assert.throws(() =>
     assertAggregateScreen(
-      { left_count: 175, right_count: 47, collisions: zero },
-      176,
-      47,
+      { left_count: 185, right_count: 55, collisions: zero },
+      186,
+      55,
     ),
   );
   const collision = {
@@ -98,9 +105,9 @@ test("request-only screen rejects missing or nonzero collision aggregates", () =
   };
   assert.throws(() =>
     assertAggregateScreen(
-      { left_count: 176, right_count: 47, collisions: collision },
-      176,
-      47,
+      { left_count: 186, right_count: 55, collisions: collision },
+      186,
+      55,
     ),
   );
 });
@@ -124,11 +131,11 @@ test(
         readFileSync(resolve(outputDir, "receipt.json"), "utf8"),
       );
       assert.deepEqual(receipt.rows, {
-        train: 176,
+        train: 186,
         historicalDiagnosticValidation: 96,
         prospectiveBlindValidation: 0,
         test: 0,
-        groups: 89,
+        groups: 94,
       });
       assert.equal(receipt.trainingReady, false);
       assert.equal(receipt.selection.mode, "validation_only");

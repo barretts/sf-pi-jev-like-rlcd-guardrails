@@ -1,0 +1,43 @@
+{
+  "collision_cross_pairs": {
+    "train_test": {
+      "canonical": 0,
+      "exact": 0,
+      "groups": 0,
+      "same_effect": 0,
+      "templates": 0
+    },
+    "train_valid": {
+      "canonical": 0,
+      "exact": 0,
+      "groups": 0,
+      "same_effect": 0,
+      "templates": 0
+    },
+    "valid_test": {
+      "canonical": 0,
+      "exact": 0,
+      "groups": 0,
+      "same_effect": 0,
+      "templates": 0
+    }
+  },
+  "proof_limit": "Exact/canonical/group/template hashes and same-effect heuristic; zero hits do not prove semantic independence.",
+  "receipt_version": "c6-blind-screen.4",
+  "screen_sha256": "d410122a9c9b4c87da008c66447185b6ada3c5efcd9f36d72556e8dac975b0db",
+  "split_count": {
+    "test": 55,
+    "valid": 62
+  },
+  "split_sha256": {
+    "test": "82cfe17e0fa4bb4ce397f60e0d8479fe9ad0d1aa7aa71807b39b69113ad359c9",
+    "valid": "b172cc2c07188c206209e4be1a770fc0cb7484539b770ea0d021d14c30f5dd87"
+  },
+  "train_count": 186,
+  "train_source_sha256": {
+    "augmentation_6": "c8538642a18468d5e4607bd650a5dbd8c728791f142ed6496e74434ec7e92409",
+    "browser_4": "0066675417d3e6ffeb16af14f9e2571b23eb435f4b52a947ab5cc2c33b681a8d",
+    "corrected_158": "cb50f35f9d0eedf7c366b5093d216839b26c1c7a7103902b81a368addd8a5f09",
+    "supplement_18": "f6bcd88d9dc546db1f7f7236db55ad5559c82fce3643f18af2d316a9419a2443"
+  }
+}
