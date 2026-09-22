@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "scope": "mocked_train_request_precondition_only",
+  "description": "For each named pane, the mocked herdr_layout.pane_split returned this exact opaque pane_id before the corresponding herdr_pane.run request. Each pane is a live shell in the same mocked workspace. This does not establish that a real Herdr pane with this ID exists.",
+  "sourceEvidence": [
+    "sf-pi/extensions/sf-herdr/lib/sf_herdr_plan-tool.ts",
+    "https://github.com/ogulcancelik/pi-extensions/blob/main/packages/pi-herdr/README.md",
+    "https://github.com/ogulcancelik/pi-extensions/blob/main/packages/pi-herdr/index.ts"
+  ],
+  "panes": [
+    {
+      "paneId": "guardrail-rehearsal",
+      "source": "herdr_layout.pane_split",
+      "state": "shell-ready"
+    },
+    {
+      "paneId": "guardrail-c5-draft",
+      "source": "herdr_layout.pane_split",
+      "state": "shell-ready"
+    },
+    {
+      "paneId": "c5-pane-rest-905",
+      "source": "herdr_layout.pane_split",
+      "state": "shell-ready"
+    },
+    {
+      "paneId": "guardrail-c6-train",
+      "source": "herdr_layout.pane_split",
+      "state": "shell-ready"
+    }
+  ]
+}
