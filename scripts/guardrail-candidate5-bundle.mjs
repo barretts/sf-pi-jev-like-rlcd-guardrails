@@ -6,7 +6,7 @@
  */
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
@@ -268,22 +268,61 @@ try {
   const [
     { readBundledConfig },
     { evaluateSafety },
-    {
-      buildJevRiskInput,
-      jevRiskEligible,
-      jevRiskPolicyFloor,
-      prepareJevRiskInput,
-    },
+    { jevRiskEligible, jevRiskPolicyFloor, prepareJevRiskInput },
     { restoreFromSessionEntries, clearSharedSfEnvironment },
     { writeLatestBrowserSnapshotRefs },
+    { getJevRiskBaselineSha256 },
   ] = await Promise.all([
     sfImport("extensions/sf-guardrail/lib/config.ts"),
     sfImport("extensions/sf-guardrail/lib/safety-kernel.ts"),
     sfImport("extensions/sf-guardrail/lib/jev-risk.ts"),
     sfImport("lib/common/sf-environment/shared-runtime.ts"),
     sfImport("lib/common/sf-browser-snapshot-state.ts"),
+    sfImport("extensions/sf-guardrail/lib/risk-baseline-identity.ts"),
   ]);
+  if (getJevRiskBaselineSha256() !== baseline.value.baselineSourceSha256)
+    throw new Error(
+      "SF host runtime source differs from pinned baseline export",
+    );
+  if (
+    supplement.value.cases.some(
+      (row) => row.observations?.org?.type === "unknown",
+    ) ||
+    supplement.value.heldCases?.length !== 4 ||
+    supplement.value.heldCases.some(
+      (row) => row.observations?.org?.type !== "unknown",
+    )
+  )
+    throw new Error(
+      "Unverified org facts must stay outside model TRAIN inputs",
+    );
   const corpusById = new Map(corpus.value.cases.map((row) => [row.id, row]));
+  if (
+    corpusById.size !== corpus.value.cases.length ||
+    baseline.value.records.length !== corpus.value.cases.length
+  )
+    throw new Error(
+      "Corpus or host baseline has duplicate or missing case IDs",
+    );
+  const baselineIds = new Set();
+  for (const row of baseline.value.records) {
+    const authored = corpusById.get(row.id);
+    if (
+      baselineIds.has(row.id) ||
+      !authored ||
+      authored.groupId !== row.groupId ||
+      authored.split !== row.split
+    )
+      throw new Error(
+        "Host baseline record identity differs from sealed corpus",
+      );
+    baselineIds.add(row.id);
+    // TEST labels are neither inspected nor copied into the training bundle.
+    if (row.split !== "test" && authored.expected !== row.expected)
+      throw new Error(
+        "Host TRAIN/VALIDATION label differs from authored rubric",
+      );
+  }
   const reserved = emptyBucket();
   const reservedRaw = emptyBucket();
   for (const row of corpus.value.cases) {
@@ -304,6 +343,9 @@ try {
     if (row.split === "train") continue;
     if (row.riskInput) add(reserved, row.riskInput, row.id, row.groupId);
   }
+  for (const row of baseline.value.records)
+    if (row.split !== "test" && row.modelEligible && row.policyFloor)
+      throw new Error("Policy floor was marked model-eligible in host export");
   const candidateGroups = new Map();
   const held = [];
   const addGroup = (origin, row) => {
@@ -339,9 +381,9 @@ try {
         "__C5_TREE_FIXTURE__",
         treePath,
       );
+    const org = row.observations?.org;
     const cwd = "/example/project";
     clearSharedSfEnvironment(cwd);
-    const org = row.observations?.org;
     if (org) {
       const env = {
         cli: { installed: true, version: "2.0.0" },
@@ -530,6 +572,7 @@ try {
     baselineSourceSha256: baseline.value.baselineSourceSha256,
     sourceSha256: source,
     mockedExecution: true,
+    trainingReady: coverageGaps.length === 0,
     status: coverageGaps.length
       ? "review-only; TRAIN coverage gaps remain"
       : "TRAIN/VALIDATION only; qualification pending",
@@ -546,6 +589,7 @@ try {
     validationGroups: new Set(validation.map((row) => row.groupId)).size,
     testRows: 0,
     supplementRowsAuthored: supplement.value.cases.length,
+    supplementRowsHeldForUnverifiedOrg: supplement.value.heldCases.length,
     supplementRowsAdmitted: selected.filter((row) =>
       seenSupplementIds.has(row.id),
     ).length,
@@ -568,6 +612,8 @@ try {
     review:
       "Machine-authored policy labels and mocked host facts. Live CLI/API acceptance and human label review remain unverified.",
   };
+  await mkdir(dirname(resolve(values.output)), { recursive: true });
+  await mkdir(dirname(resolve(values.receipt)), { recursive: true });
   await writeFile(resolve(values.output), bundleBytes, {
     mode: 0o600,
     flag: "wx",

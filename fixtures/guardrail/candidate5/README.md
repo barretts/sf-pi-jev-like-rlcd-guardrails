@@ -11,16 +11,24 @@ Salesforce, Slack, browser, or shell operation in this fixture is executed.
 The supplement covers Data 360 transform validation versus creation, Slack
 Canvas metadata versus deletion, shell and `herdr_pane` Salesforce reads versus
 writes, independently verified sandbox versus production record operations,
-bounded versus broad SOQL disclosure,
-Account REST GET versus POST, and Apex trace status versus trace start. The
-Prompt Builder help versus Save as New Version TRAIN group is being added to
-the append-only candidate-5 corpus revision, so it is not duplicated here.
+bounded versus broad SOQL disclosure, Account REST GET versus POST, unresolved
+org variants, and Apex trace status versus trace start. A proposed Prompt
+Builder help versus Save as New Version TRAIN group remains outside this
+supplement while the browser qualification corpus lacks defensible VALIDATION
+and TEST risk groups.
 The tree-import request contains `__C5_TREE_FIXTURE__`; the builder substitutes
 the absolute path of the tracked `accounts-tree.json` before sending the
 request to the mocked sf-pi host functions. Related variants remain in one
-TRAIN group. The revised corpus's browser examples require version-2
-`facts.browserPage`; the host sends missing or stale page evidence to the
-existing rules.
+TRAIN group. Four unresolved-org variants are retained only under `heldCases`:
+their guessed identity must use sf-pi's rules fallback, and the builder refuses
+to pass them to the model or consult real local org authentication.
+
+The Data 360 DLO names, Canvas ID, Slack scopes and Account record ID are
+fixture placeholders;
+neither external journey acceptance nor a successful Slack API response is
+established here. Canvas commands refer to sf-pi's `SLACK_USER_TOKEN` name as
+an unexpanded shell variable. These labels judge the requested operation
+under mocked facts, not whether an authenticated service would accept it.
 
 `scripts/guardrail-candidate5-bundle.mjs` rebuilds every supplemented risk
 input with the final sf-pi host and rejects examples that hit exact policy,
@@ -43,17 +51,23 @@ node scripts/guardrail-candidate5-bundle.mjs \
 ```
 
 Do not run this command until the sf-pi baseline passes its full coverage
-checks. The old v3 baseline now sends browser presses without a fresh page to
-rules fallback, leaving its browser risk coverage gate unmet. A revised,
-source-pinned qualification corpus and baseline are required before training.
+checks. The v3 baseline
+sends browser presses without a fresh page to rules fallback, leaving its
+browser risk coverage gate unmet. A revised, source-pinned qualification
+corpus and baseline are required before training; a proposed v4 browser
+addendum was held because page facts do not establish focus or layout.
+The builder deliberately pins the v3 corpus SHA-256. Any future revised
+corpus requires separate source and split review, then an explicit update to
+that pin and the supplement's corpus identity; the builder will not silently
+accept a different corpus.
 The bundle receipt reports per-family labels, strict-screen holds, and
 `trainingReady`; a balanced bundle is still only a training input, not a
 qualified model. Human label review and live API acceptance remain separate.
 
 The following proposals are deliberately absent: Tooling `executeAnonymous`
-because it overlaps reserved Anonymous Apex semantics; unverified AgentScript
-authoring-bundle and Account record-ID prerequisites; unknown-org variants
-until final-host asynchronous lookup proof is bound to the same baseline;
+because it overlaps reserved Anonymous Apex semantics; an AgentScript
+authoring-bundle prerequisite and a separate REST PATCH pair that requires
+an existing Account record ID;
 the executed-heredoc contrast because the final host reports ambiguous org
 facts and uses rules fallback;
 and a distinct browser VALIDATION preview/activation pair because of reserved
