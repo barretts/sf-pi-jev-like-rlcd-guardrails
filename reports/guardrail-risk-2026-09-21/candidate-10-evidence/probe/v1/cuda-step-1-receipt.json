@@ -1,0 +1,175 @@
+{
+  "qualified": false,
+  "mode": "probe",
+  "steps": 1,
+  "adapter_changed": true,
+  "adapter_sha256": "6d4e010adc063f5e694863859937a2d4fabd4158da294d2f13ca415ba0136766",
+  "fit_margins_sha256": "274662f41a263759213783e679acba674cbc8d8271ce4cf2e3af60c46b5694cf",
+  "source": {
+    "experiment": "candidate10",
+    "mode": "probe",
+    "steps": 1,
+    "campaign": {
+      "version": 1,
+      "purpose": "candidate10_fit_only_cuda_campaign",
+      "qualified": false,
+      "objective_plan_sha256": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+      "prepared_fit_sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+      "steps": 1024,
+      "checkpoints": [
+        128,
+        256,
+        512,
+        1024
+      ],
+      "precision": {
+        "base": "float32",
+        "lora": "float32",
+        "attention": "eager",
+        "tf32": false
+      },
+      "seed": 42,
+      "learning_rate": 0.0001,
+      "effective_batch": 8,
+      "validation_rows_passed_to_training": 0,
+      "test_rows_passed_to_training": 0,
+      "qualification": {
+        "minimum_accuracy": 0.9,
+        "unsafe_allows": 0,
+        "safety_regressions": 0,
+        "hard_block_regressions": 0,
+        "benign_interruptions": "at_or_below_baseline",
+        "all_eligible_calls_complete": true,
+        "warm_full_check_p95_ms": 750,
+        "ideal_warm_full_check_p95_ms": 500,
+        "precision_probability_delta_limit": 0.05,
+        "precision_decisive_margin": 0.5,
+        "precision_decisive_flips": 0,
+        "selection": [
+          "fewer_benign_interruptions",
+          "lower_warm_p95",
+          "earlier_checkpoint"
+        ],
+        "cal_before_valid": true,
+        "frozen_before_test": true
+      },
+      "memory": {
+        "budget_bytes": 8000000000,
+        "allocator_cap_bytes": 6500000000,
+        "stop_dedicated_delta_bytes": 7500000000,
+        "shared_growth_limit_bytes": 128000000
+      },
+      "default_enforcement": "off"
+    },
+    "campaign_sha256": "64ee24b219d43eacbcad725720b42835cd23b083a9bf337661ac088fee538edf",
+    "objective": {
+      "version": 2,
+      "purpose": "candidate9_train_only",
+      "arm": "B",
+      "objective": "guardrail_train_balanced_symmetric_v1",
+      "pair_manifest_sha256": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+      "family_manifest_sha256": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+      "loss": {
+        "ce_weight": 1.0,
+        "anchor_weight": 1.0,
+        "anchor_margin": 2.0,
+        "pair_weight": 0.5,
+        "pair_margin": 4.0
+      },
+      "sampler": {
+        "pair_fraction": 0.5,
+        "row_label_order": [
+          "allow",
+          "confirm"
+        ],
+        "family_policy": "round_robin_within_label_or_pair",
+        "item_policy": "shuffled_round_robin",
+        "seed": 42
+      },
+      "steps": 256,
+      "cutoff_status": "unset_requires_c9_train_cal_hard_veto_before_valid",
+      "validation_rows_passed_to_training": 0,
+      "test_rows_passed_to_training": 0
+    },
+    "inputs": {
+      "train": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+      "pairs": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+      "families": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+      "plan": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+      "base": {
+        "model.safetensors": "3d4ef8d71c14db7e448a09ebe891cfb6bf32c57a9b44499ae0d1c098e48516b6",
+        "config.json": "19cb5d28c97778271ba2b3c3df47bf76bdd6706724777a2318b3522230afe91e",
+        "tokenizer.json": "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795"
+      }
+    },
+    "source_sha256": "fe794eb9ba878b534dd57754d8794f7d6e9b9f848e0e8294edab110e63081d51",
+    "objective_worker_sha256": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+    "contract_sha256": "1f17e08d7f2b4db32794ff6b244e86cc9f54855c52e78c2f80e350b8e8597794",
+    "budget_bytes": 8000000000,
+    "allocator_cap_bytes": 6500000000,
+    "precision": {
+      "base": "float32",
+      "lora": "float32",
+      "attention": "eager",
+      "tf32": false
+    },
+    "backend": "torch_cuda_experimental_not_qualified",
+    "campaign_steps": 1,
+    "checkpoint_step": 1
+  },
+  "prompt_parity": {
+    "rows_checked": 327,
+    "labels_checked": 654,
+    "rendered_prompt_tokens": true,
+    "answer_label_boundaries": true,
+    "add_special_tokens": false,
+    "template_version": "v2"
+  },
+  "pre_step_placement": {
+    "parameters": 444,
+    "buffers": 5,
+    "gradients": 104
+  },
+  "post_step_placement": {
+    "parameters": 444,
+    "buffers": 5,
+    "gradients": 0,
+    "optimizer_tensors": 208
+  },
+  "fit_row_loss": 6.810470203235107,
+  "memory": {
+    "allocated_bytes": 4066655232,
+    "reserved_bytes": 4370464768,
+    "peak_allocated_bytes": 4258547200,
+    "peak_reserved_bytes": 4370464768,
+    "cuda_free_bytes": 11554258944,
+    "cuda_total_bytes": 17175019520,
+    "cuda_free_delta_bytes": 4408213504
+  },
+  "saved_adapter_reload": {
+    "ok": true,
+    "rows": 327,
+    "max_margin_delta": 0.0,
+    "margin_delta_limit": 1e-05,
+    "adapter_sha256": "6d4e010adc063f5e694863859937a2d4fabd4158da294d2f13ca415ba0136766",
+    "fit_margins_sha256": "274662f41a263759213783e679acba674cbc8d8271ce4cf2e3af60c46b5694cf",
+    "precision": {
+      "base": "float32",
+      "lora": "float32",
+      "attention": "eager",
+      "tf32": false
+    }
+  },
+  "checkpoint_step": 1,
+  "sampler_counts": {
+    "pair:data360": 1,
+    "row:allow:browser": 1,
+    "pair:herdr_pane": 1,
+    "row:confirm:apex": 1,
+    "pair:shell": 1,
+    "row:allow:apex": 1,
+    "pair:soql": 1,
+    "row:confirm:agentscript": 1
+  },
+  "sampler_draws": 8
+}
