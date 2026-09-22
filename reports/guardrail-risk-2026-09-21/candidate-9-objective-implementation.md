@@ -1,0 +1,29 @@
+# Candidate 9 TRAIN objective and calibration gate
+
+This is an experimental, unqualified successor to rejected Candidate 8. It keeps the reviewed `google/gemma-3-1b-it` base, the version-2 selected next-token allow/confirm scorer, and the ordinary classifier defaults. It does not change sf-pi enforcement. Blind C9 VALID and any held-out TEST body remain outside FIT, optimizer, and cutoff selection.
+
+The two prospective arms use the same admitted FIT source, explicit one-change pair manifest, FIT-only family map, prompt, base checkpoint, seed 42, and 256 optimizer updates. Arm A preserves Candidate 8's group-balanced pair objective. Arm B alternates pair and single-row draws, so each of 2,048 accumulated draws is 50% pair and 50% single. Single draws alternate allow/confirm and cycle uniformly through families that actually contain that label; pair draws cycle through families containing reviewed pairs. Rows and pairs within a family use shuffled round-robin order. No cross-product of unrelated same-group rows is created.
+
+For Arm B let `d = logit_allow - logit_confirm`, `sp(x) = log(1 + exp(x))`, `d_s` be a safe row and `d_r` its paired risky row. A single safe row has `sp(-d) + sp(2-d)` loss; a single risky row has `sp(d) + sp(2+d)`. A paired draw averages those two row losses and adds `0.5 * sp(4 + d_r - d_s)`. Thus selected-token cross-entropy and symmetric safe/risky anchors each have weight 1; the reviewed one-change pair has weight 0.5 and target separation 4. The tiny random-Gemma direct versus sequential gradient test checks this implementation without using checkpoint weights. It is not memory or latency evidence for the real 1B model.
+
+The objective plans are exact-byte, version-2 TRAIN inputs. Their pair/family hashes and all loss, sampler, seed and schedule values are checked by the RFDT worker before optimization. The fit runner separately binds the final C9 sf-pi host commit `4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a`, baseline runtime SHA `4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421`, bundled policy SHA `e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347`, and replacement blind VALID manifest SHA `b878ada2dde3d6b594b275f69e0dc372586bd8ba370c1ba03d33b0199ea502cc`. It reads only the blind manifest metadata, never the VALID case body. The runner refuses missing or changed admission, FIT/CAL overlap by group, row ID or canonical request state, changed host-control evidence, a different Google base, or dirty tracked code. Its export is **GGUF F16** with `qualification:false`; Q8 would be a separate hash-pinned inference artifact requiring its own CAL score and cutoff before any VALID use.
+
+After the independent C9 admission and label audit freeze, run `npm run build` in this worktree. Reuse the pinned native binary and llama.cpp converter checkout if the network is unavailable, recording their hashes; the reviewed Google base snapshot and GGUF are read-only inputs. Both arms use the same flags for each phase:
+
+```sh
+node scripts/guardrail-candidate9-fit.mjs preflight \
+  --arm A --admission "$C9_ADMISSION" --admission-sha256 "$C9_ADMISSION_SHA" \
+  --fit "$C9_FIT" --cal "$C9_CAL" --pairs "$C9_PAIRS" \
+  --families "$C9_FAMILIES" \
+  --objective-plan fixtures/guardrail/candidate9/objective-plan-A.json \
+  --blind-valid-manifest "$C9_BLIND_MANIFEST" \
+  --blind-valid-manifest-sha256 b878ada2dde3d6b594b275f69e0dc372586bd8ba370c1ba03d33b0199ea502cc \
+  --host-controls "$C9_CONTROLS" --host-controls-script "$C9_CONTROLS_SCRIPT" \
+  --sf-pi /private/tmp/sf-pi-guardrail-c9-host-20260922 \
+  --checkpoint /Users/bsonntag/code/simple-jev-ts/.build/hf-session-1_s2hbhu/home/hub/models--google--gemma-3-1b-it/snapshots/dcc83ea841ab6100d6b47a070329e1ba4cf78752 \
+  --base-gguf /Users/bsonntag/code/simple-jev-ts/models/gemma-3-1b-it-f16.gguf
+```
+
+Repeat those flags for `prepare`, `train`, and `export`; each phase rechecks the same sources. Add `--run /private/tmp/simple-jev-ts-guardrail-c9-objective-20260922/.build/guardrail/candidate-9-rfdt-A` to those three phases and `--model-id jev/gemma-3-1b-guardrail-candidate-9-A` to export. Run Arm B only after Arm A completes, with `--arm B`, the B objective plan, and a distinct run/model ID. Both remain candidate artifacts until the separate CAL scorer runs against the exported exact model SHA.
+
+The independent TRAIN-CAL selector is `scripts/guardrail-candidate9-select-cutoff.mjs`. It joins every score to its admitted CAL request hash, rechecks the final host and replay scripts, consumes exact-byte pinned normal-rule baseline and code-floor control receipts, and recomputes the cutoff from **CAL only**. It requires one answer per eligible case within the direct 750 ms deadline, zero unsafe automatic allows, no safety regression or floor change, and safe-case interruptions no greater than the separately replayed same-host rules baseline. C8's observed 14 safe interruptions against baseline 0 is a hard rejection under this gate. A rejected arm receives no scoring protocol or usable cutoff. Passing CAL does not prove full-host latency or effectiveness; at most one passing arm may proceed to prospective blind VALID, where preparation and queue time, complete call coverage, accuracy, and usability must be measured. Enforcement stays off unless subsequent held-out qualification and human acceptance are established.

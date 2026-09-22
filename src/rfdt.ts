@@ -1040,12 +1040,17 @@ export async function trainRfdt(
     signal?: AbortSignal;
     guardrailPairsPath?: string;
     guardrailPlanPath?: string;
+    guardrailFamiliesPath?: string;
   } = {},
 ): Promise<RfdtRunManifest> {
   const manifest = await readManifest(runDir);
   requireThat(
     Boolean(options.guardrailPairsPath) === Boolean(options.guardrailPlanPath),
     "Guardrail pair training requires both pair manifest and TRAIN objective plan",
+  );
+  requireThat(
+    !options.guardrailFamiliesPath || Boolean(options.guardrailPairsPath),
+    "C9 family-balanced training requires a TRAIN pair manifest and objective plan",
   );
   if (options.guardrailPairsPath)
     requireThat(
@@ -1085,6 +1090,8 @@ export async function trainRfdt(
     args.push("--guardrail-pairs", resolve(options.guardrailPairsPath));
   if (options.guardrailPlanPath)
     args.push("--guardrail-plan", resolve(options.guardrailPlanPath));
+  if (options.guardrailFamiliesPath)
+    args.push("--guardrail-families", resolve(options.guardrailFamiliesPath));
   const result = parseWorker(
     await runProcess(pythonBinary(options.python), args, options.signal),
   );
