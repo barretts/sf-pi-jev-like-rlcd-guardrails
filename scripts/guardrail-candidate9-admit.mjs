@@ -15,6 +15,11 @@ const finalHost = {
   policySha256:
     "e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347",
 };
+const blindValid = {
+  commit: "67cad37ce02aa4932a17016cb4ae2edccd20d9b9",
+  sourceSha256:
+    "d7d532c2712bf699133971cb82b0b0c5f21cbe5362a5edd07171b532a58f072f",
+};
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const jsonBytes = (value) => Buffer.from(JSON.stringify(value, null, 2) + "\n");
 const jsonlBytes = (rows) =>
@@ -60,6 +65,8 @@ const { values } = parseArgs({
     "source-dir": { type: "string" },
     "host-dir": { type: "string" },
     "controls-receipt": { type: "string" },
+    "overlap-receipt": { type: "string" },
+    "overlap-receipt-sha256": { type: "string" },
     "output-dir": { type: "string" },
   },
 });
@@ -69,6 +76,11 @@ const sourceDir = resolve(values["source-dir"]),
   hostDir = resolve(values["host-dir"]),
   controlsReceiptFile = resolve(values["controls-receipt"]),
   outputDir = resolve(values["output-dir"]);
+need(
+  Boolean(values["overlap-receipt"]) ===
+    Boolean(values["overlap-receipt-sha256"]),
+  "Overlap receipt and its independent SHA pin must be supplied together",
+);
 need(
   sourceDir.startsWith(resolve(root, ".build/guardrail/candidate-9-source-")) &&
     hostDir.startsWith(resolve(root, ".build/guardrail/candidate-9-host-")) &&
@@ -295,6 +307,18 @@ need(
 );
 const fitRows = fit.map((row) => ({ ...row, split: "train" }));
 const calRows = calibration.map((row) => ({ ...row, split: "calibration" }));
+const operationSha256 = (row) =>
+  sha(
+    hostCanonical({
+      toolName: row.request.state.toolName,
+      input: row.request.state.input,
+    }),
+  );
+const fitOperations = new Set(fitRows.map(operationSha256));
+need(
+  calRows.every((row) => !fitOperations.has(operationSha256(row))),
+  "FIT/CAL repeat an original tool operation",
+);
 const statusById = new Map(hostReceipt.statuses.map((row) => [row.id, row]));
 need(
   statusById.size === hostReceipt.statuses.length &&
@@ -410,6 +434,35 @@ const baseline = {
   }),
 };
 outputFiles["calibration-baseline.json"] = jsonBytes(baseline);
+let overlapReceiptSha256 = null;
+if (values["overlap-receipt"]) {
+  const overlapBytes = await readFile(resolve(values["overlap-receipt"]));
+  overlapReceiptSha256 = sha(overlapBytes);
+  need(
+    /^[a-f0-9]{64}$/.test(values["overlap-receipt-sha256"]) &&
+      overlapReceiptSha256 === values["overlap-receipt-sha256"],
+    "Independent overlap receipt SHA changed",
+  );
+  const overlap = JSON.parse(overlapBytes);
+  need(
+    overlap.version === 1 &&
+      overlap.schemaVersion === "jev.guardrail.overlap-audit.v1" &&
+      overlap.overlapFree === true &&
+      overlap.adjudicatedReplayCount === 0 &&
+      overlap.reviewCompleteness === "exhaustive_adjudication" &&
+      overlap.frozenSources?.c9TrainSourceSha256 === sha(sourceBytes) &&
+      overlap.frozenSources?.c9FitSha256 === sha(outputFiles["fit.jsonl"]) &&
+      overlap.frozenSources?.c9CalibrationSha256 ===
+        sha(outputFiles["calibration.jsonl"]) &&
+      overlap.frozenSources?.c9BlindValidSha256 === blindValid.sourceSha256 &&
+      overlap.sourceCommits?.c9BlindValid === blindValid.commit &&
+      ["exact", "same_skeleton", "same_controlled_change"].every(
+        (category) =>
+          !overlap.independentlyReviewedTrainGroups?.[category]?.length,
+      ),
+    "Independent overlap audit does not accept this exact frozen split",
+  );
+}
 const familyCounts = Object.fromEntries(
   [...new Set(families.rows.map((row) => row.family))].sort().map((family) => [
     family,
@@ -427,7 +480,7 @@ const familyCounts = Object.fromEntries(
 const admission = {
   version: 1,
   purpose: "candidate9_fit_calibration_admission",
-  trainingReady: true,
+  trainingReady: overlapReceiptSha256 !== null,
   qualification: false,
   modelCalls: 0,
   c8ValidBodyRead: false,
@@ -449,6 +502,7 @@ const admission = {
       outputFiles["calibration-baseline.json"],
     ),
     hostControlsReceiptSha256: sha(controlsReceiptBytes),
+    overlapAuditReceiptSha256: overlapReceiptSha256,
     scriptSha256: sha(await readFile(fileURLToPath(import.meta.url))),
   },
   fit: {
@@ -474,11 +528,17 @@ const admission = {
       .length,
     fitConfirm: fitRows.filter((row) => row.targets.risk.answer === "confirm")
       .length,
+    exactFitCalibrationOperationOverlap: 0,
   },
   familyCounts,
   excludedInheritedGroups: exclusions.groups,
+  overlapAudit: {
+    status: overlapReceiptSha256 === null ? "pending" : "accepted",
+    receiptSha256: overlapReceiptSha256,
+    blindValidSourceSha256: blindValid.sourceSha256,
+  },
   proofLimit:
-    "TRAIN-only admission and host preparation, not model effectiveness or split independence. CAL was reserved by complete groups; no VALID or TEST body was used.",
+    "TRAIN-only admission and host preparation, not model effectiveness. CAL was reserved by complete groups; the independent overlap receipt, when supplied, compares a sealed VALID split without exposing its body to this TRAIN author. No TEST body was used.",
 };
 await mkdir(outputDir, { recursive: true });
 for (const [file, bytes] of Object.entries({

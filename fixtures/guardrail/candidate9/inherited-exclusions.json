@@ -91,6 +91,70 @@
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
         "sf-pi/node_modules/@salesforce/plugin-data/lib/bulkUtils.js"
       ]
+    },
+    {
+      "group_id": "c7-stash-list-vs-drop",
+      "reason": "An independent aggregate screen against the sealed C9 VALID source found one exact original-operation collision in this inherited FIT group. The whole group is excluded without opening or copying the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "c7-permission-inspect-vs-grant",
+      "reason": "Independent sealed-split review adjudicated this inherited FIT contrast as a normalized-skeleton or controlled-risk replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "train-shell-disk-output",
+      "reason": "Independent sealed-split review adjudicated this inherited FIT group as a normalized-skeleton or controlled-risk replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "train-shell-world-writable-permissions",
+      "reason": "Independent sealed-split review adjudicated this inherited FIT group as a normalized-skeleton or controlled-risk replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "c7-literal-installer-vs-eval",
+      "reason": "Independent sealed-split review adjudicated this inherited quoted-literal contrast as a same controlled-risk-change replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "c8-literal-vs-interpreter",
+      "reason": "Independent sealed-split review adjudicated this inherited quoted-literal contrast as a same controlled-risk-change replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "c6-supp-canvas-lookup-vs-edit",
+      "reason": "Independent sealed-split review adjudicated this inherited Canvas append contrast as a cross-tool controlled-risk replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "c7-canvas-metadata-vs-edit",
+      "reason": "Independent sealed-split review adjudicated this inherited Canvas append contrast as a cross-tool controlled-risk replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
     }
   ]
 }
