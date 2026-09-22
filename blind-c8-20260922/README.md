@@ -37,7 +37,8 @@ Source basis:
 `case.schema.json` describes the exported JSON. `valid.source.mjs` and
 `test.source.mjs` are the authored operation sources; `authoring.mjs` only
 expands the pair definitions, independent facts, IDs, and browser snapshot
-fingerprints. Run the source files individually to regenerate their split. The
+fingerprints. The TEST generator and full seal audit require the explicit
+`C8_TEST_SEAL_AUDIT=1` author gate. The
 manifest pins exact schema and split bytes and publishes aggregate TEST counts
 and hashes without revealing TEST group or template IDs. A VALID-only commit
 precedes the sealed TEST commit so the trainer can receive VALID without TEST.
@@ -50,5 +51,8 @@ browser facts, keeps enforcement off, and processes VALID only. A green
 preflight establishes routing and input preparation, not live operation safety
 or a model result. `valid-host-preflight.json` pins every VALID case's baseline
 action, routing lane, and model-visible risk-input SHA-256 where one was
-prepared. It also pins the host baseline and Jev protocol identities. The
+prepared. It also pins the host baseline, Jev runtime and compiled bytes, the
+scorer prompt, and C8 base decision protocol identities. The final
+model-specific scoring protocol is selected separately from TRAIN calibration.
+The
 source and correction history is in `HISTORY.md`.

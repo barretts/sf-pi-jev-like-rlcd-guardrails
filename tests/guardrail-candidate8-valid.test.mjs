@@ -85,9 +85,20 @@ test("VALID host receipt pins every baseline action and prepared input", async (
   assert.equal(receipt.source_sha256, createHash("sha256").update(sourceBytes).digest("hex"));
   assert.equal(receipt.mode, "fake-facts-no-model-no-execution");
   assert.equal(receipt.label_review, "machine_authored_human_review_pending");
-  assert.equal(receipt.host_commit, "bc7862b078997d2c60aa908979b5cbf59f83db80");
-  assert.equal(receipt.host_baseline_sha256, "6ec845e7365d2948ecf502326bcabbb7b042b7d300437516db3b299fd390078e");
-  assert.match(receipt.model_protocol_sha256, /^[a-f0-9]{64}$/);
+  assert.equal(receipt.host_commit, "d86cdcfcfa02e419a4255291d16e56c48a5f2ade");
+  assert.equal(receipt.host_baseline_sha256, "927c25ebee99f59ea349bcd6d5da06c9a999255e4e99d7658ee0f113da96e4f2");
+  assert.equal(receipt.jev_runtime_commit, "c8d276d9a4157c7d825a0960b3e886a6d508c499");
+  assert.equal(receipt.decision_base_protocol_sha256, "f4f00541c9ce815ca17d19400488f5e4e999c87e9712b7c0ec17419068e85f9b");
+  assert.equal(receipt.scorer_prompt_sha256, "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530");
+  assert.equal(receipt.model_protocol_sha256, receipt.scorer_prompt_sha256);
+  assert.equal(receipt.preflight_script_sha256,
+    createHash("sha256").update(await readFile(resolve(root, "scripts/guardrail-candidate8-valid-preflight.mjs"))).digest("hex"));
+  assert.equal(receipt.rubric_sha256,
+    createHash("sha256").update(await readFile(resolve(root, "fixtures/guardrail/RUBRIC.md"))).digest("hex"));
+  assert.equal(receipt.case_schema_sha256,
+    createHash("sha256").update(await readFile(resolve(directory, "case.schema.json"))).digest("hex"));
+  for (const field of ["jev_runtime_core_js_sha256", "jev_runtime_guardrail_js_sha256", "jev_runtime_calibration_js_sha256"])
+    assert.match(receipt[field], /^[a-f0-9]{64}$/, field);
   assert.equal(receipt.status.length, corpus.cases.length);
   assert.deepEqual(receipt.status.map((row) => row.id), corpus.cases.map((row) => row.id));
   for (const row of receipt.status) {

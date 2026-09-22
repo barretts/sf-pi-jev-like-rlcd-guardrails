@@ -8,22 +8,31 @@ import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { canonical } from "../dist/core.js";
-import { GUARDRAIL_PROTOCOL_SHA256 } from "../dist/guardrail.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sourceFile = resolve(root, "blind-c8-20260922/valid.json");
 const { values } = parseArgs({ options: {
   "sf-pi": { type: "string" },
   "sf-deps": { type: "string" },
+  "jev-runtime": { type: "string" },
   output: { type: "string" },
 } });
 if (!values["sf-pi"] || !values["sf-deps"])
   throw new Error("Required: --sf-pi DIR --sf-deps NODE_MODULES");
 const sfRoot = resolve(values["sf-pi"]);
 const sfDeps = resolve(values["sf-deps"]);
+const jevRuntimeRoot = resolve(values["jev-runtime"] ?? root);
 const output = resolve(values.output ?? resolve(root, ".build/guardrail/c8-valid-preflight.json"));
 const sha = (value) => createHash("sha256").update(value).digest("hex");
+const [
+  { canonical },
+  { GUARDRAIL_PROTOCOL_SHA256 },
+  { C8_BASE_PROTOCOL_SHA256 },
+] = await Promise.all([
+  import(pathToFileURL(resolve(jevRuntimeRoot, "dist/core.js")).href),
+  import(pathToFileURL(resolve(jevRuntimeRoot, "dist/guardrail.js")).href),
+  import(pathToFileURL(resolve(jevRuntimeRoot, "dist/guardrail-calibration.js")).href),
+]);
 const sourceBytes = await readFile(sourceFile);
 const source = JSON.parse(sourceBytes);
 if (source.schema_version !== "c8.2" || source.split !== "valid" || source.cases.length !== 96)
@@ -156,6 +165,7 @@ try {
       summary.exact_policy?.baseline_blocks !== 3)
     throw new Error("VALID preflight did not preserve all exact hard blocks");
   const hostCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: sfRoot, encoding: "utf8" }).trim();
+  const runtimeCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: jevRuntimeRoot, encoding: "utf8" }).trim();
   const hostBaselineIdentity = calculateJevRiskBaselineIdentity();
   const receipt = {
     version: 1,
@@ -165,6 +175,13 @@ try {
     case_schema_sha256: sha(await readFile(resolve(root, "blind-c8-20260922/case.schema.json"))),
     host_commit: hostCommit,
     host_baseline_sha256: hostBaselineIdentity.sha256,
+    jev_runtime_commit: runtimeCommit,
+    jev_runtime_core_js_sha256: sha(await readFile(resolve(jevRuntimeRoot, "dist/core.js"))),
+    jev_runtime_guardrail_js_sha256: sha(await readFile(resolve(jevRuntimeRoot, "dist/guardrail.js"))),
+    jev_runtime_calibration_js_sha256: sha(await readFile(resolve(jevRuntimeRoot, "dist/guardrail-calibration.js"))),
+    preflight_script_sha256: sha(await readFile(fileURLToPath(import.meta.url))),
+    decision_base_protocol_sha256: C8_BASE_PROTOCOL_SHA256,
+    scorer_prompt_sha256: GUARDRAIL_PROTOCOL_SHA256,
     model_protocol_sha256: GUARDRAIL_PROTOCOL_SHA256,
     mode: "fake-facts-no-model-no-execution",
     label_review: "machine_authored_human_review_pending",

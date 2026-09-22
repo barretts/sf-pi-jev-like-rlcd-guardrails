@@ -22,6 +22,20 @@
   hashes match the prior replay on `a12f1de85c1919fa2ff94bf9315c522b0ad382da`.
   No model was called. The newer receipt supersedes the older host receipt for
   Candidate 8 scoring.
+- **C8 v2 protocol and shadow-host repin, VALID-only follow-up**: The same 96
+  VALID cases were replayed without model calls or external operations against
+  sf-pi commit `d86cdcfcfa02e419a4255291d16e56c48a5f2ade` and Jev runtime
+  commit `c8d276d9a4157c7d825a0960b3e886a6d508c499`. The host baseline
+  SHA-256 is `927c25ebee99f59ea349bcd6d5da06c9a999255e4e99d7658ee0f113da96e4f2`.
+  Jev's C8 base decision protocol SHA-256 is
+  `f4f00541c9ce815ca17d19400488f5e4e999c87e9712b7c0ec17419068e85f9b`;
+  the scorer prompt SHA-256 remains
+  `d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530`.
+  The receipt's legacy `model_protocol_sha256` field is the scorer prompt SHA;
+  the final model-specific scoring protocol will be selected from TRAIN
+  calibration and is not used in this preflight. Every per-case baseline action,
+  routing lane, and prepared risk-input hash matches the preceding C7 final-host
+  receipt. The new receipt supersedes it for C8 VALID evaluation.
 
 The original 90-case record array has SHA-256
 `c13422cc1dbdbd62795a82051fed8cfc0f3243576dbd2fd25bd697bf1eb78d86`
