@@ -16,6 +16,7 @@ export const sourceForLane = {
   soql: "src/guardrail.ts",
   canvas: "src/guardrail.ts",
   browser: "src/guardrail.ts",
+  exact_policy: "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch",
 };
 
 export function allow(tool, input, reasonCode, rationale, fixture = {}) {
@@ -23,6 +24,9 @@ export function allow(tool, input, reasonCode, rationale, fixture = {}) {
 }
 export function confirm(tool, input, reasonCode, rationale, fixture = {}) {
   return { tool, input, expected: { decision: "require_approval", reason_code: reasonCode, rationale }, fixture };
+}
+export function hardBlock(tool, input, reasonCode, rationale, fixture = {}) {
+  return { tool, input, expected: { decision: "hard_block", reason_code: reasonCode, rationale }, fixture };
 }
 
 export function org(alias, type, command) {
@@ -59,6 +63,7 @@ function mergeFixture(base, special, operation) {
     cwd: `/workspace/c8-${base.split}`,
     facts,
     ...(Object.keys(observations).length ? { observations } : {}),
+    ...(special.policyBehaviors ? { policyBehaviors: special.policyBehaviors } : {}),
   };
 }
 
@@ -72,7 +77,8 @@ export function makeCorpus(split, definitions) {
     if (groupIds.has(groupId)) throw new Error(`Duplicate group ${groupId}`);
     groupIds.add(groupId);
     for (const [variant, spec] of [["safe", safe], ["risky", risky]]) {
-      if (spec.expected.decision !== (variant === "safe" ? "allow" : "require_approval"))
+      if (variant === "safe" ? spec.expected.decision !== "allow" :
+          !["require_approval", "hard_block"].includes(spec.expected.decision))
         throw new Error(`Wrong decision for ${groupId}/${variant}`);
       const ordinal = cases.length + 1;
       const id = `c8-${split}-${String(ordinal).padStart(3, "0")}`;
@@ -111,7 +117,7 @@ export function makeCorpus(split, definitions) {
       });
     }
   }
-  return { schema_version: "c8.1", split, cases };
+  return { schema_version: "c8.2", split, cases };
 }
 
 export async function writeCorpus(split, definitions) {

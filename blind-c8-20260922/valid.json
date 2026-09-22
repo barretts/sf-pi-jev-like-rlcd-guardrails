@@ -1,5 +1,5 @@
 {
-  "schema_version": "c8.1",
+  "schema_version": "c8.2",
   "split": "valid",
   "cases": [
     {
@@ -3208,6 +3208,189 @@
         "fixtures/guardrail/RUBRIC.md",
         "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch",
         "src/guardrail.ts"
+      ]
+    },
+    {
+      "id": "c8-valid-091",
+      "family": "exact_policy",
+      "group_id": "c8-valid-exact_policy-manifest-block",
+      "template_id": "c8-valid-exact_policy-manifest-block-safe",
+      "fixture": {
+        "cwd": "/workspace/c8-valid",
+        "facts": [
+          "Requested operation is evaluated from /workspace/c8-valid."
+        ]
+      },
+      "operation": {
+        "tool": "write",
+        "input": {
+          "path": "force-app/main/default/package.xml",
+          "content": "<Package/>"
+        }
+      },
+      "expected": {
+        "decision": "allow",
+        "reason_code": "unprotected_source_edit",
+        "rationale": "The package manifest path is outside the configured destructiveChanges pattern."
+      },
+      "sources": [
+        "fixtures/guardrail/RUBRIC.md",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch"
+      ]
+    },
+    {
+      "id": "c8-valid-092",
+      "family": "exact_policy",
+      "group_id": "c8-valid-exact_policy-manifest-block",
+      "template_id": "c8-valid-exact_policy-manifest-block-risky",
+      "fixture": {
+        "cwd": "/workspace/c8-valid",
+        "facts": [
+          "Requested operation is evaluated from /workspace/c8-valid."
+        ],
+        "policyBehaviors": {
+          "sf-destructive-changes-xml": "block"
+        }
+      },
+      "operation": {
+        "tool": "write",
+        "input": {
+          "path": "force-app/main/default/destructiveChangesPost.xml",
+          "content": "<Package/>"
+        }
+      },
+      "expected": {
+        "decision": "hard_block",
+        "reason_code": "protected_path_block",
+        "rationale": "The explicit sf-destructive-changes-xml policy is configured to hard block this write."
+      },
+      "sources": [
+        "fixtures/guardrail/RUBRIC.md",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch"
+      ]
+    },
+    {
+      "id": "c8-valid-093",
+      "family": "exact_policy",
+      "group_id": "c8-valid-exact_policy-forceignore-block",
+      "template_id": "c8-valid-exact_policy-forceignore-block-safe",
+      "fixture": {
+        "cwd": "/workspace/c8-valid",
+        "facts": [
+          "Requested operation is evaluated from /workspace/c8-valid."
+        ]
+      },
+      "operation": {
+        "tool": "edit",
+        "input": {
+          "path": ".forceignore.sample",
+          "oldText": "tmp",
+          "newText": "cache"
+        }
+      },
+      "expected": {
+        "decision": "allow",
+        "reason_code": "unprotected_source_edit",
+        "rationale": "The sample file is outside the exact .forceignore rule."
+      },
+      "sources": [
+        "fixtures/guardrail/RUBRIC.md",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch"
+      ]
+    },
+    {
+      "id": "c8-valid-094",
+      "family": "exact_policy",
+      "group_id": "c8-valid-exact_policy-forceignore-block",
+      "template_id": "c8-valid-exact_policy-forceignore-block-risky",
+      "fixture": {
+        "cwd": "/workspace/c8-valid",
+        "facts": [
+          "Requested operation is evaluated from /workspace/c8-valid."
+        ],
+        "policyBehaviors": {
+          "sf-forceignore": "block"
+        }
+      },
+      "operation": {
+        "tool": "edit",
+        "input": {
+          "path": ".forceignore",
+          "oldText": "tmp",
+          "newText": "cache"
+        }
+      },
+      "expected": {
+        "decision": "hard_block",
+        "reason_code": "protected_path_block",
+        "rationale": "The explicit sf-forceignore policy hard blocks this edit."
+      },
+      "sources": [
+        "fixtures/guardrail/RUBRIC.md",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch"
+      ]
+    },
+    {
+      "id": "c8-valid-095",
+      "family": "exact_policy",
+      "group_id": "c8-valid-exact_policy-cli-state-carveout-block",
+      "template_id": "c8-valid-exact_policy-cli-state-carveout-block-safe",
+      "fixture": {
+        "cwd": "/workspace/c8-valid",
+        "facts": [
+          "Requested operation is evaluated from /workspace/c8-valid."
+        ]
+      },
+      "operation": {
+        "tool": "read",
+        "input": {
+          "path": ".sfdx/agents/preview.json"
+        }
+      },
+      "expected": {
+        "decision": "allow",
+        "reason_code": "policy_carveout",
+        "rationale": "The configured .sfdx/agents carve-out allows this read."
+      },
+      "sources": [
+        "fixtures/guardrail/RUBRIC.md",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch"
+      ]
+    },
+    {
+      "id": "c8-valid-096",
+      "family": "exact_policy",
+      "group_id": "c8-valid-exact_policy-cli-state-carveout-block",
+      "template_id": "c8-valid-exact_policy-cli-state-carveout-block-risky",
+      "fixture": {
+        "cwd": "/workspace/c8-valid",
+        "facts": [
+          "Requested operation is evaluated from /workspace/c8-valid."
+        ],
+        "policyBehaviors": {
+          "sf-cli-state": "block"
+        }
+      },
+      "operation": {
+        "tool": "read",
+        "input": {
+          "path": ".sf/orgs/active.json"
+        }
+      },
+      "expected": {
+        "decision": "hard_block",
+        "reason_code": "protected_path_block",
+        "rationale": "The explicit sf-cli-state policy hard blocks access to internal CLI state."
+      },
+      "sources": [
+        "fixtures/guardrail/RUBRIC.md",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch",
+        "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch"
       ]
     }
   ]

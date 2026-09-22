@@ -11,7 +11,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "c8.1"
+      "const": "c8.2"
     },
     "split": {
       "enum": [

@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 /** Model-free, operation-free host routing replay for Candidate 8 VALID only. */
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { registerHooks } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { canonical } from "../dist/core.js";
+import { GUARDRAIL_PROTOCOL_SHA256 } from "../dist/guardrail.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sourceFile = resolve(root, "blind-c8-20260922/valid.json");
@@ -23,7 +26,7 @@ const output = resolve(values.output ?? resolve(root, ".build/guardrail/c8-valid
 const sha = (value) => createHash("sha256").update(value).digest("hex");
 const sourceBytes = await readFile(sourceFile);
 const source = JSON.parse(sourceBytes);
-if (source.schema_version !== "c8.1" || source.split !== "valid" || source.cases.length !== 90)
+if (source.schema_version !== "c8.2" || source.split !== "valid" || source.cases.length !== 96)
   throw new Error("Unexpected Candidate 8 VALID source");
 
 const detectUrl = pathToFileURL(resolve(sfRoot, "lib/common/sf-environment/detect.ts")).href;
@@ -53,12 +56,14 @@ try {
     { jevRiskEligible, jevRiskPolicyFloor, prepareJevRiskInput },
     { clearSharedSfEnvironment, restoreFromSessionEntries },
     { writeLatestBrowserSnapshotRefs },
+    { calculateJevRiskBaselineIdentity },
   ] = await Promise.all([
     sfImport("extensions/sf-guardrail/lib/config.ts"),
     sfImport("extensions/sf-guardrail/lib/safety-kernel.ts"),
     sfImport("extensions/sf-guardrail/lib/jev-risk.ts"),
     sfImport("lib/common/sf-environment/shared-runtime.ts"),
     sfImport("lib/common/sf-browser-snapshot-state.ts"),
+    sfImport("extensions/sf-guardrail/lib/risk-baseline-identity.ts"),
   ]);
 
   const status = [];
@@ -74,14 +79,11 @@ try {
       /\b(?:sf|sfdx)\s/.test(operation.command ?? "");
     const nativeOrg = ["sf_apex", "agentscript_lifecycle", "sf_soql"].includes(toolName) ||
       toolName.startsWith("data360_");
-    if ((shellSf || nativeOrg) && !org) {
-      status.push({ id: row.id, family: row.family, outcome: "pre_model_fallback", reason: "org_fact_unavailable" });
-      continue;
-    }
-    if (toolName === "sf_browser_click" && (!browserRef || browserRef.status !== "fresh" || !browserPage)) {
-      status.push({ id: row.id, family: row.family, outcome: "pre_model_fallback", reason: "browser_evidence_unavailable" });
-      continue;
-    }
+    const preModelFallback = (shellSf || nativeOrg) && !org
+      ? "org_fact_unavailable"
+      : toolName === "sf_browser_click" && (!browserRef || browserRef.status !== "fresh" || !browserPage)
+        ? "browser_evidence_unavailable"
+        : null;
     const cwd = "/workspace/c8-valid";
     const sessionId = `c8-valid-${row.id}`;
     clearSharedSfEnvironment(cwd);
@@ -103,13 +105,33 @@ try {
           !capture.refs.some((ref) => ref.ref === operation.ref && ref.label === browserRef.label))
         throw new Error(`Invalid authored browser observation: ${row.id}`);
     }
-    const input = { toolName, input: operation, cwd, sessionId, config: readBundledConfig() };
+    let config = readBundledConfig();
+    const behaviors = row.fixture.policyBehaviors;
+    if (behaviors) {
+      for (const ruleId of Object.keys(behaviors))
+        if (!config.policies.rules.some((rule) => rule.id === ruleId))
+          throw new Error(`Unknown exact policy ${ruleId} for ${row.id}`);
+      config = {
+        ...config,
+        policies: {
+          ...config.policies,
+          rules: config.policies.rules.map((rule) =>
+            Object.hasOwn(behaviors, rule.id) ? { ...rule, behavior: behaviors[rule.id] } : rule),
+        },
+      };
+    }
+    const input = { toolName, input: operation, cwd, sessionId, config };
     try {
       const baseline = await evaluateSafety(input);
+      const baselineAction = baseline?.action ?? "allow";
+      if (preModelFallback) {
+        status.push({ id: row.id, family: row.family, routing: "pre_model_fallback", reason: preModelFallback, baseline_action: baselineAction, risk_input_sha256: null });
+        continue;
+      }
       const eligible = jevRiskEligible(input);
       const floor = eligible && jevRiskPolicyFloor(input, baseline);
       if (!eligible || floor) {
-        status.push({ id: row.id, family: row.family, outcome: "rules_fallback", reason: !eligible ? "ineligible" : "host_policy_floor", baseline: baseline?.action ?? "allow" });
+        status.push({ id: row.id, family: row.family, routing: "rules_fallback", reason: !eligible ? "ineligible" : "host_policy_floor", baseline_action: baselineAction, risk_input_sha256: null });
         continue;
       }
       const prepared = await prepareJevRiskInput(input, baseline);
@@ -117,24 +139,35 @@ try {
         throw new Error("Prepared operation differs from authored request");
       if (org && !prepared.facts.orgs?.some((fact) => fact.type === org.type && fact.guessed === false))
         throw new Error("Independent org fact missing from prepared input");
-      status.push({ id: row.id, family: row.family, outcome: "model_prepared", expected: row.expected.decision, baseline: baseline?.action ?? "allow" });
+      status.push({ id: row.id, family: row.family, routing: "model_prepared", expected: row.expected.decision, baseline_action: baselineAction, risk_input_sha256: sha(canonical(prepared)) });
     } catch (error) {
-      status.push({ id: row.id, family: row.family, outcome: "preparation_error", reason: String(error.message ?? error).slice(0, 240) });
+      status.push({ id: row.id, family: row.family, routing: "preparation_error", reason: String(error.message ?? error).slice(0, 240), baseline_action: null, risk_input_sha256: null });
     }
   }
   const summary = {};
   for (const row of status) {
-    const lane = summary[row.family] ??= { total: 0, model_prepared: 0, risky_prepared: 0, rules_fallback: 0, pre_model_fallback: 0, preparation_error: 0 };
+    const lane = summary[row.family] ??= { total: 0, model_prepared: 0, risky_prepared: 0, rules_fallback: 0, pre_model_fallback: 0, preparation_error: 0, baseline_blocks: 0 };
     lane.total++;
-    lane[row.outcome]++;
-    if (row.outcome === "model_prepared" && row.expected === "require_approval") lane.risky_prepared++;
+    lane[row.routing]++;
+    if (row.routing === "model_prepared" && row.expected === "require_approval") lane.risky_prepared++;
+    if (row.baseline_action === "block") lane.baseline_blocks++;
   }
+  if (status.some((row) => row.routing === "preparation_error") ||
+      summary.exact_policy?.baseline_blocks !== 3)
+    throw new Error("VALID preflight did not preserve all exact hard blocks");
+  const hostCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: sfRoot, encoding: "utf8" }).trim();
+  const hostBaselineIdentity = calculateJevRiskBaselineIdentity();
   const receipt = {
     version: 1,
     source: "blind-c8-20260922/valid.json",
     source_sha256: sha(sourceBytes),
-    host: sfRoot,
+    rubric_sha256: sha(await readFile(resolve(root, "fixtures/guardrail/RUBRIC.md"))),
+    case_schema_sha256: sha(await readFile(resolve(root, "blind-c8-20260922/case.schema.json"))),
+    host_commit: hostCommit,
+    host_baseline_sha256: hostBaselineIdentity.sha256,
+    model_protocol_sha256: GUARDRAIL_PROTOCOL_SHA256,
     mode: "fake-facts-no-model-no-execution",
+    label_review: "machine_authored_human_review_pending",
     summary,
     status,
   };

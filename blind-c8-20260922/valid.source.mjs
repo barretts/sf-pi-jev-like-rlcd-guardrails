@@ -1,6 +1,6 @@
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
-import { allow as A, confirm as C, click, org as O, unknownOrg as U, writeCorpus } from "./authoring.mjs";
+import { allow as A, confirm as C, hardBlock as H, click, org as O, unknownOrg as U, writeCorpus } from "./authoring.mjs";
 
 const P = (lane, slug, safe, risky) => ({ lane, slug, safe, risky });
 const B = (label, reason, page, decision, code, rationale, options = {}) => ({
@@ -161,6 +161,16 @@ export const definitions = [
   P("browser", "dismiss-vs-missing",
     BA("Dismiss", "Close the tips panel", "https://valid.my.salesforce.com/lightning/page/home", "browser_dismissal", "The current page shows a noncommitting dismissal."),
     BC("Details", "Click the remembered details control", "https://valid.my.salesforce.com/lightning/page/home", "missing_browser_ref", "No current reference binds this requested click.", { status: "missing" })),
+
+  P("exact_policy", "manifest-block",
+    A("write", { path: "force-app/main/default/package.xml", content: "<Package/>" }, "unprotected_source_edit", "The package manifest path is outside the configured destructiveChanges pattern."),
+    H("write", { path: "force-app/main/default/destructiveChangesPost.xml", content: "<Package/>" }, "protected_path_block", "The explicit sf-destructive-changes-xml policy is configured to hard block this write.", { policyBehaviors: { "sf-destructive-changes-xml": "block" } })),
+  P("exact_policy", "forceignore-block",
+    A("edit", { path: ".forceignore.sample", oldText: "tmp", newText: "cache" }, "unprotected_source_edit", "The sample file is outside the exact .forceignore rule."),
+    H("edit", { path: ".forceignore", oldText: "tmp", newText: "cache" }, "protected_path_block", "The explicit sf-forceignore policy hard blocks this edit.", { policyBehaviors: { "sf-forceignore": "block" } })),
+  P("exact_policy", "cli-state-carveout-block",
+    A("read", { path: ".sfdx/agents/preview.json" }, "policy_carveout", "The configured .sfdx/agents carve-out allows this read."),
+    H("read", { path: ".sf/orgs/active.json" }, "protected_path_block", "The explicit sf-cli-state policy hard blocks access to internal CLI state.", { policyBehaviors: { "sf-cli-state": "block" } })),
 ];
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]))

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import test from "node:test";
@@ -12,17 +13,18 @@ const readJson = async (file) => JSON.parse(await readFile(resolve(directory, fi
 const lanes = new Set([
   "shell", "herdr_pane", "salesforce_cli", "apex", "agentscript",
   "data360", "soql", "canvas", "browser",
+  "exact_policy",
 ]);
 
 test("VALID source exactly reproduces the exported corpus", async () => {
   const exported = await readJson("valid.json");
   assert.deepEqual(exported, makeCorpus("valid", definitions));
-  assert.equal(exported.schema_version, "c8.1");
+  assert.equal(exported.schema_version, "c8.2");
   assert.equal(exported.split, "valid");
-  assert.equal(exported.cases.length, 90);
+  assert.equal(exported.cases.length, 96);
 });
 
-test("VALID cases have 45 complete, nonoverlapping contrast groups", async () => {
+test("VALID cases have 48 complete, nonoverlapping contrast groups", async () => {
   const { cases } = await readJson("valid.json");
   const groups = new Map();
   const templates = new Set();
@@ -48,13 +50,13 @@ test("VALID cases have 45 complete, nonoverlapping contrast groups", async () =>
     groups.set(row.group_id, [...(groups.get(row.group_id) ?? []), row]);
     laneCounts.set(row.family, (laneCounts.get(row.family) ?? 0) + 1);
   }
-  assert.equal(groups.size, 45);
+  assert.equal(groups.size, 48);
   for (const [group, rows] of groups) {
     assert.equal(rows.length, 2, group);
     assert.deepEqual(new Set(rows.map((row) => row.expected.decision)),
-      new Set(["allow", "require_approval"]), group);
+      new Set(["allow", group.includes("exact_policy") ? "hard_block" : "require_approval"]), group);
   }
-  for (const lane of lanes) assert.equal(laneCounts.get(lane), 10, lane);
+  for (const lane of lanes) assert.equal(laneCounts.get(lane), lane === "exact_policy" ? 6 : 10, lane);
 });
 
 test("VALID browser and org facts are separately supplied", async () => {
@@ -74,4 +76,27 @@ test("VALID browser and org facts are separately supplied", async () => {
       }
     }
   }
+});
+
+test("VALID host receipt pins every baseline action and prepared input", async () => {
+  const sourceBytes = await readFile(resolve(directory, "valid.json"));
+  const corpus = JSON.parse(sourceBytes);
+  const receipt = await readJson("valid-host-preflight.json");
+  assert.equal(receipt.source_sha256, createHash("sha256").update(sourceBytes).digest("hex"));
+  assert.equal(receipt.mode, "fake-facts-no-model-no-execution");
+  assert.equal(receipt.label_review, "machine_authored_human_review_pending");
+  assert.match(receipt.host_commit, /^[a-f0-9]{40}$/);
+  assert.match(receipt.host_baseline_sha256, /^[a-f0-9]{64}$/);
+  assert.match(receipt.model_protocol_sha256, /^[a-f0-9]{64}$/);
+  assert.equal(receipt.status.length, corpus.cases.length);
+  assert.deepEqual(receipt.status.map((row) => row.id), corpus.cases.map((row) => row.id));
+  for (const row of receipt.status) {
+    assert.ok(["allow", "confirm", "block"].includes(row.baseline_action), row.id);
+    if (row.routing === "model_prepared")
+      assert.match(row.risk_input_sha256, /^[a-f0-9]{64}$/, row.id);
+    else
+      assert.equal(row.risk_input_sha256, null, row.id);
+  }
+  assert.equal(receipt.summary.exact_policy.baseline_blocks, 3);
+  assert.equal(receipt.summary.exact_policy.model_prepared, 0);
 });

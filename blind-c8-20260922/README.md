@@ -9,8 +9,10 @@ before any model or current host result. Human label review remains pending.
 
 The split has nine semantic lanes: shell, `herdr_pane.run`, Salesforce org/CLI,
 Anonymous Apex, AgentScript lifecycle, Data 360, SOQL, Slack Canvas, and
-Salesforce browser clicks. Each lane contributes five independently named
-operation groups per split. A group contains a safe and risky contrast; all
+Salesforce browser clicks. Each semantic lane contributes five independently
+named operation groups per split. Three extra exact-policy groups per split
+test configured hard blocks and safe carve-outs. A group contains a safe and
+risky contrast; all
 related variants stay within that split. Every case supplies the complete
 requested tool operation, explicit expected decision and rationale, source
 references, and independently supplied host facts when org or browser identity
@@ -46,4 +48,7 @@ manifest seals, and source reproduction. Tests do not invoke tools, models,
 Salesforce, Slack, or a browser. The optional host preflight uses mocked org and
 browser facts, keeps enforcement off, and processes VALID only. A green
 preflight establishes routing and input preparation, not live operation safety
-or a model result.
+or a model result. `valid-host-preflight.json` pins every VALID case's baseline
+action, routing lane, and model-visible risk-input SHA-256 where one was
+prepared. It also pins the host baseline and Jev protocol identities. The
+source and correction history is in `HISTORY.md`.
