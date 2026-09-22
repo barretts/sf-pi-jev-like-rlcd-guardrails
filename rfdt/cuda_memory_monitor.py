@@ -46,6 +46,7 @@ def sample(adapter_tag: str) -> tuple[int, int]:
         check=True,
         capture_output=True,
         text=True,
+        stdin=subprocess.DEVNULL,
         timeout=15,
     )
     return parse_counters(result.stdout, adapter_tag)

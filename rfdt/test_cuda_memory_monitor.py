@@ -5,6 +5,7 @@ from __future__ import annotations
 from argparse import Namespace
 import json
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -16,6 +17,16 @@ TAG = "luid_0x00000000_0x00013f43_phys_0"
 
 
 class MonitorTests(unittest.TestCase):
+    def test_counter_probe_cannot_consume_launcher_script_stdin(self) -> None:
+        rows = [
+            {"Path": f"\\\\host\\gpu adapter memory({TAG})\\dedicated usage", "CookedValue": 600},
+            {"Path": f"\\\\host\\gpu adapter memory({TAG})\\shared usage", "CookedValue": 40},
+        ]
+        result = subprocess.CompletedProcess([], 0, json.dumps(rows), "")
+        with patch.object(monitor.subprocess, "run", return_value=result) as call:
+            self.assertEqual(monitor.sample(TAG), (600, 40))
+        self.assertEqual(call.call_args.kwargs["stdin"], subprocess.DEVNULL)
+
     def test_selects_both_counters_for_the_pinned_adapter(self) -> None:
         samples = [
             {"Path": f"\\\\host\\gpu adapter memory({TAG})\\dedicated usage", "CookedValue": 600},
