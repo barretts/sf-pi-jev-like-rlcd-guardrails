@@ -11,7 +11,7 @@ index 898b0e862ed664d247d4883d6c8270f538b78f7f..51b7da79285a5e2b976fed810a81e9d1
  
  # Security scan reports
 diff --git a/catalog/index.json b/catalog/index.json
-index fe4232ae85bd69ab6675e8f8819360560845605e..93da000da879f91d2fa20b2d3a78290e87e24b7a 100644
+index fe4232ae85bd69ab6675e8f8819360560845605e..f29dbc0fd840c062ebbb61394f4997dd63cb3e38 100644
 --- a/catalog/index.json
 +++ b/catalog/index.json
 @@ -226,7 +226,7 @@
@@ -19,7 +19,7 @@ index fe4232ae85bd69ab6675e8f8819360560845605e..93da000da879f91d2fa20b2d3a78290e
      "hasReadme": true,
      "hasTests": true,
 -    "srcLoc": 6094
-+    "srcLoc": 6136
++    "srcLoc": 6139
    },
    {
      "id": "sf-code-analyzer",
@@ -338,7 +338,7 @@ index d94ecc5015aa5d12dda60df75e735226f748a45e..a138abbe30b6da6211a4acdaa9eb6c86
      const result = await runAgentBrowser(pi, ["eval", buildEditorExpression(payload)], {
        cwd: ctx.cwd,
 diff --git a/extensions/sf-browser/lib/operations.ts b/extensions/sf-browser/lib/operations.ts
-index 8afb728e724e6a0ac231581650f7d4128e056fde..3762b29ff6fc397afb5492b89403b5a07ab6db50 100644
+index 8afb728e724e6a0ac231581650f7d4128e056fde..56c828003989f82ecb232ac8c0925e81f5b8a5b9 100644
 --- a/extensions/sf-browser/lib/operations.ts
 +++ b/extensions/sf-browser/lib/operations.ts
 @@ -10,7 +10,10 @@ import {
@@ -353,23 +353,36 @@ index 8afb728e724e6a0ac231581650f7d4128e056fde..3762b29ff6fc397afb5492b89403b5a0
  import { runAgentBrowser } from "./agent-browser.ts";
  import {
    commitEvidenceCapture,
-@@ -86,14 +89,18 @@ export async function captureEvidence(
+@@ -78,6 +81,8 @@ export async function captureEvidence(
+     viewportWidth?: number;
+     viewportHeight?: number;
+     deviceScaleFactor?: number;
++    /** Capture evidence without changing the page before a separately approved action. */
++    passive?: boolean;
+   },
+   signal?: AbortSignal,
+ ): Promise<{ content: Array<TextContent | ImageContent>; details: Record<string, unknown> }> {
+@@ -85,15 +90,19 @@ export async function captureEvidence(
+   const sessionId = ctx.sessionManager.getSessionId();
    const mode = evidenceModeFromUnknown(input.imageMode);
    const planned = planEvidenceCapture(input.label, sessionId);
-   const viewport = resolveEvidenceViewport(input, mode);
+-  const viewport = resolveEvidenceViewport(input, mode);
 -  if (viewport) await setViewport(pi, ctx.cwd, viewport, signal);
++  const viewport = input.passive ? undefined : resolveEvidenceViewport(input, mode);
 +  if (viewport) {
 +    markLatestBrowserSnapshotPageStale(sessionId, "sf_browser_capture_evidence viewport");
 +    await setViewport(pi, ctx.cwd, viewport, signal);
 +  }
  
    const overlayDismissal =
-     input.dismissOverlays === false
+-    input.dismissOverlays === false
++    input.passive || input.dismissOverlays === false
        ? { dismissedRefs: [], snapshotChecked: false }
 -      : await dismissAmbientOverlays(pi, ctx.cwd, signal);
 +      : await dismissAmbientOverlays(pi, ctx.cwd, signal, sessionId);
    let scrolledToRef: string | undefined;
-   if (input.scrollToRef) {
+-  if (input.scrollToRef) {
++  if (input.scrollToRef && !input.passive) {
 +    markLatestBrowserSnapshotPageStale(sessionId, "sf_browser_capture_evidence scroll");
      await runAgentBrowser(pi, ["scrollintoview", input.scrollToRef], {
        cwd: ctx.cwd,
@@ -403,7 +416,7 @@ index c5b4e1bb4d3bace798aefe6bdb024ab5375f7391..01d92d3fc05dce6ade75e7ca9fe0009b
          await runAgentBrowser(pi, ["click", ref], { cwd, signal, timeoutMs: 15_000 });
          dismissedRefs.push(ref);
 diff --git a/extensions/sf-browser/lib/sf_browser_click-tool.ts b/extensions/sf-browser/lib/sf_browser_click-tool.ts
-index 152a0823659d1526ff6053b3e8e4fc1963df4fbf..1020d8b67a153edc1649003a7399d747a8f38853 100644
+index 152a0823659d1526ff6053b3e8e4fc1963df4fbf..3ccb177e34c3c5c4d27c55caabd7c13a9ec21c2c 100644
 --- a/extensions/sf-browser/lib/sf_browser_click-tool.ts
 +++ b/extensions/sf-browser/lib/sf_browser_click-tool.ts
 @@ -2,7 +2,10 @@
@@ -418,7 +431,14 @@ index 152a0823659d1526ff6053b3e8e4fc1963df4fbf..1020d8b67a153edc1649003a7399d747
  import { runAgentBrowser } from "./agent-browser.ts";
  import {
    type AcceptedBrowserDialog,
-@@ -55,6 +58,10 @@ export function registerSfBrowserClickTool(pi: ExtensionAPI): void {
+@@ -49,12 +52,17 @@ export function registerSfBrowserClickTool(pi: ExtensionAPI): void {
+             {
+               label: evidenceLabelForMutationBefore("click", params.ref),
+               imageMode: "thumbnail",
++              passive: true,
+             },
+             signal,
+           )
          : undefined;
        let recoveredIframeRef: string | undefined;
        let acceptedDialogs: AcceptedBrowserDialog[] = [];
@@ -560,6 +580,170 @@ index 791989917f1d3725f5d7a97387ee3bba0751ad96..c542988f5fe647c2e7f3a80ef2c5ea9f
      expect(findLatestBrowserSnapshotRefLookup(sessionId, "@e7").status).toBe("stale");
 +    expect(findLatestBrowserSnapshotPageLookup(sessionId).status).toBe("stale");
    });
+ });
+diff --git a/extensions/sf-browser/tests/operations.test.ts b/extensions/sf-browser/tests/operations.test.ts
+index 45d2c5c24d5b1884e0bd740f77acf5161afcd482..e1b4201b55d3ac461777db922cceeae6468fd2ba 100644
+--- a/extensions/sf-browser/tests/operations.test.ts
++++ b/extensions/sf-browser/tests/operations.test.ts
+@@ -1,7 +1,81 @@
+ /* SPDX-License-Identifier: Apache-2.0 */
+-/** Tests for shared SF Browser operations helpers. */
+-import { describe, expect, it } from "vitest";
++/** Tests for shared SF Browser operations helpers and pre-click evidence. */
++import { unlinkSync, writeFileSync } from "node:fs";
++import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { runAgentBrowser } from "../lib/agent-browser.ts";
+ import { formatMissingScreenshotCaptureText } from "../lib/operations.ts";
++import { registerSfBrowserClickTool } from "../lib/sf_browser_click-tool.ts";
++
++vi.mock("../lib/agent-browser.ts", () => ({ runAgentBrowser: vi.fn() }));
++vi.mock("../lib/artifacts.ts", async (importOriginal) => {
++  const original = await importOriginal<typeof import("../lib/artifacts.ts")>();
++  return {
++    ...original,
++    planEvidenceCapture: (label: string) => ({
++      id: 1,
++      label,
++      path: `/tmp/sf-pi-preclick-evidence-${process.pid}.png`,
++      thumbnailPath: `/tmp/sf-pi-preclick-evidence-${process.pid}.thumb.jpg`,
++      dir: "/tmp",
++    }),
++    commitEvidenceCapture: (capture: unknown) => capture,
++  };
++});
++
++const capturePath = `/tmp/sf-pi-preclick-evidence-${process.pid}.png`;
++const thumbnailPath = `/tmp/sf-pi-preclick-evidence-${process.pid}.thumb.jpg`;
++const png = Buffer.from(
++  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/+XsAAAAASUVORK5CYII=",
++  "base64",
++);
++const browserResult = (stdout = "") => ({
++  stdout,
++  stderr: "",
++  code: 0,
++  durationMs: 0,
++  durationText: "0 ms",
++});
++
++type ClickTool = {
++  execute: (
++    toolCallId: string,
++    params: { ref: string; reason?: string; mutation?: boolean },
++    signal: AbortSignal,
++    onUpdate: undefined,
++    ctx: ExtensionContext,
++  ) => Promise<{
++    details: Record<string, unknown>;
++    content: Array<{ type: string; text?: string }>;
++  }>;
++};
++
++function clickTool(): { tool: ClickTool; pi: ExtensionAPI; ctx: ExtensionContext } {
++  let tool: ClickTool | undefined;
++  const pi = {
++    registerTool: (registered: ClickTool) => {
++      tool = registered;
++    },
++  } as unknown as ExtensionAPI;
++  registerSfBrowserClickTool(pi);
++  if (!tool) throw new Error("SF Browser click tool was not registered");
++  const ctx = {
++    cwd: "/tmp",
++    sessionManager: { getSessionId: () => `preclick-${process.pid}` },
++  } as unknown as ExtensionContext;
++  return { tool, pi, ctx };
++}
++
++afterEach(() => {
++  vi.mocked(runAgentBrowser).mockReset();
++  for (const path of [capturePath, thumbnailPath]) {
++    try {
++      unlinkSync(path);
++    } catch {
++      // The image resizer may decide not to emit a thumbnail for a tiny fixture.
++    }
++  }
++});
+ 
+ describe("operations helpers", () => {
+   it("formats missing screenshot capture recovery without throwing", () => {
+@@ -18,4 +92,75 @@ describe("operations helpers", () => {
+     expect(text).toContain("Expected path: /tmp/missing.png");
+     expect(text).toContain("restart the browser session");
+   });
++
++  it("captures before-click evidence without changing browser state or clicking an overlay", async () => {
++    const calls: string[][] = [];
++    vi.mocked(runAgentBrowser).mockImplementation(async (_pi, args) => {
++      calls.push(args);
++      if (args[0] === "screenshot") writeFileSync(args[1]!, png);
++      if (args[0] === "get") return browserResult("https://example.test/setup");
++      if (args[0] === "snapshot") {
++        return browserResult('- button "Close banner" [ref=e2]\n- button "Save" [ref=e7]');
++      }
++      return browserResult();
++    });
++
++    const { tool, ctx } = clickTool();
++    const result = await tool.execute(
++      "click-1",
++      { ref: "@e7", mutation: true },
++      new AbortController().signal,
++      undefined,
++      ctx,
++    );
++
++    expect(calls.map((args) => args[0])).toEqual(["screenshot", "get", "click"]);
++    expect(calls[2]).toEqual(["click", "@e7"]);
++    expect(result.details.beforeMutationEvidence).toMatchObject({ imageMode: "thumbnail" });
++    expect(
++      result.content.some((item) =>
++        item.text?.includes("Before-mutation Browser Evidence captured"),
++      ),
++    ).toBe(true);
++  });
++
++  it("preserves covered-element frame retry after passive before-click evidence", async () => {
++    const calls: string[][] = [];
++    let clickAttempts = 0;
++    vi.mocked(runAgentBrowser).mockImplementation(async (_pi, args) => {
++      calls.push(args);
++      if (args[0] === "screenshot") writeFileSync(args[1]!, png);
++      if (args[0] === "get") return browserResult("https://example.test/setup");
++      if (args[0] === "snapshot") {
++        return browserResult(
++          '- button "Close banner" [ref=e2]\n- Iframe "Classic Setup" [ref=e4]\n  - button "Save" [ref=e7]',
++        );
++      }
++      if (args[0] === "click" && ++clickAttempts === 1) {
++        throw new Error("element covered by force-aloha-page");
++      }
++      return browserResult();
++    });
++
++    const { tool, ctx } = clickTool();
++    const result = await tool.execute(
++      "click-2",
++      { ref: "@e7", reason: "save" },
++      new AbortController().signal,
++      undefined,
++      ctx,
++    );
++
++    expect(calls.slice(0, 3).map((args) => args[0])).toEqual(["screenshot", "get", "click"]);
++    expect(calls).toEqual([
++      ["screenshot", capturePath],
++      ["get", "url"],
++      ["click", "@e7"],
++      ["snapshot", "-i", "-c"],
++      ["frame", "@e4"],
++      ["click", "@e7"],
++      ["frame", "main"],
++    ]);
++    expect(result.details).toMatchObject({ ok: true, recoveredIframeRef: "@e4" });
++  });
  });
 diff --git a/extensions/sf-browser/tests/page-evidence-invalidation.test.ts b/extensions/sf-browser/tests/page-evidence-invalidation.test.ts
 new file mode 100644

@@ -12,11 +12,11 @@ uses no Jev implementation imports: it discovers one versioned provider through
 | ------------------------ | ------------------------------------------------------------------------------ |
 | SF Pi baseline commit    | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                                     |
 | Baseline tree            | `4e08ddb00626e8d47852f604564b10f135082f1a`                                     |
-| Local integration commit | `5e2ee1e3073ad17d47ec6ce3510234e522b1a188`                                     |
-| Integration tree         | `7368f83a0108b7c602d9f7cc1fa6d3886928391a`                                     |
+| Local integration commit | `74e53dac3de8d19237985f913a6854b40c7fa38e`                                     |
+| Integration tree         | `0f8cdffab1361b44a7a2917271603d8db14ef8d5`                                     |
 | Patch                    | [candidate5-sf-pi-from-4f901db9.patch](./candidate5-sf-pi-from-4f901db9.patch) |
-| Patch SHA-256            | `5bc6dc989bb3cc961bc204036f6dd64434ef06e4969a7da8f0e96965bf1c66dc`             |
-| Patch size               | 319,144 bytes                                                                  |
+| Patch SHA-256            | `a84f6b554bc67f3ba7f0384a15bee17f5b70f215ee64698b3f6ee471fc97edb4`             |
+| Patch size               | 325,998 bytes                                                                  |
 
 This binary Git diff captures the version-2 Jev risk input, the optional SF Pi
 bridge, policy floors, fallback, corpus exporter, and related hook and workflow
@@ -25,8 +25,10 @@ supplies independently observed browser-page facts when available, but
 `sf_browser_press` and non-exact-floor `sf_browser_click` fall back to the
 existing rules. The host cannot establish the live page and focused element for
 a key press or guarantee that a cached click reference still names the same
-target. Direct `agent-browser` CLI commands retain their existing confirmation
-floor. Unverified Salesforce org facts also fall back to rules. These
+target. Pre-click evidence capture is passive; it does not resize the viewport,
+scroll, or dismiss overlays before the separately approved click. Direct
+`agent-browser` CLI commands retain their existing confirmation floor.
+Unverified Salesforce org facts also fall back to rules. These
 safeguards leave candidate 5's browser coverage gate open.
 
 The patch was generated from the two pinned commits with `git diff --binary
@@ -51,7 +53,7 @@ git -C /tmp/sf-pi-jev-risk apply --index /path/to/simple-jev-ts/integrations/sf-
 git -C /tmp/sf-pi-jev-risk write-tree
 ```
 
-The final command should print `7368f83a0108b7c602d9f7cc1fa6d3886928391a`.
+The final command should print `0f8cdffab1361b44a7a2917271603d8db14ef8d5`.
 Install that local SF Pi package and the separately built Jev extension in an
 isolated Pi environment when exercising it. See [GUARDRAIL.md](../../GUARDRAIL.md)
 for candidate selection, training, and the reproducible bridge evaluation.
@@ -116,7 +118,7 @@ the slash commands use a UI notification surface with no headless output.
 ## Verification scope
 
 The candidate 5 patch reproduces the exact integration tree
-`7368f83a0108b7c602d9f7cc1fa6d3886928391a` from the pinned baseline. The
+`0f8cdffab1361b44a7a2917271603d8db14ef8d5` from the pinned baseline. The
 historical candidate 4 patch was replayed with `git am` and reproduced tree
 `368241cef98569779904763bc20f0688a9773ca9`. Its qualification baseline was
 exported twice with byte-identical output; the SHA-256 is in the historical
