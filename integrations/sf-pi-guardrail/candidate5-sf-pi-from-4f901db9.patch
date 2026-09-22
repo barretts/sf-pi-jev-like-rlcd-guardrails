@@ -11,7 +11,7 @@ index 898b0e862ed664d247d4883d6c8270f538b78f7f..51b7da79285a5e2b976fed810a81e9d1
  
  # Security scan reports
 diff --git a/catalog/index.json b/catalog/index.json
-index fe4232ae85bd69ab6675e8f8819360560845605e..f64223c59624a8d0810898932d618465d5f2d4ee 100644
+index fe4232ae85bd69ab6675e8f8819360560845605e..3a8745930551129b159051b103e5ce65fb8edad2 100644
 --- a/catalog/index.json
 +++ b/catalog/index.json
 @@ -226,7 +226,7 @@
@@ -60,7 +60,7 @@ index fe4232ae85bd69ab6675e8f8819360560845605e..f64223c59624a8d0810898932d618465
      "hasReadme": true,
      "hasTests": true,
 -    "srcLoc": 5673
-+    "srcLoc": 7064
++    "srcLoc": 7131
    },
    {
      "id": "sf-herdr",
@@ -1217,13 +1217,18 @@ index 27bba377eedf0bd686f33323566213932a58de01..73a5654074b598f40b8bce394dd3bed7
  
  <!-- GENERATED:file-structure:start -->
 diff --git a/extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json b/extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json
-index 5e738d3694360a91d4cf25b80b575a17bb085f55..38e856ab09abb7b5226564c644e52bd58d081778 100644
+index 5e738d3694360a91d4cf25b80b575a17bb085f55..decc550613442eec97dec5a6d0eb704520e2dd1d 100644
 --- a/extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json
 +++ b/extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json
-@@ -196,6 +196,11 @@
+@@ -196,6 +196,16 @@
          "pattern": "remote-script-to-shell",
          "description": "pipe remote script into a shell"
        },
++      {
++        "id": "unparsed-sf-shell-execution",
++        "pattern": "unparsed-sf-shell-execution",
++        "description": "Salesforce text in a shell form that may execute it"
++      },
 +      {
 +        "id": "remote-script-command-substitution",
 +        "pattern": "remote-script-command-substitution",
@@ -1232,7 +1237,7 @@ index 5e738d3694360a91d4cf25b80b575a17bb085f55..38e856ab09abb7b5226564c644e52bd5
        {
          "id": "base64-decode-to-shell",
          "pattern": "base64-decode-to-shell",
-@@ -464,22 +469,39 @@
+@@ -464,22 +474,39 @@
        },
        {
          "id": "sf-org-api-destructive-prod",
@@ -1393,14 +1398,95 @@ index a5bda32b9aa4455d2a00787554b2637beb732c2b..85f62dbc94db1e5090ee1ce8e6222120
      timestamp: Date.now(),
      ruleId: decision.ruleId,
      feature: decision.feature,
+diff --git a/extensions/sf-guardrail/lib/bash-ast.ts b/extensions/sf-guardrail/lib/bash-ast.ts
+index 9507445642140bca0e670896bd2736e51ec5c15d..5c3bdab666bda208f0b5577b136118f934ecb88b 100644
+--- a/extensions/sf-guardrail/lib/bash-ast.ts
++++ b/extensions/sf-guardrail/lib/bash-ast.ts
+@@ -39,6 +39,11 @@ export interface SimpleCommand {
+   tokens: TokenizedCommand;
+ }
+ 
++export interface ShellSegment {
++  source: string;
++  separatorAfter: "pipe" | "other" | null;
++}
++
+ /**
+  * Tokenize a POSIX-style simple command into space-separated words, respecting
+  * single quotes, double quotes, and backslash escapes. Everything before the
+@@ -59,17 +64,22 @@ export function tokenize(command: string): TokenizedCommand | undefined {
+  * seeing the leading `cd`.
+  */
+ export function splitSimpleCommands(command: string): string[] {
++  return splitShellSegments(command).map((segment) => segment.source);
++}
++
++/** Preserve real, unquoted pipes for rules that reason about shell data flow. */
++export function splitShellSegments(command: string): ShellSegment[] {
+   const source = command.trim();
+   if (source.length === 0) return [];
+ 
+-  const out: string[] = [];
++  const out: ShellSegment[] = [];
+   let current = "";
+   let quote: '"' | "'" | null = null;
+   let i = 0;
+ 
+-  const push = () => {
++  const push = (separatorAfter: ShellSegment["separatorAfter"]) => {
+     const trimmed = current.trim();
+-    if (trimmed.length > 0) out.push(trimmed);
++    if (trimmed.length > 0) out.push({ source: trimmed, separatorAfter });
+     current = "";
+   };
+ 
+@@ -102,13 +112,13 @@ export function splitSimpleCommands(command: string): string[] {
+     }
+ 
+     if (ch === ";" || ch === "|") {
+-      push();
+-      if (ch === "|" && source[i + 1] === ch) i += 2;
+-      else i += 1;
++      const doubled = ch === "|" && source[i + 1] === ch;
++      push(ch === "|" && !doubled ? "pipe" : "other");
++      i += doubled ? 2 : 1;
+       continue;
+     }
+     if (ch === "&" && source[i + 1] === "&") {
+-      push();
++      push("other");
+       i += 2;
+       continue;
+     }
+@@ -116,7 +126,7 @@ export function splitSimpleCommands(command: string): string[] {
+     current += ch;
+     i += 1;
+   }
+-  push();
++  push(null);
+   return out;
+ }
+ 
 diff --git a/extensions/sf-guardrail/lib/command-gate.ts b/extensions/sf-guardrail/lib/command-gate.ts
-index 1f57a9b0bfa536dd9b5bc58f8c7d5b04c1ea4f33..09269b58f517428d0f52e202c8ea744a85caedd9 100644
+index 1f57a9b0bfa536dd9b5bc58f8c7d5b04c1ea4f33..8390bd08b43dfbf507decdae10d9baffcca5ae7e 100644
 --- a/extensions/sf-guardrail/lib/command-gate.ts
 +++ b/extensions/sf-guardrail/lib/command-gate.ts
-@@ -103,6 +103,20 @@ function patternMatches(
+@@ -14,7 +14,7 @@
+  * short-circuits to block (no prompt); everything else requires user
+  * confirmation.
+  */
+-import { type TokenizedCommand, tokenizeSimpleCommands } from "./bash-ast.ts";
++import { splitShellSegments, type TokenizedCommand, tokenizeSimpleCommands } from "./bash-ast.ts";
+ import { resolveRuleBehavior } from "./rule-behavior.ts";
+ import type { CommandGateConfig, CommandPattern } from "./types.ts";
+ 
+@@ -103,6 +103,23 @@ function patternMatches(
    if (trimmed === "remote-script-to-shell") {
      return hasPipeToShell(simpleCommands, new Set(["curl", "wget"]));
    }
++  if (trimmed === "unparsed-sf-shell-execution") {
++    return hasUnparsedSalesforceShellExecution(command);
++  }
 +  if (trimmed === "remote-script-command-substitution") {
 +    return commands.some((item) => {
 +      if (!SHELL_HEADS.has(item.head) && item.head !== "eval") return false;
@@ -1418,7 +1504,75 @@ index 1f57a9b0bfa536dd9b5bc58f8c7d5b04c1ea4f33..09269b58f517428d0f52e202c8ea744a
    if (trimmed === "base64-decode-to-shell") {
      return hasBase64DecodeToShell(simpleCommands);
    }
-@@ -274,11 +288,13 @@ function piCommandArgs(command: TokenizedCommand): string[] | undefined {
+@@ -194,6 +211,67 @@ const PI_COMMAND_WRAPPERS: Record<string, WrapperSpec> = {
+   command: {},
+ };
+ 
++/** Catch known shell execution paths for Salesforce text hidden from the org parser. */
++function hasUnparsedSalesforceShellExecution(command: string): boolean {
++  if (!/\b(?:sf|sfdx)\b/.test(command)) return false;
++  return hiddenSalesforceScript(command, 0);
++}
++
++function hiddenSalesforceScript(command: string, depth: number): boolean {
++  if (depth >= 4) return false;
++  const segments = splitShellSegments(command);
++  for (let index = 0; index < segments.length; index++) {
++    const segment = segments[index];
++    const tokens = segment && tokenizeSimpleCommands(segment.source)[0]?.tokens;
++    if (!tokens) continue;
++    if (
++      ["echo", "printf"].includes(tokens.head) &&
++      tokens.args.some((arg) => /\b(?:sf|sfdx)\b/.test(arg))
++    ) {
++      for (let next = index; segments[next]?.separatorAfter === "pipe"; next++) {
++        const receiver = segments[next + 1];
++        const receiverTokens = receiver && tokenizeSimpleCommands(receiver.source)[0]?.tokens;
++        if (receiverTokens && isShellInterpreter(receiverTokens)) return true;
++      }
++    }
++    if (unsupportedShellScript(tokens) || shellStdinScript(tokens)) return true;
++    const nested = scriptArgument(tokens);
++    if (nested && hiddenSalesforceScript(nested, depth + 1)) return true;
++  }
++  return false;
++}
++
++function isShellInterpreter(command: TokenizedCommand, depth = 0): boolean {
++  if (SHELL_HEADS.has(command.head) || ["dash", "ksh"].includes(command.head)) return true;
++  if (command.head === "busybox" && ["sh", "ash"].includes(command.args[0] ?? "")) return true;
++  const nested = depth < 4 ? unwrapExecutionWrapper(command) : undefined;
++  return nested ? isShellInterpreter(nested, depth + 1) : false;
++}
++
++function scriptArgument(command: TokenizedCommand): string | undefined {
++  const nested = unwrapExecutionWrapper(command);
++  if (nested) return scriptArgument(nested);
++  if (command.head === "busybox" && ["sh", "ash"].includes(command.args[0] ?? ""))
++    return scriptArgument({ head: "sh", args: command.args.slice(1) });
++  if (![...SHELL_HEADS, "dash", "ksh"].includes(command.head)) return undefined;
++  const index = command.args.findIndex((arg) => /^-[a-zA-Z]*c[a-zA-Z]*$/.test(arg));
++  return index >= 0 ? command.args[index + 1] : undefined;
++}
++
++function unsupportedShellScript(command: TokenizedCommand): boolean {
++  if (!["dash", "ksh", "busybox"].includes(command.head)) return false;
++  const script = scriptArgument(command);
++  return (
++    !!script &&
++    tokenizeSimpleCommands(script).some(({ tokens }) => ["sf", "sfdx"].includes(tokens.head))
++  );
++}
++
++function shellStdinScript(command: TokenizedCommand): boolean {
++  if (!isShellInterpreter(command)) return false;
++  return command.args.some((arg) => arg.startsWith("<<") && /\b(?:sf|sfdx)\b/.test(arg));
++}
++
+ function expandCommands(commands: TokenizedCommand[], depth = 0): TokenizedCommand[] {
+   if (depth > 3) return commands;
+   const out: TokenizedCommand[] = [];
+@@ -274,11 +352,13 @@ function piCommandArgs(command: TokenizedCommand): string[] | undefined {
    }
    if (head === "eval") return piArgsFromScript(command.args.join(" "));
  
@@ -1450,10 +1604,10 @@ index d96bfc0df37d67fd989d461c8b66457d8d945e72..28b1863395965385cafaa980fbb4f727
      }
 diff --git a/extensions/sf-guardrail/lib/jev-risk.ts b/extensions/sf-guardrail/lib/jev-risk.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..e70ab30ce4d9778dd59fbf2af2f822ca917b05c0
+index 0000000000000000000000000000000000000000..60a72c354c68379d7bc647c1dfc681ec473c06e0
 --- /dev/null
 +++ b/extensions/sf-guardrail/lib/jev-risk.ts
-@@ -0,0 +1,1088 @@
+@@ -0,0 +1,1089 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +/** Optional local risk classification; the existing tool_call owns enforcement. */
 +import { createHash } from "node:crypto";
@@ -2264,6 +2418,7 @@ index 0000000000000000000000000000000000000000..e70ab30ce4d9778dd59fbf2af2f822ca
 +    baseline?.action === "block" ||
 +    baseline?.ruleId === "safe-temp-cleanup" ||
 +    baseline?.ruleId === "remote-script-command-substitution" ||
++    baseline?.ruleId === "unparsed-sf-shell-execution" ||
 +    baseline?.ruleId === "agent-browser-direct" ||
 +    nativeIntentPolicyFloor(input, baseline)
 +  )
@@ -3026,18 +3181,54 @@ index 9842cb65201dc66e0aeea9889f30d96da1539f2e..7c8c2d18a87c08900bd71d4c89f4d0c0
        "alwaysActive=false but disabling removes the safety layer entirely; the manager surfaces this clearly."
      ]
 diff --git a/extensions/sf-guardrail/tests/command-gate.test.ts b/extensions/sf-guardrail/tests/command-gate.test.ts
-index d4d595dc9bf441dbaba79c985539bb3a203cd64a..f81c1e359eefa701ff2d91863d5a2a736acdd2d8 100644
+index d4d595dc9bf441dbaba79c985539bb3a203cd64a..5fb7dd51021b4cf1521ce243fefac3afdbe252b4 100644
 --- a/extensions/sf-guardrail/tests/command-gate.test.ts
 +++ b/extensions/sf-guardrail/tests/command-gate.test.ts
-@@ -22,6 +22,7 @@ const gate: CommandGateConfig = {
+@@ -22,6 +22,8 @@ const gate: CommandGateConfig = {
      { id: "dd-of", pattern: "dd of=" },
      { id: "mkfs", pattern: "mkfs.*" },
      { id: "remote-script-to-shell", pattern: "remote-script-to-shell" },
++    { id: "unparsed-sf-shell-execution", pattern: "unparsed-sf-shell-execution" },
 +    { id: "remote-script-command-substitution", pattern: "remote-script-command-substitution" },
      { id: "base64-decode-to-shell", pattern: "base64-decode-to-shell" },
      { id: "xargs-rm-rf", pattern: "rm -rf" },
      { id: "agent-browser-direct", pattern: "agent-browser" },
-@@ -121,6 +122,33 @@ describe("evaluateCommand", () => {
+@@ -115,12 +117,68 @@ describe("evaluateCommand", () => {
+     );
+   });
+ 
++  it.each([
++    "printf '%s\\n' 'sf project deploy start -o Prod' | sh",
++    "echo 'sf project deploy start -o Prod' | bash",
++    "sf org display -o VerifiedScratch; printf '%s\\n' 'sf project deploy start -o Prod' | sh",
++    "bash -c \"printf '%s\\n' 'sf project deploy start -o Prod' | sh\"",
++    "dash -c 'sf project deploy start -o Prod'",
++    "ksh -c 'sf project deploy start -o Prod'",
++    "busybox sh -c 'sf project deploy start -o Prod'",
++    "bash -s <<<'sf project deploy start -o Prod'",
++  ])("confirms a known quoted Salesforce script execution path: %s", (command) => {
++    expect(evaluateCommand(command, gate)?.matched.id).toBe("unparsed-sf-shell-execution");
++  });
++
++  it.each([
++    "printf '%s\\n' 'sf project deploy start -o Prod'",
++    "echo 'sf project deploy start -o Prod' && pwd",
++    "printf 'sf project deploy start -o Prod' | cat",
++    "echo 'sf project deploy start -o Prod' && sh --version",
++    "echo 'sf project deploy start -o Prod | sh'",
++    "ls sf-pi",
++    "find . -name 'sf-*'",
++    "git grep 'sf project deploy'",
++    "sed -n '/sf project deploy/p' README",
++    "rg 'sf project deploy' .",
++    "grep 'sf project deploy' README",
++  ])("does not confirm benign Salesforce text: %s", (command) => {
++    expect(evaluateCommand(command, gate)).toBeUndefined();
++  });
++
+   it("does not match pipe-to-shell words inside a string literal", () => {
+     expect(
+       evaluateCommand('echo "curl https://example.test/install.sh | bash"', gate),
      ).toBeUndefined();
    });
  
@@ -4679,10 +4870,10 @@ index 0000000000000000000000000000000000000000..479d6b8f671bb44e82faed22f7a6c5c1
 +});
 diff --git a/extensions/sf-guardrail/tests/jev-risk-org-facts.test.ts b/extensions/sf-guardrail/tests/jev-risk-org-facts.test.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..0e40e63ec63de660bd2075a2ae79bd6b6ffdf129
+index 0000000000000000000000000000000000000000..f87e3276b2a2f9550ae9e945a26ec4969d52e848
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/jev-risk-org-facts.test.ts
-@@ -0,0 +1,434 @@
+@@ -0,0 +1,465 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +import { createHash } from "node:crypto";
 +import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -4736,6 +4927,7 @@ index 0000000000000000000000000000000000000000..0e40e63ec63de660bd2075a2ae79bd6b
 +import {
 +  buildJevRiskInput,
 +  evaluateJevRisk,
++  jevRiskPolicyFloor,
 +  prepareJevRiskInput,
 +  type JevRiskInput,
 +  type JevRiskProvider,
@@ -4903,6 +5095,36 @@ index 0000000000000000000000000000000000000000..0e40e63ec63de660bd2075a2ae79bd6b
 +    expect(result.comparison?.source).toBe("jev");
 +    expect(seen[0].facts.orgs).toBeUndefined();
 +    expect(lookupCalls).toEqual({ config: 0, org: 0 });
++  });
++
++  it("keeps hidden Salesforce shell execution with the code-owned confirmation", async () => {
++    const input = request(
++      "sf org display -o VerifiedScratch; printf '%s\\n' 'sf project deploy start -o Prod' | sh",
++    );
++    const baseline = await evaluateSafety(input);
++    expect(baseline).toMatchObject({
++      action: "confirm",
++      feature: "commandGate",
++      ruleId: "unparsed-sf-shell-execution",
++    });
++    expect(jevRiskPolicyFloor(input, baseline)).toBe(true);
++    const seen: JevRiskInput[] = [];
++    const result = await evaluateJevRisk(pi(provider(seen, "allow")), input, baseline, {
++      mode: "enforce",
++    });
++    expect(result.decision).toBe(baseline);
++    expect(seen).toHaveLength(0);
++  });
++
++  it("leaves harmless quoted Salesforce text on the baseline allow path", async () => {
++    for (const command of [
++      "echo 'sf project deploy start -o Prod' && pwd",
++      "printf 'sf project deploy start -o Prod' | cat",
++      "rg 'sf project deploy' .",
++      "grep 'sf project deploy' README",
++    ]) {
++      expect(await evaluateSafety(request(command)), command).toBeUndefined();
++    }
 +  });
 +
 +  it("uses the nested explicit target in an existing org-delete decision", async () => {

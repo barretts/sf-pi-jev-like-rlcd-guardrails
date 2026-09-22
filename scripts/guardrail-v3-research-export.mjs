@@ -136,7 +136,9 @@ function knownFallback(error) {
   const message = error.message;
   if (
     message ===
-    "Jev Salesforce org identity unverified; using Safety Kernel fallback"
+      "Jev Salesforce org identity unverified; using Safety Kernel fallback" ||
+    message ===
+      "Jev Salesforce org target is ambiguous; using Safety Kernel fallback"
   )
     return message;
   if (

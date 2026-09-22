@@ -15,7 +15,7 @@ candidate 2's usability rejection remain preserved below. Their fused exports,
 diagnostic quantization scratch and F16 GGUF files were removed after the
 2026-09-22 cleanup; adapters, manifests, hashes and evaluation receipts remain.
 
-The current SF Pi integration is `44820d21` (tree
+The preceding SF Pi integration was `44820d21` (tree
 `eaa5b6e042ce28e98a3f1cf47c47125d1188775a`). Its bundled rules now
 confirm unresolved-org mutating REST requests and wrapped Salesforce data
 imports. The Guardrail suite passed 374 tests with two skipped; the strict v3
@@ -28,6 +28,56 @@ updates finished in 63.62 seconds; loss fell from 6.493761 to 0.676923,
 adapter weights changed and reload passed. This proves local training mechanics
 on that narrow input, not model effectiveness or candidate-5 admission. The
 browser execution contract and full qualification remain open.
+
+## Candidate 5 nonqualifying research export, 2026-09-22
+
+SF Pi `d7165d3f` added a narrow code-owned confirmation for tested forms
+that execute quoted Salesforce shell text, such as `printf 'sf ...' | sh`.
+The existing rules still allow tested harmless searches and quoted output;
+generated or encoded shell commands and script-file provenance remain
+uncovered baseline limits. The candidate-5 v3 strict diagnostic passed seven
+checks and failed the six browser safe/risk eligibility checks across TRAIN,
+validation and TEST. It produced no admissible baseline. SF's runtime source
+SHA-256 was `b1dd0309a789b30c98a7d14a01d843fc3ab199d1542d023ce97c10cbcd2a9e7d`.
+The final integration commit `8c6b9f7` refreshed the generated catalog index
+without changing that runtime hash. On this source, 395 Guardrail tests passed
+with two skipped; TypeScript, 31 runtime-surface checks, formatting and the
+catalog check passed. A full SF suite using borrowed dependencies encountered
+failures in unrelated extensions and was stopped, so a full-suite pass on this
+commit is not claimed.
+
+The nonqualifying v3 research exporter replayed only TRAIN and validation
+from the sealed corpus with authored mock host facts. Of 504 requests, 153
+TRAIN and 96 validation requests were model-eligible; 72 browser requests
+remained rules fallback. Its receipt is
+`../../.build/guardrail/candidate-5-v3-research-8c6b9f7-20260922/receipt.json`.
+A separate verified 40-row TRAIN supplement was merged; two canonically
+identical TRAIN inputs in one group were removed. The resulting research set
+contains 191 TRAIN, 96 validation, zero TEST and 92 groups. Dataset SHA-256
+is `9c66f5834e4462a6cf36f97dddcde517ff40a9f1878f637c5c1849663d6609c0`;
+the final-source merge receipt is
+`../../.build/guardrail/candidate-5-research-8c6b9f7-20260922/merge-receipt.json`.
+An actual SF bridge preflight replayed the 96 eligible validation requests
+without model calls: 96 input and baseline matches, zero errors. These are
+research data and bridge-plumbing results, not model accuracy, full browser
+coverage, a held-out result or an enforcement qualification. A later audit
+found related TRAIN and validation operations despite distinct group IDs.
+The 512-step research run on this set was stopped at step 23; no adapter,
+model export, model validation or TEST call exists. Its
+[aborted-run receipt](../../.build/guardrail/candidate-5-research-d7165d3f-20260922/rfdt-512/ABORTED.json)
+records the reason. Related-operation split review is required before a new
+research candidate can use this validation set. The reviewed correction
+withheld eight entire TRAIN groups, 24 rows, while leaving all validation
+bytes fixed. The corrected research set contains 167 TRAIN (118 allow, 49
+confirm), 96 validation (63 allow, 33 confirm), zero TEST, and 84 groups. Its
+SHA-256 is `f97050f508c45c16bf14b8c68aae50cf51e43404056bffe25cb91dd1365983ea`;
+the [new split receipt](../../.build/guardrail/candidate-5-research-split-8c6b9f7-20260922/merge-receipt.json)
+lists every withheld group and row. Shared broad tool families remain, but
+the reviewed same-operation/effect near-replays are withheld. Any model trained
+from this set starts from the original Google base; the aborted adapter is not
+resumed. The [committed aggregate](./candidate-5-v3-split-research-summary.json)
+retains request-free source, coverage and split counts separately from the
+private corpus and receipts.
 
 ## Candidate 5 750 ms runtime checkpoint, 2026-09-22
 
@@ -53,10 +103,10 @@ source check and lint passed. Jev commit `68bcb8c` retained the
 [integration patch](../../integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch)
 at that checkpoint. Jev `6f279ab` refreshed it after the direct browser CLI
 floor, and `25bccf8` refreshed it after passive pre-click evidence. The current
-patch is 336,134 bytes, SHA-256
-`3af9588b029a5e9113b0f981ddd8252a7a2ed9efa35a622b28b29913dacfdd9f`.
-Fresh application from SF base `4f901db9` reproduced `44820d21` and tree
-`eaa5b6e042ce28e98a3f1cf47c47125d1188775a` exactly. This is
+patch is 345,037 bytes, SHA-256
+`4b1d4cb864b310b274604665ddbb12679efa65746816de54c112be57b9d3679e`.
+Fresh application from SF base `4f901db9` reproduced `8c6b9f7` and tree
+`5fcb84bd011209fb8a1c60cb3fa570d0a5faf2b7` exactly. This is
 source-delivery proof; it does not show installation or model effectiveness.
 
 The first sandboxed Pi SDK run did **not** complete its
@@ -174,9 +224,10 @@ or close the qualification coverage gap.
 
 The browser tool sends a separate native click or press after Guardrail's
 hook, and the native driver may resolve a stale element ref to another node
-with the same role and name. A sound browser-model path needs a guarded
-native driver action that checks live target, node and focus at dispatch,
-including its retry paths. An SF Pi-only precheck cannot close that gap.
+with the same role and name. A guarded driver action can check live target,
+node and focus at dispatch, including retry paths. That establishes which
+input receives the event, not what arbitrary page handlers will do with it.
+An SF Pi-only precheck cannot close either gap.
 
 An isolated `agent-browser` native-daemon prototype at
 `/private/tmp/agent-browser-guard-prototype` (commit `2c855656`) tested an optional guard for
@@ -203,6 +254,18 @@ post-input failure may be indeterminate. It is not installed in SF Pi or
 admitted as browser-model evidence. A future SF Pi integration must pin this
 CLI build or verify its capability: an older CLI can ignore the new option
 and perform an ordinary click.
+
+Two later inert Chrome regressions on the same public prototype branch
+(`c0cedb2`, `34a2bf7`) make the remaining boundary concrete. In one, a
+`mousedown` handler changes the form action after the final prepress check.
+In the other, the same button gains a delegated `click` handler after the
+snapshot and changes page-local state. The guarded click succeeds in both;
+the target node did not change. Both focused browser tests and six guarded
+unit tests passed on commit `34a2bf7`, with no SF Pi wiring or authenticated
+operation. Chrome's input dispatch has no atomic predicate for the resulting
+JavaScript and default actions. A model-authorized browser commit therefore
+needs an application-owned effect boundary or an equivalently proved
+operation contract; more snapshot fields alone do not establish one.
 
 An aggregate-only audit of the sealed v3 corpus found 18/9/9 risky browser
 click rows in TRAIN/VALIDATION/TEST, but the last admissible baseline marked
@@ -322,7 +385,7 @@ selection, focus or layout state that the requests do not independently
 establish. The host's last-snapshot freshness means cache age at most 120
 seconds; the post-score comparison detects cache changes, not live focus or
 layout. Admissible browser tests need independently observed and reverified
-focus/page facts at execution, or reviewed focus-independent semantics. No
+focus/page facts at execution and an effect-bound operation contract. No
 revised corpus has been sealed. Separately, automatic approval review rejected
 a proposed new held-out fixture **before freeze** because it could contaminate
 held-out evaluation; that fixture was neither written nor

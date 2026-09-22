@@ -205,7 +205,10 @@ hash, scorer protocol, and research code. It reports eligibility by split and
 family, browser fallback counts, and the hashes of both private outputs. A
 request-free aggregate from the 2026-09-22 replay is committed at
 `reports/guardrail-risk-2026-09-21/candidate-5-v3-research-export-summary.json`.
-The separate 40-row TRAIN supplement is not included in this export.
+That original aggregate is bound to SF `44820d21`; the current final-source
+split-reviewed aggregate is
+`reports/guardrail-risk-2026-09-21/candidate-5-v3-split-research-summary.json`.
+The separate 40-row TRAIN supplement is not included in the v3 export itself.
 
 The eight-update local smoke completed on 2026-09-22 using dataset SHA-256
 `a3f19d40ae1caf6312d39ee0cbdd8451b4c1b893ac469cf57a015056b25344cf`.
@@ -215,3 +218,46 @@ Gemma 3 1B base changed adapter weights, reduced loss from 6.493761 to
 projection on clean SF commit `44820d21` produced identical dataset bytes;
 the earlier projection had already seen those SF changes before commit. These
 are systems and source-replay results only, not candidate qualification.
+
+### Nonqualifying TRAIN/validation research run
+
+After the strict admission fails browser coverage, the separate research path
+can still test the local model on the non-browser subset. Generate the v3
+research export above and reproject the reviewed 40-row TRAIN supplement with
+`scripts/guardrail-candidate5-train-smoke.mjs` against the **same committed SF
+checkout**. Then merge their receipts into a new private output:
+
+```sh
+node scripts/guardrail-v3-research-merge.mjs \
+  --base "$RESEARCH/receipt.json" \
+  --supplement "$SMOKE/receipt.json" \
+  --sf-pi /private/tmp/sf-pi-guardrail-candidate5-20260922 \
+  --output "$MERGED/merged-train-validation.jsonl" \
+  --receipt "$MERGED/merge-receipt.json"
+```
+
+The merge rechecks the current SF runtime, Jev scorer, source scripts, sealed
+corpus, original Google base weights, exact risk-only question shape, split
+isolation and input duplication. Identical same-group TRAIN inputs are
+deduplicated. Eight reviewed TRAIN groups whose operations nearly replay fixed
+validation cases are withheld in full; the receipt lists their 24 row IDs.
+Validation rows remain byte-identical. Shared broad tool families are reported
+as a limit on novelty, not treated as an automatic label leak.
+The receipt always says `qualification: false`, `officialCandidate5Admission:
+false`, and zero TEST rows. The generic RFDT CLI can prepare and train from the
+merged JSONL for a **research** candidate only; this does not bypass the
+official `train:guardrail` admission gate. Use the original verified Google
+Gemma 3 1B checkpoint, the pinned RFDT environment, and TRAIN/validation only.
+The first 191/96 research preparation was abandoned at step 23 after this
+split issue was found; its adapter was never exported. The corrected 167/96
+research dataset starts a fresh 256-update run from the original base.
+
+Before model evaluation, run the current SF bridge preflight against the
+research export with `scripts/guardrail-v3-research-valid.mjs --preflight`.
+It checks that eligible validation rows still produce the exported baseline
+and model input. After training/export, the same script without `--preflight`
+uses `--model` and `--registry` for shadow comparison; the receipt remains
+nonqualifying and reports every fallback. The 750 ms warm deadline includes
+baseline evaluation, preparation and queueing. Sub-500 ms warm p95 is an ideal;
+every eligible warm call must finish below 750 ms for qualification. No
+research result permits a TEST run or enforcement.
