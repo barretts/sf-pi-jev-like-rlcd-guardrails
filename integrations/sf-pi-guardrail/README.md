@@ -6,6 +6,31 @@ grants and audit records. Exact policy constraints remain in code. The extension
 uses no Jev implementation imports: it discovers one versioned provider through
 `sf-guardrail:risk-providers`.
 
+## Candidate 9 training host (not qualified)
+
+The [Candidate 9 baseline-bound patch](./candidate9-sf-pi-from-4f901db9.patch)
+reconstructs the committed sf-pi host for the fresh C9 corpus and future
+model-free baseline replay. It adds a bundled confirmation rule for dynamic
+shell `eval` on the rules-fallback route. Operator overrides and the existing
+`tool_call` approval and audit owner remain authoritative. The replacement C9
+VALID source is sealed, but no C9 model fit or effectiveness score is claimed
+by this host patch. Keep enforcement at its default `off` mode.
+
+| Artifact                 | Pinned identity                                                    |
+| ------------------------ | ------------------------------------------------------------------ |
+| SF Pi baseline commit    | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                         |
+| C9 host commit           | `4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a`                         |
+| C9 host tree             | `4bdbee05cbd490ff3d0f99db43a5133b08a90186`                         |
+| Risk baseline SHA-256    | `4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421` |
+| Effective policy SHA-256 | `e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347` |
+| Patch SHA-256            | `cf5a24e73a0b8b88575e096b6325e3f50e75829522c189d50578eaf2ed7119b8` |
+| Patch size               | 467,622 bytes                                                      |
+
+The binary diff from the exact baseline passed `git apply --cached --check`
+and reproduced the committed C9 host tree in a disposable index. The check
+left sf-pi working files and its real index unchanged. This patch records
+local integration source; it does not install the host or qualify a model.
+
 ## Candidate 8 qualification-capable host
 
 The [Candidate 8 baseline-bound patch](./candidate8-sf-pi-from-4f901db9.patch)
