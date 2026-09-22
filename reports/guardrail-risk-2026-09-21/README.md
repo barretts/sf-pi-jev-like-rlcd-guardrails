@@ -1,6 +1,6 @@
 # Guardrail risk replacement evidence, 2026-09-21
 
-## Candidate 9 preparation, 2026-09-22
+## Candidate 9 admitted TRAIN and training in progress, 2026-09-22
 
 The goal remains a local Gemma 3 1B semantic risk provider that matches or
 improves on the current SF Guardrail rules without weakening exact policy,
@@ -12,12 +12,24 @@ TEST and real Pi enforce proof follow only if the earlier gates pass.
 The [baseline-bound C9 host patch](../../integrations/sf-pi-guardrail/README.md)
 is pinned to sf-pi `4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a` and tree
 `4bdbee05cbd490ff3d0f99db43a5133b08a90186`. The replacement VALID source
-is sealed, and the [future held-out baseline-seal protocol](../../docs/guardrail-c9-baseline-seal.md)
-is prepared. The initial pre-fit overlap audit rejected the proposed source
-split; the fit input must pass a corrected overlap audit before training.
-There is no C9 model fit, cutoff selection, VALID score, held-out result, or
-qualification at this checkpoint. The existing rules remain in force with
-`SF_GUARDRAIL_JEV_MODE=off` by default.
+is sealed, and the [held-out baseline-seal protocol](../../docs/guardrail-c9-baseline-seal.md)
+is prepared. The first pre-fit overlap audit rejected the proposed TRAIN
+split. The revised [TRAIN admission](./candidate-9-evidence/train/README.md)
+subsequently passed independent, exhaustive overlap review against the sealed
+VALID source. The accepted split has 327 FIT rows in 133 groups and 42
+separate CAL rows in 21 groups; `trainingReady: true` authorizes training only.
+The model-free [VALID preflight](./candidate-9-evidence/valid/README.md) covered
+160 cases on the pinned host with 116 model-prepared calls, 39 code-owned rules
+fallbacks, five pre-model fallbacks and no preparation errors. These checks do
+not measure C9 model quality.
+
+The first 256-update C9 Gemma training arm, A-v2, is underway from the reviewed
+Google base using FIT only. A second precommitted objective arm is planned to
+run sequentially. Their [objective and selection contract](./candidate-9-objective-implementation.md)
+reserves CAL for cutoff and arm selection. At this checkpoint, there is no
+completed C9 model artifact, model effectiveness score, selected cutoff,
+prospective VALID score, held-out TEST result, or qualification. Existing
+rules remain in force with `SF_GUARDRAIL_JEV_MODE=off` by default.
 
 On the exact C9 host, focused Pi hook and SDK tests passed: three files,
 51 tests passed and one local-model arm skipped. The tests exercise stub tools,
