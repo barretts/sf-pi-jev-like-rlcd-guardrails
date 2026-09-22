@@ -935,6 +935,8 @@ async function runHost(rows, sf, sfDeps, fixtureCwd, runtime, fake, hostPin) {
       },
       { clearSharedSfEnvironment, restoreFromSessionEntries },
       browser,
+      { previewCliSendFloor, previewNativeSendFloor },
+      { getHostPreviewSession },
       { getJevRiskBaselineSha256, calculateJevRiskBaselineIdentity },
     ] = await Promise.all([
       sfImport("extensions/sf-guardrail/lib/config.ts"),
@@ -942,6 +944,8 @@ async function runHost(rows, sf, sfDeps, fixtureCwd, runtime, fake, hostPin) {
       sfImport("extensions/sf-guardrail/lib/jev-risk.ts"),
       sfImport("lib/common/sf-environment/shared-runtime.ts"),
       sfImport("lib/common/sf-browser-snapshot-state.ts"),
+      sfImport("extensions/sf-guardrail/lib/preview-session-facts.ts"),
+      sfImport("lib/common/agent-preview/store.ts"),
       sfImport("extensions/sf-guardrail/lib/risk-baseline-identity.ts"),
     ]);
     if (getJevRiskBaselineSha256() !== hostPin.runtimeSha256)
@@ -1003,7 +1007,39 @@ async function runHost(rows, sf, sfDeps, fixtureCwd, runtime, fake, hostPin) {
         input.toolName === "sf_browser_click"
           ? jevBrowserClickEvidenceFingerprint(input)
           : undefined;
-      const baselineDecision = await evaluateSafety(input);
+      const rawBaselineDecision = await evaluateSafety(input);
+      const command =
+        input.toolName === "bash" ||
+        (input.toolName === "herdr_pane" && input.input.action === "run")
+          ? input.input.command
+          : undefined;
+      // Mirror the actual tool_call order: code-owned preview floors are
+      // applied after Safety Kernel classification and before Jev shadowing.
+      const baselineDecision =
+        typeof command === "string"
+          ? previewCliSendFloor(
+              command,
+              rawBaselineDecision,
+              config,
+              sessionId,
+              fixtureCwd,
+            )
+          : input.toolName === "agentscript_preview" &&
+              input.input.action === "send"
+            ? previewNativeSendFloor(
+                input.input,
+                rawBaselineDecision,
+                typeof input.input.session_id === "string"
+                  ? getHostPreviewSession(
+                      input.input.session_id,
+                      sessionId,
+                      fixtureCwd,
+                    )
+                  : undefined,
+                sessionId,
+                fixtureCwd,
+              )
+            : rawBaselineDecision;
       const baseline = baselineDecision?.action ?? "allow";
       if (overrideRuleId) {
         const expectedBehavior = Object.values(row.fixture.policyBehaviors)[0];
@@ -1067,6 +1103,7 @@ async function runHost(rows, sf, sfDeps, fixtureCwd, runtime, fake, hostPin) {
         family: row.family,
         expected: label[row.expected.decision],
         baseline,
+        preFloorBaseline: rawBaselineDecision?.action ?? "allow",
         actual: comparison?.actual ?? baseline,
         gate,
         source,
@@ -1296,6 +1333,7 @@ export function compareCandidate7HostPreparation(records, preflightById) {
     if (
       !prior ||
       row.baseline !== prior.baseline ||
+      row.preFloorBaseline !== prior.preFloorBaseline ||
       row.gate !== prior.gate ||
       row.policyFloor !== prior.policyFloor ||
       row.fallbackReason !== prior.fallbackReason
@@ -1541,9 +1579,13 @@ async function main() {
         "C7 model-call accounting differs from bridge interception",
       );
     const baselineActions = { allow: 0, confirm: 0, block: 0 };
+    const preFloorBaselineActions = { allow: 0, confirm: 0, block: 0 };
+    const hostFloorChanges = [];
     const fallbackReasons = {};
     for (const row of result.records) {
       baselineActions[row.baseline]++;
+      preFloorBaselineActions[row.preFloorBaseline]++;
+      if (row.preFloorBaseline !== row.baseline) hostFloorChanges.push(row.id);
       if (row.gate === "fallback") fallbackReasons[row.id] = row.fallbackReason;
     }
     const coverage = summarizeCandidate7FamilyCoverage(rows, result.records);
@@ -1618,6 +1660,8 @@ async function main() {
       },
       metrics: summary.metrics,
       baselineActions,
+      preFloorBaselineActions,
+      hostFloorChanges,
       fallbackReasons,
       familyCoverage: coverage.matrix,
       laneCoverage: {
