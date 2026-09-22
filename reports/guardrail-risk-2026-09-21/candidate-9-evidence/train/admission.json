@@ -1,7 +1,7 @@
 {
   "version": 1,
   "purpose": "candidate9_fit_calibration_admission",
-  "trainingReady": false,
+  "trainingReady": true,
   "qualification": false,
   "modelCalls": 0,
   "c8ValidBodyRead": false,
@@ -17,11 +17,11 @@
     "sourceCompositionReceiptSha256": "c0f49d2782d019c470ff39ca25ee015c20208e5349cb3e3c37813ae6408e959e",
     "hostProjectionReceiptSha256": "6f5906f65a52750910b7a304a000428257276b66d31f6d424fefa45a91a5cdec",
     "inheritedBashFamilySha256": "1ba4aa1c083d8c62d14edc965af9c8ebaeb4893aebac04057f3622f80537b2fe",
-    "inheritedSourceExclusionSha256": "f6012e412120da72185d7ab395c5a9414e256fb7553e5630ab89589c6e84d98a",
+    "inheritedSourceExclusionSha256": "c30b46b5024180a09eab36d3e64c4f885549b6cffc7d7699f1d5a2bc4180354d",
     "inheritedPairsSha256": "5d966c78f0b2ea2193a99a8f007cbd84327594c66d4e9bb62f42f8440a233b04",
     "calibrationBaselineReceiptSha256": "39f5f409a659d4a6bba0b2b1ed3a83df787df709e46f314ebacf883071bc8e12",
     "hostControlsReceiptSha256": "a2029554d9505285d7becad529906b9c36efe05d59b9ee568b3c5a3c8fdd6633",
-    "overlapReceiptSha256": null,
+    "overlapReceiptSha256": "0adf75b23578459ce5886c151c88f84b623d7382645605c006385b3eb09bada7",
     "scriptSha256": "00f7e74a8a1af03f0f7f037a42e116bf43616ea967d74a01aa621d8da4bc39fc"
   },
   "fit": {
@@ -254,7 +254,7 @@
       "reason": "Independent sealed-split review adjudicated this inherited raw Data 360 GET group as a replay of the same normalized REST request route. The complete group is excluded without reading the blind case body.",
       "evidence": [
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
-        "candidate9_final_blind_overlap_receipt_pending"
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/final-pre-fit-acceptance.json"
       ]
     },
     {
@@ -262,7 +262,7 @@
       "reason": "Independent sealed-split review adjudicated this inherited Product2 stream-creation group as a controlled-risk replay despite generated resource names and org differences. The complete group is excluded without reading the blind case body.",
       "evidence": [
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
-        "candidate9_final_blind_overlap_receipt_pending"
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/final-pre-fit-acceptance.json"
       ]
     },
     {
@@ -270,7 +270,7 @@
       "reason": "Independent sealed-split review adjudicated this inherited SOQL group as the same unbounded query projection, object, and scope across CLI and native surfaces despite an org-name difference. The complete group is excluded without reading the blind case body.",
       "evidence": [
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
-        "candidate9_final_blind_overlap_receipt_pending"
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/final-pre-fit-acceptance.json"
       ]
     },
     {
@@ -278,7 +278,7 @@
       "reason": "Independent sealed-split review adjudicated this inherited SOQL group as the same unbounded query projection, object, and scope across CLI and native surfaces despite an org-name difference. The complete group is excluded without reading the blind case body.",
       "evidence": [
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
-        "candidate9_final_blind_overlap_receipt_pending"
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/final-pre-fit-acceptance.json"
       ]
     },
     {
@@ -286,7 +286,7 @@
       "reason": "Independent sealed-split review adjudicated this inherited shell group as the same rsync --delete dry-run-to-live controlled change despite path and output-flag differences. The complete group is excluded without reading the blind case body.",
       "evidence": [
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
-        "candidate9_final_blind_overlap_receipt_pending"
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/final-pre-fit-acceptance.json"
       ]
     },
     {
@@ -294,7 +294,7 @@
       "reason": "Independent sealed-split review adjudicated this inherited Canvas creation group as a related variant of the same create operation, even though the channel destination differs. The complete group is excluded without reading the blind case body.",
       "evidence": [
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
-        "candidate9_final_blind_overlap_receipt_pending"
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/final-pre-fit-acceptance.json"
       ]
     },
     {
@@ -302,7 +302,7 @@
       "reason": "Independent sealed-split review adjudicated this inherited remote installer group as the same curl-to-interpreter controlled change. The complete group is excluded without reading the blind case body.",
       "evidence": [
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
-        "candidate9_final_blind_overlap_receipt_pending"
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/final-pre-fit-acceptance.json"
       ]
     },
     {
@@ -310,7 +310,7 @@
       "reason": "Independent sealed-split review adjudicated this inherited cache-inventory-to-deletion group as a related controlled-risk variant. The complete group is excluded without reading the blind case body.",
       "evidence": [
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
-        "candidate9_final_blind_overlap_receipt_pending"
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/final-pre-fit-acceptance.json"
       ]
     },
     {
@@ -318,13 +318,13 @@
       "reason": "Independent sealed-split review adjudicated this inherited credential-name-to-value disclosure group as the same controlled change across shell syntax. The complete group is excluded without reading the blind case body.",
       "evidence": [
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
-        "candidate9_final_blind_overlap_receipt_pending"
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/final-pre-fit-acceptance.json"
       ]
     }
   ],
   "overlapAudit": {
-    "status": "pending",
-    "receiptSha256": null,
+    "status": "accepted",
+    "receiptSha256": "0adf75b23578459ce5886c151c88f84b623d7382645605c006385b3eb09bada7",
     "blindValidSourceSha256": "d7d532c2712bf699133971cb82b0b0c5f21cbe5362a5edd07171b532a58f072f"
   },
   "proofLimit": "TRAIN-only admission and host preparation, not model effectiveness. CAL was reserved by complete groups; the independent overlap receipt, when supplied, compares a sealed VALID split without exposing its body to this TRAIN author. No TEST body was used."
