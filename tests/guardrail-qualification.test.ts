@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import ts from "typescript";
 import { canonical } from "../src/core.js";
 import { GUARDRAIL_PROTOCOL_SHA256 } from "../src/guardrail.js";
 import {
@@ -9,6 +14,7 @@ import {
   verifyGuardrailQualification,
   type GuardrailEvaluationRecord,
   type GuardrailInventoryRecord,
+  type GuardrailQualification,
 } from "../src/guardrail-evaluation.js";
 const sha = (value: unknown) =>
   createHash("sha256").update(canonical(value)).digest("hex");
@@ -75,6 +81,89 @@ const passing = () => {
   const freeze = freezeGuardrailCandidate(validation, inventory());
   return qualifyGuardrail(rows("test"), { ...identity, split: "test", freeze });
 };
+
+// Run copied modules in a fresh process so their implementation fingerprint is
+// recomputed. Only synthetic adapter scores and synthetic qualification rows
+// are used; the copied runtime never opens a model or starts a native worker.
+function checkIsolatedClient(
+  directory: string,
+  report?: GuardrailQualification,
+) {
+  const script = `
+    import { readFileSync } from "node:fs";
+    import { pathToFileURL } from "node:url";
+    const data = JSON.parse(readFileSync(0, "utf8"));
+    const directory = process.argv[1];
+    const load = (name) => import(pathToFileURL(directory + "/" + name + ".js").href);
+    const [evaluation, backend, guardrail] = await Promise.all([
+      load("guardrail-evaluation"), load("backend"), load("guardrail")
+    ]);
+    const adapter = {
+      async warmup() {},
+      async compile(plan) { return plan.questions; },
+      async evaluate(branches) {
+        return {
+          logits: Object.fromEntries(branches.map((branch) => [
+            branch.branch_id,
+            Object.fromEntries(branch.output_labels.map((label, index) => [label, index === 0 ? 8 : -8]))
+          ])),
+          input_tokens: 1,
+          metrics: {}
+        };
+      },
+      async dispose() {}
+    };
+    const config = backend.configFromEnv({
+      JEV_DEVICE: "cpu", JEV_MODEL_ID: "google/gemma-3-1b-it", JEV_TEMPLATE_VERSION: "v2"
+    });
+    const classifier = new backend.Classifier(config, adapter);
+    const probe = await guardrail.classifyGuardrailRisk(classifier, {
+      version: 1, toolName: "bash", input: { command: "ls" }, facts: {}
+    }, config.modelId);
+    await classifier.dispose();
+    let report = data.report;
+    if (!report) {
+      const validation = evaluation.qualifyGuardrail(data.validation, { ...data.identity, split: "validation" });
+      const freeze = evaluation.freezeGuardrailCandidate(validation, data.inventory);
+      report = evaluation.qualifyGuardrail(data.test, { ...data.identity, split: "test", freeze });
+    }
+    let freezeError, receiptError;
+    try { evaluation.assertGuardrailFreeze(report.freeze, data.identity, data.inventory); }
+    catch (error) { freezeError = error.message; }
+    try { evaluation.verifyGuardrailQualification(report, data.identity.modelSha256, data.identity.nativeBinarySha256); }
+    catch (error) { receiptError = error.message; }
+    process.stdout.write(JSON.stringify({
+      report, probe, freezeError, receiptError,
+      criteriaSha256: evaluation.GUARDRAIL_CRITERIA_SHA256,
+      protocolSha256: guardrail.GUARDRAIL_PROTOCOL_SHA256
+    }));
+  `;
+  return JSON.parse(
+    execFileSync(
+      process.execPath,
+      ["--input-type=module", "-e", script, directory],
+      {
+        input: JSON.stringify({
+          identity,
+          inventory: inventory(),
+          validation: rows("validation"),
+          test: rows("test"),
+          report,
+        }),
+        encoding: "utf8",
+        timeout: 10_000,
+      },
+    ),
+  ) as {
+    report: GuardrailQualification;
+    probe: { action: string };
+    freezeError?: string;
+    receiptError?: string;
+    criteriaSha256: string;
+    protocolSha256: string;
+  };
+}
+
 describe("frozen guardrail selection", () => {
   it("requires real bridge evidence, complete coverage and a frozen validation-selected candidate", () => {
     const test = qualifyGuardrail(rows("test"), { ...identity, split: "test" });
@@ -170,4 +259,73 @@ describe("frozen guardrail selection", () => {
       );
     }
   });
+  it.each(["backend", "models", "guardrail-extension"])(
+    "invalidates a sealed freeze and receipt when copied %s scoring-client bytes change",
+    async (changedModule) => {
+      const directory = await mkdtemp(
+        join(tmpdir(), "jev-guardrail-client-binding-"),
+      );
+      try {
+        await writeFile(join(directory, "package.json"), '{"type":"module"}');
+        for (const name of [
+          "guardrail-evaluation",
+          "core",
+          "guardrail",
+          "backend",
+          "models",
+          "guardrail-extension",
+        ]) {
+          const source = await readFile(
+            new URL(`../src/${name}.ts`, import.meta.url),
+            "utf8",
+          );
+          const copied = ts.transpileModule(source, {
+            compilerOptions: {
+              module: ts.ModuleKind.ESNext,
+              target: ts.ScriptTarget.ES2023,
+            },
+          }).outputText;
+          await writeFile(join(directory, `${name}.js`), copied);
+        }
+        const before = checkIsolatedClient(directory);
+        expect(before.report.qualified).toBe(true);
+        expect(before.freezeError).toBeUndefined();
+        expect(before.receiptError).toBeUndefined();
+        expect(before.probe.action).toBe("allow");
+        const path = join(directory, `${changedModule}.js`);
+        const original = await readFile(path, "utf8");
+        if (changedModule === "backend") {
+          // Reproduce an actual client mapping change with the same prompts,
+          // model/native binary identity and synthetic native logits.
+          expect(original).toContain("result.logits,");
+          await writeFile(
+            path,
+            original.replace(
+              "result.logits,",
+              "Object.fromEntries(Object.entries(result.logits).map(([id, row]) => [id, Object.fromEntries(Object.entries(row).map(([label, logit]) => [label, -logit]))])),",
+            ),
+          );
+        } else {
+          await writeFile(
+            path,
+            original + "\n// Revised copied scoring client module.\n",
+          );
+        }
+        const after = checkIsolatedClient(directory, before.report);
+        expect(after.probe.action).toBe(
+          changedModule === "backend" ? "confirm" : "allow",
+        );
+        expect(after.protocolSha256).toBe(before.protocolSha256);
+        expect(after.report.modelSha256).toBe(before.report.modelSha256);
+        expect(after.report.nativeBinarySha256).toBe(
+          before.report.nativeBinarySha256,
+        );
+        expect(after.criteriaSha256).not.toBe(before.criteriaSha256);
+        expect(after.freezeError).toContain("held-out execution is prohibited");
+        expect(after.receiptError).toBeDefined();
+      } finally {
+        await rm(directory, { recursive: true, force: true });
+      }
+    },
+  );
 });

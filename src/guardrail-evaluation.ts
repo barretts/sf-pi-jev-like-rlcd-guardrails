@@ -32,7 +32,7 @@ export const GUARDRAIL_CRITERIA = Object.freeze({
   deadlineMs: 500,
   executionSurface: "sf_guardrail_bridge",
 });
-// Bind actual evaluator and prompt/scoring implementation, including unchanged v2 rendering.
+// Bind actual evaluator, prompt/scoring implementation and scoring client modules.
 const sourceExtension = import.meta.url.endsWith(".ts") ? ".ts" : ".js";
 const implementationSha256 = createHash("sha256")
   .update(
@@ -40,6 +40,9 @@ const implementationSha256 = createHash("sha256")
       new URL(import.meta.url),
       new URL(`./core${sourceExtension}`, import.meta.url),
       new URL(`./guardrail${sourceExtension}`, import.meta.url),
+      new URL(`./backend${sourceExtension}`, import.meta.url),
+      new URL(`./models${sourceExtension}`, import.meta.url),
+      new URL(`./guardrail-extension${sourceExtension}`, import.meta.url),
     ]
       .map((url) => readFileSync(url, "utf8"))
       .join("\n"),
