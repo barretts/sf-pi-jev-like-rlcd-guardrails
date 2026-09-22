@@ -172,12 +172,12 @@
     },
     "retainedSfIntegrationPatch": {
       "path": "integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch",
-      "sha256": "93f2bfce0eb1b21650644e7b67dd2dda5be755837ad62859ae8daeb0026887d8",
-      "bytes": 318074,
+      "sha256": "5bc6dc989bb3cc961bc204036f6dd64434ef06e4969a7da8f0e96965bf1c66dc",
+      "bytes": 319144,
       "sfBaseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
       "sfBaseTree": "4e08ddb00626e8d47852f604564b10f135082f1a",
-      "sfTargetCommit": "40ba11da1959723052c106db4272e779b802757d",
-      "sfTargetTree": "0b5f973115696887838150f768f89a810cd1f995",
+      "sfTargetCommit": "5e2ee1e3073ad17d47ec6ce3510234e522b1a188",
+      "sfTargetTree": "7368f83a0108b7c602d9f7cc1fa6d3886928391a",
       "freshDetachedApplyExactTreeMatch": true,
       "sourceDeliveryOnly": true,
       "hostActivationOrModelQualification": false

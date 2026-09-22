@@ -31,11 +31,12 @@ The final Jev source suite passed 1,048 tests in 48 files. SF Pi's focused
 suite passed 361 tests with two skipped, 31 runtime-surface checks passed, and
 source check and lint passed. Jev commit `68bcb8c` retained the
 [integration patch](../../integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch)
-(318,074 bytes, SHA-256
-`93f2bfce0eb1b21650644e7b67dd2dda5be755837ad62859ae8daeb0026887d8`).
-Fresh application from SF base `4f901db9` reproduced `40ba11d` and its tree
-exactly. This is source-delivery proof; it does not show installation or model
-effectiveness.
+at that checkpoint. Jev `6f279ab` refreshed it after the direct browser CLI
+floor: the current patch is 319,144 bytes, SHA-256
+`5bc6dc989bb3cc961bc204036f6dd64434ef06e4969a7da8f0e96965bf1c66dc`.
+Fresh application from SF base `4f901db9` reproduced `5e2ee1e` and tree
+`7368f83a0108b7c602d9f7cc1fa6d3886928391a` exactly. This is
+source-delivery proof; it does not show installation or model effectiveness.
 
 The first sandboxed Pi SDK run did **not** complete its
 semantic model checks: zero of four answered, three reached approximately the
