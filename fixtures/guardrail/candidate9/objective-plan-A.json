@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "purpose": "candidate9_train_only",
+  "arm": "A",
+  "objective": "guardrail_train_group_pair_margin_v1",
+  "pair_manifest_sha256": "b6b062a09a774c4c9907deb99992ec3b1e5f897274181a6c570c7e4494c607d9",
+  "family_manifest_sha256": "10ea2d9610e991b4f541c82378715d2e68d09e68829bf4e8c0de4366c0e6f14c",
+  "loss": {
+    "pair_margin": 2.0,
+    "anchor_margin": 1.0,
+    "ce_weight": 0.25,
+    "anchor_weight": 0.5
+  },
+  "sampler": {
+    "mode": "c8_group_balanced",
+    "seed": 42
+  },
+  "steps": 256,
+  "cutoff_status": "unset_requires_c9_train_cal_hard_veto_before_valid",
+  "validation_rows_passed_to_training": 0,
+  "test_rows_passed_to_training": 0
+}
