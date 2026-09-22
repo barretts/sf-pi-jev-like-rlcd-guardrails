@@ -132,6 +132,20 @@ async function fixture() {
     arm: "B",
     modelSha256: pin("2"),
     nativeBinarySha256: pin("3"),
+    artifactFormat: "q8_0",
+    artifactManifestSha256: pin("5"),
+    registrySha256: pin("6"),
+    runManifestSha256: pin("7"),
+    fitPlanSha256: pin("8"),
+    quantizationManifestSha256: pin("9"),
+    calScorerCliSha256: pin("a"),
+    calScorerCoreSha256: pin("b"),
+    coldInitializationMs: 120,
+    coldInitializationBasis:
+      "backend_warmup_after_source_and_artifact_verification",
+    preScoreVerificationMs: 10,
+    elapsedBasis:
+      "direct_jev_risk_check_including_prompt_preparation_and_queue",
     promptProtocolSha256: GUARDRAIL_PROTOCOL_SHA256,
     hostCommit,
     baselineSha256: hostBaseline,
@@ -201,6 +215,7 @@ async function fixture() {
     counts: { rows: 1, unchanged: 1, modelCalls: 0 },
   });
   admission.source.hostControlsReceiptSha256 = hostControlsReceiptSha256;
+  admission.source.calibrationBaselineReceiptSha256 = baselineReceiptSha256;
   admissionSha256 = await put("admission.json", admission);
   scores.admissionSha256 = admissionSha256;
   scoresSha256 = await put("scores.json", scores);

@@ -1,8 +1,15 @@
 #!/usr/bin/env node
 /** C9 FIT-only prepare/train/export. Blind VALID seal is read as metadata only. */
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
-import { lstat, mkdir, readFile, writeFile } from "node:fs/promises";
+import {
+  lstat,
+  mkdir,
+  open,
+  readFile,
+  statfs,
+  writeFile,
+} from "node:fs/promises";
 import { basename, dirname, relative, resolve, sep } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -24,6 +31,9 @@ const baseWeightsSha256 =
   "3d4ef8d71c14db7e448a09ebe891cfb6bf32c57a9b44499ae0d1c098e48516b6";
 const baseGgufSha256 =
   "05bd381a5f45611ce53f4fdcc6641cf6cec68c3091d74e8a32ea591f062d3fc5";
+const quantizerBinarySha256 =
+  "e2c48c541efe39436f0edbbbfe0e65c9185e1bb1d6295fcfb28ebc38c1e77985";
+const quantizerSourceRevision = "f072b103714dfa1eee531f80b24512faf38e3dd2";
 const c9HostCommit = "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a";
 const c9HostBaselineSha256 =
   "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421";
@@ -33,12 +43,14 @@ const c9BlindValidManifestSha256 =
   "b878ada2dde3d6b594b275f69e0dc372586bd8ba370c1ba03d33b0199ea502cc";
 const c9BlindValidSourceSha256 =
   "d7d532c2712bf699133971cb82b0b0c5f21cbe5362a5edd07171b532a58f072f";
+const supersededAdmissionSha256 =
+  "e7d79edb8984d3a9604862f9f513cd07cd9085f484006940b3b329c71880508f";
 const compilerLimits = Object.freeze({
   maxModelLen: 2048,
   maxBatchSize: 32,
   maxBatchTokens: 2048,
 });
-const inferenceArtifactFormat = "GGUF_F16";
+const inferenceArtifactFormat = "GGUF_Q8_0";
 const sha = (value) => createHash("sha256").update(value).digest("hex");
 const pin = (value) =>
   typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
@@ -170,6 +182,38 @@ async function verifyBaseGguf(path) {
     fail("reviewed original Google Gemma base GGUF changed");
   return artifact;
 }
+async function verifyQuantizer(binaryPath, sourceDirectory) {
+  const binary = await hashArtifact(resolve(binaryPath));
+  if (binary.sha256 !== quantizerBinarySha256)
+    fail("C9 Q8 quantizer binary differs from frozen local build");
+  const source = resolve(sourceDirectory);
+  if (git(source, ["rev-parse", "HEAD"]) !== quantizerSourceRevision)
+    fail("C9 Q8 quantizer source revision changed");
+  try {
+    git(source, ["diff", "--quiet", "HEAD"]);
+  } catch {
+    fail("C9 Q8 quantizer source is dirty");
+  }
+  return { binary, source };
+}
+async function runQuantizer(binary, source, target) {
+  await new Promise((resolvePromise, reject) => {
+    const child = spawn(
+      binary,
+      ["--leave-output-tensor", source, target, "Q8_0"],
+      {
+        stdio: "inherit",
+        signal: controller.signal,
+      },
+    );
+    child.once("error", reject);
+    child.once("exit", (code, signal) =>
+      code === 0
+        ? resolvePromise()
+        : reject(new Error(`C9 Q8 quantizer exited ${code ?? signal}`)),
+    );
+  });
+}
 async function verifyHost(sfPi, admission) {
   const hostCommit = git(sfPi, ["rev-parse", "HEAD"]);
   try {
@@ -190,6 +234,8 @@ async function verifyHost(sfPi, admission) {
     fail("C9 sf-pi host commit or baseline runtime changed");
 }
 async function verifyInputs(values) {
+  if (values["admission-sha256"] === supersededAdmissionSha256)
+    fail("superseded C9 FIT admission has a blind-VALID operation overlap");
   const admissionRaw = await pinned(
     values.admission,
     values["admission-sha256"],
@@ -210,6 +256,7 @@ async function verifyInputs(values) {
       admission.source?.pairsSha256,
       admission.source?.familiesSha256,
       admission.source?.hostControlsReceiptSha256,
+      admission.source?.calibrationBaselineReceiptSha256,
       admission.fit?.sha256,
       admission.calibration?.sha256,
     ].every(pin)
@@ -225,6 +272,7 @@ async function verifyInputs(values) {
     objectiveRaw,
     blindRaw,
     controlsRaw,
+    calBaselineRaw,
   ] = await Promise.all([
     pinned(values.fit, admission.fit.sha256),
     pinned(values.cal, admission.calibration.sha256),
@@ -236,6 +284,10 @@ async function verifyInputs(values) {
       values["blind-valid-manifest-sha256"],
     ),
     pinned(values["host-controls"], admission.source.hostControlsReceiptSha256),
+    pinned(
+      values["cal-baseline"],
+      admission.source.calibrationBaselineReceiptSha256,
+    ),
   ]);
   const controls = JSON.parse(controlsRaw);
   if (
@@ -251,6 +303,15 @@ async function verifyInputs(values) {
     controls.qualification !== false ||
     controls.heldOutTestRead !== false ||
     !Array.isArray(controls.records) ||
+    controls.counts?.rows !== controls.records?.length ||
+    controls.counts?.unchanged !== controls.records?.length ||
+    controls.counts?.modelCalls !== 0 ||
+    controls.records.some(
+      (row) =>
+        row.actualAction !== row.baselineAction ||
+        row.modelCalls !== 0 ||
+        !pin(row.effectivePolicySha256),
+    ) ||
     !controls.records.some(
       (row) =>
         row.gate === "exact_policy_floor" &&
@@ -286,6 +347,39 @@ async function verifyInputs(values) {
     )
   )
     fail("admitted FIT and CAL rows, operations or groups changed");
+  const calBaseline = JSON.parse(calBaselineRaw);
+  const calIds = new Map(
+    cal.map((row) => [row.id, sha(Buffer.from(canonical(row.request.state)))]),
+  );
+  if (
+    calBaseline.version !== 1 ||
+    calBaseline.purpose !== "candidate9_train_cal_baseline_replay" ||
+    calBaseline.baselineSha256 !== c9HostBaselineSha256 ||
+    calBaseline.policySha256 !== c9BundledPolicySha256 ||
+    calBaseline.calibrationCorpusSha256 !== admission.calibration.sha256 ||
+    calBaseline.source?.hostCommit !== c9HostCommit ||
+    calBaseline.source?.c9SourceSha256 !== admission.source.c9SourceSha256 ||
+    !pin(calBaseline.source?.scriptSha256) ||
+    calBaseline.modelCalls !== 0 ||
+    calBaseline.externalOperationsExecuted !== 0 ||
+    calBaseline.qualification !== false ||
+    calBaseline.heldOutTestRead !== false ||
+    !Array.isArray(calBaseline.records) ||
+    calBaseline.records.length !== cal.length ||
+    calBaseline.records.some(
+      (row) =>
+        calIds.get(row.id) !== row.inputSha256 ||
+        row.gate !== "model_prepared" ||
+        !["allow", "confirm", "block"].includes(row.action),
+    ) ||
+    new Set(calBaseline.records.map((row) => row.id)).size !== cal.length
+  )
+    fail("same-host CAL rules replay is incomplete or changed");
+  if (
+    sha(await bytes(values["cal-baseline-script"])) !==
+    calBaseline.source.scriptSha256
+  )
+    fail("CAL baseline replay script differs from admitted source");
   const pair = JSON.parse(pairRaw);
   const family = JSON.parse(familyRaw);
   const objective = JSON.parse(objectiveRaw);
@@ -399,6 +493,7 @@ async function verifyPrepared(run, source, plan) {
 }
 async function attempt(run, phase, source, action) {
   const file = resolve(run, `candidate9-${phase}-attempt-${randomUUID()}.json`);
+  const disk = await statfs(root);
   const began = {
     version: 1,
     purpose: "candidate9_fit_only_attempt",
@@ -409,6 +504,7 @@ async function attempt(run, phase, source, action) {
     qualification: false,
     validationRead: false,
     heldOutTestRead: false,
+    diskAvailableBytesAtStart: disk.bavail * disk.bsize,
   };
   await writeFile(file, JSON.stringify(began, null, 2) + "\n", {
     flag: "wx",
@@ -455,18 +551,22 @@ const { values, positionals } = parseArgs({
       "blind-valid-manifest-sha256",
       "host-controls",
       "host-controls-script",
+      "cal-baseline",
+      "cal-baseline-script",
       "sf-pi",
       "checkpoint",
       "base-gguf",
       "run",
       "arm",
       "model-id",
+      "quantizer-binary",
+      "quantizer-source",
     ].map((name) => [name, { type: "string" }]),
   ),
 });
 const phase = positionals[0];
-if (!["preflight", "prepare", "train", "export"].includes(phase))
-  fail("use preflight, prepare, train, or export");
+if (!["preflight", "prepare", "train", "export", "quantize"].includes(phase))
+  fail("use preflight, prepare, train, export, or quantize");
 if (!["A", "B"].includes(values.arm)) fail("--arm A or B is required");
 for (const name of [
   "admission",
@@ -478,6 +578,8 @@ for (const name of [
   "blind-valid-manifest",
   "host-controls",
   "host-controls-script",
+  "cal-baseline",
+  "cal-baseline-script",
   "sf-pi",
   "checkpoint",
   "base-gguf",
@@ -488,6 +590,7 @@ const checkpoint = resolve(values.checkpoint);
 const baseFiles = await verifyBase(checkpoint);
 const baseGguf = await verifyBaseGguf(values["base-gguf"]);
 if (phase === "preflight") {
+  const disk = await statfs(root);
   console.log(
     JSON.stringify({
       phase,
@@ -495,6 +598,7 @@ if (phase === "preflight") {
       checkpoint,
       baseFiles,
       baseGguf,
+      diskAvailableBytes: disk.bavail * disk.bsize,
       qualification: false,
     }),
   );
@@ -594,6 +698,94 @@ if (phase === "train") {
   );
   process.exit(0);
 }
+if (phase === "quantize") {
+  if (!values["quantizer-binary"] || !values["quantizer-source"])
+    fail("quantize requires pinned --quantizer-binary and --quantizer-source");
+  const quantizer = await verifyQuantizer(
+    values["quantizer-binary"],
+    values["quantizer-source"],
+  );
+  const result = await attempt(run, phase, source, async () => {
+    const parent = JSON.parse(await bytes(resolve(run, "artifact.json")));
+    const f16 = await verifyTrainedArtifactExport(parent);
+    if (f16.id !== parent.id || !f16.file.endsWith("gemma-3-1b-rfdt-f16.gguf"))
+      fail("F16 parent artifact is not the frozen RFDT export");
+    const q8File = resolve(run, "gemma-3-1b-rfdt-q8_0.gguf");
+    try {
+      await lstat(q8File);
+      fail("Q8 output already exists");
+    } catch (error) {
+      if (error?.code !== "ENOENT") throw error;
+    }
+    await runQuantizer(resolve(values["quantizer-binary"]), f16.file, q8File);
+    const q8 = await hashArtifact(q8File);
+    const outputFile = await open(q8File, "r");
+    try {
+      const magic = Buffer.alloc(4);
+      await outputFile.read(magic, 0, 4, 0);
+      if (magic.toString("ascii") !== "GGUF") fail("Q8 output is not GGUF");
+    } finally {
+      await outputFile.close();
+    }
+    const id = `${f16.id}-q8_0`;
+    const descriptor = {
+      ...f16,
+      id,
+      file: q8File,
+      sha256: q8.sha256,
+      size: q8.size,
+    };
+    const registry = Buffer.from(
+      JSON.stringify({ version: 1, artifacts: [descriptor] }, null, 2) + "\n",
+    );
+    const registryFile = resolve(run, "q8-candidate-registry.json");
+    await writeFile(registryFile, registry, { flag: "wx", mode: 0o600 });
+    const manifest = {
+      version: 1,
+      purpose: "candidate9_same_weights_q8_0_calibration_candidate",
+      qualification: false,
+      sourceWeights: {
+        modelId: f16.id,
+        file: f16.file,
+        sha256: f16.sha256,
+        size: f16.size,
+      },
+      quantizer: {
+        sourceDirectory: quantizer.source,
+        sourceRevision: quantizerSourceRevision,
+        binarySha256: quantizer.binary.sha256,
+        type: "Q8_0",
+        leaveOutputTensorUnquantized: true,
+        importanceMatrix: null,
+      },
+      output: {
+        modelId: id,
+        file: q8File,
+        sha256: q8.sha256,
+        size: q8.size,
+        registrySha256: sha(registry),
+      },
+    };
+    const manifestBytes = Buffer.from(JSON.stringify(manifest, null, 2) + "\n");
+    await writeFile(
+      resolve(run, "candidate9-q8-manifest.json"),
+      manifestBytes,
+      { flag: "wx", mode: 0o600 },
+    );
+    return {
+      inferenceArtifactFormat,
+      modelId: id,
+      modelSha256: q8.sha256,
+      quantizationManifestSha256: sha(manifestBytes),
+      registrySha256: sha(registry),
+      qualification: false,
+    };
+  });
+  console.log(
+    JSON.stringify({ phase: "quantized", run, arm: source.arm, ...result }),
+  );
+  process.exit(0);
+}
 if (!/^jev\/[a-zA-Z0-9._-]+$/.test(values["model-id"] ?? ""))
   fail("export requires --model-id jev/ID");
 const result = await attempt(run, phase, source, async () => {
@@ -611,7 +803,8 @@ const result = await attempt(run, phase, source, async () => {
   return {
     artifact: artifact.file,
     artifactSha256: artifact.sha256,
-    inferenceArtifactFormat,
+    parentArtifactFormat: "GGUF_F16",
+    candidateArtifactFormat: inferenceArtifactFormat,
   };
 });
 console.log(

@@ -111,6 +111,8 @@ export async function selectFromPinnedSources(
     pins.policySha256 !== c9BundledPolicySha256 ||
     admission.source?.hostControlsReceiptSha256 !==
       pins.hostControlsReceiptSha256 ||
+    admission.source?.calibrationBaselineReceiptSha256 !==
+      pins.baselineReceiptSha256 ||
     admission.source?.hostRuntimeSha256 !== pins.hostBaselineSha256 ||
     !pin(admission.source?.c9SourceSha256) ||
     !pin(admission.source?.pairsSha256) ||
@@ -241,6 +243,18 @@ export async function selectFromPinnedSources(
     arm: scores.arm,
     modelSha256: scores.modelSha256,
     nativeBinarySha256: scores.nativeBinarySha256,
+    artifactFormat: scores.artifactFormat,
+    artifactManifestSha256: scores.artifactManifestSha256,
+    registrySha256: scores.registrySha256,
+    runManifestSha256: scores.runManifestSha256,
+    fitPlanSha256: scores.fitPlanSha256,
+    quantizationManifestSha256: scores.quantizationManifestSha256,
+    calScorerCliSha256: scores.calScorerCliSha256,
+    calScorerCoreSha256: scores.calScorerCoreSha256,
+    coldInitializationMs: scores.coldInitializationMs,
+    coldInitializationBasis: scores.coldInitializationBasis,
+    preScoreVerificationMs: scores.preScoreVerificationMs,
+    elapsedBasis: scores.elapsedBasis,
     promptProtocolSha256: scores.promptProtocolSha256,
     hostCommit: scores.hostCommit,
     baselineSha256: pins.hostBaselineSha256,

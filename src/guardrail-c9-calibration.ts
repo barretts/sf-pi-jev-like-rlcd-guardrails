@@ -54,6 +54,18 @@ export interface C9CalibrationInput {
   arm: "A" | "B";
   modelSha256: string;
   nativeBinarySha256: string;
+  artifactFormat: "q8_0";
+  artifactManifestSha256: string;
+  registrySha256: string;
+  runManifestSha256: string;
+  fitPlanSha256: string;
+  quantizationManifestSha256: string;
+  calScorerCliSha256: string;
+  calScorerCoreSha256: string;
+  coldInitializationMs: number;
+  coldInitializationBasis: "backend_warmup_after_source_and_artifact_verification";
+  preScoreVerificationMs: number;
+  elapsedBasis: "direct_jev_risk_check_including_prompt_preparation_and_queue";
   promptProtocolSha256: string;
   hostCommit: string;
   baselineSha256: string;
@@ -250,6 +262,18 @@ function validate(input: C9CalibrationInput): void {
     "arm",
     "modelSha256",
     "nativeBinarySha256",
+    "artifactFormat",
+    "artifactManifestSha256",
+    "registrySha256",
+    "runManifestSha256",
+    "fitPlanSha256",
+    "quantizationManifestSha256",
+    "calScorerCliSha256",
+    "calScorerCoreSha256",
+    "coldInitializationMs",
+    "coldInitializationBasis",
+    "preScoreVerificationMs",
+    "elapsedBasis",
     "promptProtocolSha256",
     "hostCommit",
     "baselineSha256",
@@ -276,9 +300,27 @@ function validate(input: C9CalibrationInput): void {
     input.version !== 1 ||
     input.purpose !== "candidate9_train_calibration_only" ||
     !["A", "B"].includes(input.arm) ||
+    input.artifactFormat !== "q8_0" ||
+    input.coldInitializationBasis !==
+      "backend_warmup_after_source_and_artifact_verification" ||
+    input.elapsedBasis !==
+      "direct_jev_risk_check_including_prompt_preparation_and_queue" ||
+    typeof input.coldInitializationMs !== "number" ||
+    !Number.isFinite(input.coldInitializationMs) ||
+    input.coldInitializationMs < 0 ||
+    typeof input.preScoreVerificationMs !== "number" ||
+    !Number.isFinite(input.preScoreVerificationMs) ||
+    input.preScoreVerificationMs < 0 ||
     ![
       input.modelSha256,
       input.nativeBinarySha256,
+      input.artifactManifestSha256,
+      input.registrySha256,
+      input.runManifestSha256,
+      input.fitPlanSha256,
+      input.quantizationManifestSha256,
+      input.calScorerCliSha256,
+      input.calScorerCoreSha256,
       input.promptProtocolSha256,
       input.baselineSha256,
       input.policySha256,
@@ -475,6 +517,15 @@ export function selectC9Calibration(
     arm: input.arm,
     modelSha256: input.modelSha256,
     nativeBinarySha256: input.nativeBinarySha256,
+    artifactFormat: input.artifactFormat,
+    artifactManifestSha256: input.artifactManifestSha256,
+    registrySha256: input.registrySha256,
+    runManifestSha256: input.runManifestSha256,
+    fitPlanSha256: input.fitPlanSha256,
+    quantizationManifestSha256: input.quantizationManifestSha256,
+    calScorerCliSha256: input.calScorerCliSha256,
+    calScorerCoreSha256: input.calScorerCoreSha256,
+    elapsedBasis: input.elapsedBasis,
     promptProtocolSha256: input.promptProtocolSha256,
     hostCommit: input.hostCommit,
     baselineSha256: input.baselineSha256,

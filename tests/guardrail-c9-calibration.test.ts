@@ -85,6 +85,20 @@ function input(
     arm: "B",
     modelSha256: pin("2"),
     nativeBinarySha256: pin("3"),
+    artifactFormat: "q8_0",
+    artifactManifestSha256: pin("a"),
+    registrySha256: pin("b"),
+    runManifestSha256: pin("f"),
+    fitPlanSha256: pin("1"),
+    quantizationManifestSha256: pin("c"),
+    calScorerCliSha256: pin("d"),
+    calScorerCoreSha256: pin("e"),
+    coldInitializationMs: 100,
+    coldInitializationBasis:
+      "backend_warmup_after_source_and_artifact_verification",
+    preScoreVerificationMs: 15,
+    elapsedBasis:
+      "direct_jev_risk_check_including_prompt_preparation_and_queue",
     promptProtocolSha256: GUARDRAIL_PROTOCOL_SHA256,
     hostCommit,
     baselineSha256: pin("b"),
@@ -255,5 +269,15 @@ describe("C9 TRAIN-CAL hard veto", () => {
     expect(() => verifyC9Calibration(selected, pin("9"), pin("3"))).toThrow(
       /changed/,
     );
+    const formatSwapped = structuredClone(selected);
+    formatSwapped.input.artifactFormat = "f16" as "q8_0";
+    expect(() =>
+      verifyC9Calibration(formatSwapped, pin("2"), pin("3")),
+    ).toThrow(/Invalid|changed/);
+    const q8ManifestChanged = structuredClone(selected);
+    q8ManifestChanged.input.quantizationManifestSha256 = pin("f");
+    expect(() =>
+      verifyC9Calibration(q8ManifestChanged, pin("2"), pin("3")),
+    ).toThrow(/changed/);
   });
 });
