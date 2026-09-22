@@ -71,7 +71,7 @@ function committedBytes(path) {
   return execFileSync("git", ["show", `HEAD:${rel}`], { cwd: root });
 }
 
-async function readSealedSources() {
+export async function readCandidate8SealedSources() {
   const files = {
     valid: sourceFile,
     schema: schemaFile,
@@ -439,7 +439,7 @@ async function main() {
     throw new Error(
       "Real C8 VALID requires a model, registry, and committed freeze",
     );
-  const sources = await readSealedSources();
+  const sources = await readCandidate8SealedSources();
   const source = JSON.parse(sources.bytes.valid);
   const receipt = JSON.parse(sources.bytes.preflight);
   const preflightById = verifyCandidate8ValidPopulation(source, receipt);
@@ -530,7 +530,7 @@ async function main() {
     });
     if (result.providerCalls !== C8_VALID_SEAL.modelPrepared)
       throw new Error("C8 attempted-model call count differs from the seal");
-    const afterSources = await readSealedSources();
+    const afterSources = await readCandidate8SealedSources();
     const afterRuntimeIdentity = await readRuntimeIdentity();
     if (
       JSON.stringify(sources.hashes) !== JSON.stringify(afterSources.hashes) ||

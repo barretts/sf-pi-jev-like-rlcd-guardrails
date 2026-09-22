@@ -263,6 +263,7 @@ export async function runCandidate8HostRows({
   expectedModelSha256,
   validateInput,
   createProvider,
+  onPreparedCall,
 }) {
   if (
     !Array.isArray(rows) ||
@@ -270,7 +271,8 @@ export async function runCandidate8HostRows({
     !(preflightById instanceof Map) ||
     preflightById.size !== rows.length ||
     typeof validateInput !== "function" ||
-    typeof createProvider !== "function"
+    typeof createProvider !== "function" ||
+    (onPreparedCall !== undefined && typeof onPreparedCall !== "function")
   )
     throw new Error("Incomplete C8 host replay inputs");
   if (
@@ -406,6 +408,12 @@ export async function runCandidate8HostRows({
         throw new Error(`C8 model routing changed since preflight: ${row.id}`);
       if (routing === "model_prepared")
         assertCandidate8PreparedCall(row, newCalls[0], preflight);
+      if (routing === "model_prepared")
+        await onPreparedCall?.({
+          id: row.id,
+          input: newCalls[0].input,
+          inputSha256: newCalls[0].inputSha256,
+        });
       if (
         routing === "pre_model_fallback" &&
         !["rules_fallback", "exact_policy"].includes(comparison?.source)
