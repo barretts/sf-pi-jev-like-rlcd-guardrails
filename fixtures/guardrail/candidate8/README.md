@@ -61,7 +61,7 @@ disjoint:
 | Host fallback control |                     0 |           2 / 1 |             2 / 1 |           1 / 1 |
 
 The admission receipt is under
-.build/guardrail/candidate-8-admission-v4/receipt.json, with a committed copy
+.build/guardrail/candidate-8-admission-v5/receipt.json, with a committed copy
 in reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/admission.json.
 It checks pinned
 source/screen/host bytes, Google Gemma base and prompt protocol, complete
@@ -73,6 +73,15 @@ calibration.jsonl SHA-256 is
 The calibration records carry a separate split marker and must never be
 passed to an RFDT fit. These build files are local, rebuildable receipts,
 not committed model weights.
+
+The committed source-screen and host-preflight receipts plus the
+projected-train.jsonl copy permit a portable admission replay without
+the author's original build directory. Pass their exact receipt hashes
+as screen-sha256 and host-sha256 to
+scripts/guardrail-candidate8-train-admission.mjs, supply the committed
+projected-train.jsonl through projected-train, and use a fresh C8
+admission output directory. The override is restricted to that committed
+projection path and must match the host receipt's projected data hash.
 
 The proposed two fixed schedules are 256 and 512 optimizer updates
 from the original reviewed Google Gemma 3 1B checkpoint, revision

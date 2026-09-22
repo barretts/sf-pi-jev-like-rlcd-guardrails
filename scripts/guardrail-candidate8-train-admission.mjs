@@ -47,6 +47,7 @@ const { values } = parseArgs({
     "host-receipt": { type: "string" },
     "host-sha256": { type: "string" },
     "output-dir": { type: "string" },
+    "projected-train": { type: "string" },
   },
 });
 for (const key of [
@@ -118,7 +119,18 @@ need(
     RFDT_BASE_MODEL === "google/gemma-3-1b-it",
   "Unexpected C8 source/pair/base contract",
 );
-const projectedBytes = await readFile(host.projectedTrain.file);
+const committedProjection = resolve(
+  root,
+  "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/projected-train.jsonl",
+);
+const projectedFile = values["projected-train"]
+  ? resolve(values["projected-train"])
+  : host.projectedTrain.file;
+need(
+  !values["projected-train"] || projectedFile === committedProjection,
+  "Projection override must use the committed C8 TRAIN evidence copy",
+);
+const projectedBytes = await readFile(projectedFile);
 need(
   sha(projectedBytes) === host.projectedTrain.sha256,
   "Projected TRAIN bytes changed",
@@ -231,6 +243,7 @@ const receipt = {
     splitPlanSha256: sha(splitBytes),
     sourceScreenSha256: sha(screenBytes),
     hostPreflightSha256: sha(hostBytes),
+    projectedTrainSha256: sha(projectedBytes),
     hostCommit: host.source.sfPiCommit,
     hostRuntimeSha256: host.source.sfPiRuntimeSha256,
     baseModel: RFDT_BASE_MODEL,
