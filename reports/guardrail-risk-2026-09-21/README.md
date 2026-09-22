@@ -38,6 +38,21 @@ SHA-256 `98d53a280245176afdd93a14188fee119cca52bb91549507662673dfbe28923b`.
 Its deferred-stub timings and one-safe-request denominator do not establish
 native latency, risky approvals, complete workflow parity or qualification.
 
+An actual native Pi SDK trial with the rejected candidate 3 used the updated
+normal `session_start` path while two local RFDT workers were active. The
+[full failed-attempt receipt](./candidate-3-normal-startup-failed.json)
+records that model initialization ended with `Context initialization failed`:
+the risk worker remained cold with no verified model SHA, and none of eight
+semantic checks received a model answer. Seven reached the 500 ms deadline and
+one encountered worker retirement. The harness correctly failed its complete
+model-execution assertion. All eight requests fell back to the current rules,
+both exact-policy checks stayed exact, and off/shadow accepted outcomes,
+confirmations, session grants, decisions, retries and tool errors matched.
+The system reported 80% free memory at inspection, so the concurrent jobs do
+not establish the cause of native context failure. This is an operational
+fallback observation, not a valid latency or model-quality measurement. A
+passing native normal-startup proof remains pending under an uncontended setup.
+
 The updated optional native SDK harness now registers the real general Jev
 driver and awaits that normal binding/startup path, with no manual provider
 warmup. Seven actual SF source cases passed with the native arm skipped, plus
@@ -46,7 +61,7 @@ eight semantic/two exact-policy comparison requirements are unchanged, as are
 the 33 production sources and their qualification identity. Startup timing is
 inclusive of all handlers and is reported separately from setup, warm workflow
 and total time. Candidate 3's existing native receipt used manual warmup and
-does not prove this updated startup path. Its actual native run and genuinely
+does not prove this updated startup path. A passing native run and genuinely
 qualified enforcement remain pending.
 
 The isolated worktrees use `barretts/jev-guardrail-risk`: Jev at

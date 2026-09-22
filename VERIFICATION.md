@@ -266,6 +266,17 @@ startup times do not measure native latency or complete workflow parity. The
 installed Pi SDK's binding awaits startup, including print and RPC modes; API
 embeddings must also await binding.
 
+The first actual native normal-startup SDK attempt used rejected candidate 3
+in off/shadow mode while two RFDT training workers were active. Native context
+initialization failed, the risk worker remained cold, and all eight semantic
+checks used rule fallback; the harness correctly failed its model-completion
+assertion. Both exact-policy checks and all off/shadow execution and approval
+outcomes matched. The complete failed-attempt receipt is retained under
+`reports/guardrail-risk-2026-09-21/candidate-3-normal-startup-failed.json`.
+Concurrent jobs do not establish the failure cause, and this result supplies
+no native latency or qualification evidence. A passing uncontended native
+startup run remains necessary.
+
 The [prospective TRAIN diversity supplement](./docs/GUARDRAIL_TRAIN_DIVERSITY.md)
 retains 80 exact seven-field bridge inputs in 40 groups, 40 allow and 40 confirm,
 plus the raw mocked observations and complete source/provenance proof. Root

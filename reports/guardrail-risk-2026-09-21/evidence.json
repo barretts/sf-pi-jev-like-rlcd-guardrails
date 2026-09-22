@@ -57,6 +57,25 @@
     "modelQualified": false,
     "historicalCandidate3NativeReceipt": "Manual provider warmup; does not prove updated driver startup"
   },
+  "sdkNormalStartupNativeFailedAttempt": {
+    "scope": "Actual Pi SDK off/shadow workflow with rejected candidate 3 and current general Jev driver; two RFDT training workers active; counter-only tools and mocked facts",
+    "testExitCode": 1,
+    "failure": "Native context initialization failed; expected eight semantic model answers, observed zero",
+    "candidateModelSha256": "c87022dfe3090765ffbd25d792fb9263bed914f1c37cc090e1130c2987b537be",
+    "fullReceipt": "reports/guardrail-risk-2026-09-21/candidate-3-normal-startup-failed.json",
+    "fullReceiptSha256": "914bf971e148323c8a5b1b8d908f5e330120a8269f7e95a256366a6d255b9ea9",
+    "shadowComparisons": {
+      "exactPolicy": 2,
+      "rulesFallback": 8,
+      "modelAnswered": 0
+    },
+    "shadowOutcomeAndApprovalParityWithOff": true,
+    "riskWorkerFinalState": "cold",
+    "riskWorkerLastError": "Context initialization failed",
+    "resourceContentionCauseEstablished": false,
+    "nativeNormalStartupPassed": false,
+    "modelQualification": false
+  },
   "workspaces": {
     "branch": "barretts/jev-guardrail-risk",
     "jev": {
