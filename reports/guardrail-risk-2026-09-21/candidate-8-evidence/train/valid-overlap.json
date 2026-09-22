@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "purpose": "candidate8_postfreeze_valid_overlap",
+  "qualification": false,
+  "modelCalls": 0,
+  "externalOperationsExecuted": 0,
+  "heldOutTestRead": false,
+  "validationCaseBodiesEmitted": false,
+  "source": {
+    "frozenTrainCommit": "7d6b05b43b630cd9a897ea05f98065c125188ea2",
+    "frozenTrainSourceSha256": "b2c72317259633c3362f13553a7ec39dffe144199b9641426e8e3a06af892141",
+    "inheritedTrainSha256": "745004e919d7c8cd6d3a1bb0078f741a9fa6134443ea195b618cf6a39aed53e7",
+    "blindValidCommit": "44b4fd1ab595d13e9b576dc5930985a1aa4a15e2",
+    "blindValidSha256": "a95f61b055d4e214d1e0245b1b87f417a06ddbd1fb10a6f1c3e003ea2d1dbad8",
+    "blindManifestSha256": "e8624f9577affaf9a941c9fdd50f298838437ed5af99c9b81dca4f8f4c0da131",
+    "screenScriptSha256": "48bc968f450ecf136f13119bd9efd9c257020d39df64d57cea5ccbce7bf4106c"
+  },
+  "counts": {
+    "trainRows": 275,
+    "trainGroups": 95,
+    "validRows": 96,
+    "validGroups": 48,
+    "validTemplates": 96,
+    "exactOperationOverlap": 0,
+    "exactCommandOverlap": 0,
+    "idOverlap": 0,
+    "groupOverlap": 0
+  },
+  "proofLimit": "Exact aggregate overlap is a necessary check, not proof of semantic independence or generalization. C7 VALID outcomes informed C8 TRAIN; this separate C8 VALID was independently authored. TEST body remains sealed."
+}

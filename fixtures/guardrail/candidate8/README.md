@@ -37,6 +37,17 @@ not establish semantic independence. C7 VALID results informed the broad
 C8 recovery topics, so an independently authored C8 VALID set is required
 for selection.
 
+After this source was frozen, an aggregate-only screen checked the independent
+C8 VALID-only commit 44b4fd1ab595d13e9b576dc5930985a1aa4a15e2. Its
+96 cases in 48 groups had zero exact tool/input, command, case ID, or group
+ID overlap with the 227 inherited C7 TRAIN rows plus all 48 authored C8
+rows. The screen emitted only counts and hashes, never case bodies, and read
+no C8 TEST file. Its receipt is
+reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/valid-overlap.json.
+This checks the current VALID source seal; verify the final manifest hash
+again after the scorer/host pin before a model score. Exact overlap alone
+does not establish semantic independence or effectiveness.
+
 The model-free replay on sf-pi host
 bc7862b078997d2c60aa908979b5cbf59f83db80, runtime SHA-256
 6ec845e7365d2948ecf502326bcabbb7b042b7d300437516db3b299fd390078e,
