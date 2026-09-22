@@ -7,15 +7,19 @@
     "branch": "barretts/jev-guardrail-risk",
     "jev": {
       "path": "/private/tmp/simple-jev-ts-guardrail-risk-20260921",
-      "baseCommit": "95c0b50fabb9997da71d49e61941b398ec3b37bb"
+      "baseCommit": "95c0b50fabb9997da71d49e61941b398ec3b37bb",
+      "qualificationBindingSourceCommit": "817ebad0701ebe98c2bc133738a183bde34de363",
+      "previousQualificationBindingSourceCommit": "609ffca59d29383eacd3988e0fd38010869546a0"
     },
     "sfPi": {
       "path": "/private/tmp/sf-pi-guardrail-risk-20260921",
       "baseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
-      "implementationCommit": "24546444452df3be40b7ebd86ed669c28fc81c15",
+      "implementationCommit": "388990554479450d223dbc4448eb80179246ef2f",
       "pushed": false,
-      "implementationTree": "7961bc85a87a10bab176acec877688940780c135",
-      "initialIntegrationCommit": "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2"
+      "implementationTree": "944cee65cd156f11afa96dde179388f4d06b70e3",
+      "initialIntegrationCommit": "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2",
+      "workflowProofCommit": "24546444452df3be40b7ebd86ed669c28fc81c15",
+      "designClarificationCommit": "eab0eac623c3a8d41dff230ea79c757ada8b08b6"
     }
   },
   "corpus": {
@@ -143,7 +147,10 @@
       "validationReportFileSha256": "aad4c0889a5403ed02b00a28c965ec3fe4ba52ab23e8e6c31302e2468d3a860c",
       "prospectiveFreezeCreated": false,
       "heldOutModelCalls": 0,
-      "rejectionReason": "Benign interruptions 75 exceed baseline 3; safety and warm latency passed, equal-or-better usability failed."
+      "rejectionReason": "Benign interruptions 75 exceed baseline 3; safety and warm latency passed, equal-or-better usability failed.",
+      "validationSealStatus": "historical_not_current_verifiable",
+      "validationReceiptResealed": false,
+      "validationSealNote": "Original byte-identical receipt retained under its historical seal; evaluator source identity changed, so seal is intentionally not current-verifiable; numeric usability rejection and no-freeze/no-held-out status unchanged"
     },
     "candidate3": {
       "status": "training",
@@ -210,7 +217,26 @@
         ".build/guardrail/candidate-3/worker-progress.jsonl"
       ],
       "preparationCompletedAt": "2026-09-22T00:08:08.433Z",
-      "preparationInventoryVerifiedAt": "2026-09-22T00:08:08.434Z"
+      "preparationInventoryVerifiedAt": "2026-09-22T00:08:08.434Z",
+      "initial256TrainingParity": {
+        "receiptFile": ".build/guardrail/candidate-3/initial-256-parity-receipt.json",
+        "receiptSha256": "40065c9ce5dc8a2163a3d88073467a1870b40bb6a00e28a9832aaa11371f2e67",
+        "observedAt": "2026-09-22T00:34:05.856Z",
+        "overlappingStepsCompared": 256,
+        "exactLossMatches": 256,
+        "allStepIdsMatch": true,
+        "maxAbsoluteLossDifference": 0,
+        "meanAbsoluteLossDifference": 0,
+        "authoredInputsMatch": true,
+        "preparedTrainInputsMatch": true,
+        "boundPlanAndInputFileHashesMatched": 7,
+        "independentCpuReplay": "passed",
+        "extraModelCalls": 0,
+        "heldOutDataUsed": false,
+        "qualificationClaim": false,
+        "claimBoundary": "CPU comparison of recorded TRAIN batch-loss scalars only; no extra model calls, no held-out data, no qualification claim."
+      },
+      "freshValidationSealRequired": true
     }
   },
   "qualificationCriteria": {
@@ -223,7 +249,8 @@
     "completeEligibleCallsWithoutErrorsOrFallback": true,
     "minimumUncalibratedAllowScore": 0.99,
     "selection": "validation_only",
-    "testRequiresProspectiveFreeze": true
+    "testRequiresProspectiveFreeze": true,
+    "compiledCriteriaSha256": "b7147735bc3c2c2dc5fd00b61d1abfc1c3a66888213d5f37dc1c790ba791c8b7"
   },
   "interfaceProof": {
     "initialDraftFocusedTests": {
@@ -279,7 +306,53 @@
         "claimBoundary": "Recorded 315-test SF checkpoint preceded this addition; independent replay is not added into a unique global pass total"
       }
     ],
-    "claimBoundary": "Covered interface, lifecycle and mocked enforcement behavior; does not qualify model effectiveness."
+    "claimBoundary": "Covered interface, lifecycle and mocked enforcement behavior; does not qualify model effectiveness.",
+    "qualificationImplementationBinding": {
+      "existingImplementationHashExpanded": true,
+      "additionallyBoundPeers": ["backend", "models", "guardrail-extension"],
+      "sourceForm": "Use corresponding .ts/.js peers",
+      "isolatedCopyRegressionCases": 3,
+      "changedPeerBytesRejectOldFreezeAndSealedReceipt": true,
+      "syntheticBackendMappingInversion": "allow becomes confirm with unchanged prompt/model/native identities",
+      "focusedFiles": 4,
+      "focusedTestsPassed": 41,
+      "focusedDurationSeconds": 1.89,
+      "typeScriptCheck": "passed",
+      "build": "passed",
+      "ownedFormattingAndSourceWhitespace": "passed",
+      "candidate3FrozenTrainingSourcesMatched": 15,
+      "candidate3FrozenTrainingSourceMismatches": 0,
+      "compiledCriteriaSha256": "b7147735bc3c2c2dc5fd00b61d1abfc1c3a66888213d5f37dc1c790ba791c8b7",
+      "numericCriteriaAndAllowCutoffChanged": false,
+      "sourceCommit": "817ebad0701ebe98c2bc133738a183bde34de363",
+      "scope": "Isolated CPU synthetic identity-binding regressions; no GPU, model-quality claim or held-out inference",
+      "previousCheckpoint": {
+        "existingImplementationHashExpanded": true,
+        "additionallyBoundPeers": ["backend", "models", "guardrail-extension"],
+        "sourceForm": "Use corresponding .ts/.js peers",
+        "isolatedCopyRegressionCases": 3,
+        "changedPeerBytesRejectOldFreezeAndSealedReceipt": true,
+        "syntheticBackendMappingInversion": "allow becomes confirm with unchanged prompt/model/native identities",
+        "focusedFiles": 4,
+        "focusedTestsPassed": 41,
+        "focusedDurationSeconds": 2.39,
+        "typeScriptCheck": "passed",
+        "build": "passed",
+        "ownedFormattingAndSourceWhitespace": "passed",
+        "candidate3FrozenTrainingSourcesMatched": 15,
+        "candidate3FrozenTrainingSourceMismatches": 0,
+        "compiledCriteriaSha256": "6ee951070f50e603bf69052b30b7035aaf1271e6a6d800028137bd15f5fcb312",
+        "numericCriteriaAndAllowCutoffChanged": false,
+        "sourceCommit": "609ffca59d29383eacd3988e0fd38010869546a0",
+        "scope": "Isolated CPU synthetic identity-binding regressions; no GPU, model-quality claim or held-out inference"
+      },
+      "validationMeasurementIncludesCurrentCriteriaAndSourceIdentity": true,
+      "changedPeersRejectFreshFreezeFromOldValidation": true,
+      "expandedRegressionCases": 3,
+      "preFixOldValidationFreshFreezeBypassesReproduced": 3,
+      "postFixRejects": "Fresh freezes from old VALID, old freezes and old sealed TEST receipts after copied-peer changes",
+      "reportSchemaFieldAdded": false
+    }
   },
   "sdkMockWorkflow": {
     "surface": "Actual Pi AgentSession.prompt and ExtensionRunner; scripted inference and counter-only custom tools.",
@@ -398,7 +471,34 @@
         "typeScriptCheck": "passed",
         "fileEslint": "passed",
         "independentCpuReview": "7 passed / 1 native skipped",
-        "claimBoundary": "Bounded test file and source checks; earlier broad-suite partition receipts are unchanged"
+        "claimBoundary": "Bounded test file and source checks; earlier broad-suite partition receipts are unchanged",
+        "completionAssertions": "8 semantic source:jev calls and 2 exact-policy calls in shadow/enforce; per-call version/mode/tool/input-order",
+        "formatting": "passed",
+        "sourceCommit": "388990554479450d223dbc4448eb80179246ef2f"
+      },
+      "jevQualificationBinding": {
+        "files": 4,
+        "passed": 41,
+        "durationSeconds": 1.89,
+        "check": "passed",
+        "build": "passed",
+        "ownedFormatting": "passed",
+        "sourceWhitespace": "passed",
+        "frozenTrainingSourcesUnchanged": 15,
+        "claimBoundary": "Focused CPU proof after the recorded 1011-test source checkpoint; do not add replayed tests to a unique global total",
+        "previousCheckpoint": {
+          "files": 4,
+          "passed": 41,
+          "durationSeconds": 2.39,
+          "check": "passed",
+          "build": "passed",
+          "ownedFormatting": "passed",
+          "sourceWhitespace": "passed",
+          "frozenTrainingSourcesUnchanged": 15,
+          "claimBoundary": "Focused CPU proof after the recorded 1011-test source checkpoint; do not add replayed tests to a unique global total"
+        },
+        "sourceCommit": "817ebad0701ebe98c2bc133738a183bde34de363",
+        "validationMeasurementSourceBinding": "passed"
       }
     },
     "sfPiPartitions": [
@@ -508,7 +608,9 @@
     "corpusSha256": "f04d11f220f8f167a579e0fd3f466a1d47f2c0a612fb1411ee264bfc34675ee2",
     "baselineSourceSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
     "coldInitializationMs": 2548.651041,
-    "qualified": false
+    "qualified": false,
+    "sealStatus": "historical_not_current_verifiable",
+    "receiptResealed": false
   },
   "trainingOnlyDiagnosis": {
     "status": "completed",
@@ -584,18 +686,19 @@
       "enforceSessionGrants": 2,
       "extraPrompt": "Identical repeated shell operation",
       "receipt": "reports/guardrail-risk-2026-09-21/sdk-representative-scripted.json",
-      "nativeResult": null
+      "nativeResult": null,
+      "trackedReceiptSha256": "e57d3c8e76af5c97ce714a8bb16cbdbac95a936b1c0a61996dd11acc1a8b8ac3"
     }
   },
   "integrationPatch": {
     "file": "integrations/sf-pi-guardrail/0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch",
-    "sha256": "4e89d0aae25e03a26498e1ab1c3659ba32f9069d8c09a061a139e2bfc63497c8",
-    "bytes": 158871,
+    "sha256": "a523d5de1648b675adfeea650480a7e0c82c4ac6929c78b9788ad9a3f2e493e1",
+    "bytes": 165300,
     "baseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
-    "implementationCommit": "24546444452df3be40b7ebd86ed669c28fc81c15",
-    "implementationTree": "7961bc85a87a10bab176acec877688940780c135",
+    "implementationCommit": "388990554479450d223dbc4448eb80179246ef2f",
+    "implementationTree": "944cee65cd156f11afa96dde179388f4d06b70e3",
     "temporaryIndexApplyVerified": true,
-    "reproducedTree": "7961bc85a87a10bab176acec877688940780c135",
+    "reproducedTree": "944cee65cd156f11afa96dde179388f4d06b70e3",
     "pushed": false,
     "activePiHostChanged": false,
     "claimBoundary": "Pinned patch delivery integrity; not model qualification or host activation",
@@ -605,18 +708,47 @@
       "observedPatchSha256": "db3d9350616b3e9709b442fc7a0d4678c17704a06bc82da121ccd86f36e95b7d",
       "observedPatchBytes": 133579,
       "temporaryIndexApplyVerified": true,
-      "scope": "Historical single-email delivery observation; same retained filename now contains the two-email series"
+      "scope": "Historical single-email delivery observation; same retained filename now contains the four-email series"
     },
-    "emailPatches": 2,
+    "emailPatches": 4,
     "commits": [
       "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2",
-      "24546444452df3be40b7ebd86ed669c28fc81c15"
+      "24546444452df3be40b7ebd86ed669c28fc81c15",
+      "eab0eac623c3a8d41dff230ea79c757ada8b08b6",
+      "388990554479450d223dbc4448eb80179246ef2f"
     ],
-    "applyProof": "Split into two email patches and apply sequentially in a separate temporary index from the exact base",
-    "proofDirectory": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/guardrail-series-proof-UhJNXM",
+    "applyProof": "Split into four email patches and apply sequentially in a separate temporary index from the exact baseline; reproduce final tree",
+    "proofDirectory": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/guardrail-series-proof-5jq_1h7a",
     "realCheckoutChanged": false,
     "realIndexChanged": false,
-    "runtimeBaselineSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45"
+    "runtimeBaselineSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
+    "threeEmailCheckpoint": {
+      "implementationCommit": "eab0eac623c3a8d41dff230ea79c757ada8b08b6",
+      "implementationTree": "42d95a9b77a20e28911f6ce465095775d6510baa",
+      "observedPatchSha256": "d87399543a70e8eff4acb10b9bbce5fa43cae81ccf4dd67b336eea8db7353eae",
+      "observedPatchBytes": 160480,
+      "emailPatches": 3,
+      "exactBase": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
+      "temporaryIndexApplyVerified": true,
+      "realIndexUnchanged": true,
+      "cleanCheckout": true,
+      "proofReceiptFile": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/guardrail-series-proof-3atjz24f/receipt.json",
+      "proofReceiptSha256": "7063ab635e240210f36e87e737497e82923c74e11a6e3fb7843db5dcac698b13",
+      "scope": "Historical three-email checkpoint after ADR0052 clarification; final fourth patch adds collector assertions without runtime-baseline change"
+    },
+    "twoEmailCheckpoint": {
+      "implementationCommit": "24546444452df3be40b7ebd86ed669c28fc81c15",
+      "implementationTree": "7961bc85a87a10bab176acec877688940780c135",
+      "observedPatchSha256": "4e89d0aae25e03a26498e1ab1c3659ba32f9069d8c09a061a139e2bfc63497c8",
+      "observedPatchBytes": 158871,
+      "emailPatches": 2,
+      "temporaryIndexApplyVerified": true,
+      "proofDirectory": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/guardrail-series-proof-UhJNXM",
+      "scope": "Historical two-email delivery checkpoint; later ADR clarification and collector assertions add two mails without runtime-baseline change"
+    },
+    "proofReceiptFile": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/guardrail-series-proof-5jq_1h7a/receipt.json",
+    "proofReceiptSha256": "2631e2b1df24c070e282fce772c0d46310dc0acd2944602622cfd8c272e6ff0c",
+    "cleanCheckout": true
   },
   "packageDryRun": {
     "status": "passed",
@@ -633,11 +765,11 @@
     "operations": 10,
     "workflowDefinitionSha256": "0039df8fc5568b3be141f4f28f253b7f32e429019e3b4e288cb42029f56e7fc4",
     "baselineSourceSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
-    "sourceReportFile": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/sdk-representative-scripted.json",
-    "sourceReportSha256": "6aecb4694fea780d9f28d6c4622f92692d8f0d975ae1f0f775923a9ab1e9f5c7",
+    "sourceReportFile": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/sdk-review-scripted.json",
+    "sourceReportSha256": "750fbb6073e9de54e3f4f593550beaf510a554063167f357bf8be2030d4b0d39",
     "trackedReportFile": "reports/guardrail-risk-2026-09-21/sdk-representative-scripted.json",
-    "trackedReportSha256": "b88f9d523320b3df25ab7cdd529c911d1a6855a6f7d98f26de0604bb309b8fd3",
-    "trackedReportBytes": 78015,
+    "trackedReportSha256": "e57d3c8e76af5c97ce714a8bb16cbdbac95a936b1c0a61996dd11acc1a8b8ac3",
+    "trackedReportBytes": 88896,
     "modelInference": "scripted_stub",
     "toolExecution": "counter_only",
     "externalOperations": false,
@@ -654,10 +786,11 @@
         "fallbackCount": 0,
         "retries": 0,
         "unexpectedToolErrors": 0,
-        "sdkSetupMs": 3.3718750000000455,
-        "workflowMs": 4.612916999999925,
-        "totalElapsedMs": 7.986374999999953,
+        "sdkSetupMs": 3.5693750000000364,
+        "workflowMs": 3.750541999999996,
+        "totalElapsedMs": 7.320958000000019,
         "localRiskColdInitializationMs": null,
+        "comparisonSources": {},
         "workflows": [
           {
             "id": "safe-read-and-quoted-text",
@@ -665,7 +798,7 @@
             "accepted": 3,
             "confirmations": 0,
             "toolErrors": 0,
-            "operationElapsedMs": 1.3984159999999974
+            "operationElapsedMs": 1.228249999999889
           },
           {
             "id": "identical-shell-risk-session-reuse",
@@ -673,7 +806,7 @@
             "accepted": 2,
             "confirmations": 1,
             "toolErrors": 0,
-            "operationElapsedMs": 0.3029579999999896
+            "operationElapsedMs": 0.23979099999974096
           },
           {
             "id": "identical-apex-risk-session-reuse",
@@ -681,7 +814,7 @@
             "accepted": 2,
             "confirmations": 1,
             "toolErrors": 0,
-            "operationElapsedMs": 0.3298749999999018
+            "operationElapsedMs": 0.3118329999999787
           },
           {
             "id": "native-rehearsal-and-live-mutation",
@@ -689,7 +822,7 @@
             "accepted": 2,
             "confirmations": 1,
             "toolErrors": 0,
-            "operationElapsedMs": 0.8280829999998787
+            "operationElapsedMs": 0.5316660000000866
           },
           {
             "id": "protected-path-exact-block",
@@ -697,7 +830,7 @@
             "accepted": 0,
             "confirmations": 0,
             "toolErrors": 1,
-            "operationElapsedMs": 0.30462499999998727
+            "operationElapsedMs": 0.27445799999986775
           }
         ]
       },
@@ -711,10 +844,14 @@
         "fallbackCount": 0,
         "retries": 0,
         "unexpectedToolErrors": 0,
-        "sdkSetupMs": 2.8445839999999407,
-        "workflowMs": 9.469084000000066,
-        "totalElapsedMs": 12.314583999999968,
+        "sdkSetupMs": 2.873207999999977,
+        "workflowMs": 8.701833999999963,
+        "totalElapsedMs": 11.57612499999982,
         "localRiskColdInitializationMs": null,
+        "comparisonSources": {
+          "exact_policy": 2,
+          "jev": 8
+        },
         "workflows": [
           {
             "id": "safe-read-and-quoted-text",
@@ -722,7 +859,7 @@
             "accepted": 3,
             "confirmations": 0,
             "toolErrors": 0,
-            "operationElapsedMs": 2.863708000000088
+            "operationElapsedMs": 3.0757489999998597
           },
           {
             "id": "identical-shell-risk-session-reuse",
@@ -730,7 +867,7 @@
             "accepted": 2,
             "confirmations": 1,
             "toolErrors": 0,
-            "operationElapsedMs": 2.3897920000001704
+            "operationElapsedMs": 2.0580419999998867
           },
           {
             "id": "identical-apex-risk-session-reuse",
@@ -738,7 +875,7 @@
             "accepted": 2,
             "confirmations": 1,
             "toolErrors": 0,
-            "operationElapsedMs": 1.13287500000024
+            "operationElapsedMs": 1.1986249999999927
           },
           {
             "id": "native-rehearsal-and-live-mutation",
@@ -746,7 +883,7 @@
             "accepted": 2,
             "confirmations": 1,
             "toolErrors": 0,
-            "operationElapsedMs": 1.2444169999998849
+            "operationElapsedMs": 1.018041999999923
           },
           {
             "id": "protected-path-exact-block",
@@ -754,7 +891,7 @@
             "accepted": 0,
             "confirmations": 0,
             "toolErrors": 1,
-            "operationElapsedMs": 0.4554169999998976
+            "operationElapsedMs": 0.22020900000006804
           }
         ]
       },
@@ -768,10 +905,14 @@
         "fallbackCount": 0,
         "retries": 0,
         "unexpectedToolErrors": 0,
-        "sdkSetupMs": 2.946291000000201,
-        "workflowMs": 11.114624999999933,
-        "totalElapsedMs": 14.06208300000003,
+        "sdkSetupMs": 3.0332079999998314,
+        "workflowMs": 11.029041000000007,
+        "totalElapsedMs": 14.06358299999988,
         "localRiskColdInitializationMs": null,
+        "comparisonSources": {
+          "exact_policy": 2,
+          "jev": 8
+        },
         "workflows": [
           {
             "id": "safe-read-and-quoted-text",
@@ -779,7 +920,7 @@
             "accepted": 3,
             "confirmations": 0,
             "toolErrors": 0,
-            "operationElapsedMs": 4.753541999999925
+            "operationElapsedMs": 3.104000000000042
           },
           {
             "id": "identical-shell-risk-session-reuse",
@@ -787,7 +928,7 @@
             "accepted": 2,
             "confirmations": 2,
             "toolErrors": 0,
-            "operationElapsedMs": 2.1175000000000637
+            "operationElapsedMs": 2.254165999999941
           },
           {
             "id": "identical-apex-risk-session-reuse",
@@ -795,7 +936,7 @@
             "accepted": 2,
             "confirmations": 1,
             "toolErrors": 0,
-            "operationElapsedMs": 1.2506249999999
+            "operationElapsedMs": 2.9340830000001006
           },
           {
             "id": "native-rehearsal-and-live-mutation",
@@ -803,7 +944,7 @@
             "accepted": 2,
             "confirmations": 1,
             "toolErrors": 0,
-            "operationElapsedMs": 1.530958000000055
+            "operationElapsedMs": 1.2684159999998883
           },
           {
             "id": "protected-path-exact-block",
@@ -811,7 +952,7 @@
             "accepted": 0,
             "confirmations": 0,
             "toolErrors": 1,
-            "operationElapsedMs": 0.2843749999999545
+            "operationElapsedMs": 0.21312500000021828
           }
         ]
       }
@@ -820,6 +961,205 @@
     "scriptedEnforceConfirmationCountParityObserved": false,
     "scriptedEnforceExtraConfirmations": 1,
     "limitation": "Identical repeated shell operation confirms twice under enforce versus once under off/shadow; conservative implicit session setting remains pending user decision",
-    "claimBoundary": "Actual SDK collector and scripted approval behavior only; not local-model accuracy, warm/cold inference performance, matched real-model workflow effectiveness or production acceptance"
+    "claimBoundary": "Actual SDK collector and scripted approval behavior only; not local-model accuracy, warm/cold inference performance, matched real-model workflow effectiveness or production acceptance",
+    "previousCheckpoint": {
+      "scope": "Actual Pi SDK with scripted risk predictions and counter-only tools; collector proof only.",
+      "workflows": 5,
+      "operations": 10,
+      "workflowDefinitionSha256": "0039df8fc5568b3be141f4f28f253b7f32e429019e3b4e288cb42029f56e7fc4",
+      "baselineSourceSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
+      "sourceReportFile": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/sdk-representative-scripted.json",
+      "sourceReportSha256": "6aecb4694fea780d9f28d6c4622f92692d8f0d975ae1f0f775923a9ab1e9f5c7",
+      "trackedReportFile": "reports/guardrail-risk-2026-09-21/sdk-representative-scripted.json",
+      "trackedReportSha256": "b88f9d523320b3df25ab7cdd529c911d1a6855a6f7d98f26de0604bb309b8fd3",
+      "trackedReportBytes": 78015,
+      "modelInference": "scripted_stub",
+      "toolExecution": "counter_only",
+      "externalOperations": false,
+      "nativeArmExecuted": false,
+      "nativeArmResults": null,
+      "measurements": [
+        {
+          "mode": "off",
+          "executedOperations": 9,
+          "exactProtectedBlocks": 1,
+          "confirmationCount": 3,
+          "sessionGrantCount": 3,
+          "unsafeAutomaticAllows": 0,
+          "fallbackCount": 0,
+          "retries": 0,
+          "unexpectedToolErrors": 0,
+          "sdkSetupMs": 3.3718750000000455,
+          "workflowMs": 4.612916999999925,
+          "totalElapsedMs": 7.986374999999953,
+          "localRiskColdInitializationMs": null,
+          "workflows": [
+            {
+              "id": "safe-read-and-quoted-text",
+              "operations": 3,
+              "accepted": 3,
+              "confirmations": 0,
+              "toolErrors": 0,
+              "operationElapsedMs": 1.3984159999999974
+            },
+            {
+              "id": "identical-shell-risk-session-reuse",
+              "operations": 2,
+              "accepted": 2,
+              "confirmations": 1,
+              "toolErrors": 0,
+              "operationElapsedMs": 0.3029579999999896
+            },
+            {
+              "id": "identical-apex-risk-session-reuse",
+              "operations": 2,
+              "accepted": 2,
+              "confirmations": 1,
+              "toolErrors": 0,
+              "operationElapsedMs": 0.3298749999999018
+            },
+            {
+              "id": "native-rehearsal-and-live-mutation",
+              "operations": 2,
+              "accepted": 2,
+              "confirmations": 1,
+              "toolErrors": 0,
+              "operationElapsedMs": 0.8280829999998787
+            },
+            {
+              "id": "protected-path-exact-block",
+              "operations": 1,
+              "accepted": 0,
+              "confirmations": 0,
+              "toolErrors": 1,
+              "operationElapsedMs": 0.30462499999998727
+            }
+          ]
+        },
+        {
+          "mode": "shadow",
+          "executedOperations": 9,
+          "exactProtectedBlocks": 1,
+          "confirmationCount": 3,
+          "sessionGrantCount": 3,
+          "unsafeAutomaticAllows": 0,
+          "fallbackCount": 0,
+          "retries": 0,
+          "unexpectedToolErrors": 0,
+          "sdkSetupMs": 2.8445839999999407,
+          "workflowMs": 9.469084000000066,
+          "totalElapsedMs": 12.314583999999968,
+          "localRiskColdInitializationMs": null,
+          "workflows": [
+            {
+              "id": "safe-read-and-quoted-text",
+              "operations": 3,
+              "accepted": 3,
+              "confirmations": 0,
+              "toolErrors": 0,
+              "operationElapsedMs": 2.863708000000088
+            },
+            {
+              "id": "identical-shell-risk-session-reuse",
+              "operations": 2,
+              "accepted": 2,
+              "confirmations": 1,
+              "toolErrors": 0,
+              "operationElapsedMs": 2.3897920000001704
+            },
+            {
+              "id": "identical-apex-risk-session-reuse",
+              "operations": 2,
+              "accepted": 2,
+              "confirmations": 1,
+              "toolErrors": 0,
+              "operationElapsedMs": 1.13287500000024
+            },
+            {
+              "id": "native-rehearsal-and-live-mutation",
+              "operations": 2,
+              "accepted": 2,
+              "confirmations": 1,
+              "toolErrors": 0,
+              "operationElapsedMs": 1.2444169999998849
+            },
+            {
+              "id": "protected-path-exact-block",
+              "operations": 1,
+              "accepted": 0,
+              "confirmations": 0,
+              "toolErrors": 1,
+              "operationElapsedMs": 0.4554169999998976
+            }
+          ]
+        },
+        {
+          "mode": "enforce",
+          "executedOperations": 9,
+          "exactProtectedBlocks": 1,
+          "confirmationCount": 4,
+          "sessionGrantCount": 2,
+          "unsafeAutomaticAllows": 0,
+          "fallbackCount": 0,
+          "retries": 0,
+          "unexpectedToolErrors": 0,
+          "sdkSetupMs": 2.946291000000201,
+          "workflowMs": 11.114624999999933,
+          "totalElapsedMs": 14.06208300000003,
+          "localRiskColdInitializationMs": null,
+          "workflows": [
+            {
+              "id": "safe-read-and-quoted-text",
+              "operations": 3,
+              "accepted": 3,
+              "confirmations": 0,
+              "toolErrors": 0,
+              "operationElapsedMs": 4.753541999999925
+            },
+            {
+              "id": "identical-shell-risk-session-reuse",
+              "operations": 2,
+              "accepted": 2,
+              "confirmations": 2,
+              "toolErrors": 0,
+              "operationElapsedMs": 2.1175000000000637
+            },
+            {
+              "id": "identical-apex-risk-session-reuse",
+              "operations": 2,
+              "accepted": 2,
+              "confirmations": 1,
+              "toolErrors": 0,
+              "operationElapsedMs": 1.2506249999999
+            },
+            {
+              "id": "native-rehearsal-and-live-mutation",
+              "operations": 2,
+              "accepted": 2,
+              "confirmations": 1,
+              "toolErrors": 0,
+              "operationElapsedMs": 1.530958000000055
+            },
+            {
+              "id": "protected-path-exact-block",
+              "operations": 1,
+              "accepted": 0,
+              "confirmations": 0,
+              "toolErrors": 1,
+              "operationElapsedMs": 0.2843749999999545
+            }
+          ]
+        }
+      ],
+      "shadowApprovalAndOutcomeParityObserved": true,
+      "scriptedEnforceConfirmationCountParityObserved": false,
+      "scriptedEnforceExtraConfirmations": 1,
+      "limitation": "Identical repeated shell operation confirms twice under enforce versus once under off/shadow; conservative implicit session setting remains pending user decision",
+      "claimBoundary": "Actual SDK collector and scripted approval behavior only; not local-model accuracy, warm/cold inference performance, matched real-model workflow effectiveness or production acceptance",
+      "historyScope": "Prior representative scripted checkpoint; same tracked filename now refreshed from the stricter collector run; raw source remains separately pinned"
+    },
+    "semanticAnsweredCallsPerShadowOrEnforce": 8,
+    "exactPolicyCallsPerShadowOrEnforce": 2,
+    "completionAssertions": "Each expected semantic call matches source:jev, version, mode, tool, input identity and delivery order; exact-policy calls verified separately"
   }
 }

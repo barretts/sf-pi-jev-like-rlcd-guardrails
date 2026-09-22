@@ -18,13 +18,14 @@ RFDT pipeline. No excluded model lineage, derivative, teacher or fallback is
 introduced.
 
 The SF integration's final local source checkpoint is
-`24546444452df3be40b7ebd86ed669c28fc81c15`; it has not been pushed. Its tree is
-`7961bc85a87a10bab176acec877688940780c135`. The
+`388990554479450d223dbc4448eb80179246ef2f`; it has not been pushed. Its tree is
+`944cee65cd156f11afa96dde179388f4d06b70e3`. The
 [baseline-bound integration patch](../../integrations/sf-pi-guardrail/0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch)
-retains its filename and contains two email patches: initial integration commit
-`beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2` and the workflow checkpoint above.
-Its SHA-256 is `4e89d0aae25e03a26498e1ab1c3659ba32f9069d8c09a061a139e2bfc63497c8`,
-with 158,871 bytes. Splitting and sequentially applying both to baseline
+retains its filename and contains four email patches: initial integration
+`beaa11c0`, workflow proof `24546444`, ADR0052 clarification `eab0eac6`, and
+semantic-call completeness checks at the final checkpoint above.
+Its SHA-256 is `a523d5de1648b675adfeea650480a7e0c82c4ac6929c78b9788ad9a3f2e493e1`,
+with 165,300 bytes. Splitting and sequentially applying all four to baseline
 `4f901db9c3f5076ea0305dea33ad6e8856e467da` in a separate temporary index
 reproduced the final tree. The real checkout/index remained unchanged. Runtime
 baseline SHA-256 stays `0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45`.
@@ -130,6 +131,17 @@ Completion and full TRAIN per-case post-fit evaluation are pending before any
 export. Training, validation, held-out and matched workflow results remain
 unset; selection and qualification still require the unchanged gates.
 
+The saved-scalar CPU parity receipt
+`.build/guardrail/candidate-3/initial-256-parity-receipt.json`, observed at
+00:34:05.856 UTC, has SHA-256
+`40065c9ce5dc8a2163a3d88073467a1870b40bb6a00e28a9832aaa11371f2e67`.
+Its first 256 candidate 3 step IDs and TRAIN batch losses match candidate 2
+256/256 exactly; maximum absolute loss difference is zero. Authored and
+prepared TRAIN input hashes match. An independent CPU replay checked those
+scalars and all seven bound plan/input hashes, without model calls or held-out
+data. This supports reproducibility of the unchanged training profile only;
+candidate 3's completion and all effectiveness results remain pending.
+
 Candidate 2's preparation binds the original bundle SHA-256
 `6381f6dc8c94de22105a417d95265a90ec798a3c36d18784f61a1c04c06dbc83` and its then-current
 baseline/provenance SHA-256
@@ -193,9 +205,9 @@ workflow definition SHA-256 is
 
 | Mode    | Executed operations | Confirmations | Session grants | Exact blocks | Unsafe automatic allows | Fallbacks / retries | SDK setup ms | Workflow ms | Total ms |
 | ------- | ------------------: | ------------: | -------------: | -----------: | ----------------------: | ------------------- | -----------: | ----------: | -------: |
-| Off     |                   9 |             3 |              3 |            1 |                       0 | 0 / 0               |        3.372 |       4.613 |    7.986 |
-| Shadow  |                   9 |             3 |              3 |            1 |                       0 | 0 / 0               |        2.845 |       9.469 |   12.315 |
-| Enforce |                   9 |             4 |              2 |            1 |                       0 | 0 / 0               |        2.946 |      11.115 |   14.062 |
+| Off     |                   9 |             3 |              3 |            1 |                       0 | 0 / 0               |        3.569 |       3.751 |    7.321 |
+| Shadow  |                   9 |             3 |              3 |            1 |                       0 | 0 / 0               |        2.873 |       8.702 |   11.576 |
+| Enforce |                   9 |             4 |              2 |            1 |                       0 | 0 / 0               |        3.033 |      11.029 |   14.064 |
 
 No unexpected tool errors occurred. The extra enforce confirmation occurred
 on the identical repeated shell operation; the baseline/shadow session grant
@@ -207,6 +219,36 @@ TypeScript/file-level ESLint passed. The earlier 315-test SF checkpoint preceded
 this addition and is not increased into a new global total. The native SDK
 workflow arm has not executed while candidate 3 trains; real-model workflow
 results remain unset. All timings above describe scripted inference.
+
+The latest collector additionally verifies exactly eight answered semantic
+comparisons with `source: jev` and two exact-policy comparisons for shadow and
+enforce, matching each call's version, mode, tool, input identity and delivery
+order. The workflow definition remains frozen and unchanged. The complete
+tracked scripted receipt is refreshed; its physical hash and the earlier
+representative checkpoint's hash remain separate ledger entries. Final source
+checks again passed seven tests with one native skip, TypeScript, file-level
+ESLint and formatting. Those assertions do not execute the native arm.
+
+The qualification evaluator also binds backend, model-artifact and
+guardrail-extension peer bytes through its existing implementation hash.
+Three isolated-copy CPU regressions reject old freezes and sealed receipts
+after each peer changes. The existing validation measurement hash additionally
+includes the current criteria/source identity. Before that narrow fix, all
+three expanded regressions reproduced fresh-freeze reuse of old passing VALID;
+they now reject fresh freezes from old VALID, old freezes and old sealed TEST
+receipts. This adds no report schema field or numeric criterion. A synthetic
+backend mapping inversion changes allow
+to confirm without changing prompt/model/native identities. Four focused
+files passed 41 tests in 1.89 seconds; TypeScript check/build and owned-file
+format/source whitespace checks passed. All 15 candidate 3 frozen training
+source files still match their prospective plan. Compiled criteria SHA-256 is
+`b7147735bc3c2c2dc5fd00b61d1abfc1c3a66888213d5f37dc1c790ba791c8b7`.
+Numeric criteria and the 0.99 cutoff are unchanged. This strengthens identity
+binding before future validation; it supplies no model-effectiveness claim.
+Candidate 2's original validation receipt remains byte-identical with its
+historical seal, intentionally not verifiable under the current evaluator.
+It is not resealed; the numeric usability rejection and no-freeze/no-held-out
+status remain intact. Candidate 3 must use fresh validation evidence and seal.
 
 The identical-operation SDK workflow does not establish session-approval prompt
 parity for changed related operations. Current model-derived grants bind to an

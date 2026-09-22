@@ -1,7 +1,7 @@
 From beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2 Mon Sep 17 00:00:00 2001
 From: Barrett Sonntag <bsonntag@salesforce.com>
 Date: Mon, 21 Sep 2026 18:40:10 -0500
-Subject: [PATCH 1/2] feat(guardrail): support an optional local Jev risk
+Subject: [PATCH 1/4] feat(guardrail): support an optional local Jev risk
  provider
 
 ---
@@ -2963,7 +2963,7 @@ base-commit: 4f901db9c3f5076ea0305dea33ad6e8856e467da
 From 24546444452df3be40b7ebd86ed669c28fc81c15 Mon Sep 17 00:00:00 2001
 From: Barrett Sonntag <bsonntag@salesforce.com>
 Date: Mon, 21 Sep 2026 19:14:17 -0500
-Subject: [PATCH 2/2] test(guardrail): measure local Jev workflows through Pi
+Subject: [PATCH 2/4] test(guardrail): measure local Jev workflows through Pi
  SDK
 
 ---
@@ -3572,6 +3572,133 @@ index a9c7a982..355f65e0 100644
 +    120_000,
 +  );
  });
+-- 
+2.50.1 (Apple Git-155)
+
+
+From eab0eac623c3a8d41dff230ea79c757ada8b08b6 Mon Sep 17 00:00:00 2001
+From: Barrett Sonntag <bsonntag@salesforce.com>
+Date: Mon, 21 Sep 2026 19:34:04 -0500
+Subject: [PATCH 3/4] docs(guardrail): clarify optional semantic provider
+ policy
+
+---
+ docs/adr/0052-sf-guardrail-is-rule-behavior-only.md | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/docs/adr/0052-sf-guardrail-is-rule-behavior-only.md b/docs/adr/0052-sf-guardrail-is-rule-behavior-only.md
+index 3b2dd397..299d1866 100644
+--- a/docs/adr/0052-sf-guardrail-is-rule-behavior-only.md
++++ b/docs/adr/0052-sf-guardrail-is-rule-behavior-only.md
+@@ -7,6 +7,8 @@ supersedes: ["0044", "0045"]
+ 
+ # SF Guardrail is rule-behavior only
+ 
++> Updated 2026-09-21 by [ADR 0118](./0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md): exact user policy constraints remain authoritative, with per-rule Rule Behavior as the policy control. ADR 0118 now describes optional local semantic-provider decisions and operator-controlled provider modes; those decisions cannot override exact user policy.
++
+ SF Guardrail no longer has bulk posture modes, hard-block themes, broad feature master switches, or an internal enabled flag. When the extension is enabled, mediation is controlled by per-rule Rule Behavior only: `off`, `confirm`, or `block`.
+ 
+ The complete disable path is the SF Pi package lifecycle control: disable the `sf-guardrail` extension from the Manager Surface or with `/sf-pi disable sf-guardrail`. This avoids the ambiguous state where the extension is loaded but a hidden internal switch makes it inert.
+-- 
+2.50.1 (Apple Git-155)
+
+
+From 388990554479450d223dbc4448eb80179246ef2f Mon Sep 17 00:00:00 2001
+From: Barrett Sonntag <bsonntag@salesforce.com>
+Date: Mon, 21 Sep 2026 19:38:23 -0500
+Subject: [PATCH 4/4] test(guardrail): require complete SDK model comparisons
+
+---
+ .../sf-guardrail/tests/jev-risk-sdk.test.ts   | 54 +++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+
+diff --git a/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
+index 355f65e0..ec123cec 100644
+--- a/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
++++ b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
+@@ -210,6 +210,8 @@ const representativeWorkflows = [
+ const representativeOperations = representativeWorkflows.flatMap((workflow) =>
+   workflow.operations.map((operation) => ({ ...operation, workflowId: workflow.id })),
+ );
++const EXPECTED_SEMANTIC_OPERATIONS = 8;
++const EXPECTED_EXACT_POLICY_OPERATIONS = 2;
+ 
+ function canonical(value: unknown): string {
+   if (Array.isArray(value)) return "[" + value.map(canonical).join(",") + "]";
+@@ -487,7 +489,19 @@ function representativeMeasurement(mode: "off" | "shadow" | "enforce", trial: Sd
+     ...record,
+     workflowId: representativeOperations[index].workflowId,
+     expected: representativeOperations[index].expected,
++    expectedComparisonSource:
++      representativeOperations[index].toolName === "read" ||
++      representativeOperations[index].toolName === "write"
++        ? ("exact_policy" as const)
++        : ("jev" as const),
++    riskComparisons: record.customEntries
++      .filter((entry) => entry.customType === JEV_RISK_COMPARISON_ENTRY)
++      .map((entry) => entry.data as JevRiskComparison),
+   }));
++  const semanticCalls = calls.filter((record) => record.expectedComparisonSource === "jev");
++  const exactPolicyCalls = calls.filter(
++    (record) => record.expectedComparisonSource === "exact_policy",
++  );
+   const observedGrants: Array<Record<string, unknown>> = [];
+   let unsafeAutomaticAllows = 0;
+   for (const record of calls) {
+@@ -514,6 +528,26 @@ function representativeMeasurement(mode: "off" | "shadow" | "enforce", trial: Sd
+   }
+   return {
+     mode,
++    expectedSemanticOperationCount: EXPECTED_SEMANTIC_OPERATIONS,
++    semanticOperationCount: semanticCalls.length,
++    expectedModelAnswerCount: mode === "off" ? 0 : EXPECTED_SEMANTIC_OPERATIONS,
++    completedSemanticRiskChecks: semanticCalls.filter(
++      (record) =>
++        record.riskComparisons.length === 1 &&
++        record.riskComparisons[0].source === "jev" &&
++        record.riskComparisons[0].toolName === record.toolName &&
++        record.riskComparisons[0].mode === mode,
++    ).length,
++    expectedExactPolicyOperationCount: EXPECTED_EXACT_POLICY_OPERATIONS,
++    exactPolicyOperationCount: exactPolicyCalls.length,
++    expectedExactPolicyComparisonCount: mode === "off" ? 0 : EXPECTED_EXACT_POLICY_OPERATIONS,
++    completedExactPolicyChecks: exactPolicyCalls.filter(
++      (record) =>
++        record.riskComparisons.length === 1 &&
++        record.riskComparisons[0].source === "exact_policy" &&
++        record.riskComparisons[0].toolName === record.toolName &&
++        record.riskComparisons[0].mode === mode,
++    ).length,
+     acceptedOutcomes: calls.map((record) => ({
+       toolCallId: record.toolCallId,
+       workflowId: record.workflowId,
+@@ -584,6 +618,26 @@ function verifyMatchedSdkOutcomes(measurements: ReturnType<typeof representative
+     expect(shadow[key], `Shadow changed rules-only ${key}`).toEqual(baseline[key]);
+   for (const row of measurements) {
+     expect(row.calls).toHaveLength(representativeOperations.length);
++    expect(row.calls.map(({ toolName, input }) => ({ toolName, input }))).toEqual(
++      representativeOperations.map(({ toolName, input }) => ({ toolName, input })),
++    );
++    expect(row.semanticOperationCount).toBe(EXPECTED_SEMANTIC_OPERATIONS);
++    expect(row.exactPolicyOperationCount).toBe(EXPECTED_EXACT_POLICY_OPERATIONS);
++    expect(row.completedSemanticRiskChecks).toBe(row.expectedModelAnswerCount);
++    expect(row.completedExactPolicyChecks).toBe(row.expectedExactPolicyComparisonCount);
++    expect(row.comparisons).toHaveLength(
++      row.expectedModelAnswerCount + row.expectedExactPolicyComparisonCount,
++    );
++    for (const call of row.calls) {
++      expect(call.riskComparisons).toHaveLength(row.mode === "off" ? 0 : 1);
++      if (row.mode !== "off")
++        expect(call.riskComparisons[0]).toMatchObject({
++          version: 1,
++          source: call.expectedComparisonSource,
++          toolName: call.toolName,
++          mode: row.mode,
++        });
++    }
+     expect(row.acceptedOutcomes.map((call) => call.executed)).toEqual(
+       representativeOperations.map((operation) => operation.expected !== "block"),
+     );
 -- 
 2.50.1 (Apple Git-155)
 

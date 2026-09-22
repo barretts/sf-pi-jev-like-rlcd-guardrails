@@ -73,6 +73,16 @@ The preparation worker was disposed before MLX training. Full TRAIN per-case
 post-fit evaluation is pending before any export. Training, validation,
 held-out and workflow results remain unset; training start is not qualification.
 
+The CPU-only initial-256 parity receipt at
+`.build/guardrail/candidate-3/initial-256-parity-receipt.json` has SHA-256
+`40065c9ce5dc8a2163a3d88073467a1870b40bb6a00e28a9832aaa11371f2e67`.
+Independent replay compared all 256 overlapping step IDs and recorded TRAIN
+batch losses against candidate 2, matching 256/256 exactly with maximum
+absolute difference zero. All seven bound plan/input-file hashes matched;
+authored and prepared TRAIN inputs are unchanged. This is saved-scalar
+reproducibility evidence using no extra model calls or held-out data. Candidate
+3 is still training and no effectiveness or qualification result follows.
+
 The initial interface draft passed 24 focused Jev tests and 46 focused sf-pi
 tests. Final Jev source checks passed 1,011 tests across 46 files in 10.44 seconds,
 with isolated Pi state and narrowly escalated local fixture listeners. The
@@ -96,12 +106,13 @@ The repeated package dry run passed with 171 files, 6,194,598 unpacked bytes and
 required guardrail sources, corpus, scripts and patch, with no weights. It used
 a worktree-local npm cache. These size observations precede recording the sizes
 and are not a sealed final archive identity. The SF patch
-contains two email patches: initial integration commit `beaa11c0` followed by
-workflow commit `24546444452df3be40b7ebd86ed669c28fc81c15`. Its SHA-256 is
-`4e89d0aae25e03a26498e1ab1c3659ba32f9069d8c09a061a139e2bfc63497c8`,
-with 158,871 bytes. Splitting and applying the two patches sequentially against
+contains four email patches: initial integration `beaa11c0`, workflow proof
+`24546444`, ADR0052 clarification `eab0eac6`, and semantic-call completeness
+checks `388990554479450d223dbc4448eb80179246ef2f`. Its SHA-256 is
+`a523d5de1648b675adfeea650480a7e0c82c4ac6929c78b9788ad9a3f2e493e1`,
+with 165,300 bytes. Splitting and applying the four patches sequentially against
 the pinned `4f901db9` baseline in a separate index reproduced final tree
-`7961bc85a87a10bab176acec877688940780c135`. The real checkout/index remained
+`944cee65cd156f11afa96dde179388f4d06b70e3`. The real checkout/index remained
 unchanged; no push or active Pi host change is part of that proof. Runtime
 baseline identity remains `0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45`.
 
@@ -129,6 +140,37 @@ The new SDK test file passed seven tests with one native test skipped; an
 independent CPU review reproduced that result, and TypeScript/file-level lint
 passed. The earlier 315-test SF checkpoint predates this test file; no new
 global pass count or uniform-suite success is inferred.
+
+The final scripted receipt verifies exactly eight semantic comparisons with
+`source: jev` and two exact-policy comparisons for both shadow and enforce.
+Per-call version, mode, tool, input identity and delivery order match the frozen
+workflow; no fallback can substitute for an answered semantic call in that
+collector proof. The definition SHA-256 is unchanged. The latest source test
+still passed seven tests with one native skip, plus TypeScript, file-level lint
+and formatting. This remains scripted SDK evidence.
+
+The evaluator's implementation byte-binding additionally covers the backend,
+model-artifact and guardrail-extension peers, using the corresponding `.ts`
+or `.js` source form. Three isolated-copy CPU regressions reject an old freeze
+and sealed receipt after peer bytes change. The existing validation measurement
+hash now includes the current criteria/source identity, closing fresh-freeze
+reuse of old passing VALID. The expanded regressions reproduced that bypass
+in all three copied-peer cases before the fix and now reject fresh freezes
+from old VALID, old freezes and old sealed TEST receipts. No report schema
+field or numeric criterion was added. A synthetic copied-backend mapping
+inversion changes allow to confirm while retaining prompt/model/native
+identities, demonstrating why those client bytes must be bound. Four focused
+files passed 41 tests in 1.89 seconds; TypeScript check/build and owned-file
+formatting/source whitespace checks passed. All 15 candidate 3 frozen training
+source files remain unchanged. Compiled criteria SHA-256 is
+`b7147735bc3c2c2dc5fd00b61d1abfc1c3a66888213d5f37dc1c790ba791c8b7`;
+the numeric criteria and 0.99 cutoff are unchanged. This CPU identity evidence
+does not establish model quality, workflow benefit or held-out qualification.
+Candidate 2's preserved validation receipt retains its original historical
+seal, intentionally not current-verifiable. No resealing occurred; its
+numeric usability rejection and no-freeze/no-held-out status are unchanged.
+Candidate 3's future validation must create a fresh seal under the current
+evaluator.
 
 The SDK workflow repeats an identical operation. It does not establish prompt
 parity when related operation payloads change: current model-derived session

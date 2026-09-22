@@ -85,6 +85,14 @@ preparation worker was disposed before MLX training. Training completion and
 full TRAIN post-fit results remain pending; no export, native validation,
 held-out qualification or matched workflow result is recorded for candidate 3.
 
+An independent CPU comparison of saved batch-loss scalars found exact parity
+for candidate 3's first 256 updates against candidate 2: 256/256 step IDs and
+losses matched, with maximum absolute difference zero. Authored and prepared
+TRAIN input hashes also matched. Receipt SHA-256 is
+`40065c9ce5dc8a2163a3d88073467a1870b40bb6a00e28a9832aaa11371f2e67`.
+This supports reproducibility of the unchanged profile; no model calls or
+held-out data were used, and it does not establish qualification.
+
 Session-approval behavior remains a proof boundary: the current integration
 binds model-derived grants to an exact operation, active policy, model and
 protocol. Broader operation-family reuse can reduce repeated prompts in the
@@ -113,14 +121,31 @@ files, and formatting. SF guardrail/runtime checks passed 315 tests; its full
 test-file coverage used appropriate isolated partitions and an unrelated
 timeout replay, so a uniform `npm test` or `validate:ci` success is not claimed.
 The package dry run included the guardrail sources, corpus and integration
-patch without weights. The baseline-bound two-email SF patch series reproduced
-final tree `7961bc85a87a10bab176acec877688940780c135` in a separate temporary
-index; final local SF commit is `24546444452df3be40b7ebd86ed669c28fc81c15`.
+patch without weights. The baseline-bound four-email SF patch series reproduced
+final tree `944cee65cd156f11afa96dde179388f4d06b70e3` in a separate temporary
+index; final local SF commit is `388990554479450d223dbc4448eb80179246ef2f`.
 The new SDK workflow test file separately passed seven tests with one native
 test skipped, plus TypeScript and file-level lint checks. The recorded
 315-test SF checkpoint preceded this addition; counts are not combined into
 a new global total. These establish source and delivery integrity,
 separately from the rejected candidate's effectiveness.
+
+The latest scripted SDK collector verifies eight answered semantic model
+comparisons and two exact-policy comparisons in shadow/enforce, matching
+per-call version, mode, tool, input identity and delivery order. Its frozen
+workflow definition is unchanged. Qualification byte-binding now also covers
+backend, model-artifact and guardrail-extension implementation bytes. Three
+isolated CPU regressions reject old freezes/receipts when those peer bytes
+change. The existing validation measurement hash now also includes the current
+criteria/source identity: the expanded regressions first reproduced all three
+old-VALID/fresh-freeze bypasses and now reject those attempts. Four focused
+files passed 41 tests in 1.89 seconds. The cutoff and numeric safety
+criteria remain unchanged; all 15 candidate 3 frozen training source files
+still match. These are collector and identity checks, not model-quality results.
+Candidate 2's original validation receipt remains byte-identical historical
+evidence, intentionally not verifiable under the current seal; it is not
+resealed and its numeric usability rejection is unchanged. Candidate 3 needs
+fresh validation evidence under the current evaluator.
 
 The current summary and remaining proof boundaries are maintained in
 [the guardrail evidence report](./reports/guardrail-risk-2026-09-21/README.md).
