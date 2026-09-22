@@ -7,8 +7,6 @@ import {
   mkdir,
   open,
   readFile,
-  readdir,
-  readlink,
   statfs,
   writeFile,
 } from "node:fs/promises";
@@ -26,6 +24,7 @@ import {
   RFDT_BASE_REVISION,
   trainRfdt,
 } from "../dist/rfdt.js";
+import { inspectQuantizerLibraries } from "./guardrail-candidate9-quantizer-libraries.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const build = resolve(root, ".build/guardrail");
@@ -123,6 +122,7 @@ function jsonl(value, split) {
 async function sourceIdentity(paths) {
   const tracked = [
     "scripts/guardrail-candidate9-fit.mjs",
+    "scripts/guardrail-candidate9-quantizer-libraries.mjs",
     "scripts/guardrail-candidate9-select-cutoff.mjs",
     "scripts/guardrail-candidate9-artifact-provenance.mjs",
     "src/rfdt.ts",
@@ -199,42 +199,8 @@ async function verifyQuantizer(binaryPath, sourceDirectory) {
     fail("C9 Q8 quantizer source is dirty");
   }
   const libraryDirectory = dirname(resolve(binaryPath));
-  const entries = (await readdir(libraryDirectory, { withFileTypes: true }))
-    .filter((entry) => entry.name.endsWith(".dylib"))
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
-  const runtimeLibraries = {};
-  const runtimeLibraryLinks = {};
-  for (const entry of entries) {
-    const file = resolve(libraryDirectory, entry.name);
-    if (entry.isFile())
-      runtimeLibraries[entry.name] = (await hashArtifact(file)).sha256;
-    else if (entry.isSymbolicLink()) {
-      const target = await readlink(file);
-      if (target !== basename(target) || !target.endsWith(".dylib"))
-        fail("C9 Q8 quantizer library link escapes its adjacent directory");
-      runtimeLibraryLinks[entry.name] = target;
-    } else fail("C9 Q8 quantizer library inventory changed");
-  }
-  if (
-    Object.keys(runtimeLibraries).length !== 8 ||
-    Object.keys(runtimeLibraryLinks).length !== 15 ||
-    Object.values(runtimeLibraryLinks).some(
-      (target) =>
-        !(target in runtimeLibraries) && !(target in runtimeLibraryLinks),
-    )
-  )
-    fail("C9 Q8 quantizer linked-library inventory changed");
-  for (const start of Object.keys(runtimeLibraryLinks)) {
-    const seen = new Set();
-    let current = start;
-    while (current in runtimeLibraryLinks) {
-      if (seen.has(current)) fail("C9 Q8 quantizer library link cycle");
-      seen.add(current);
-      current = runtimeLibraryLinks[current];
-    }
-    if (!(current in runtimeLibraries))
-      fail("C9 Q8 quantizer library link lacks a regular payload");
-  }
+  const { runtimeLibraries, runtimeLibraryLinks } =
+    await inspectQuantizerLibraries(libraryDirectory);
   return { binary, source, runtimeLibraries, runtimeLibraryLinks };
 }
 async function runQuantizer(binary, source, target) {
@@ -661,6 +627,12 @@ const source = await verifyInputs(values);
 const checkpoint = resolve(values.checkpoint);
 const baseFiles = await verifyBase(checkpoint);
 const baseGguf = await verifyBaseGguf(values["base-gguf"]);
+if (!values["quantizer-binary"] || !values["quantizer-source"])
+  fail("all phases require pinned --quantizer-binary and --quantizer-source");
+const quantizer = await verifyQuantizer(
+  values["quantizer-binary"],
+  values["quantizer-source"],
+);
 if (phase === "preflight") {
   const disk = await statfs(root);
   console.log(
@@ -670,6 +642,7 @@ if (phase === "preflight") {
       checkpoint,
       baseFiles,
       baseGguf,
+      quantizer,
       diskAvailableBytes: disk.bavail * disk.bsize,
       qualification: false,
     }),
@@ -706,6 +679,7 @@ if (phase === "prepare") {
       checkpoint,
       baseFiles,
       baseGguf,
+      quantizer,
       steps: 256,
       inferenceArtifactFormat,
       compilerLimits,
@@ -742,6 +716,7 @@ if (
   JSON.stringify(plan.source) !== JSON.stringify(source) ||
   plan.checkpoint !== checkpoint ||
   JSON.stringify(plan.baseGguf) !== JSON.stringify(baseGguf) ||
+  JSON.stringify(plan.quantizer) !== JSON.stringify(quantizer) ||
   JSON.stringify(plan.compilerLimits) !== JSON.stringify(compilerLimits)
 )
   fail("frozen C9 FIT plan changed");
@@ -771,12 +746,6 @@ if (phase === "train") {
   process.exit(0);
 }
 if (phase === "quantize") {
-  if (!values["quantizer-binary"] || !values["quantizer-source"])
-    fail("quantize requires pinned --quantizer-binary and --quantizer-source");
-  const quantizer = await verifyQuantizer(
-    values["quantizer-binary"],
-    values["quantizer-source"],
-  );
   const result = await attempt(run, phase, source, async () => {
     const parent = JSON.parse(await bytes(resolve(run, "artifact.json")));
     const f16 = await verifyTrainedArtifactExport(parent);
