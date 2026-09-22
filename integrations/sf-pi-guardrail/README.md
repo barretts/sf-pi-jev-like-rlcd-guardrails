@@ -101,18 +101,19 @@ and all other qualification gates are unresolved.
 
 ## Current local use
 
-Use a fresh SF Pi worktree at the pinned baseline, then apply the Candidate 6
-scored-host patch:
+Use a fresh SF Pi worktree at the pinned baseline, then apply the Candidate 7
+evaluation-host patch:
 
 ```sh
 git -C /path/to/sf-pi worktree add --detach /tmp/sf-pi-jev-risk 4f901db9c3f5076ea0305dea33ad6e8856e467da
-git -C /tmp/sf-pi-jev-risk apply --index /path/to/simple-jev-ts/integrations/sf-pi-guardrail/candidate6-sf-pi-from-4f901db9.patch
+git -C /tmp/sf-pi-jev-risk apply --index /path/to/simple-jev-ts/integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch
 git -C /tmp/sf-pi-jev-risk write-tree
 ```
 
-The final command should print `2151c6cdda44494ab337046db4a1346381c52a57`.
+The final command should print `77baa1b435e07da31675a26ead942d36f0a1bdbe`.
 Install that local SF Pi package and the separately built Jev extension in an
-isolated Pi environment when exercising it. See [GUARDRAIL.md](../../GUARDRAIL.md)
+isolated Pi environment for shadow inspection. Both C7 models failed VALID
+selection, so this patch does not permit model enforcement. See [GUARDRAIL.md](../../GUARDRAIL.md)
 for candidate selection, training, and the reproducible bridge evaluation.
 
 ## Historical candidate 4 integration
@@ -191,7 +192,10 @@ behavior; they do not establish local-model effectiveness. The current model
 results, matched-workflow measures, and remaining qualification gates are in the
 [evidence report](../../reports/guardrail-risk-2026-09-21/README.md).
 
-Model-derived approvals are bound to one operation attempt and the active policy,
-model, and scoring protocol. The existing hook still owns exact policy blocks and
-native session handling. `off` remains the default; a candidate that fails its
-frozen qualification leaves the existing engine active.
+Model-derived approval fingerprints bind the complete operation, observed host
+facts, cwd, active policy, model, and scoring protocol. An existing baseline
+confirmation may retain its session option for the exact repeated operation
+when its scope permits it and the org is not production or unknown; a novel
+model-only risk receives no session option. The existing hook still owns exact
+policy blocks, approval revocation, and audit. `off` remains the default; a
+candidate that fails qualification leaves the existing engine active.
