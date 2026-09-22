@@ -16,6 +16,8 @@ export const C5_RESEARCH_SHA256 =
   "f97050f508c45c16bf14b8c68aae50cf51e43404056bffe25cb91dd1365983ea";
 const C5_PROTOCOL_SHA256 =
   "b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e";
+const C6_PROTOCOL_SHA256 =
+  "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530";
 const BASE_MODEL = "google/gemma-3-1b-it";
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const canonical = (value) =>
@@ -509,9 +511,9 @@ async function main() {
     throw new Error(
       "Required: --input C5_JSONL --output NEW_C6_JSONL --receipt NEW_JSON",
     );
-  if (GUARDRAIL_PROTOCOL_SHA256 !== C5_PROTOCOL_SHA256)
+  if (GUARDRAIL_PROTOCOL_SHA256 !== C6_PROTOCOL_SHA256)
     throw new Error(
-      "Changed Jev scoring protocol; C6 correction must be reviewed again",
+      "Changed Jev scoring protocol; C6 corrected output must be reviewed again",
     );
   const inputPath = resolve(values.input);
   const outputPath = resolve(values.output);
@@ -558,9 +560,13 @@ async function main() {
       input: inputPath,
       inputSha256: sha(inputBytes),
       scriptSha256: sha(await readFile(fileURLToPath(import.meta.url))),
-      scoringProtocolSha256: GUARDRAIL_PROTOCOL_SHA256,
+      scoringProtocolSha256: C5_PROTOCOL_SHA256,
     },
-    output: { file: outputPath, sha256: sha(outputBytes) },
+    output: {
+      file: outputPath,
+      sha256: sha(outputBytes),
+      scoringProtocolSha256: C6_PROTOCOL_SHA256,
+    },
   };
   await Promise.all([
     mkdir(dirname(outputPath), { recursive: true }),

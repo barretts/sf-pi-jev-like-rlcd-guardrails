@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
+import { createHash, randomUUID } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
@@ -14,13 +15,119 @@ import {
 const root = resolve(import.meta.dirname, "..");
 const corrected = resolve(
   root,
-  ".build/guardrail/candidate-6-dev-corrections-v4-20260922",
+  ".build/guardrail/candidate-6-dev-corrections-v5-20260922",
 );
 const c5 = resolve(
   root,
   ".build/guardrail/candidate-5-research-split-e456e1c9-20260922",
 );
 const sha = (value) => createHash("sha256").update(value).digest("hex");
+
+test(
+  "final sf-pi host replays all corrected rows without policy floor or fallback",
+  { skip: !process.env.C6_SF_PI || !process.env.C6_SF_DEPS },
+  async () => {
+    const outputDir = resolve(
+      root,
+      `.build/guardrail/candidate-6-corrected-host-preflight-test-${randomUUID()}`,
+    );
+    try {
+      const result = spawnSync(
+        process.execPath,
+        [
+          resolve(
+            root,
+            "scripts/guardrail-candidate6-corrected-host-preflight.mjs",
+          ),
+          "--dataset",
+          resolve(corrected, "merged-train-validation.jsonl"),
+          "--receipt",
+          resolve(corrected, "receipt.json"),
+          "--merge-receipt",
+          resolve(c5, "merge-receipt.json"),
+          "--sf-pi",
+          process.env.C6_SF_PI,
+          "--sf-deps",
+          process.env.C6_SF_DEPS,
+          "--output-dir",
+          outputDir,
+        ],
+        { encoding: "utf8", timeout: 30_000 },
+      );
+      assert.equal(result.status, 0, result.stderr);
+      const receipt = JSON.parse(
+        await readFile(resolve(outputDir, "receipt.json"), "utf8"),
+      );
+      assert.equal(receipt.qualification, false);
+      assert.equal(receipt.trainingReady, false);
+      assert.equal(receipt.modelCalls, 0);
+      assert.equal(receipt.externalOperationsExecuted, 0);
+      assert.deepEqual(receipt.bySplit.train, {
+        total: 158,
+        matched: 158,
+        policyFloor: 0,
+        ineligible: 0,
+        fallback: 0,
+      });
+      assert.deepEqual(receipt.bySplit.validation, {
+        total: 96,
+        matched: 96,
+        policyFloor: 0,
+        ineligible: 0,
+        fallback: 0,
+      });
+      assert.equal(
+        receipt.source.scorerProtocolSha256,
+        "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
+      );
+      assert.equal(
+        receipt.source.sfPiCommit,
+        "dd97a1a9165a89cdb7ff5b2d0c84d2bbf3843277",
+      );
+    } finally {
+      await rm(outputDir, { recursive: true, force: true });
+    }
+  },
+);
+
+test("corrected source preserves C5 protocol and binds new C6 output protocol", async () => {
+  const verified = await verifyCorrectedSource({
+    datasetPath: resolve(corrected, "merged-train-validation.jsonl"),
+    receiptPath: resolve(corrected, "receipt.json"),
+    mergeReceiptPath: resolve(c5, "merge-receipt.json"),
+  });
+  assert.equal(verified.rows.length, 254);
+  assert.equal(
+    verified.receipt.source.scoringProtocolSha256,
+    "b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e",
+  );
+  assert.equal(
+    verified.receipt.output.scoringProtocolSha256,
+    "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
+  );
+});
+
+test("host replay rejects a correction receipt claiming the old output protocol", async () => {
+  const dir = await mkdtemp(resolve(tmpdir(), "c6-old-output-protocol-"));
+  try {
+    const receipt = JSON.parse(
+      await readFile(resolve(corrected, "receipt.json"), "utf8"),
+    );
+    receipt.output.scoringProtocolSha256 = receipt.source.scoringProtocolSha256;
+    const receiptPath = resolve(dir, "receipt.json");
+    await writeFile(receiptPath, `${JSON.stringify(receipt)}\n`);
+    await assert.rejects(
+      verifyCorrectedSource({
+        datasetPath: resolve(corrected, "merged-train-validation.jsonl"),
+        receiptPath,
+        mergeReceiptPath: resolve(c5, "merge-receipt.json"),
+      }),
+      /pinned C5\/C6 identity/,
+    );
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
 
 function row(
   command = "sf data query --query 'SELECT Id FROM Account LIMIT 1' -o DevOrg",

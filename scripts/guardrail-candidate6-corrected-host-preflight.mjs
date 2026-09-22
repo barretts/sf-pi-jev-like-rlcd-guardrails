@@ -41,12 +41,21 @@ const sourceSha256 =
 const correctedSha256 =
   "cb50f35f9d0eedf7c366b5093d216839b26c1c7a7103902b81a368addd8a5f09";
 const correctionScriptSha256 =
-  "d354dfb7cf0ca07463691eb04bff188ff13f8d4402418347d0353472afc33782";
-const protocolSha256 =
+  "cea39cfe8140e6289de07e33ff61c740fc113a2ce1f975700b92262ad68386c7";
+const c5ProtocolSha256 =
   "b249564d783087cd105fec3c1f92c4ce93201c1ae06958e8498b35aa2988cd8e";
-const sfCommit = "e456e1c9c7c0c9b97ccb08f4084558e5cbcd7a8c";
-const sfRuntimeSha256 =
+const c6ProtocolSha256 =
+  "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530";
+const c5SfCommit = "e456e1c9c7c0c9b97ccb08f4084558e5cbcd7a8c";
+const c5SfRuntimeSha256 =
   "b1dd0309a789b30c98a7d14a01d843fc3ab199d1542d023ce97c10cbcd2a9e7d";
+const sfCommit = "dd97a1a9165a89cdb7ff5b2d0c84d2bbf3843277";
+const sfRuntimeSha256 =
+  "7d8c068bf02725b1f5ad7d77349a4144390ab0f1a6e531bc28f89af8270154c4";
+const scorerDistributionSha256 =
+  "451e617f598d2b2e6bb5a708b3725f6b0cf3bde129cfc2a7ef7d1915618c34e2";
+const sfPackageLockSha256 =
+  "d5c07361d083931e11e04367562a81a8f0c04347e34be9079f973c7184d17ad9";
 const discoveryStubSha256 =
   "6f2de20efc26434e87510be0e9e7dd40e035a0ae449a43ce12c1d17acab68dce";
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
@@ -101,7 +110,7 @@ export async function verifyCorrectedSource({
   const receipt = JSON.parse(receiptBytes);
   const merge = JSON.parse(mergeBytes);
   if (
-    GUARDRAIL_PROTOCOL_SHA256 !== protocolSha256 ||
+    GUARDRAIL_PROTOCOL_SHA256 !== c6ProtocolSha256 ||
     sha(correctionBytes) !== correctionScriptSha256 ||
     sha(datasetBytes) !== correctedSha256 ||
     receipt?.version !== 1 ||
@@ -138,7 +147,8 @@ export async function verifyCorrectedSource({
     receipt.output?.sha256 !== correctedSha256 ||
     receipt.source?.inputSha256 !== sourceSha256 ||
     receipt.source?.scriptSha256 !== correctionScriptSha256 ||
-    receipt.source?.scoringProtocolSha256 !== protocolSha256 ||
+    receipt.source?.scoringProtocolSha256 !== c5ProtocolSha256 ||
+    receipt.output?.scoringProtocolSha256 !== c6ProtocolSha256 ||
     merge?.version !== 1 ||
     merge.purpose !== "nonqualifying_v3_research_merged_train_validation" ||
     merge.qualification !== false ||
@@ -151,9 +161,9 @@ export async function verifyCorrectedSource({
         test: merge.rows.test,
       },
     ) !== canonical({ train: 167, validation: 96, test: 0 }) ||
-    merge.source?.sfPiCommit !== sfCommit ||
-    merge.source?.sfPiRuntimeSha256 !== sfRuntimeSha256 ||
-    merge.source?.scorerProtocolSha256 !== protocolSha256 ||
+    merge.source?.sfPiCommit !== c5SfCommit ||
+    merge.source?.sfPiRuntimeSha256 !== c5SfRuntimeSha256 ||
+    merge.source?.scorerProtocolSha256 !== c5ProtocolSha256 ||
     merge.source?.model !== RFDT_BASE_MODEL ||
     merge.source?.revision !== RFDT_BASE_REVISION ||
     resolve(merge.dataset?.file ?? "") !==
@@ -344,7 +354,7 @@ const bump = (record, key) => {
 
 export async function replayCorrectedPool({ rows, sf, sfDeps }) {
   if (gitHead(sf) !== sfCommit)
-    throw new Error("sf-pi commit differs from pinned C5 source");
+    throw new Error("sf-pi commit differs from pinned C6 host");
   if (!(await stat(sfDeps)).isDirectory())
     throw new Error("--sf-deps must be an installed dependency directory");
   configureHostResolver(sf, sfDeps);
@@ -368,7 +378,7 @@ export async function replayCorrectedPool({ rows, sf, sfDeps }) {
     ]);
     const runtimeSha = getJevRiskBaselineSha256();
     if (runtimeSha !== sfRuntimeSha256)
-      throw new Error("sf-pi runtime differs from pinned C5 baseline");
+      throw new Error("sf-pi runtime differs from pinned C6 host");
     const bySplit = {
       train: {
         total: 0,
@@ -528,6 +538,13 @@ async function main() {
   ]);
   if (sha(stubBytes) !== discoveryStubSha256)
     throw new Error("Mock discovery stub differs from reviewed C5 source");
+  if (
+    sha(scorerBytes) !== scorerDistributionSha256 ||
+    sha(sfLockBytes) !== sfPackageLockSha256
+  )
+    throw new Error(
+      "Current C6 scorer or sf-pi dependency lock differs from pin",
+    );
   const result = await replayCorrectedPool({ rows: verified.rows, sf, sfDeps });
   const end = await verifyCorrectedSource(paths);
   if (
@@ -579,7 +596,8 @@ async function main() {
       sfDependenciesDirectory: sfDeps,
       mockDiscoveryStubSha256: sha(stubBytes),
       scorerDistributionSha256: sha(scorerBytes),
-      scorerProtocolSha256: protocolSha256,
+      scorerProtocolSha256: c6ProtocolSha256,
+      c5SourceScorerProtocolSha256: c5ProtocolSha256,
       rfdtBaseModel: RFDT_BASE_MODEL,
       rfdtBaseRevision: RFDT_BASE_REVISION,
     },
