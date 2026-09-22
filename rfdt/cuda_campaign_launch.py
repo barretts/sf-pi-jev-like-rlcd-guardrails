@@ -220,9 +220,10 @@ def snapshot_checkpoint_memory(run_root: Path, checkpoint: Path | int, output: P
                 or row["shared_delta_bytes"] >= launch["shared_growth_limit_bytes"]
                 or row["dedicated_bytes"] >= launch["stop_total_dedicated_bytes"]):
             raise ValueError("Checkpoint journal reaches memory stop limit")
-    if any(left["time_unix"] >= right["time_unix"] for left, right in zip(rows, rows[1:])):
+    if any(left["time_unix"] >= right["time_unix"] or left["elapsed_seconds"] >= right["elapsed_seconds"]
+           for left, right in zip(rows, rows[1:])):
         raise ValueError("Checkpoint journal timestamps are not ordered")
-    if not rows[0]["time_unix"] <= completion <= rows[-1]["time_unix"]:
+    if not rows[0]["time_unix"] <= completion < rows[-1]["time_unix"]:
         raise ValueError("Wait for watchdog sample after checkpoint completion")
     now = time.time()
     if now < rows[-1]["time_unix"]:
