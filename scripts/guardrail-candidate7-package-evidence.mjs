@@ -2,6 +2,7 @@
 /** Preserve C7 TRAIN and real VALID receipts without copying model weights or TEST. */
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import { createReadStream } from "node:fs";
 import {
   lstat,
   mkdir,
@@ -36,6 +37,12 @@ const source = Object.freeze({
   preflightSha256:
     "6a6181facc00f8f1b5503f467a339079bdedffb3cd011c5376abff968c05a23b",
   sfPiHead: "bc7862b078997d2c60aa908979b5cbf59f83db80",
+  sfPiRuntimeSha256:
+    "6ec845e7365d2948ecf502326bcabbb7b042b7d300437516db3b299fd390078e",
+  sfPiPatchSha256:
+    "b1a6e9cbaa436b803fe43b88cc4472f08e1df4261b5ce22001486ca8caeb4bae",
+  evaluatorScriptSha256:
+    "b3bdbd780a99133ce2406a2efa94c72534218a5a1c51e9ea95b10c0dbd0cdf5c",
   modelIds: Object.freeze({
     128: "jev/gemma-3-1b-guardrail-c7-128-v1",
     256: "jev/gemma-3-1b-guardrail-c7-256-v1",
@@ -60,6 +67,14 @@ async function regularBytes(path) {
     fail(`${path} is not a regular file`);
   if (entry.size > 25_000_000) fail(`${path} exceeds the receipt size bound`);
   return readFile(path);
+}
+async function largeFileHash(path, expectedSize) {
+  const entry = await lstat(path);
+  if (!entry.isFile() || entry.isSymbolicLink() || entry.size !== expectedSize)
+    fail(`${path} is not the expected regular model artifact`);
+  const hash = createHash("sha256");
+  for await (const chunk of createReadStream(path)) hash.update(chunk);
+  return hash.digest("hex");
 }
 function head(path) {
   return execFileSync("git", ["rev-parse", "HEAD"], {
@@ -96,6 +111,8 @@ async function main() {
       "integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch",
     ),
   );
+  if (sha(patch) !== source.sfPiPatchSha256)
+    fail("baseline-bound sf-pi patch changed");
   const fakePreflight = await regularBytes(
     resolve(
       evaluatorRoot,
@@ -132,9 +149,14 @@ async function main() {
       report.source?.evaluatorGitHead !== source.evaluatorHead ||
       report.source?.manifestSha256 !== source.manifestSha256 ||
       report.source?.sfPiCommit !== source.sfPiHead ||
+      report.source?.sfPiRuntimeSha256 !== source.sfPiRuntimeSha256 ||
+      report.source?.evaluatorScriptSha256 !== source.evaluatorScriptSha256 ||
+      report.source?.preflightSha256 !== source.preflightSha256 ||
       report.source?.modelId !== source.modelIds[steps] ||
       report.metrics?.cases !== 65 ||
-      report.metrics?.preparedModelCalls !== 36
+      report.metrics?.preparedModelCalls !== 36 ||
+      !Array.isArray(report.records) ||
+      report.records.length !== 65
     )
       fail(`${steps}-step report is not the pinned real C7 VALID replay`);
     const run = resolve(
@@ -146,9 +168,22 @@ async function main() {
     );
     if (
       artifact.id !== source.modelIds[steps] ||
-      artifact.sha256 !== report.source.modelSha256
+      artifact.sha256 !== report.source.modelSha256 ||
+      artifact.file !== resolve(run, "gemma-3-1b-rfdt-f16.gguf")
     )
       fail(`${steps}-step artifact and VALID report disagree`);
+    const registry = JSON.parse(
+      await regularBytes(resolve(run, "candidate-registry.json")),
+    );
+    const entry = registry.artifacts?.find((item) => item.id === artifact.id);
+    if (
+      entry?.sha256 !== artifact.sha256 ||
+      entry?.size !== artifact.size ||
+      entry?.file !== artifact.file
+    )
+      fail(`${steps}-step registry and artifact disagree`);
+    if ((await largeFileHash(artifact.file, artifact.size)) !== artifact.sha256)
+      fail(`${steps}-step local model bytes changed since scoring`);
     reports[steps] = { path, bytes, report, run };
   }
 
