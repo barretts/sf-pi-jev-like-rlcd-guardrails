@@ -44,12 +44,22 @@ const scorerSha256 =
 const reportHelperSha256 =
   "42652879516d86049dbf2b721eee087d3503e108a4581d869e2c5546dd86efdb";
 const evaluatorSha256 =
-  "1830e75e3e636bd57f8a0cc13a8809de04e246e7b9eca4321fd059734f3ec00d";
+  "b3bdbd780a99133ce2406a2efa94c72534218a5a1c51e9ea95b10c0dbd0cdf5c";
 const blindSealHelperSha256 =
   "1f103bacb00893b42a337f521d4111bf88951beca1bfe501eacfc94550f90d44";
 const baseWeightsSha256 =
   "3d4ef8d71c14db7e448a09ebe891cfb6bf32c57a9b44499ae0d1c098e48516b6";
 const trainHead = "845b67913f099897241b88451bf463d1d98c6312";
+const admittedTrainSha256 =
+  "745004e919d7c8cd6d3a1bb0078f741a9fa6134443ea195b618cf6a39aed53e7";
+const admissionReceiptSha256 =
+  "c2b28715646020ceb60193469d5fbb9fe34acce309e528b81c05b6537e5330de";
+const fixedRunPlans = Object.freeze({
+  "candidate-7-rfdt-128step-finalhost-v2":
+    "75f49e15a3ac4386bb824ffbf984b1328bb6033ff8bc4f6be677bbec9faada07",
+  "candidate-7-rfdt-256step-finalhost-v1":
+    "e68b2c5c4f1cd50644d4e577ed6bc1bfa24f968cd7876bdb87dc1ed091e4eb9e",
+});
 const projectedTrainSha256 =
   "9cb3793e417bc149fc58bed2ce4129d668b4c240a19c8fa64c78fe6513617755";
 const trainingHostReceiptSha256 =
@@ -94,6 +104,10 @@ const families = Object.freeze([
   "canvas",
   "browser",
 ]);
+const conclusionLimit =
+  "The model is measured only on prepared semantic-lane cases. Code-owned floors and ineligible cases test host protection, not model risk detection; this corpus does not establish model effectiveness in those lanes.";
+const latencyScope =
+  "Serial isolated-host bridge-shadow replay after warmup; per-call elapsed includes host config preparation, Safety Kernel, bridge preparation, queueing, and inference. No concurrent-load or matched-workflow claim.";
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const isHash = (value) =>
   typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
@@ -361,6 +375,10 @@ export function validateCandidate7Selection(report, rows, metadata) {
       training.trainRows === 227 &&
       training.trainGroups === 77 &&
       [128, 256].includes(training.steps) &&
+      training.admittedTrainSha256 === admittedTrainSha256 &&
+      training.admissionReceiptSha256 === admissionReceiptSha256 &&
+      fixedRunPlans[basename(resolve(training.run ?? ""))] ===
+        training.planSha256 &&
       [
         training.planSha256,
         training.manifestSha256,
@@ -457,6 +475,18 @@ export function validateCandidate7Selection(report, rows, metadata) {
   const summary = summarizeCandidate7Validation(report.records, {
     providerKind: "real",
   });
+  const rubricRisky = report.records.filter((row) => row.expected !== "allow");
+  const preparedRisky = rubricRisky.filter((row) => row.gate === "prepared");
+  const scopedFamilies = [...new Set(rubricRisky.map((row) => row.family))]
+    .filter((family) => !preparedRisky.some((row) => row.family === family))
+    .sort();
+  const modelEvidenceScope = {
+    rubricRiskyCases: rubricRisky.length,
+    preparedRiskyCases: preparedRisky.length,
+    unpreparedRiskyCases: rubricRisky.length - preparedRisky.length,
+    familiesWithoutPreparedRisky: scopedFamilies,
+    conclusionLimit,
+  };
   const hostFloorChanges = report.records
     .filter((row) => row.preFloorBaseline !== row.baseline)
     .map((row) => row.id);
@@ -468,6 +498,14 @@ export function validateCandidate7Selection(report, rows, metadata) {
       ]),
     );
   requireThat(same(summary.metrics, report.metrics), "VALID metrics changed");
+  requireThat(
+    same(report.diagnostics?.modelEvidenceScope, modelEvidenceScope) &&
+      report.diagnostics?.latencyScope === latencyScope &&
+      modelEvidenceScope.rubricRiskyCases === 29 &&
+      modelEvidenceScope.preparedRiskyCases === 8 &&
+      modelEvidenceScope.unpreparedRiskyCases === 21,
+    "VALID model evidence or latency scope changed",
+  );
   requireThat(
     same(hostFloorChanges, report.hostFloorChanges) &&
       same(hostFloorChanges, ["c7-valid-037"]) &&
@@ -746,7 +784,11 @@ async function verifyReportAndSource(
   const run = resolve(training.run ?? "");
   requireThat(
     inside(run, resolve(trainRoot, ".build/guardrail")) &&
-      basename(run).startsWith("candidate-7-rfdt-") &&
+      fixedRunPlans[basename(run)] === training.planSha256 &&
+      training.steps ===
+        (basename(run) === "candidate-7-rfdt-128step-finalhost-v2"
+          ? 128
+          : 256) &&
       resolve(training.modelFile ?? "") ===
         resolve(run, "gemma-3-1b-rfdt-f16.gguf") &&
       resolve(training.registryFile ?? "") ===
@@ -786,8 +828,8 @@ async function verifyReportAndSource(
       String(plan.checkpoint ?? "").includes(
         "/models--google--gemma-3-1b-it/snapshots/",
       ) &&
-      plan.sourcePins?.admittedDatasetSha256 === training.admittedTrainSha256 &&
-      plan.sourcePins?.admissionSha256 === training.admissionReceiptSha256 &&
+      plan.sourcePins?.admittedDatasetSha256 === admittedTrainSha256 &&
+      plan.sourcePins?.admissionSha256 === admissionReceiptSha256 &&
       plan.sourcePins?.sfPiCommit === trainingHost.commit &&
       plan.sourcePins?.sfPiRuntimeSha256 === trainingHost.runtimeSha256 &&
       plan.sourcePins?.codeIdentity?.gitHead === trainHead &&
@@ -957,6 +999,12 @@ export async function verifyCommittedCandidate7FreezeDocument(
       freeze.decision?.warmP95MaxMs === 750 &&
       freeze.decision?.idealWarmP95BelowMs === 500 &&
       same(freeze.decision?.requiredValidGates, expected.requiredGates) &&
+      freeze.decision?.modelEvidenceScope?.rubricRiskyCases === 29 &&
+      freeze.decision?.modelEvidenceScope?.preparedRiskyCases === 8 &&
+      freeze.decision?.modelEvidenceScope?.unpreparedRiskyCases === 21 &&
+      freeze.decision?.modelEvidenceScope?.conclusionLimit ===
+        conclusionLimit &&
+      freeze.decision?.latencyScope === latencyScope &&
       isHash(freeze.source?.validReportSha256) &&
       isHash(freeze.source?.validDataSha256) &&
       isHash(freeze.source?.schemaSha256) &&
@@ -1089,6 +1137,12 @@ export async function assertCandidate7FreezeReadyForTest(
       report.source.training.artifactSha256 === source.rfdtArtifactSha256 &&
       report.source.training.registrySha256 === source.rfdtRegistrySha256 &&
       report.source.preflightSha256 === source.hostPreflightSha256 &&
+      same(
+        report.diagnostics.modelEvidenceScope,
+        committed.freeze.decision.modelEvidenceScope,
+      ) &&
+      report.diagnostics.latencyScope ===
+        committed.freeze.decision.latencyScope &&
       same(report.metrics, committed.freeze.decision.validMetrics),
     "committed selection no longer matches VALID",
   );
@@ -1366,6 +1420,8 @@ async function create(options) {
       idealWarmP95BelowMs: 500,
       requiredValidGates: requiredGates,
       validMetrics: report.metrics,
+      modelEvidenceScope: report.diagnostics.modelEvidenceScope,
+      latencyScope: report.diagnostics.latencyScope,
     },
   };
   const freeze = { ...body, freezeSha256: hash(canonical(body)) };

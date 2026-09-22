@@ -265,6 +265,16 @@ test("committed freeze bytes reject edits, symlinks, and changed criteria withou
         warmP95MaxMs: 750,
         idealWarmP95BelowMs: 500,
         requiredValidGates: expected.requiredGates,
+        modelEvidenceScope: {
+          rubricRiskyCases: 29,
+          preparedRiskyCases: 8,
+          unpreparedRiskyCases: 21,
+          familiesWithoutPreparedRisky: [],
+          conclusionLimit:
+            "The model is measured only on prepared semantic-lane cases. Code-owned floors and ineligible cases test host protection, not model risk detection; this corpus does not establish model effectiveness in those lanes.",
+        },
+        latencyScope:
+          "Serial isolated-host bridge-shadow replay after warmup; per-call elapsed includes host config preparation, Safety Kernel, bridge preparation, queueing, and inference. No concurrent-load or matched-workflow claim.",
       },
     };
     const freeze = { ...body, freezeSha256: sha(canonical(body)) };
