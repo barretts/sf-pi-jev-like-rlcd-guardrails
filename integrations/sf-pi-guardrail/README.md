@@ -6,6 +6,32 @@ grants and audit records. Exact policy constraints remain in code. The extension
 uses no Jev implementation imports: it discovers one versioned provider through
 `sf-guardrail:risk-providers`.
 
+## Candidate 7 evaluation host
+
+The [Candidate 7 baseline-bound patch](./candidate7-sf-pi-from-4f901db9.patch)
+reconstructs the final local sf-pi host used for C7's frozen validation
+comparison. This is integration source provenance, not a model effectiveness
+score or permission to enable `enforce`.
+
+| Artifact              | Pinned identity                                                    |
+| --------------------- | ------------------------------------------------------------------ |
+| SF Pi baseline commit | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                         |
+| C7 evaluation commit  | `bc7862b078997d2c60aa908979b5cbf59f83db80`                         |
+| Evaluation host tree  | `77baa1b435e07da31675a26ead942d36f0a1bdbe`                         |
+| Risk runtime SHA-256  | `6ec845e7365d2948ecf502326bcabbb7b042b7d300437516db3b299fd390078e` |
+| Patch SHA-256         | `b1a6e9cbaa436b803fe43b88cc4472f08e1df4261b5ce22001486ca8caeb4bae` |
+| Patch size            | 441,504 bytes                                                      |
+
+The patch is `git diff --binary --full-index` from the exact baseline to the
+evaluation commit. `git apply --cached --check` and application into a disposable
+index reproduced the evaluation tree exactly. That verification wrote no
+working files or index changes to the sf-pi checkout. The C7 TRAIN source used
+the preceding sf-pi commit `a12f1de85c1919fa2ff94bf9315c522b0ad382da`;
+the 52 new TRAIN requests were independently replayed through both hosts and
+produced byte-identical model inputs. The 175 inherited C6 TRAIN requests were
+not reprojected on the newer host, so that equality claim is limited to the
+new supplement.
+
 ## Candidate 6 scored host
 
 The [Candidate 6 baseline-bound patch](./candidate6-sf-pi-from-4f901db9.patch)
