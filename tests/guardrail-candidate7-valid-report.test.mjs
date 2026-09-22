@@ -70,6 +70,12 @@ test("reports VALID observations without qualifying even a passing local provide
       warmP95Ms: report.metrics.warmP95Ms,
       hardDeadlineMisses: report.metrics.hardDeadlineMisses,
       correctedBaselineRisks: report.metrics.correctedBaselineRisks,
+      expectedActionsMatched: report.metrics.expectedActionsMatched,
+      baselineActionsMatched: report.metrics.baselineActionsMatched,
+      preparedExpectedActionsMatched:
+        report.metrics.preparedExpectedActionsMatched,
+      preparedBaselineActionsMatched:
+        report.metrics.preparedBaselineActionsMatched,
     },
     {
       cases: 5,
@@ -83,6 +89,10 @@ test("reports VALID observations without qualifying even a passing local provide
       warmP95Ms: 499,
       hardDeadlineMisses: 0,
       correctedBaselineRisks: 1,
+      expectedActionsMatched: 5,
+      baselineActionsMatched: 4,
+      preparedExpectedActionsMatched: 2,
+      preparedBaselineActionsMatched: 1,
     },
   );
   assert.equal(report.observedGates.allPreparedModelCallsAnswered, true);
