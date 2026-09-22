@@ -115,7 +115,11 @@ def run(args: argparse.Namespace) -> None:
                 elif shared_delta >= args.shared_growth_limit_bytes:
                     reason = "shared_memory_growth"
             except BaseException as error:
-                journal.write(json.dumps({"time_unix": time.time(), "monitor_error": type(error).__name__}) + "\n")
+                journal.write(json.dumps({
+                    "time_unix": time.time(),
+                    "monitor_error": type(error).__name__,
+                    "detail": str(error)[:500],
+                }) + "\n")
                 reason = "monitor_error"
             if reason != "worker_exit":
                 stop_owned_worker(pid, worker, run_dir)
