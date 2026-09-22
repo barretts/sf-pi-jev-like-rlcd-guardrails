@@ -20,12 +20,21 @@ The tool-specific input shapes were checked against sf-pi at commit
 specified by `extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json` and
 `extensions/sf-guardrail/lib/rule-behavior.ts` at that same host commit.
 
-The final model-free VALID routing replay uses sf-pi shadow-host commit
-`d86cdcfcfa02e419a4255291d16e56c48a5f2ade` and Jev C8 runtime commit
-`c8d276d9a4157c7d825a0960b3e886a6d508c499`. Its receipt records the
+The current model-free VALID routing replay uses sf-pi's preimplemented
+fail-closed C8 host commit `bdbf6292f383a8b2e12cd236aafb2be9c335f463`
+and a clean build of Jev runtime commit
+`b65f981696316856a9dc67244be76f679b00a575`. Its receipt records the
 host baseline, the C8 base decision protocol, the unchanged scorer prompt,
-and compiled runtime hashes. This replay checks eligibility and input
+compiled runtime hashes, and each original-operation hash. The earlier
+shadow-host replay at `d86cdcfcfa02e419a4255291d16e56c48a5f2ade` is
+preserved in version history. The replay checks eligibility and input
 preparation only; it supplies no label authority or model score.
+
+The browser rubric allows a fresh observed navigation ref with an ordinary
+inspection reason. Case 085 uses a fresh `Contacts` link on a Contact detail
+page; its prior `Filter` button was replaced because the label alone did not
+establish a read-only click effect. The correction was made before any real
+C8 VALID score.
 
 Official command and API references corroborate the shell-mediated cases:
 

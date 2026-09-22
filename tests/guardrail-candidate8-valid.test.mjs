@@ -9,10 +9,18 @@ import { definitions } from "../blind-c8-20260922/valid.source.mjs";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const directory = resolve(root, "blind-c8-20260922");
-const readJson = async (file) => JSON.parse(await readFile(resolve(directory, file), "utf8"));
+const readJson = async (file) =>
+  JSON.parse(await readFile(resolve(directory, file), "utf8"));
 const lanes = new Set([
-  "shell", "herdr_pane", "salesforce_cli", "apex", "agentscript",
-  "data360", "soql", "canvas", "browser",
+  "shell",
+  "herdr_pane",
+  "salesforce_cli",
+  "apex",
+  "agentscript",
+  "data360",
+  "soql",
+  "canvas",
+  "browser",
   "exact_policy",
 ]);
 
@@ -41,7 +49,10 @@ test("VALID cases have 48 complete, nonoverlapping contrast groups", async () =>
     assert.equal(templates.has(row.template_id), false, row.template_id);
     templates.add(row.template_id);
     assert.ok(row.fixture.cwd && row.fixture.facts.length > 0, row.id);
-    assert.ok(row.operation.tool && Object.keys(row.operation.input).length > 0, row.id);
+    assert.ok(
+      row.operation.tool && Object.keys(row.operation.input).length > 0,
+      row.id,
+    );
     assert.ok(row.expected.reason_code && row.expected.rationale, row.id);
     assert.ok(row.sources.includes("fixtures/guardrail/RUBRIC.md"), row.id);
     const key = JSON.stringify([row.operation.tool, row.operation.input]);
@@ -53,10 +64,17 @@ test("VALID cases have 48 complete, nonoverlapping contrast groups", async () =>
   assert.equal(groups.size, 48);
   for (const [group, rows] of groups) {
     assert.equal(rows.length, 2, group);
-    assert.deepEqual(new Set(rows.map((row) => row.expected.decision)),
-      new Set(["allow", group.includes("exact_policy") ? "hard_block" : "require_approval"]), group);
+    assert.deepEqual(
+      new Set(rows.map((row) => row.expected.decision)),
+      new Set([
+        "allow",
+        group.includes("exact_policy") ? "hard_block" : "require_approval",
+      ]),
+      group,
+    );
   }
-  for (const lane of lanes) assert.equal(laneCounts.get(lane), lane === "exact_policy" ? 6 : 10, lane);
+  for (const lane of lanes)
+    assert.equal(laneCounts.get(lane), lane === "exact_policy" ? 6 : 10, lane);
 });
 
 test("VALID browser and org facts are separately supplied", async () => {
@@ -65,49 +83,136 @@ test("VALID browser and org facts are separately supplied", async () => {
     const observed = row.fixture.observations ?? {};
     if (observed.org) {
       assert.equal(observed.org.guessed, false, row.id);
-      assert.ok(["production", "sandbox", "scratch", "developer", "trial", "unknown"].includes(observed.org.type), row.id);
+      assert.ok(
+        [
+          "production",
+          "sandbox",
+          "scratch",
+          "developer",
+          "trial",
+          "unknown",
+        ].includes(observed.org.type),
+        row.id,
+      );
     }
     if (row.operation.tool === "sf_browser_click") {
       assert.equal(typeof row.operation.input.ref, "string", row.id);
       assert.ok(observed.browserRef, row.id);
       if (observed.browserRef.status === "fresh") {
-        assert.equal(observed.browserRef.snapshotSha256, observed.browserPage?.snapshotSha256, row.id);
-        assert.ok(observed.browserPage.snapshot.includes(`ref=${row.operation.input.ref}`), row.id);
+        assert.equal(
+          observed.browserRef.snapshotSha256,
+          observed.browserPage?.snapshotSha256,
+          row.id,
+        );
+        assert.ok(
+          observed.browserPage.snapshot.includes(
+            `ref=${row.operation.input.ref}`,
+          ),
+          row.id,
+        );
       }
     }
   }
+  const correctedNavigation = cases.find((row) => row.id === "c8-valid-085");
+  assert.equal(correctedNavigation.expected.decision, "allow");
+  assert.equal(
+    correctedNavigation.fixture.observations.browserRef.role,
+    "link",
+  );
+  assert.equal(
+    Object.hasOwn(correctedNavigation.operation.input, "mutation"),
+    false,
+  );
 });
 
 test("VALID host receipt pins every baseline action and prepared input", async () => {
   const sourceBytes = await readFile(resolve(directory, "valid.json"));
   const corpus = JSON.parse(sourceBytes);
   const receipt = await readJson("valid-host-preflight.json");
-  assert.equal(receipt.source_sha256, createHash("sha256").update(sourceBytes).digest("hex"));
+  assert.equal(
+    receipt.source_sha256,
+    createHash("sha256").update(sourceBytes).digest("hex"),
+  );
   assert.equal(receipt.mode, "fake-facts-no-model-no-execution");
   assert.equal(receipt.label_review, "machine_authored_human_review_pending");
-  assert.equal(receipt.host_commit, "d86cdcfcfa02e419a4255291d16e56c48a5f2ade");
-  assert.equal(receipt.host_baseline_sha256, "927c25ebee99f59ea349bcd6d5da06c9a999255e4e99d7658ee0f113da96e4f2");
-  assert.equal(receipt.jev_runtime_commit, "c8d276d9a4157c7d825a0960b3e886a6d508c499");
-  assert.equal(receipt.decision_base_protocol_sha256, "f4f00541c9ce815ca17d19400488f5e4e999c87e9712b7c0ec17419068e85f9b");
-  assert.equal(receipt.scorer_prompt_sha256, "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530");
+  assert.equal(receipt.host_commit, "bdbf6292f383a8b2e12cd236aafb2be9c335f463");
+  assert.equal(
+    receipt.host_baseline_sha256,
+    "1e5e8167f25ce8fb440d7bf8054be44a27d67c0fa71272a5558b01204c24bd0e",
+  );
+  assert.equal(
+    receipt.jev_runtime_commit,
+    "b65f981696316856a9dc67244be76f679b00a575",
+  );
+  assert.equal(
+    receipt.decision_base_protocol_sha256,
+    "f4f00541c9ce815ca17d19400488f5e4e999c87e9712b7c0ec17419068e85f9b",
+  );
+  assert.equal(
+    receipt.scorer_prompt_sha256,
+    "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
+  );
   assert.equal(receipt.model_protocol_sha256, receipt.scorer_prompt_sha256);
-  assert.equal(receipt.preflight_script_sha256,
-    createHash("sha256").update(await readFile(resolve(root, "scripts/guardrail-candidate8-valid-preflight.mjs"))).digest("hex"));
-  assert.equal(receipt.rubric_sha256,
-    createHash("sha256").update(await readFile(resolve(root, "fixtures/guardrail/RUBRIC.md"))).digest("hex"));
-  assert.equal(receipt.case_schema_sha256,
-    createHash("sha256").update(await readFile(resolve(directory, "case.schema.json"))).digest("hex"));
-  for (const field of ["jev_runtime_core_js_sha256", "jev_runtime_guardrail_js_sha256", "jev_runtime_calibration_js_sha256"])
+  assert.equal(
+    receipt.operation_sha256_contract,
+    "sha256(jev canonical({toolName,input:originalOperation,cwd}))",
+  );
+  assert.equal(
+    receipt.preflight_script_sha256,
+    createHash("sha256")
+      .update(
+        await readFile(
+          resolve(root, "scripts/guardrail-candidate8-valid-preflight.mjs"),
+        ),
+      )
+      .digest("hex"),
+  );
+  assert.equal(
+    receipt.rubric_sha256,
+    createHash("sha256")
+      .update(await readFile(resolve(root, "fixtures/guardrail/RUBRIC.md")))
+      .digest("hex"),
+  );
+  assert.equal(
+    receipt.case_schema_sha256,
+    createHash("sha256")
+      .update(await readFile(resolve(directory, "case.schema.json")))
+      .digest("hex"),
+  );
+  for (const field of [
+    "jev_runtime_core_js_sha256",
+    "jev_runtime_guardrail_js_sha256",
+    "jev_runtime_calibration_js_sha256",
+  ])
     assert.match(receipt[field], /^[a-f0-9]{64}$/, field);
   assert.equal(receipt.status.length, corpus.cases.length);
-  assert.deepEqual(receipt.status.map((row) => row.id), corpus.cases.map((row) => row.id));
+  assert.deepEqual(
+    receipt.status.map((row) => row.id),
+    corpus.cases.map((row) => row.id),
+  );
+  assert.deepEqual(
+    receipt.status.map((row) => [row.group_id, row.expected]),
+    corpus.cases.map((row) => [row.group_id, row.expected.decision]),
+  );
+  assert.equal(
+    new Set(receipt.status.map((row) => row.operation_sha256)).size,
+    corpus.cases.length,
+  );
   for (const row of receipt.status) {
-    assert.ok(["allow", "confirm", "block"].includes(row.baseline_action), row.id);
+    assert.match(row.operation_sha256, /^[a-f0-9]{64}$/, row.id);
+    assert.ok(
+      ["allow", "confirm", "block"].includes(row.baseline_action),
+      row.id,
+    );
     if (row.routing === "model_prepared")
       assert.match(row.risk_input_sha256, /^[a-f0-9]{64}$/, row.id);
-    else
-      assert.equal(row.risk_input_sha256, null, row.id);
+    else assert.equal(row.risk_input_sha256, null, row.id);
   }
   assert.equal(receipt.summary.exact_policy.baseline_blocks, 3);
   assert.equal(receipt.summary.exact_policy.model_prepared, 0);
+  const correctedNavigation = receipt.status.find(
+    (row) => row.id === "c8-valid-085",
+  );
+  assert.equal(correctedNavigation.baseline_action, "allow");
+  assert.equal(correctedNavigation.routing, "model_prepared");
 });

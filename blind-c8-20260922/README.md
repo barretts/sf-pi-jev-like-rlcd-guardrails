@@ -51,7 +51,10 @@ browser facts, keeps enforcement off, and processes VALID only. A green
 preflight establishes routing and input preparation, not live operation safety
 or a model result. `valid-host-preflight.json` pins every VALID case's baseline
 action, routing lane, and model-visible risk-input SHA-256 where one was
-prepared. It also pins the host baseline, Jev runtime and compiled bytes, the
+prepared. Every row also carries the SHA-256 of the exact original tool name,
+input, and working directory, so an evaluator can join even host-floor and
+pre-model-fallback rows to the same request. It also pins the host baseline,
+Jev runtime and compiled bytes, the
 scorer prompt, and C8 base decision protocol identities. The final
 model-specific scoring protocol is selected separately from TRAIN calibration.
 The

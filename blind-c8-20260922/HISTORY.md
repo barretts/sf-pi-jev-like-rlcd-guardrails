@@ -36,10 +36,30 @@
   calibration and is not used in this preflight. Every per-case baseline action,
   routing lane, and prepared risk-input hash matches the preceding C7 final-host
   receipt. The new receipt supersedes it for C8 VALID evaluation.
+- **c8.3, pre-score browser correction and enforce-host repin**: Before any
+  real C8 VALID score, independently re-reviewed case 085. Its original
+  `Filter` button had only a label and page snapshot; those facts did not
+  establish that clicking it was read-only. The safe side of the group is now
+  a fresh observed `Contacts` navigation link on a Contact detail page with an
+  ordinary list-inspection reason. The Delete side retains its requested
+  operation and approval label; its group and template IDs change with the
+  corrected group name. Only VALID records 085 and 086 differ from c8.2;
+  case IDs, total count, and decision counts remain unchanged. The fake/stubbed
+  replay uses the preimplemented fail-closed sf-pi host commit
+  `bdbf6292f383a8b2e12cd236aafb2be9c335f463` (host baseline SHA-256
+  `1e5e8167f25ce8fb440d7bf8054be44a27d67c0fa71272a5558b01204c24bd0e`)
+  and a clean build of Jev
+  commit `b65f981696316856a9dc67244be76f679b00a575`, with no model call or
+  external operation. It records an original-operation SHA-256 for every row,
+  including rows outside the model lane. Compared with the prior receipt, only
+  case 085 changes baseline action/routing/prepared-input hash: it is now
+  baseline allow and model prepared. This repin is source evidence, not a
+  qualification result or a declaration that host review is complete.
 
 The original 90-case record array has SHA-256
 `c13422cc1dbdbd62795a82051fed8cfc0f3243576dbd2fd25bd697bf1eb78d86`
-both at `c9136e0` and as the first 90 records in c8.2.
+both at `c9136e0` and as the first 90 records in c8.2. The c8.3 correction
+changes that historical first-90 checksum.
 
 The exact-policy examples use the C7 host's documented `behavior: block`
 configuration for protected file rules. These decisions are owned by host
