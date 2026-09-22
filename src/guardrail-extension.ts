@@ -1,4 +1,5 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { createHash } from "node:crypto";
 import { constants } from "node:fs";
 import { open } from "node:fs/promises";
 import { performance } from "node:perf_hooks";
@@ -94,9 +95,18 @@ export function registerGuardrailProvider(
       return;
     runtime.ready = false;
     runtime.qualified = false;
+    const qualificationPath = env.JEV_GUARDRAIL_QUALIFICATION;
+    const qualificationSha256 = env.JEV_GUARDRAIL_QUALIFICATION_SHA256;
     runtime.warming = (async () => {
       await waitFor(retirement, runtime.controller.signal);
       assertCurrent(runtime);
+      if (
+        qualificationPath !== undefined &&
+        (!qualificationSha256 || !/^[a-f0-9]{64}$/.test(qualificationSha256))
+      )
+        throw new Error(
+          "Guardrail qualification requires an operator-pinned 64-character lowercase SHA-256",
+        );
       const artifact = await verifyArtifact(
         config.modelFile!,
         "classifier",
@@ -110,9 +120,10 @@ export function registerGuardrailProvider(
       runtime.backend ??=
         options.createBackend?.(config) ?? new NativeBackend(config);
       runtime.classifier ??= new Classifier(config, runtime.backend);
-      const binaryBeforeWarmup = env.JEV_GUARDRAIL_QUALIFICATION
-        ? await hashArtifact(config.binary, runtime.controller.signal)
-        : undefined;
+      const binaryBeforeWarmup =
+        qualificationPath !== undefined
+          ? await hashArtifact(config.binary, runtime.controller.signal)
+          : undefined;
       // Reset/disposal interrupts waiting even if a test adapter ignores disposal.
       await waitFor(runtime.backend.warmup(), runtime.controller.signal);
       assertCurrent(runtime);
@@ -123,11 +134,17 @@ export function registerGuardrailProvider(
       runtime.modelSha256 = artifact.sha256;
       let qualified = false;
       let qualificationBaselineSha256: string | null = null;
-      if (env.JEV_GUARDRAIL_QUALIFICATION) {
+      if (qualificationPath !== undefined) {
         const raw = await readQualification(
-          env.JEV_GUARDRAIL_QUALIFICATION,
+          qualificationPath,
           runtime.controller.signal,
         );
+        if (
+          createHash("sha256").update(raw).digest("hex") !== qualificationSha256
+        )
+          throw new Error(
+            "Guardrail qualification SHA-256 does not match the operator pin",
+          );
         const binary = await hashArtifact(
           config.binary,
           runtime.controller.signal,
@@ -140,7 +157,7 @@ export function registerGuardrailProvider(
             "Guardrail scoring binary changed during worker warmup",
           );
         const qualification = verifyGuardrailQualification(
-          JSON.parse(raw),
+          JSON.parse(raw.toString("utf8")),
           artifact.sha256,
           binary.sha256,
         );
@@ -359,7 +376,7 @@ export function registerGuardrailProvider(
 async function readQualification(
   path: string,
   signal: AbortSignal,
-): Promise<string> {
+): Promise<Buffer> {
   const limit = 4 * 1024 * 1024;
   signal.throwIfAborted();
   // Nonblocking open also lets us reject FIFOs without waiting for a writer.
@@ -390,7 +407,7 @@ async function readQualification(
       if (chunk.bytesRead === 0) break;
     }
     signal.throwIfAborted();
-    return bytes.subarray(0, length).toString("utf8");
+    return bytes.subarray(0, length);
   } finally {
     await handle.close();
   }

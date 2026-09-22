@@ -18,6 +18,7 @@ import {
   GUARDRAIL_REQUIRED_FAMILIES,
   freezeGuardrailCandidate,
   qualifyGuardrail,
+  verifyGuardrailQualification,
   type GuardrailEvaluationRecord,
   type GuardrailInventoryRecord,
   type GuardrailQualification,
@@ -53,6 +54,8 @@ const baselineSourceSha256 = "c".repeat(64);
 const nativeBinary = guardrailConfig({}).binary;
 const sha = (value: unknown) =>
   createHash("sha256").update(canonical(value)).digest("hex");
+const shaBytes = (value: string) =>
+  createHash("sha256").update(value).digest("hex");
 const verified = vi.mocked(verifyArtifact);
 const hashed = vi.mocked(hashArtifact);
 const directories: string[] = [];
@@ -123,12 +126,13 @@ function rows(split: "validation" | "test"): GuardrailEvaluationRecord[] {
 
 function passingReport(
   binarySha256 = nativeBinarySha256,
+  baselineSha256 = baselineSourceSha256,
 ): GuardrailQualification {
   // Synthetic measurements exercise receipt validation, not model effectiveness.
   const identity = {
     modelSha256,
     corpusSha256: "b".repeat(64),
-    baselineSourceSha256,
+    baselineSourceSha256: baselineSha256,
     bridgeProvenance: {
       exporterSha256: "e".repeat(64),
       provenanceSourceSha256: "f".repeat(64),
@@ -175,6 +179,7 @@ function passingReport(
 async function fixture(
   report: GuardrailQualification,
   suppliedWorker?: InferenceAdapter,
+  qualificationPin: string | null = shaBytes(JSON.stringify(report)),
 ) {
   const directory = await mkdtemp(join(tmpdir(), "jev-risk-qualification-"));
   directories.push(directory);
@@ -199,11 +204,14 @@ async function fixture(
     on: vi.fn(),
   };
   const createBackend = vi.fn(() => worker);
+  const env: NodeJS.ProcessEnv = {
+    JEV_GUARDRAIL_QUALIFICATION: qualificationFile,
+    JEV_GUARDRAIL_ARTIFACT_REGISTRY: join(directory, "guard-artifacts.json"),
+  };
+  if (qualificationPin !== null)
+    env.JEV_GUARDRAIL_QUALIFICATION_SHA256 = qualificationPin;
   const extension = registerGuardrailProvider(pi, {
-    env: {
-      JEV_GUARDRAIL_QUALIFICATION: qualificationFile,
-      JEV_GUARDRAIL_ARTIFACT_REGISTRY: join(directory, "guard-artifacts.json"),
-    },
+    env,
     createBackend,
   });
   extensions.push(extension);
@@ -221,10 +229,80 @@ async function fixture(
     discover,
     statusCommand,
     qualificationFile,
+    env,
   };
 }
 
 describe("provider qualification receipt loading", () => {
+  it("requires an operator SHA-256 pin when a qualification path is configured", async () => {
+    const f = await fixture(passingReport(), undefined, null);
+    await expect(f.extension.warmup()).rejects.toThrow(
+      "requires an operator-pinned 64-character lowercase SHA-256",
+    );
+    expect(f.extension.provider.qualified).toBe(false);
+    expect(f.worker.compile).not.toHaveBeenCalled();
+    expect(f.worker.evaluate).not.toHaveBeenCalled();
+  });
+
+  it("does not treat an empty configured qualification path as an absent path", async () => {
+    const f = await fixture(passingReport(), undefined, null);
+    f.env.JEV_GUARDRAIL_QUALIFICATION = "";
+    await expect(f.extension.warmup()).rejects.toThrow(
+      "requires an operator-pinned 64-character lowercase SHA-256",
+    );
+    expect(f.extension.provider.qualified).toBe(false);
+  });
+
+  it("rejects a malformed operator SHA-256 pin", async () => {
+    const f = await fixture(passingReport(), undefined, "not-a-sha256");
+    await expect(f.extension.warmup()).rejects.toThrow(
+      "requires an operator-pinned 64-character lowercase SHA-256",
+    );
+    expect(f.extension.provider.qualified).toBe(false);
+  });
+
+  it("rejects a changed receipt before parsing it", async () => {
+    const f = await fixture(passingReport());
+    await writeFile(f.qualificationFile, "not JSON");
+    await expect(f.extension.warmup()).rejects.toThrow(
+      "SHA-256 does not match the operator pin",
+    );
+    expect(f.extension.provider.qualified).toBe(false);
+  });
+
+  it("pins exact receipt bytes even when JSON formatting changes only", async () => {
+    const report = passingReport();
+    const f = await fixture(report);
+    await writeFile(f.qualificationFile, JSON.stringify(report, null, 2));
+    await expect(f.extension.warmup()).rejects.toThrow(
+      "SHA-256 does not match the operator pin",
+    );
+    expect(f.extension.provider.qualified).toBe(false);
+  });
+
+  it("rejects a coherently rehashed forged receipt without an updated operator pin", async () => {
+    const f = await fixture(passingReport());
+    const forged = passingReport(nativeBinarySha256, "d".repeat(64));
+    expect(
+      verifyGuardrailQualification(forged, modelSha256, nativeBinarySha256)
+        .qualified,
+    ).toBe(true);
+    await writeFile(f.qualificationFile, JSON.stringify(forged));
+    await expect(f.extension.warmup()).rejects.toThrow(
+      "SHA-256 does not match the operator pin",
+    );
+    expect(f.extension.provider.qualified).toBe(false);
+  });
+
+  it("keeps warmup unqualified when no receipt path is configured", async () => {
+    const f = await fixture(passingReport(), undefined, null);
+    delete f.env.JEV_GUARDRAIL_QUALIFICATION;
+    await f.extension.warmup();
+    expect(f.extension.provider.qualified).toBe(false);
+    expect(hashed).not.toHaveBeenCalled();
+    expect(f.worker.warmup).toHaveBeenCalledOnce();
+  });
+
   it("loads sealed held-out evidence and caches its baseline identity without work during status or discovery", async () => {
     const report = passingReport();
     expect(report.qualified).toBe(true);
@@ -447,10 +525,9 @@ describe("provider qualification receipt loading", () => {
       qualified: false,
     });
     activeBinarySha256 = replacementSha256;
-    await writeFile(
-      f.qualificationFile,
-      JSON.stringify(passingReport(replacementSha256)),
-    );
+    const replacementReport = JSON.stringify(passingReport(replacementSha256));
+    await writeFile(f.qualificationFile, replacementReport);
+    f.env.JEV_GUARDRAIL_QUALIFICATION_SHA256 = shaBytes(replacementReport);
     await f.extension.warmup();
 
     expect(f.createBackend).toHaveBeenCalledTimes(2);
