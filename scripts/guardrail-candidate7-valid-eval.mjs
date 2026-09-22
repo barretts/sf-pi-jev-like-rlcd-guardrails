@@ -66,6 +66,17 @@ const sealed = Object.freeze({
     "b31d600d262be46bb68fc5de6cd581265dad2f29d5ed03b0f1c6920c6e78afba",
   trainProjection:
     "9cb3793e417bc149fc58bed2ce4129d668b4c240a19c8fa64c78fe6513617755",
+  trainGitHead: "845b67913f099897241b88451bf463d1d98c6312",
+  admissionReceipt:
+    "c2b28715646020ceb60193469d5fbb9fe34acce309e528b81c05b6537e5330de",
+  admittedDataset:
+    "745004e919d7c8cd6d3a1bb0078f741a9fa6134443ea195b618cf6a39aed53e7",
+  fixedRunPlans: Object.freeze({
+    "candidate-7-rfdt-128step-finalhost-v2":
+      "75f49e15a3ac4386bb824ffbf984b1328bb6033ff8bc4f6be677bbec9faada07",
+    "candidate-7-rfdt-256step-finalhost-v1":
+      "e68b2c5c4f1cd50644d4e577ed6bc1bfa24f968cd7876bdb87dc1ed091e4eb9e",
+  }),
   baseWeights:
     "3d4ef8d71c14db7e448a09ebe891cfb6bf32c57a9b44499ae0d1c098e48516b6",
 });
@@ -194,16 +205,17 @@ export function verifyCandidate7RuntimeBytes(bytesByName) {
 export function verifyCandidate7TrainingPins(sourcePins, expected) {
   if (
     !isHash(expected?.admissionSha256) ||
+    expected.admissionSha256 !== sealed.admissionReceipt ||
     !isHash(expected?.hostRuntimeSha256) ||
     !/^[a-f0-9]{40}$/.test(expected?.hostCommit ?? "") ||
-    sourcePins?.admissionSha256 !== expected.admissionSha256 ||
+    sourcePins?.admissionSha256 !== sealed.admissionReceipt ||
     sourcePins?.sfPiCommit !== sealed.trainHostCommit ||
     sourcePins?.sfPiRuntimeSha256 !== sealed.trainHostRuntime ||
     sourcePins?.scorerProtocolSha256 !== sealed.protocol ||
     sourcePins?.trainRows !== 227 ||
     sourcePins?.trainGroups !== 77 ||
-    !isHash(sourcePins?.admittedDatasetSha256) ||
-    !/^[a-f0-9]{40}$/.test(sourcePins?.codeIdentity?.gitHead ?? "") ||
+    sourcePins?.admittedDatasetSha256 !== sealed.admittedDataset ||
+    sourcePins?.codeIdentity?.gitHead !== sealed.trainGitHead ||
     canonical(Object.keys(sourcePins?.codeIdentity?.files ?? {}).sort()) !==
       canonical([...trainSourceFiles].sort()) ||
     !isHash(sourcePins?.codeIdentity?.nativeBinarySha256)
@@ -214,6 +226,13 @@ export function verifyCandidate7TrainingPins(sourcePins, expected) {
     admissionReceiptSha256: sourcePins.admissionSha256,
     trainGitHead: sourcePins.codeIdentity.gitHead,
   };
+}
+
+export function verifyCandidate7FixedRunPlan(runName, planBytes) {
+  const expected = sealed.fixedRunPlans[runName];
+  if (!expected || !Buffer.isBuffer(planBytes) || sha(planBytes) !== expected)
+    throw new Error("C7 run is outside the two frozen TRAIN-only fit plans");
+  return expected;
 }
 
 async function readRuntimeBytes() {
@@ -638,6 +657,10 @@ async function verifyRealCandidate(run, modelId, sf, trainRoot, expected) {
       readFile(resolve(run, "artifact.json")),
       readFile(resolve(run, "candidate-registry.json")),
     ]);
+  const fixedPlanSha256 = verifyCandidate7FixedRunPlan(
+    basename(run),
+    planBytes,
+  );
   const plan = JSON.parse(planBytes);
   const manifest = JSON.parse(manifestBytes);
   const artifact = JSON.parse(artifactBytes);
@@ -835,7 +858,7 @@ async function verifyRealCandidate(run, modelId, sf, trainRoot, expected) {
     modelFile: artifact.file,
     modelSha256: artifact.sha256,
     registryFile: resolve(run, "candidate-registry.json"),
-    planSha256: sha(planBytes),
+    planSha256: fixedPlanSha256,
     manifestSha256: sha(manifestBytes),
     artifactSha256: sha(artifactBytes),
     registrySha256: sha(registryBytes),
@@ -990,6 +1013,9 @@ async function runHost(rows, sf, sfDeps, fixtureCwd, runtime, fake, hostPin) {
         restoreFromSessionEntries,
       );
       const browserEvidence = installBrowser(row, sessionId, browser);
+      // Start before per-call host configuration, Safety Kernel classification,
+      // bridge preparation, queueing, and model inference.
+      const startedAt = performance.now();
       const { config, overrideRuleId } = configuredPolicy(
         row,
         readBundledConfig,
@@ -1001,7 +1027,6 @@ async function runHost(rows, sf, sfDeps, fixtureCwd, runtime, fake, hostPin) {
         sessionId,
         config,
       };
-      const startedAt = performance.now();
       const priorCalls = calls.length;
       const browserEvidenceBeforeBaseline =
         input.toolName === "sf_browser_click"
@@ -1318,7 +1343,8 @@ export function assertCandidate7Preflight(
         prior.groupId !== row.group_id ||
         !["prepared", "policy_floor", "ineligible", "fallback"].includes(
           prior.gate,
-        )
+        ) ||
+        (prior.gate === "prepared" && !isHash(prior.comparison?.inputSha256))
       );
     })
   )
@@ -1336,7 +1362,10 @@ export function compareCandidate7HostPreparation(records, preflightById) {
       row.preFloorBaseline !== prior.preFloorBaseline ||
       row.gate !== prior.gate ||
       row.policyFloor !== prior.policyFloor ||
-      row.fallbackReason !== prior.fallbackReason
+      row.fallbackReason !== prior.fallbackReason ||
+      (row.gate === "prepared" &&
+        (!isHash(row.comparison?.inputSha256) ||
+          row.comparison.inputSha256 !== prior.comparison?.inputSha256))
     )
       changes.push(row.id);
   }
@@ -1589,6 +1618,19 @@ async function main() {
       if (row.gate === "fallback") fallbackReasons[row.id] = row.fallbackReason;
     }
     const coverage = summarizeCandidate7FamilyCoverage(rows, result.records);
+    const rubricRiskyRows = rows.filter(
+      (row) => row.expected.decision !== "allow",
+    );
+    const preparedRiskyRecords = result.records.filter(
+      (row) => row.gate === "prepared" && row.expected !== "allow",
+    );
+    const familiesWithoutPreparedRisky = [
+      ...new Set(rubricRiskyRows.map((row) => row.family)),
+    ]
+      .filter(
+        (family) => !preparedRiskyRecords.some((row) => row.family === family),
+      )
+      .sort();
     const hostPreparationChanges = fake
       ? []
       : compareCandidate7HostPreparation(result.records, preflightById);
@@ -1679,6 +1721,17 @@ async function main() {
         strictRequiredFamilyMixedCoverage:
           coverage.strictRequiredFamilyMixedCoverage,
         strictMixedCoverageApplicableToSelection: false,
+        modelEvidenceScope: {
+          rubricRiskyCases: rubricRiskyRows.length,
+          preparedRiskyCases: preparedRiskyRecords.length,
+          unpreparedRiskyCases:
+            rubricRiskyRows.length - preparedRiskyRecords.length,
+          familiesWithoutPreparedRisky,
+          conclusionLimit:
+            "The model is measured only on prepared semantic-lane cases. Code-owned floors and ineligible cases test host protection, not model risk detection; this corpus does not establish model effectiveness in those lanes.",
+        },
+        latencyScope:
+          "Serial isolated-host bridge-shadow replay after warmup; per-call elapsed includes host config preparation, Safety Kernel, bridge preparation, queueing, and inference. No concurrent-load or matched-workflow claim.",
       },
       idealWarmP95Below500Ms: summary.observedGates.idealWarmP95Below500Ms,
       records: result.records,

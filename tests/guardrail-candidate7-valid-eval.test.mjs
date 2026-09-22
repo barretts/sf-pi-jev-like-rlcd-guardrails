@@ -7,6 +7,7 @@ import {
   assertPreparedCall,
   compareCandidate7HostPreparation,
   summarizeCandidate7FamilyCoverage,
+  verifyCandidate7FixedRunPlan,
   verifyCandidate7TrainingPins,
 } from "../scripts/guardrail-candidate7-valid-eval.mjs";
 
@@ -38,7 +39,7 @@ function records() {
       : "jev",
     comparison: ["read", "write", "edit"].includes(row.operation.tool)
       ? { source: "exact_policy" }
-      : { source: "jev" },
+      : { source: "jev", inputSha256: "1".repeat(64) },
     modelCalls: ["read", "write", "edit"].includes(row.operation.tool) ? 0 : 1,
     policyFloor: false,
   }));
@@ -87,7 +88,8 @@ test("C7 family gate uses actual prepared calls and requires both sides of each 
 
 test("C7 TRAIN and host pins reject a self-consistent model source switch", () => {
   const expected = {
-    admissionSha256: "a".repeat(64),
+    admissionSha256:
+      "c2b28715646020ceb60193469d5fbb9fe34acce309e528b81c05b6537e5330de",
     hostCommit: "a12f1de85c1919fa2ff94bf9315c522b0ad382da",
     hostRuntimeSha256:
       "b31d600d262be46bb68fc5de6cd581265dad2f29d5ed03b0f1c6920c6e78afba",
@@ -100,9 +102,10 @@ test("C7 TRAIN and host pins reject a self-consistent model source switch", () =
       "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
     trainRows: 227,
     trainGroups: 77,
-    admittedDatasetSha256: "d".repeat(64),
+    admittedDatasetSha256:
+      "745004e919d7c8cd6d3a1bb0078f741a9fa6134443ea195b618cf6a39aed53e7",
     codeIdentity: {
-      gitHead: "e".repeat(40),
+      gitHead: "845b67913f099897241b88451bf463d1d98c6312",
       files: Object.fromEntries(
         [
           "scripts/guardrail-candidate7-train.mjs",
@@ -142,6 +145,38 @@ test("C7 TRAIN and host pins reject a self-consistent model source switch", () =
       ),
     /TRAIN, protocol, or host pins changed/,
   );
+  assert.throws(
+    () =>
+      verifyCandidate7TrainingPins(
+        { ...source, admittedDatasetSha256: "0".repeat(64) },
+        expected,
+      ),
+    /TRAIN, protocol, or host pins changed/,
+  );
+  assert.throws(
+    () =>
+      verifyCandidate7TrainingPins(source, {
+        ...expected,
+        admissionSha256: "0".repeat(64),
+      }),
+    /TRAIN, protocol, or host pins changed/,
+  );
+  assert.throws(
+    () =>
+      verifyCandidate7FixedRunPlan(
+        "candidate-7-rfdt-128step-finalhost-v2",
+        Buffer.from("changed plan"),
+      ),
+    /two frozen TRAIN-only fit plans/,
+  );
+  assert.throws(
+    () =>
+      verifyCandidate7FixedRunPlan(
+        "candidate-7-rfdt-512step-unreviewed",
+        Buffer.from("unreviewed plan"),
+      ),
+    /two frozen TRAIN-only fit plans/,
+  );
 });
 
 test("real replay cannot silently change fake-host baseline, eligibility, or fallback", () => {
@@ -179,6 +214,30 @@ test("real replay cannot silently change fake-host baseline, eligibility, or fal
     source[0].id,
     source[1].id,
   ]);
+  const alteredFacts = source.map((row) => ({ ...row }));
+  const preparedIndex = alteredFacts.findIndex(
+    (row) => row.gate === "prepared",
+  );
+  alteredFacts[preparedIndex].comparison = {
+    ...alteredFacts[preparedIndex].comparison,
+    inputSha256: "2".repeat(64),
+  };
+  assert.deepEqual(compareCandidate7HostPreparation(alteredFacts, indexed), [
+    source[preparedIndex].id,
+  ]);
+  const missingPreflightInput = source.map((row) => ({ ...row }));
+  missingPreflightInput[preparedIndex] = {
+    ...missingPreflightInput[preparedIndex],
+    comparison: { source: "jev" },
+  };
+  assert.throws(
+    () =>
+      assertCandidate7Preflight(
+        { ...preflight, records: missingPreflightInput },
+        options,
+      ),
+    /preflight population changed/,
+  );
   assert.throws(
     () =>
       assertCandidate7Preflight(
