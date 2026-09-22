@@ -16,6 +16,10 @@ const C8_REPORT = resolve(
   root,
   "reports/guardrail-risk-2026-09-21/candidate-8-valid-real-256-evidence/report.json",
 );
+const Q8_MANIFEST = resolve(
+  root,
+  "reports/guardrail-risk-2026-09-21/candidate-9-latency-evidence/q8_0-export-manifest.json",
+);
 const WARM_DEADLINE_MS = 750;
 const COLD_PROBE_DEADLINE_MS = 2_500;
 const C9_PINS = Object.freeze({
@@ -119,7 +123,7 @@ export function summarizeWarmSamples(samples) {
   };
 }
 
-async function verifiedInputs(modelFile, registry) {
+async function verifiedInputs(modelFile, registry, variant) {
   if (!isAbsolute(modelFile) || !isAbsolute(registry))
     throw new Error("Model and registry paths must be absolute");
   const scriptRel = "scripts/guardrail-candidate9-latency.mjs";
@@ -153,18 +157,66 @@ async function verifiedInputs(modelFile, registry) {
     import("../dist/models.js"),
     import("../dist/core.js"),
   ]);
-  const artifact = await verifyArtifact(
-    modelFile,
-    "classifier",
-    C9_PINS.modelId,
-    {
-      registryPath: registry,
-    },
-  );
+  let modelId = C9_PINS.modelId;
+  let modelSha256 = C9_PINS.modelSha256;
+  let quantization = null;
+  if (variant === "q8_0") {
+    const raw = await readFile(Q8_MANIFEST);
+    const committed = execFileSync(
+      "git",
+      [
+        "show",
+        "HEAD:reports/guardrail-risk-2026-09-21/candidate-9-latency-evidence/q8_0-export-manifest.json",
+      ],
+      { cwd: root },
+    );
+    if (!raw.equals(committed))
+      throw new Error("Quantized export manifest must be committed");
+    const manifest = JSON.parse(raw);
+    const sourceIdentity = await hashArtifact(
+      manifest.sourceWeights?.file ?? "",
+    );
+    const quantizerRevision = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: manifest.quantizer?.sourceDirectory,
+      encoding: "utf8",
+    }).trim();
+    if (
+      manifest.purpose !== "candidate9_same_weights_q8_0_performance_only" ||
+      manifest.qualification !== false ||
+      manifest.sourceWeights?.sha256 !== C9_PINS.modelSha256 ||
+      manifest.sourceWeights?.file !== c8Report.source.model.modelFile ||
+      sourceIdentity.sha256 !== C9_PINS.modelSha256 ||
+      sourceIdentity.size !== manifest.sourceWeights.size ||
+      manifest.quantizer?.type !== "Q8_0" ||
+      manifest.quantizer?.sourceDirectory !==
+        "/Users/bsonntag/code/simple-jev-ts/.vendor/llama.cpp" ||
+      manifest.quantizer?.sourceRevision !==
+        "f072b103714dfa1eee531f80b24512faf38e3dd2" ||
+      quantizerRevision !== manifest.quantizer.sourceRevision ||
+      manifest.quantizer?.leaveOutputTensorUnquantized !== true ||
+      manifest.output?.file !== modelFile ||
+      !/^[a-f0-9]{64}$/.test(manifest.output?.sha256 ?? "") ||
+      !/^jev\/[a-zA-Z0-9._-]+$/.test(manifest.output?.modelId ?? "") ||
+      sha(await readFile(registry)) !== manifest.output.registrySha256 ||
+      sha(
+        await readFile(resolve(root, ".build/quantize/bin/llama-quantize")),
+      ) !== manifest.quantizer.binarySha256
+    )
+      throw new Error(
+        "Quantized export provenance differs from committed manifest",
+      );
+    modelId = manifest.output.modelId;
+    modelSha256 = manifest.output.sha256;
+    quantization = { manifestSha256: sha(raw), ...manifest };
+  }
+  const artifact = await verifyArtifact(modelFile, "classifier", modelId, {
+    registryPath: registry,
+  });
   const nativeBinary = resolve(root, ".build/jev-native");
   const nativeSha256 = (await hashArtifact(nativeBinary)).sha256;
   if (
-    artifact.sha256 !== C9_PINS.modelSha256 ||
+    artifact.sha256 !== modelSha256 ||
+    (quantization !== null && artifact.size !== quantization.output.size) ||
     nativeSha256 !== C9_PINS.nativeBinarySha256
   )
     throw new Error(
@@ -172,6 +224,9 @@ async function verifiedInputs(modelFile, registry) {
     );
   return {
     artifact,
+    modelId,
+    modelSha256,
+    quantization,
     nativeBinary,
     canonical,
     c8Report,
@@ -205,12 +260,16 @@ async function main() {
       "model-file": { type: "string" },
       registry: { type: "string" },
       output: { type: "string" },
+      variant: { type: "string" },
     },
   });
   if (!values["model-file"] || !values.registry || !values.output)
     throw new Error(
       "Required: --model-file PATH --registry PATH --output PATH",
     );
+  const variant = values.variant ?? "f16";
+  if (!["f16", "q8_0"].includes(variant))
+    throw new Error("C9 latency variant must be f16 or q8_0");
   const output = resolve(values.output);
   if (
     !output.startsWith(`${outputBase}/`) ||
@@ -219,7 +278,11 @@ async function main() {
     throw new Error(
       "Output must be a new .build/guardrail/candidate-9-latency-*.json file",
     );
-  const inputs = await verifiedInputs(values["model-file"], values.registry);
+  const inputs = await verifiedInputs(
+    values["model-file"],
+    values.registry,
+    variant,
+  );
   const [
     { NativeBackend, Classifier },
     { guardrailConfig },
@@ -231,7 +294,7 @@ async function main() {
   ]);
   const config = guardrailConfig({
     JEV_DEVICE: "metal",
-    JEV_GUARDRAIL_MODEL_ID: C9_PINS.modelId,
+    JEV_GUARDRAIL_MODEL_ID: inputs.modelId,
     JEV_GUARDRAIL_MODEL_FILE: values["model-file"],
     JEV_GUARDRAIL_ARTIFACT_REGISTRY: values.registry,
   });
@@ -313,7 +376,7 @@ async function main() {
         input: workload.operation.input,
         facts: {},
       };
-      const request = guardrailRequest(input, C9_PINS.modelId);
+      const request = guardrailRequest(input, inputs.modelId);
       sample.requestStateSha256 = sha(inputs.canonical(request.state));
       sample.requestPreparationMs = performance.now() - start;
       const response = await context.run(sample, () =>
@@ -321,6 +384,7 @@ async function main() {
       );
       sample.status = "answered";
       sample.responseInputTokens = response.usage.input_tokens;
+      sample.allowScore = response.answers.risk.probabilities.allow;
       sample.classifierQueueMs =
         typeof response.metrics?.queue_seconds === "number"
           ? response.metrics.queue_seconds * 1_000
@@ -382,6 +446,7 @@ async function main() {
   const report = {
     version: 1,
     purpose: "candidate9_latency_diagnostic_only",
+    variant,
     qualification: false,
     heldOutTestUsed: false,
     externalOperationsExecuted: 0,
@@ -389,14 +454,16 @@ async function main() {
       evaluatorHead: inputs.evaluatorHead,
       c8DeliveryCommit: C9_PINS.c8DeliveryCommit,
       c8ValidReportSha256: C9_PINS.c8ReportSha256,
-      modelSha256: C9_PINS.modelSha256,
+      modelSha256: inputs.modelSha256,
+      sourceF16WeightsSha256: C9_PINS.modelSha256,
+      quantization: inputs.quantization,
       nativeBinarySha256: C9_PINS.nativeBinarySha256,
       compiledRuntimeSha256: C9_PINS.runtime,
     },
     protocol: {
       workload: "full_original_guardrail_request_selected_next_token_logits",
       device: "metal",
-      modelId: C9_PINS.modelId,
+      modelId: inputs.modelId,
       warmDeadlineMs: WARM_DEADLINE_MS,
       coldProbeDeadlineMs: COLD_PROBE_DEADLINE_MS,
       advancedMetricsDiagnosticOnly: true,
