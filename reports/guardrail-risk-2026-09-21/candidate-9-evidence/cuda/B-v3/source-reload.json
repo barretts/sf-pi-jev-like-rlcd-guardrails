@@ -1,0 +1,20 @@
+{
+  "purpose": "cuda_saved_adapter_fit_reload_only",
+  "qualified": false,
+  "source_receipt_sha256": "10e0e307313a7c7e92be5c0e0873e180af099438a17757057276b11195c42648",
+  "adapter_sha256": "ee16c403001cafb7e5dc72f99908603901146f582ad3d6559cc85a5ba8fbd8db",
+  "rows": 327,
+  "max_margin_delta": 0.0,
+  "margin_delta_limit": 1e-05,
+  "ok": true,
+  "attention_implementation": "sdpa",
+  "memory": {
+    "allocated_bytes": 2073070592,
+    "reserved_bytes": 2139095040,
+    "peak_allocated_bytes": 2104491008,
+    "peak_reserved_bytes": 2139095040,
+    "cuda_free_bytes": 13787725824,
+    "cuda_total_bytes": 17175019520,
+    "cuda_free_delta_bytes": 2174746624
+  }
+}

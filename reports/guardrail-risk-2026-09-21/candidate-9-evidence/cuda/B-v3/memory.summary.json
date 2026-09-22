@@ -1,0 +1,11 @@
+{
+  "worker_pid": 7334,
+  "reason": "worker_exit",
+  "samples": 278,
+  "sampling_interval_seconds": 2.0,
+  "peak_dedicated_delta_bytes": 2461622272,
+  "peak_shared_delta_bytes": 71835648,
+  "hard_budget_bytes": 8000000000,
+  "stop_dedicated_delta_bytes": 7500000000,
+  "shared_growth_limit_bytes": 128000000
+}

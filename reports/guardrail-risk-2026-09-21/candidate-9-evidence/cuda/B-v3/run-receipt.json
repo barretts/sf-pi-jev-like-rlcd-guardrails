@@ -1,0 +1,123 @@
+{
+  "qualified": false,
+  "mode": "train",
+  "steps": 256,
+  "initial_objective": 13.481168403452855,
+  "final_objective": 0.15720022620024587,
+  "initial_row_loss": 15.230392276028619,
+  "final_row_loss": 0.21581607765719285,
+  "adapter_changed": true,
+  "adapter_sha256": "ee16c403001cafb7e5dc72f99908603901146f582ad3d6559cc85a5ba8fbd8db",
+  "fit_margins_sha256": "62285888302e299a64a9079d2961c14d9459d1d8462b57ec9a2f0a72961ffe54",
+  "sampler_counts": {
+    "pair:agentscript": 128,
+    "pair:browser": 128,
+    "pair:canvas": 128,
+    "pair:data360": 128,
+    "pair:herdr_pane": 128,
+    "pair:salesforce_cli": 128,
+    "pair:shell": 128,
+    "pair:soql": 128,
+    "row:allow:agentscript": 57,
+    "row:allow:apex": 57,
+    "row:allow:browser": 57,
+    "row:allow:canvas": 57,
+    "row:allow:data360": 56,
+    "row:allow:herdr_pane": 57,
+    "row:allow:salesforce_cli": 57,
+    "row:allow:shell": 57,
+    "row:allow:soql": 57,
+    "row:confirm:agentscript": 57,
+    "row:confirm:apex": 57,
+    "row:confirm:browser": 57,
+    "row:confirm:canvas": 57,
+    "row:confirm:data360": 56,
+    "row:confirm:herdr_pane": 57,
+    "row:confirm:salesforce_cli": 57,
+    "row:confirm:shell": 57,
+    "row:confirm:soql": 57
+  },
+  "sampler_draws": 2048,
+  "prompt_parity": {
+    "rows_checked": 327,
+    "labels_checked": 654,
+    "rendered_prompt_tokens": true,
+    "answer_label_boundaries": true,
+    "add_special_tokens": false,
+    "template_version": "v2"
+  },
+  "pre_step_placement": {
+    "parameters": 444,
+    "buffers": 5,
+    "gradients": 104
+  },
+  "post_step_placement": {
+    "parameters": 444,
+    "buffers": 5,
+    "gradients": 0,
+    "optimizer_tensors": 208
+  },
+  "memory": {
+    "allocated_bytes": 2093517824,
+    "reserved_bytes": 2277507072,
+    "peak_allocated_bytes": 2208915968,
+    "peak_reserved_bytes": 2277507072,
+    "cuda_free_bytes": 13640925184,
+    "cuda_total_bytes": 17175019520,
+    "cuda_free_delta_bytes": 2321547264
+  },
+  "source": {
+    "mode": "train",
+    "objective": {
+      "version": 2,
+      "purpose": "candidate9_train_only",
+      "arm": "B",
+      "objective": "guardrail_train_balanced_symmetric_v1",
+      "pair_manifest_sha256": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+      "family_manifest_sha256": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+      "loss": {
+        "ce_weight": 1.0,
+        "anchor_weight": 1.0,
+        "anchor_margin": 2.0,
+        "pair_weight": 0.5,
+        "pair_margin": 4.0
+      },
+      "sampler": {
+        "pair_fraction": 0.5,
+        "row_label_order": [
+          "allow",
+          "confirm"
+        ],
+        "family_policy": "round_robin_within_label_or_pair",
+        "item_policy": "shuffled_round_robin",
+        "seed": 42
+      },
+      "steps": 256,
+      "cutoff_status": "unset_requires_c9_train_cal_hard_veto_before_valid",
+      "validation_rows_passed_to_training": 0,
+      "test_rows_passed_to_training": 0
+    },
+    "inputs": {
+      "train": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+      "pairs": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+      "families": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+      "plan": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+      "base": {
+        "model.safetensors": "3d4ef8d71c14db7e448a09ebe891cfb6bf32c57a9b44499ae0d1c098e48516b6",
+        "config.json": "19cb5d28c97778271ba2b3c3df47bf76bdd6706724777a2318b3522230afe91e",
+        "tokenizer.json": "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795"
+      }
+    },
+    "source_sha256": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+    "contract_sha256": "54e4fd0fe9d804bd45a856ee304893a9352fcdea7bacfa0d187707ddbbbc4550",
+    "steps": 256,
+    "budget_bytes": 8000000000,
+    "allocator_cap_bytes": 6500000000,
+    "backend": "torch_cuda_experimental_not_qualified",
+    "precision": {
+      "base": "bfloat16",
+      "lora": "float32",
+      "selected_projection": "bfloat16_then_float32_margin"
+    }
+  }
+}
