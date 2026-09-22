@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { candidate8OperationSha256 } from "../scripts/guardrail-candidate8-host-core.mjs";
 import {
   createCandidate9ShadowProvider,
+  verifyCandidate9NonModelRoutes,
   verifyCandidate9ValidPopulation,
 } from "../scripts/guardrail-candidate9-valid-eval.mjs";
 
@@ -89,6 +90,79 @@ test("C9 replay rejects changed operation, prepared input, policy, or row count"
       () => verifyCandidate9ValidPopulation(source, manifest, preflight),
       /C9 VALID replay:/,
       defect,
+    );
+  }
+});
+
+test("C9 replay rejects unexpected errors hidden as code-owned fallbacks", () => {
+  const preflight = {
+    status: [
+      { id: "floor", routing: "rules_fallback", reason: "host_policy_floor" },
+      { id: "file", routing: "rules_fallback", reason: "ineligible" },
+      {
+        id: "org",
+        routing: "pre_model_fallback",
+        reason: "org_fact_unavailable",
+      },
+      {
+        id: "browser",
+        routing: "pre_model_fallback",
+        reason: "browser_evidence_unavailable",
+      },
+    ],
+  };
+  const rows = [
+    {
+      id: "floor",
+      routing: "rules_fallback",
+      modelCalls: 0,
+      modelAnswered: false,
+      comparison: { source: "exact_policy", reason: "exact_policy_constraint" },
+    },
+    {
+      id: "file",
+      routing: "rules_fallback",
+      modelCalls: 0,
+      modelAnswered: false,
+      comparison: { source: "exact_policy", reason: "exact_policy_constraint" },
+    },
+    {
+      id: "org",
+      routing: "pre_model_fallback",
+      modelCalls: 0,
+      modelAnswered: false,
+      fallbackReason: "org_fact_unavailable",
+      hostReason:
+        "Jev Salesforce org identity unverified; using Safety Kernel fallback",
+      comparison: {
+        source: "rules_fallback",
+        reason:
+          "Jev Salesforce org identity unverified; using Safety Kernel fallback",
+      },
+    },
+    {
+      id: "browser",
+      routing: "pre_model_fallback",
+      modelCalls: 0,
+      modelAnswered: false,
+      fallbackReason: "browser_evidence_unavailable",
+      hostReason: "Browser reference evidence unavailable before model check",
+      comparison: {
+        source: "rules_fallback",
+        reason: "Browser reference evidence unavailable before model check",
+      },
+    },
+  ];
+  assert.doesNotThrow(() => verifyCandidate9NonModelRoutes(rows, preflight));
+  for (const index of [0, 1, 2, 3]) {
+    const changed = structuredClone(rows);
+    changed[index].comparison.reason = "Jev risk evaluation unavailable";
+    if (index < 2) changed[index].comparison.source = "rules_fallback";
+    if (index >= 2)
+      changed[index].hostReason = changed[index].comparison.reason;
+    assert.throws(
+      () => verifyCandidate9NonModelRoutes(changed, preflight),
+      /code-owned fallback route or reason changed/,
     );
   }
 });

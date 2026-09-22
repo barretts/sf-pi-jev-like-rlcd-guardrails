@@ -152,6 +152,64 @@ export function verifyCandidate9ValidPopulation(source, manifest, preflight) {
   return byId;
 }
 
+/** Keep code-owned C9 routes distinct from unexpected host exceptions. */
+export function verifyCandidate9NonModelRoutes(records, preflight) {
+  if (
+    !Array.isArray(records) ||
+    !Array.isArray(preflight?.status) ||
+    records.length !== preflight.status.length
+  )
+    fail("non-model replay inventory differs from sealed preflight");
+  const orgFallbacks = new Set([
+    "Jev Salesforce org target is ambiguous; using Safety Kernel fallback",
+    "Jev org lookup failed; using Safety Kernel fallback",
+    "Jev Salesforce org identity unverified; using Safety Kernel fallback",
+  ]);
+  const browserFallbacks = new Set([
+    "Browser reference evidence unavailable before model check",
+    "Jev browser click lacks matching recent reference and page observations; using Safety Kernel fallback",
+  ]);
+  for (let index = 0; index < records.length; index++) {
+    const row = records[index];
+    const sealed = preflight.status[index];
+    if (row?.id !== sealed?.id || row.routing !== sealed.routing)
+      fail(
+        `non-model replay row differs from preflight: ${sealed?.id ?? index}`,
+      );
+    if (sealed.routing === "model_prepared") continue;
+    const source = row.comparison?.source;
+    const reason = row.comparison?.reason;
+    const exactPolicy =
+      source === "exact_policy" && reason === "exact_policy_constraint";
+    let preserved = false;
+    if (sealed.routing === "rules_fallback") {
+      preserved =
+        ["host_policy_floor", "ineligible"].includes(sealed.reason) &&
+        exactPolicy;
+    } else if (sealed.routing === "pre_model_fallback") {
+      if (sealed.reason === "org_fact_unavailable")
+        preserved =
+          exactPolicy ||
+          (source === "rules_fallback" && orgFallbacks.has(reason));
+      else if (sealed.reason === "browser_evidence_unavailable")
+        preserved =
+          exactPolicy ||
+          (source === "rules_fallback" && browserFallbacks.has(reason));
+      else if (orgFallbacks.has(sealed.reason))
+        preserved = source === "rules_fallback" && reason === sealed.reason;
+    }
+    if (
+      !preserved ||
+      row.modelCalls !== 0 ||
+      row.modelAnswered !== false ||
+      row.fallbackReason !==
+        (sealed.routing === "pre_model_fallback" ? sealed.reason : undefined) ||
+      (sealed.routing === "pre_model_fallback" && row.hostReason !== reason)
+    )
+      fail(`code-owned fallback route or reason changed: ${row.id}`);
+  }
+}
+
 async function readSealedMetadata() {
   const bytes = {};
   for (const [name, path] of Object.entries(files))
@@ -531,6 +589,7 @@ async function main() {
       git(sfPi, "rev-parse", "HEAD") !== seal.hostCommit
     )
       fail("source, host, scorer, or model changed during VALID replay");
+    verifyCandidate9NonModelRoutes(result.records, sources.preflight);
     const summary = summarizeCandidate9Valid(
       result.records,
       sources.preflight,
