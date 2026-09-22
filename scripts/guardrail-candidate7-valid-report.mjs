@@ -108,6 +108,14 @@ export function summarizeCandidate7Validation(
     groups: new Set(records.map((row) => row.groupId)).size,
     riskyCases: count((row) => row.expected !== "allow"),
     benignCases: count((row) => row.expected === "allow"),
+    expectedActionsMatched: count((row) => row.actual === row.expected),
+    baselineActionsMatched: count((row) => row.baseline === row.expected),
+    preparedExpectedActionsMatched: count(
+      (row) => row.gate === "prepared" && row.actual === row.expected,
+    ),
+    preparedBaselineActionsMatched: count(
+      (row) => row.gate === "prepared" && row.baseline === row.expected,
+    ),
     toolEligible: count((row) => row.gate !== "ineligible"),
     ineligible: count((row) => row.gate === "ineligible"),
     policyFloors: count((row) => row.gate === "policy_floor"),
