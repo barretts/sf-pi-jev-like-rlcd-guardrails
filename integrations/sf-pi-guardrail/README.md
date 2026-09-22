@@ -157,45 +157,34 @@ integration source, not evidence of model effectiveness or permission to enable
 `enforce`. The existing risk engine remains active while the browser coverage
 and all other qualification gates are unresolved.
 
-## Current local use
+## Current local C9 setup
 
-Use a fresh SF Pi worktree at the pinned baseline, then apply the Candidate 8
-host patch:
-
-```sh
-git -C /path/to/sf-pi worktree add --detach /tmp/sf-pi-jev-risk 4f901db9c3f5076ea0305dea33ad6e8856e467da
-git -C /tmp/sf-pi-jev-risk apply --index /path/to/simple-jev-ts/integrations/sf-pi-guardrail/candidate8-sf-pi-from-4f901db9.patch
-git -C /tmp/sf-pi-jev-risk write-tree
-```
-
-The final command should print `50589ffa257f26b9178b21337107bda65d2b3c98`.
-Install that local SF Pi package and the separately built Jev extension in an
-isolated Pi environment for shadow inspection. For the retained C8 model on
-this machine, verify that the local GGUF matches the
-[frozen model hash](../../reports/guardrail-risk-2026-09-21/candidate-8-prevalid-freeze.md),
-then set the following before launching Pi (replace the Jev checkout path with
-the actual checkout containing this patch):
+Use a clean SF Pi worktree at the committed C9 host for model-free preflight
+and hook checks:
 
 ```sh
-export SF_GUARDRAIL_JEV_MODE=shadow
-export JEV_GUARDRAIL_MODEL_ID=jev/guardrail-c8-256
-export JEV_GUARDRAIL_MODEL_FILE=/private/tmp/simple-jev-ts-guardrail-c8-fit-20260922/.build/guardrail/candidate-8-rfdt-256-v1/gemma-3-1b-rfdt-f16.gguf
-export JEV_GUARDRAIL_ARTIFACT_REGISTRY=/path/to/simple-jev-ts/reports/guardrail-risk-2026-09-21/candidate-8-evidence/runs/256/registry.json
-export JEV_GUARDRAIL_CALIBRATION=/path/to/simple-jev-ts/reports/guardrail-risk-2026-09-21/candidate-8-evidence/cal/cutoff-freeze-256.json
-export JEV_GUARDRAIL_CALIBRATION_SHA256=6b6c06ea3262ba13d0da1d15e4b744ac474bf182d63715b43170d5a9f7d80229
+git -C /path/to/sf-pi worktree add --detach /tmp/sf-pi-c9-risk 4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a
+git -C /tmp/sf-pi-c9-risk rev-parse 'HEAD^{tree}'
 ```
 
-The committed registry references that same local GGUF path; moving the model
-requires a separately reviewed artifact registry with its new path. Use
-`/jev-risk warmup`,
+The second command must print `4bdbee05cbd490ff3d0f99db43a5133b08a90186`.
+The baseline-bound C9 patch and its verified reconstruction hash are recorded
+above; the committed host is required by the C9 preflight identity checks.
+Keep `SF_GUARDRAIL_JEV_MODE` unset or set it to `off`, its default. The existing
+SF Guardrail rules, approval path, and audit remain active.
+
+After a C9 model and TRAIN-CAL cutoff are frozen, install the separately built
+Jev extension and this pinned SF Pi host in an isolated Pi environment. Set
+`SF_GUARDRAIL_JEV_MODE=shadow` and supply the selected model file, artifact
+registry, and cutoff receipt with their recorded hashes. Use `/jev-risk warmup`,
 `/jev-risk status`, `/sf-guardrail risk`, and `/sf-guardrail audit` to inspect
-the comparison and the actual rule-owned outcome. Leave
-`JEV_GUARDRAIL_C8_QUALIFICATION` unset until a passing, model-and-host-bound
-held-out report exists; the final host falls back to the existing engine if
-qualification is absent or invalid. See [GUARDRAIL.md](../../GUARDRAIL.md)
-and the [C8 final report](../../reports/guardrail-risk-2026-09-21/candidate-8-final.md)
-for the measured rejection and proof boundary. The C7 patch above remains available for
-reproducing its rejected models' historical evaluation.
+model comparisons alongside the rule-owned outcomes. No C9 model or cutoff is
+selected at this checkpoint, so there are no C9 artifact paths or hashes to
+configure yet. The host and Jev provider still recognize C8-specific held-out
+qualification receipts for `enforce`; those receipts cannot qualify C9.
+Enforcement needs a separately verified C9 receipt path after prospective
+VALID and held-out gates pass. See the [C9 preparation record](../../reports/guardrail-risk-2026-09-21/README.md)
+and [baseline-seal protocol](../../docs/guardrail-c9-baseline-seal.md).
 
 ## Historical candidate 4 integration
 

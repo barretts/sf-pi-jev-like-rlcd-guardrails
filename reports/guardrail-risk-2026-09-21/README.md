@@ -1,5 +1,38 @@
 # Guardrail risk replacement evidence, 2026-09-21
 
+## Candidate 9 preparation, 2026-09-22
+
+The goal remains a local Gemma 3 1B semantic risk provider that matches or
+improves on the current SF Guardrail rules without weakening exact policy,
+approval, or audit. The [C9 run proposal](./candidate-9-next-run-proposal.md)
+sets the TRAIN-CAL veto, fresh prospective VALID boundary, safety and benign
+interruption parity, completed model-call and warm latency gates. A held-out
+TEST and real Pi enforce proof follow only if the earlier gates pass.
+
+The [baseline-bound C9 host patch](../../integrations/sf-pi-guardrail/README.md)
+is pinned to sf-pi `4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a` and tree
+`4bdbee05cbd490ff3d0f99db43a5133b08a90186`. The replacement VALID source
+is sealed, and the [future held-out baseline-seal protocol](../../docs/guardrail-c9-baseline-seal.md)
+is prepared. The initial pre-fit overlap audit rejected the proposed source
+split; the fit input must pass a corrected overlap audit before training.
+There is no C9 model fit, cutoff selection, VALID score, held-out result, or
+qualification at this checkpoint. The existing rules remain in force with
+`SF_GUARDRAIL_JEV_MODE=off` by default.
+
+On the exact C9 host, focused Pi hook and SDK tests passed: three files,
+51 tests passed and one local-model arm skipped. The tests exercise stub tools,
+scripted risk predictions, off/shadow isolation, fallback, approvals, audit,
+hard blocks, and representative workflows through Pi. This is host behavior
+evidence; it does not measure a C9 model. A C9 model must later complete a
+fresh shadow comparison and a real Pi SDK run with counter-only tools before
+any enforcement claim.
+
+The focused host command was:
+
+```sh
+npm test -- --run extensions/sf-guardrail/tests/jev-risk-workflows.test.ts extensions/sf-guardrail/tests/jev-risk-sdk.test.ts extensions/sf-guardrail/tests/jev-risk-hook.test.ts --testTimeout=10000
+```
+
 ## Candidate 8 prospective VALID outcome, 2026-09-22
 
 The [Candidate 8 delivery report](./candidate-8-final.md) and
