@@ -431,7 +431,7 @@
         "https://www.freedesktop.org/software/systemd/man/latest/systemctl.html"
       ],
       "policyRationale": "Status reports the audit service's current state without changing it.",
-      "controlledRiskChange": "Inspect the audit service's status versus stop it immediately and disable future startup."
+      "controlledRiskChange": "Inspect the audit service's status versus stop it now and remove its normal boot enablement."
     },
     {
       "id": "c9-pane-service-status-vs-disable-confirm",
@@ -459,7 +459,7 @@
         "https://www.freedesktop.org/software/systemd/man/latest/systemctl.html"
       ],
       "policyRationale": "Disabling the unit with --now stops the required audit collector and removes its normal boot enablement.",
-      "controlledRiskChange": "Inspect the audit service's status versus stop it immediately and disable future startup."
+      "controlledRiskChange": "Inspect the audit service's status versus stop it now and remove its normal boot enablement."
     },
     {
       "id": "c9-pane-schedule-list-vs-remove-allow",
