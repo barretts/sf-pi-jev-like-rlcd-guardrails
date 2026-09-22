@@ -85,6 +85,21 @@ VALIDATION and TEST. The builder's sealed-corpus and SF-source pins have not
 been loosened to manufacture a ready result, so a positive admitted-bundle
 prepare remains unexercised.
 
+The strict baseline diagnostic was repeated on current SF Pi `40ba11d` with
+the sealed 693-case v3 corpus (SHA-256
+`bb4ed147933c076111b127e6a5433c6ce7ea54cc43befb7d384ddb54681e6309`).
+Seven exporter tests passed; the coverage test failed on the same six
+browser family/split gaps. No baseline file was written. The current runtime
+baseline source SHA-256 is
+`7c047635954f884fe0c04fa29a6a44590044e64408598078d9f7045baa30a433`.
+The source-pinned TRAIN supplement still names the earlier SF `3070408`
+commit; changing that pin alone cannot create an admissible baseline.
+The browser tool sends a separate native click or press after Guardrail's
+hook, and the native driver may resolve a stale element ref to another node
+with the same role and name. A sound browser-model path needs a guarded
+native driver action that checks live target, node and focus at dispatch,
+including its retry paths. An SF Pi-only precheck cannot close that gap.
+
 On rejected candidate-4 weights, a TRAIN-only paired direct-native context
 diagnostic completed 72/72 scores across 18 requests, with identical prompts,
 selected logits and decisions at both context settings. The original 49,152
