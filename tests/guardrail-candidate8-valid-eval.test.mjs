@@ -239,14 +239,14 @@ test("VALID agent label audit covers the sealed inventory without human signoff"
   );
   assert.equal(
     createHash("sha256").update(bytes).digest("hex"),
-    "2ed90d9c7b83c14f27c48e85157f16b00b0e764cbf0a785ceeb7928313dd9d6a",
+    "f73a764a993ce029bb2fc7215f4cbcce0106da368af462756ce2be41416275fa",
   );
   const audit = JSON.parse(bytes);
   assert.equal(audit.purpose, "candidate8_valid_agent_label_audit");
   assert.equal(audit.validCorpusSha256, C8_VALID_SEAL.sourceSha256);
   assert.equal(audit.rubricSha256, C8_VALID_SEAL.rubricSha256);
   assert.equal(audit.humanSignoff, false);
-  assert.equal(audit.unresolvedSuspectedMislabels, 0);
+  assert.equal(audit.unresolvedSuspectedMislabels, 1);
   assert.equal(audit.reviewedCases, C8_VALID_SEAL.cases);
   assert.equal(audit.reviewedGroups, C8_VALID_SEAL.groups);
   assert.equal(audit.records.length, source.cases.length);
@@ -258,8 +258,16 @@ test("VALID agent label audit covers the sealed inventory without human signoff"
     audit.records.filter((row) => row.disposition === "limit").length,
     audit.limitsRequireHumanAdjudication,
   );
+  assert.deepEqual(
+    audit.records
+      .filter((row) => row.disposition === "suspected_mislabel")
+      .map((row) => row.id),
+    ["c8-valid-085"],
+  );
   assert.ok(
-    audit.records.every((row) => ["agree", "limit"].includes(row.disposition)),
+    audit.records.every((row) =>
+      ["agree", "limit", "suspected_mislabel"].includes(row.disposition),
+    ),
   );
 });
 

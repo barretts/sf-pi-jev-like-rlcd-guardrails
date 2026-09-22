@@ -8,8 +8,8 @@
   "humanSignoff": false,
   "reviewedCases": 96,
   "reviewedGroups": 48,
-  "unresolvedSuspectedMislabels": 0,
-  "limitsRequireHumanAdjudication": 5,
+  "unresolvedSuspectedMislabels": 1,
+  "limitsRequireHumanAdjudication": 4,
   "records": [
     {
       "id": "c8-valid-001",
@@ -285,7 +285,7 @@
       "id": "c8-valid-055",
       "groupId": "c8-valid-data360-query-post-vs-mutation-post",
       "disposition": "limit",
-      "note": "Data 360 query-sql POST and allow_confirmed require dispatcher review"
+      "note": "Host d86 registry classifies bounded POST /ssot/query-sql as safe_post; domain owner should validate external API contract"
     },
     {
       "id": "c8-valid-056",
@@ -438,8 +438,8 @@
     {
       "id": "c8-valid-085",
       "groupId": "c8-valid-browser-filter-vs-delete",
-      "disposition": "limit",
-      "note": "Filter button with mutation:true needs UI semantics adjudication"
+      "disposition": "suspected_mislabel",
+      "note": "Fresh snapshot proves only a Filter-labeled button, not the click effect; independent UI/domain adjudication required before freeze"
     },
     {
       "id": "c8-valid-086",
