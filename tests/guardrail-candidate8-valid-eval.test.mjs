@@ -7,6 +7,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   C8_VALID_SEAL,
+  assertCandidate8FrozenSelection,
   candidate8QualificationEvidence,
   summarizeCandidate8Valid,
   verifyCandidate8CalibratedSelection,
@@ -243,6 +244,43 @@ test("real VALID path accepts only the admitted dynamic TRAIN-CAL selection", ()
   );
 });
 
+test("real VALID is bound to the committed C8-256 TRAIN-CAL selection", async () => {
+  const raw = await readFile(
+    resolve(
+      root,
+      "reports/guardrail-risk-2026-09-21/candidate-8-frozen-selection/cutoff-256.json",
+    ),
+  );
+  assert.equal(
+    createHash("sha256").update(raw).digest("hex"),
+    C8_VALID_SEAL.selectedCalibrationReceiptSha256,
+  );
+  const receipt = JSON.parse(raw);
+  const selected = verifyCandidate8CalibratedSelection(
+    receipt,
+    C8_VALID_SEAL.selectedModelSha256,
+    C8_VALID_SEAL.selectedNativeBinarySha256,
+    verifyC8Calibration,
+  );
+  const candidate = {
+    modelId: C8_VALID_SEAL.selectedModelId,
+    modelSha256: C8_VALID_SEAL.selectedModelSha256,
+    nativeBinarySha256: C8_VALID_SEAL.selectedNativeBinarySha256,
+    calibrationSha256: C8_VALID_SEAL.selectedCalibrationReceiptSha256,
+    scoringProtocolSha256: selected.scoringProtocolSha256,
+    minimumAllowScore: selected.minimumAllowScore,
+  };
+  assert.doesNotThrow(() => assertCandidate8FrozenSelection(candidate));
+  assert.throws(
+    () =>
+      assertCandidate8FrozenSelection({
+        ...candidate,
+        minimumAllowScore: candidate.minimumAllowScore - 0.01,
+      }),
+    /differs from frozen/,
+  );
+});
+
 test("VALID agent label audit covers the sealed inventory without human signoff", async () => {
   const source = await readJson("valid.json");
   const bytes = await readFile(
@@ -313,7 +351,7 @@ test("qualification evidence cannot be exported from a fake replay", async () =>
   );
 });
 
-test("real VALID CLI remains locked before any corpus or model scoring", () => {
+test("real VALID CLI rejects unpinned candidates before corpus or model scoring", () => {
   const run = spawnSync(
     process.execPath,
     [
@@ -328,5 +366,5 @@ test("real VALID CLI remains locked before any corpus or model scoring", () => {
     { cwd: root, encoding: "utf8" },
   );
   assert.notEqual(run.status, 0);
-  assert.match(run.stderr, /Real C8 VALID scoring is disabled/);
+  assert.match(run.stderr, /committed C8-256 TRAIN-CAL freeze/);
 });

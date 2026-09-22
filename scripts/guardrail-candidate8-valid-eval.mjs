@@ -49,6 +49,16 @@ export const C8_VALID_SEAL = Object.freeze({
     "17f6672fffe913aacdbf44394119bc0b14fbab5db4cc87fccf21c66da449cdc5",
   calCorpusSha256:
     "7371877d67874e8d55c418b678d9d808207bb4e645d1868d4e44ad8d5d57144f",
+  selectedModelId: "jev/guardrail-c8-256",
+  selectedModelSha256:
+    "5b2c6be87fef227ea02c71f91b853010f089501035b872a888b100b5d746237f",
+  selectedNativeBinarySha256:
+    "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+  selectedCalibrationReceiptSha256:
+    "6b6c06ea3262ba13d0da1d15e4b744ac474bf182d63715b43170d5a9f7d80229",
+  selectedScoringProtocolSha256:
+    "57f1998c932a431b2aa75244943947a78fde120a0ccd654bf17a4037998190a9",
+  selectedMinimumAllowScore: 0.9967565871733567,
   promptProtocolSha256:
     "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
   decisionBaseProtocolSha256:
@@ -459,6 +469,23 @@ export function verifyCandidate8CalibratedSelection(
   return selected;
 }
 
+/** One prospectively selected model and cutoff may enter VALID shadow replay. */
+export function assertCandidate8FrozenSelection(candidate) {
+  if (
+    candidate?.modelId !== C8_VALID_SEAL.selectedModelId ||
+    candidate.modelSha256 !== C8_VALID_SEAL.selectedModelSha256 ||
+    candidate.nativeBinarySha256 !== C8_VALID_SEAL.selectedNativeBinarySha256 ||
+    candidate.calibrationSha256 !==
+      C8_VALID_SEAL.selectedCalibrationReceiptSha256 ||
+    candidate.scoringProtocolSha256 !==
+      C8_VALID_SEAL.selectedScoringProtocolSha256 ||
+    candidate.minimumAllowScore !== C8_VALID_SEAL.selectedMinimumAllowScore
+  )
+    throw new Error(
+      "C8 real VALID candidate differs from frozen TRAIN-CAL selection",
+    );
+}
+
 async function loadRealCandidate(values, runtime) {
   const path = resolve(values["freeze-file"] ?? "");
   const repo = resolve(values["freeze-repo"] ?? "");
@@ -516,7 +543,7 @@ async function loadRealCandidate(values, runtime) {
     nativeBinarySha256,
     runtime.verifyCalibration,
   );
-  return {
+  const candidate = {
     modelId: values["model-id"],
     modelFile: values["model-file"],
     modelSha256: artifact.sha256,
@@ -532,6 +559,8 @@ async function loadRealCandidate(values, runtime) {
     freezeRevision: revision,
     trainCalibrationReceiptSha256: sha(raw),
   };
+  assertCandidate8FrozenSelection(candidate);
+  return candidate;
 }
 
 async function main() {
@@ -568,9 +597,15 @@ async function main() {
     );
   if (fake && process.env.C8_VALID_FAKE_PROVIDER_TEST !== "1")
     throw new Error("Fake provider requires explicit test-harness mode");
-  if (!fake)
+  if (
+    !fake &&
+    (values["model-id"] !== C8_VALID_SEAL.selectedModelId ||
+      values["model-sha256"] !== C8_VALID_SEAL.selectedModelSha256 ||
+      values["freeze-sha256"] !==
+        C8_VALID_SEAL.selectedCalibrationReceiptSha256)
+  )
     throw new Error(
-      "Real C8 VALID scoring is disabled until final qualification host and model-specific TRAIN-CAL freeze are pinned",
+      "Real C8 VALID requires the committed C8-256 TRAIN-CAL freeze",
     );
   if (
     !fake &&
