@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import { existsSync } from "node:fs";
 import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -8,6 +9,7 @@ import { test } from "node:test";
 import { canonical } from "../dist/core.js";
 import { GUARDRAIL_PROTOCOL_SHA256 } from "../dist/guardrail.js";
 import { selectFromPinnedSources } from "../scripts/guardrail-candidate9-select-cutoff.mjs";
+import { fixture as artifactFixture } from "./helpers/c9-artifact-fixture.mjs";
 
 const sha = (value) => createHash("sha256").update(value).digest("hex");
 const pin = (c) => c.repeat(64);
@@ -16,6 +18,7 @@ const hostBaseline =
   "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421";
 const policy =
   "e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347";
+const localPinnedHost = "/private/tmp/sf-pi-guardrail-c9-host-20260922";
 
 async function fixture() {
   const dir = await mkdtemp(join(tmpdir(), "jev-c9-selector-"));
@@ -50,10 +53,8 @@ async function fixture() {
     row("cal-safe", "cal-one", "allow", "calibration"),
     row("cal-risk", "cal-two", "confirm", "calibration"),
   ];
-  const fitSha256 = await put(
-    "fit.jsonl",
-    fit.map(JSON.stringify).join("\n") + "\n",
-  );
+  const fitJsonl = fit.map(JSON.stringify).join("\n") + "\n";
+  const fitSha256 = await put("fit.jsonl", fitJsonl);
   const calibrationCorpusSha256 = await put(
     "cal.jsonl",
     cal.map(JSON.stringify).join("\n") + "\n",
@@ -100,16 +101,7 @@ async function fixture() {
     },
   };
   let admissionSha256 = await put("admission.json", admission);
-  const planSha256 = await put("objectivePlan.json", {
-    version: 2,
-    purpose: "candidate9_train_only",
-    arm: "B",
-    pair_manifest_sha256: pairsSha256,
-    family_manifest_sha256: familiesSha256,
-    steps: 256,
-    validation_rows_passed_to_training: 0,
-    test_rows_passed_to_training: 0,
-  });
+  const planSha256 = pin("d");
   const cases = cal
     .map((r) => ({
       id: r.id,
@@ -217,7 +209,37 @@ async function fixture() {
   admission.source.hostControlsReceiptSha256 = hostControlsReceiptSha256;
   admission.source.calibrationBaselineReceiptSha256 = baselineReceiptSha256;
   admissionSha256 = await put("admission.json", admission);
+  const artifact = await artifactFixture("B", {
+    fitBytes: Buffer.from(fitJsonl),
+    fitRows: fit.length,
+    fitGroups: 1,
+    pairSha256: pairsSha256,
+    familySha256: familiesSha256,
+    admissionSha256,
+  });
+  Object.assign(paths, {
+    runDirectory: artifact.paths.runDirectory,
+    objectivePlan: artifact.paths.objectivePlan,
+    f16Model: artifact.paths.f16Model,
+    q8Model: artifact.paths.q8Model,
+    calScorerCli: artifact.paths.calScorerCli,
+    calScorerCore: artifact.paths.calScorerCore,
+    nativeBinary: artifact.paths.nativeBinary,
+  });
   scores.admissionSha256 = admissionSha256;
+  for (const key of [
+    "modelSha256",
+    "nativeBinarySha256",
+    "artifactManifestSha256",
+    "registrySha256",
+    "runManifestSha256",
+    "fitPlanSha256",
+    "quantizationManifestSha256",
+    "calScorerCliSha256",
+    "calScorerCoreSha256",
+    "objectivePlanSha256",
+  ])
+    scores[key] = artifact.expected[key];
   scoresSha256 = await put("scores.json", scores);
   const pins = {
     admissionSha256,
@@ -265,6 +287,96 @@ test("C9 selector rejects same-ID different-operation score after re-pinning its
     /admitted CAL operations/,
   );
 });
+
+test("C9 selector rehashes the actual Q8 artifact before accepting CAL scores", async () => {
+  const { paths, pins } = await fixture();
+  await writeFile(paths.q8Model, "GGUFchanged-after-score");
+  await assert.rejects(
+    selectFromPinnedSources(paths, pins, async () => ({
+      commit: hostCommit,
+      baselineSha256: hostBaseline,
+    })),
+    /C9 artifact provenance:.*Q8 model bytes/,
+  );
+});
+
+test(
+  "C9 selector CLI accepts the same pinned synthetic CAL through the real host identity path",
+  { skip: !existsSync(localPinnedHost) },
+  async () => {
+    const { paths, pins } = await fixture();
+    const script = new URL(
+      "../scripts/guardrail-candidate9-select-cutoff.mjs",
+      import.meta.url,
+    );
+    const args = [
+      "--admission",
+      paths.admission,
+      "--admission-sha256",
+      pins.admissionSha256,
+      "--fit",
+      paths.fit,
+      "--cal",
+      paths.cal,
+      "--pairs",
+      paths.pairs,
+      "--families",
+      paths.families,
+      "--objective-plan",
+      paths.objectivePlan,
+      "--run",
+      paths.runDirectory,
+      "--f16-model",
+      paths.f16Model,
+      "--q8-model",
+      paths.q8Model,
+      "--cal-scorer-cli",
+      paths.calScorerCli,
+      "--cal-scorer-core",
+      paths.calScorerCore,
+      "--native-binary",
+      paths.nativeBinary,
+      "--scores",
+      paths.scores,
+      "--scores-sha256",
+      pins.scoresSha256,
+      "--baseline",
+      paths.baseline,
+      "--baseline-receipt-sha256",
+      pins.baselineReceiptSha256,
+      "--host-controls",
+      paths.hostControls,
+      "--host-controls-receipt-sha256",
+      pins.hostControlsReceiptSha256,
+      "--baseline-script",
+      paths.baselineScript,
+      "--host-controls-script",
+      paths.hostControlsScript,
+      "--sf-pi",
+      localPinnedHost,
+      "--model-sha256",
+      pins.modelSha256,
+      "--native-binary-sha256",
+      pins.nativeBinarySha256,
+      "--host-baseline-sha256",
+      pins.hostBaselineSha256,
+      "--policy-sha256",
+      pins.policySha256,
+      "--output",
+      paths.output,
+    ];
+    const result = spawnSync(process.execPath, [script.pathname, ...args], {
+      encoding: "utf8",
+      timeout: 10_000,
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(JSON.parse(result.stdout).accepted, true);
+    assert.equal(
+      JSON.parse(await readFile(paths.output, "utf8")).accepted,
+      true,
+    );
+  },
+);
 
 test("C9 cutoff CLI refuses unpinned invocations before writing a receipt", () => {
   const script = new URL(

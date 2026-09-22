@@ -9,6 +9,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { canonical } from "../dist/core.js";
 import { GUARDRAIL_PROTOCOL_SHA256 } from "../dist/guardrail.js";
 import { selectC9Calibration } from "../dist/guardrail-c9-calibration.js";
+import { verifyC9Q8Artifact } from "./guardrail-candidate9-artifact-provenance.mjs";
 
 const sha = (value) => createHash("sha256").update(value).digest("hex");
 const pin = (value) =>
@@ -224,6 +225,22 @@ export async function selectFromPinnedSources(
     )
   )
     fail("model scores differ from admitted CAL operations or identities");
+  await verifyC9Q8Artifact({
+    paths: {
+      runDirectory: paths.runDirectory,
+      objectivePlan: paths.objectivePlan,
+      f16Model: paths.f16Model,
+      q8Model: paths.q8Model,
+      calScorerCli: paths.calScorerCli,
+      calScorerCore: paths.calScorerCore,
+      nativeBinary: paths.nativeBinary,
+    },
+    expected: scores,
+    admission,
+    objectivePlanSha256: sha(planBytes),
+    modelSha256: pins.modelSha256,
+    arm: plan.arm,
+  });
   const baseline = JSON.parse(baselineBytes);
   const controls = JSON.parse(controlsBytes);
   const host = await inspectHost(paths.sfPi);
@@ -298,6 +315,12 @@ if (
     "pairs",
     "families",
     "objective-plan",
+    "run",
+    "f16-model",
+    "q8-model",
+    "cal-scorer-cli",
+    "cal-scorer-core",
+    "native-binary",
     "scores",
     "scores-sha256",
     "baseline",
@@ -325,6 +348,12 @@ if (
     pairs: values.pairs,
     families: values.families,
     objectivePlan: values["objective-plan"],
+    runDirectory: values.run,
+    f16Model: values["f16-model"],
+    q8Model: values["q8-model"],
+    calScorerCli: values["cal-scorer-cli"],
+    calScorerCore: values["cal-scorer-core"],
+    nativeBinary: values["native-binary"],
     scores: values.scores,
     baseline: values.baseline,
     hostControls: values["host-controls"],

@@ -184,6 +184,7 @@ export async function verifyC9Q8Artifact({
     objectiveFile,
     cliFile,
     coreFile,
+    nativeBinaryFile,
   ] = await Promise.all([
     json(locations.artifact),
     json(locations.run),
@@ -193,6 +194,7 @@ export async function verifyC9Q8Artifact({
     json(paths.objectivePlan),
     regular(paths.calScorerCli, MAX_JSON_BYTES),
     regular(paths.calScorerCore, MAX_JSON_BYTES),
+    regular(paths.nativeBinary, 64 * 1_048_576),
   ]);
   checkPin(
     artifactFile.sha256,
@@ -210,6 +212,11 @@ export async function verifyC9Q8Artifact({
   checkPin(objectiveFile.sha256, objectivePlanSha256, "TRAIN objective plan");
   checkPin(cliFile.sha256, expected.calScorerCliSha256, "CAL scorer CLI");
   checkPin(coreFile.sha256, expected.calScorerCoreSha256, "CAL scorer core");
+  checkPin(
+    nativeBinaryFile.sha256,
+    expected.nativeBinarySha256,
+    "CAL native scorer",
+  );
   check(
     cliFile.sha256 === CAL_SCORER_CLI_SHA256 &&
       coreFile.sha256 === CAL_SCORER_CORE_SHA256,
@@ -359,6 +366,8 @@ export async function verifyC9Q8Artifact({
       ) &&
       fit.baseFiles?.["model.safetensors"]?.sha256 === BASE_WEIGHTS_SHA256 &&
       fit.baseGguf?.sha256 === BASE_GGUF_SHA256 &&
+      fit.source?.code?.files?.[".build/jev-native"] ===
+        nativeBinaryFile.sha256 &&
       fit.rfdtPreparedSha256 === run.prepared.sha256,
     "C9 FIT plan source pins or schedule changed",
   );
