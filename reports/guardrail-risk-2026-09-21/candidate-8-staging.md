@@ -1,20 +1,23 @@
 # Candidate 8 source staging (2026-09-22)
 
-This branch assembles the committed Candidate 8 source and model-free evidence
-on top of the rejected Candidate 7 delivery. It contains **no Candidate 8 model
-effectiveness score, no frozen selected cutoff, and no qualification claim**.
-The existing sf-guardrail engine remains the enforcement owner and Jev remains
-off by default. The C8 held-out TEST payload is not in this branch.
+This is the historical source-staging receipt at commit `eb5df74`. Later
+commits added the completed training, TRAIN-CAL score, selected cutoff, and
+final sf-pi host; see the [pre-VALID freeze](./candidate-8-prevalid-freeze.md)
+for their current identities and proof limits. At this staging checkpoint,
+there was **no Candidate 8 model effectiveness score, frozen selected cutoff,
+or qualification claim**. The existing sf-guardrail engine remained the
+enforcement owner and Jev remained off by default. No held-out TEST payload
+was present.
 
-## Source and evidence assembled
+## Source and evidence assembled at initial staging
 
-| Component | Tracked evidence or source | Current boundary |
-| --- | --- | --- |
-| TRAIN fit and reserved calibration | `candidate-8-evidence/train/fit.jsonl`, `calibration.jsonl`, `admission.json` | 226 fit rows in 77 groups; 47 disjoint TRAIN-CAL rows in 17 groups. Human label review is pending. |
-| Paired RFDT objective and fixed schedule | `rfdt/worker.py`, `fixtures/guardrail/candidate8/objective-plan.json`, `scripts/guardrail-candidate8-fit.mjs` | Original Google Gemma 3 1B base; no validation or test examples passed to fitting. The fit runner is pinned to its original source commit. |
-| Calibration scoring and cutoff selection | `scripts/guardrail-candidate8-cal-score.mjs`, `scripts/guardrail-c8-select-cutoff.mjs`, `src/guardrail-calibration.ts` | Only TRAIN-CAL may select the cutoff. The v2 provider path is shadow-only until a qualified held-out receipt exists. |
-| Independently authored VALID | `blind-c8-20260922/valid.json`, `valid-host-preflight.json` | 96 cases in 48 groups; 58 prepared model calls. This is a model-free preflight on historical sf-pi host `d86cdcfc`; final-host repinning is pending. |
-| Executable shadow comparison | `candidate-8-v2-shadow-evidence/fake-shadow-report.json` | All 58 fake-provider calls answered; no tool executed and the baseline kept control. Fake decisions and timings are not a model score. |
+| Component                                | Tracked evidence or source                                                                                             | Current boundary                                                                                                                                     |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TRAIN fit and reserved calibration       | `candidate-8-evidence/train/fit.jsonl`, `calibration.jsonl`, `admission.json`                                          | 226 fit rows in 77 groups; 47 disjoint TRAIN-CAL rows in 17 groups. Human label review is pending.                                                   |
+| Paired RFDT objective and fixed schedule | `rfdt/worker.py`, `fixtures/guardrail/candidate8/objective-plan.json`, `scripts/guardrail-candidate8-fit.mjs`          | Original Google Gemma 3 1B base; no validation or test examples passed to fitting. The fit runner is pinned to its original source commit.           |
+| Calibration scoring and cutoff selection | `scripts/guardrail-candidate8-cal-score.mjs`, `scripts/guardrail-c8-select-cutoff.mjs`, `src/guardrail-calibration.ts` | Only TRAIN-CAL may select the cutoff. The v2 provider path is shadow-only until a qualified held-out receipt exists.                                 |
+| Independently authored VALID             | `blind-c8-20260922/valid.json`, `valid-host-preflight.json`                                                            | 96 cases in 48 groups; 58 prepared model calls. This is a model-free preflight on historical sf-pi host `d86cdcfc`; final-host repinning is pending. |
+| Executable shadow comparison             | `candidate-8-v2-shadow-evidence/fake-shadow-report.json`                                                               | All 58 fake-provider calls answered; no tool executed and the baseline kept control. Fake decisions and timings are not a model score.               |
 
 The admitted fit JSONL SHA-256 is
 `17f6672fffe913aacdbf44394119bc0b14fbab5db4cc87fccf21c66da449cdc5`;
@@ -47,7 +50,7 @@ was applied in a disposable Git index at sf-pi baseline `4f901db9` and
 reproduced C7 host tree `77baa1b435e07da31675a26ead942d36f0a1bdbe`.
 This checks the old host patch, not the pending C8 host.
 
-## Remaining delivery evidence
+## Remaining delivery evidence at initial staging
 
 Before scoring VALID, retain the completed training/export receipts and model
 artifact hash; commit the final enforce-capable sf-pi host and its baseline-bound

@@ -6,6 +6,36 @@ grants and audit records. Exact policy constraints remain in code. The extension
 uses no Jev implementation imports: it discovers one versioned provider through
 `sf-guardrail:risk-providers`.
 
+## Candidate 8 qualification-capable host
+
+The [Candidate 8 baseline-bound patch](./candidate8-sf-pi-from-4f901db9.patch)
+reconstructs the committed sf-pi host used for Candidate 8's frozen TRAIN-CAL
+cutoff and intended prospective VALID comparison. The host contains the
+precommitted fail-closed qualification verifier and an enforcement path that
+requires a passing held-out receipt. **The patch itself is not model
+qualification.** No C8 VALID or TEST model result is claimed here; leave
+`SF_GUARDRAIL_JEV_MODE` at its default `off` outside an isolated shadow replay.
+
+| Artifact                 | Pinned identity                                                    |
+| ------------------------ | ------------------------------------------------------------------ |
+| SF Pi baseline commit    | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                         |
+| C8 final host commit     | `bdbf6292f383a8b2e12cd236aafb2be9c335f463`                         |
+| Final host tree          | `50589ffa257f26b9178b21337107bda65d2b3c98`                         |
+| Risk baseline SHA-256    | `1e5e8167f25ce8fb440d7bf8054be44a27d67c0fa71272a5558b01204c24bd0e` |
+| Effective policy SHA-256 | `06aa441885847cce10b5432120b535657b780726b83327cbfd170b1b455bef22` |
+| Patch SHA-256            | `89625f16d10b9a29034d04c1334874a7c2c89a2b64defc872f1d9d6596a5919c` |
+| Patch size               | 468,257 bytes                                                      |
+
+The patch is the binary, full-index diff from the baseline to the final host.
+It passed `git diff --check` and `git apply --cached --check`; applying it in a
+disposable index reproduced the final host tree exactly, without changing the
+sf-pi checkout's working files or index. It includes sf-pi ADR 0118
+(`docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md`)
+and the update to ADR 0052: a qualified local model may supply semantic risk
+judgments, while exact user policy and the `tool_call` approval and audit path
+remain authoritative. The patch has not been pushed or installed in the user's
+active Pi environment.
+
 ## Candidate 7 evaluation host
 
 The [Candidate 7 baseline-bound patch](./candidate7-sf-pi-from-4f901db9.patch)
@@ -101,20 +131,43 @@ and all other qualification gates are unresolved.
 
 ## Current local use
 
-Use a fresh SF Pi worktree at the pinned baseline, then apply the Candidate 7
-evaluation-host patch:
+Use a fresh SF Pi worktree at the pinned baseline, then apply the Candidate 8
+host patch:
 
 ```sh
 git -C /path/to/sf-pi worktree add --detach /tmp/sf-pi-jev-risk 4f901db9c3f5076ea0305dea33ad6e8856e467da
-git -C /tmp/sf-pi-jev-risk apply --index /path/to/simple-jev-ts/integrations/sf-pi-guardrail/candidate7-sf-pi-from-4f901db9.patch
+git -C /tmp/sf-pi-jev-risk apply --index /path/to/simple-jev-ts/integrations/sf-pi-guardrail/candidate8-sf-pi-from-4f901db9.patch
 git -C /tmp/sf-pi-jev-risk write-tree
 ```
 
-The final command should print `77baa1b435e07da31675a26ead942d36f0a1bdbe`.
+The final command should print `50589ffa257f26b9178b21337107bda65d2b3c98`.
 Install that local SF Pi package and the separately built Jev extension in an
-isolated Pi environment for shadow inspection. Both C7 models failed VALID
-selection, so this patch does not permit model enforcement. See [GUARDRAIL.md](../../GUARDRAIL.md)
-for candidate selection, training, and the reproducible bridge evaluation.
+isolated Pi environment for shadow inspection. For the retained C8 model on
+this machine, verify that the local GGUF matches the
+[frozen model hash](../../reports/guardrail-risk-2026-09-21/candidate-8-prevalid-freeze.md),
+then set the following before launching Pi (replace the Jev checkout path with
+the actual checkout containing this patch):
+
+```sh
+export SF_GUARDRAIL_JEV_MODE=shadow
+export JEV_GUARDRAIL_MODEL_ID=jev/guardrail-c8-256
+export JEV_GUARDRAIL_MODEL_FILE=/private/tmp/simple-jev-ts-guardrail-c8-fit-20260922/.build/guardrail/candidate-8-rfdt-256-v1/gemma-3-1b-rfdt-f16.gguf
+export JEV_GUARDRAIL_ARTIFACT_REGISTRY=/path/to/simple-jev-ts/reports/guardrail-risk-2026-09-21/candidate-8-evidence/runs/256/registry.json
+export JEV_GUARDRAIL_CALIBRATION=/path/to/simple-jev-ts/reports/guardrail-risk-2026-09-21/candidate-8-evidence/cal/cutoff-freeze-256.json
+export JEV_GUARDRAIL_CALIBRATION_SHA256=6b6c06ea3262ba13d0da1d15e4b744ac474bf182d63715b43170d5a9f7d80229
+```
+
+The committed registry references that same local GGUF path; moving the model
+requires a separately reviewed artifact registry with its new path. Use
+`/jev-risk warmup`,
+`/jev-risk status`, `/sf-guardrail risk`, and `/sf-guardrail audit` to inspect
+the comparison and the actual rule-owned outcome. Leave
+`JEV_GUARDRAIL_C8_QUALIFICATION` unset until a passing, model-and-host-bound
+held-out report exists; the final host falls back to the existing engine if
+qualification is absent or invalid. See [GUARDRAIL.md](../../GUARDRAIL.md)
+and the [C8 pre-VALID freeze](../../reports/guardrail-risk-2026-09-21/candidate-8-prevalid-freeze.md)
+for the current proof boundary. The C7 patch above remains available for
+reproducing its rejected models' historical evaluation.
 
 ## Historical candidate 4 integration
 
