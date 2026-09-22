@@ -8,6 +8,7 @@ import { test } from "node:test";
 import {
   assertPreparedCall,
   createHostRecorder,
+  verifyCandidate6ReportHelperBytes,
   verifyCandidate6RuntimeBytes,
   verifyCandidate6TrainOnlyFiles,
   verifyCandidate6TrainingPins,
@@ -19,7 +20,41 @@ const script = resolve(root, "scripts/guardrail-candidate6-valid-eval.mjs");
 const valid = resolve(root, "blind-c6-20260922/c6-valid-v4.json");
 const manifest = resolve(root, "blind-c6-20260922/c6-valid-v4.manifest.json");
 const schema = resolve(root, "blind-c6-20260922/c6-case-v2.schema.json");
+const reportHelper = resolve(
+  root,
+  "scripts/guardrail-candidate6-valid-report.mjs",
+);
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
+
+test("selection reporter bytes are pinned before model input", async () => {
+  const bytes = await readFile(reportHelper);
+  const committedBytes = execFileSync(
+    "git",
+    ["show", "HEAD:scripts/guardrail-candidate6-valid-report.mjs"],
+    { cwd: root },
+  );
+  const expected =
+    "3217e9705720104a72d8d629430802d3ccb1f4184d383190aeb92fef559c2f82";
+  assert.equal(
+    verifyCandidate6ReportHelperBytes(bytes, committedBytes),
+    expected,
+  );
+  const changed = Buffer.from(bytes);
+  changed[0] ^= 1;
+  assert.throws(
+    () => verifyCandidate6ReportHelperBytes(changed, committedBytes),
+    /VALID report helper changed/,
+  );
+  assert.throws(
+    () => verifyCandidate6ReportHelperBytes(bytes, changed),
+    /differs from committed source/,
+  );
+  assert.throws(
+    () =>
+      verifyCandidate6ReportHelperBytes(bytes.toString("utf8"), committedBytes),
+    /VALID report helper changed/,
+  );
+});
 
 test("the real Jev provider can register its lifecycle on the host recorder", async () => {
   const pi = createHostRecorder();
@@ -316,6 +351,10 @@ test(
       assert.equal(report.modelProvider, "fake");
       assert.equal(report.executionSurface, "sf_guardrail_bridge_shadow");
       assert.equal(report.externalOperationsExecuted, 0);
+      assert.equal(
+        report.source.reportHelperSha256,
+        "3217e9705720104a72d8d629430802d3ccb1f4184d383190aeb92fef559c2f82",
+      );
       assert.equal(
         report.source.validSha256,
         "b172cc2c07188c206209e4be1a770fc0cb7484539b770ea0d021d14c30f5dd87",

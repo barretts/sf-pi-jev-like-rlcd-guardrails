@@ -24,8 +24,6 @@ import {
 import { performance } from "node:perf_hooks";
 import { parseArgs } from "node:util";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { summarizeCandidate6Validation } from "./guardrail-candidate6-valid-report.mjs";
-
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const buildRoot = resolve(root, ".build/guardrail");
 const validPath = resolve(root, "blind-c6-20260922/c6-valid-v4.json");
@@ -38,8 +36,14 @@ const detectStubPath = resolve(
   root,
   "scripts/guardrail-v3-research-detect-stub.mjs",
 );
+const reportHelperPath = resolve(
+  root,
+  "scripts/guardrail-candidate6-valid-report.mjs",
+);
 const runtimeDirectory = resolve(root, "dist");
 const sealed = Object.freeze({
+  reportHelper:
+    "3217e9705720104a72d8d629430802d3ccb1f4184d383190aeb92fef559c2f82",
   valid: "b172cc2c07188c206209e4be1a770fc0cb7484539b770ea0d021d14c30f5dd87",
   manifest: "4696aee64fe8e91cbc3fb471e80bb1c741223314ee98841d3c276e911f916de7",
   schema: "e204e21d086bf4a4bebee0c7c14440ea83ed9509228ec3cab03ba3d55202c376",
@@ -106,6 +110,45 @@ const label = Object.freeze({
   require_approval: "confirm",
   hard_block: "block",
 });
+
+/** The reporter computes every candidate-selection gate and must be immutable. */
+export function verifyCandidate6ReportHelperBytes(bytes, committedBytes) {
+  if (!Buffer.isBuffer(bytes) || sha(bytes) !== sealed.reportHelper)
+    throw new Error("C6 VALID report helper changed");
+  if (!Buffer.isBuffer(committedBytes) || !bytes.equals(committedBytes))
+    throw new Error("C6 VALID report helper differs from committed source");
+  return sealed.reportHelper;
+}
+
+function committedReportHelperBytes() {
+  return execFileSync(
+    "git",
+    ["show", "HEAD:scripts/guardrail-candidate6-valid-report.mjs"],
+    { cwd: root },
+  );
+}
+
+async function readReportHelperBytes() {
+  const entry = await lstat(reportHelperPath);
+  if (!entry.isFile() || entry.isSymbolicLink())
+    throw new Error("C6 VALID report helper is not a regular file");
+  return readFile(reportHelperPath);
+}
+
+async function loadPinnedReportHelper() {
+  const sha256 = verifyCandidate6ReportHelperBytes(
+    await readReportHelperBytes(),
+    committedReportHelperBytes(),
+  );
+  const module = await import(pathToFileURL(reportHelperPath).href);
+  verifyCandidate6ReportHelperBytes(
+    await readReportHelperBytes(),
+    committedReportHelperBytes(),
+  );
+  if (typeof module.summarizeCandidate6Validation !== "function")
+    throw new Error("C6 VALID report helper export changed");
+  return { sha256, summarize: module.summarizeCandidate6Validation };
+}
 const expectedPreModelFallbacks = Object.freeze({
   "c6-valid-008": "Invalid or incomplete guardrail risk input",
   "c6-valid-046": "authored_browser_evidence_incomplete",
@@ -1007,6 +1050,7 @@ async function main() {
     throw new Error(
       "Output must be a fresh candidate-6-valid-eval-* directory under .build/guardrail",
     );
+  const reportHelper = await loadPinnedReportHelper();
   const runtimeHashes = await loadPinnedJevRuntime();
   const [validBytes, manifestBytes, schemaBytes, stubBytes, scriptBytes] =
     await Promise.all([
@@ -1049,6 +1093,10 @@ async function main() {
     const endRuntimeHashes = verifyCandidate6RuntimeBytes(
       await readRuntimeBytes(),
     );
+    verifyCandidate6ReportHelperBytes(
+      await readReportHelperBytes(),
+      committedReportHelperBytes(),
+    );
     if (
       !validBytes.equals(endValid) ||
       !manifestBytes.equals(endManifest) ||
@@ -1067,7 +1115,7 @@ async function main() {
           ))
     )
       throw new Error("C6 VALID data or evaluation code changed during replay");
-    const summary = summarizeCandidate6Validation(result.records, {
+    const summary = reportHelper.summarize(result.records, {
       providerKind: fake ? "fake" : "real",
     });
     if (result.providerCalls !== summary.metrics.preparedModelCalls)
@@ -1129,6 +1177,7 @@ async function main() {
         schemaFile: schemaPath,
         schemaSha256: sealed.schema,
         evaluatorScriptSha256: sha(scriptBytes),
+        reportHelperSha256: reportHelper.sha256,
         scorerDistributionSha256: runtimeHashes["guardrail.js"],
         scorerProtocolSha256: GUARDRAIL_PROTOCOL_SHA256,
         runtimeDistributionModules: runtimeHashes,
