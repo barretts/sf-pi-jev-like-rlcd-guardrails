@@ -1,0 +1,188 @@
+{
+  "version": 1,
+  "purpose": "candidate9_fit_calibration_admission",
+  "trainingReady": true,
+  "qualification": false,
+  "modelCalls": 0,
+  "c8ValidBodyRead": false,
+  "heldOutTestRead": false,
+  "source": {
+    "baseModel": "google/gemma-3-1b-it",
+    "scorerProtocolSha256": "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
+    "hostCommit": "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a",
+    "hostRuntimeSha256": "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421",
+    "c9SourceSha256": "e1eddcfea45e7742d9bfa16742aa7a1e54db9925bf8c2fcf35c419ea6aa8fac4",
+    "pairsSha256": "14bf441943af175e9edb403a57763a5f7acbb575ca9f3bf5e8f369417f2f6e29",
+    "familiesSha256": "c0da32e19b86815663d027064cabfc40c93680543b50f83a64fd9106753f8806",
+    "sourceCompositionReceiptSha256": "f05e04ce642bfb768d35785eec6b2e3bede25df1be1c82b1b398bc59942db196",
+    "hostProjectionReceiptSha256": "ed1228761a67d364000cd7d8da767d80c74f965cd8da9e6c55f2f640ddc373f7",
+    "inheritedBashFamilySha256": "1ba4aa1c083d8c62d14edc965af9c8ebaeb4893aebac04057f3622f80537b2fe",
+    "inheritedSourceExclusionSha256": "e2e27c1c4326aebed47006da1fe77dea54842276fb3242a3f66a4ffef7fbc832",
+    "inheritedPairsSha256": "5d966c78f0b2ea2193a99a8f007cbd84327594c66d4e9bb62f42f8440a233b04",
+    "calibrationBaselineReceiptSha256": "30ade52e146c73cbcabb632cac472a6c926dc9b64cf8f7691469a4019367b374",
+    "hostControlsReceiptSha256": "034f0c2bf9ca715e19fa4d987fe865e82aab101c66783db1eef0fb6a7c84fda6",
+    "scriptSha256": "1a6f5f3983ddb63a62906389b27ab4de1c59f00f3d145ccb9bbeb0c96d98cf3a"
+  },
+  "fit": {
+    "sha256": "77e7ebc3aa53d8274afb566c5d1401014555d25880f478476ea2704731a127ed",
+    "rows": 383,
+    "groups": 152
+  },
+  "calibration": {
+    "sha256": "8b5a3ede3d7b4d8eb28d73b966bcdf60cd3aa65f2ff7628fff996d96aa7c72f3",
+    "rows": 42,
+    "groups": 21,
+    "notPassedToFit": true
+  },
+  "counts": {
+    "inheritedRows": 243,
+    "inheritedHostPreparedRows": 270,
+    "inheritedSourceExcludedGroups": 11,
+    "newFitRows": 140,
+    "pairs": 97,
+    "inheritedPairs": 27,
+    "newPairs": 70,
+    "fitAllow": 223,
+    "fitConfirm": 160
+  },
+  "familyCounts": {
+    "agentscript": {
+      "rows": 14,
+      "allow": 10,
+      "confirm": 4
+    },
+    "apex": {
+      "rows": 14,
+      "allow": 13,
+      "confirm": 1
+    },
+    "browser": {
+      "rows": 32,
+      "allow": 16,
+      "confirm": 16
+    },
+    "canvas": {
+      "rows": 38,
+      "allow": 19,
+      "confirm": 19
+    },
+    "data360": {
+      "rows": 58,
+      "allow": 42,
+      "confirm": 16
+    },
+    "herdr_pane": {
+      "rows": 66,
+      "allow": 34,
+      "confirm": 32
+    },
+    "salesforce_cli": {
+      "rows": 39,
+      "allow": 20,
+      "confirm": 19
+    },
+    "shell": {
+      "rows": 74,
+      "allow": 37,
+      "confirm": 37
+    },
+    "soql": {
+      "rows": 48,
+      "allow": 32,
+      "confirm": 16
+    }
+  },
+  "excludedInheritedGroups": [
+    {
+      "group_id": "c7-data360-dlo-list-vs-delete",
+      "reason": "The risky DELETE targets /ssot/data-lake-objects/C7TicketEvent__dlm, a DMO suffix under the DLO endpoint. This is not a source-valid DLO deletion contrast.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "sf-pi/extensions/sf-data360/lib/agent-observability/platform-tracing.ts"
+      ]
+    },
+    {
+      "group_id": "c8-data360-get-vs-post",
+      "reason": "The risky sf api request rest command supplies --body ./fixtures/c8-insight.json without the CLI's @ file-body prefix, and that file is absent from the C9 source tree. It would send a literal path instead of the claimed JSON body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/calibration.jsonl",
+        "https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_api_request_rest.html"
+      ]
+    },
+    {
+      "group_id": "train-salesforce-production-validation",
+      "reason": "The sf project deploy validate command has no manifest, source-dir, metadata, or metadata-dir selector, although the installed CLI requires exactly one. It exits during flag validation before a deployment validation can occur.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "sf-pi/node_modules/@salesforce/plugin-deploy-retrieve/lib/commands/project/deploy/validate.js"
+      ]
+    },
+    {
+      "group_id": "c8-tree-import-target",
+      "reason": "The tree import requests ./fixtures/c8-seed-plan.json, which is absent from the C9 source tree. The asserted complete import fixture cannot be replayed.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/calibration.jsonl",
+        "fixtures/guardrail/candidate8/train-recovery.json"
+      ]
+    },
+    {
+      "group_id": "c8-apex-test-vs-run",
+      "reason": "The Apex execution side references ./apex/c8-repair.apex, which is absent from the C9 source tree, so the claimed readable script cannot be validated.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "fixtures/guardrail/candidate8/train-recovery.json"
+      ]
+    },
+    {
+      "group_id": "c7-apex-test-status-vs-anonymous",
+      "reason": "The Apex execution side references ./scripts/reconcile-case.apex, which is absent from the C9 source tree, so the claimed readable script cannot be validated.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/calibration.jsonl",
+        "fixtures/guardrail/candidate7/train-contrasts.json"
+      ]
+    },
+    {
+      "group_id": "c5-draft-salesforce-tree-import-org-fact",
+      "reason": "The tree import command hard-codes an older temporary worktree's absolute fixture path. That dependency is not part of the C9 checkout or source-pinned runtime and would break when the old worktree is removed.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "fixtures/guardrail/candidate5/train-supplement.json"
+      ]
+    },
+    {
+      "group_id": "c6-supp-data360-members-read-vs-upsert",
+      "reason": "The risky data-space members upsert nests members and filter conditions as objects where the Data 360 request schema requires arrays; the request would fail schema validation.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/calibration.jsonl",
+        "sf-pi/extensions/sf-data360/registry/examples.json",
+        "https://developer.salesforce.com/docs/data/connectapi/references/spec"
+      ]
+    },
+    {
+      "group_id": "c8-canvas-lookup-vs-access",
+      "reason": "The Canvas access.set request names a user without the method's required prior direct-share condition; the source preconditions do not establish it.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "fixtures/guardrail/candidate8/train-recovery.json",
+        "https://docs.slack.dev/reference/methods/canvases.access.set/"
+      ]
+    },
+    {
+      "group_id": "c7-task-query-vs-bulk-export",
+      "reason": "The bulk export writes under ./exports, but that directory is not established in the source fixture; the installed CLI creates the file stream without creating its parent directory.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/calibration.jsonl",
+        "sf-pi/node_modules/@salesforce/plugin-data/lib/bulkUtils.js"
+      ]
+    },
+    {
+      "group_id": "c8-soql-metadata-vs-export",
+      "reason": "The bulk export writes under ./exports, but that directory is not established in the source fixture; the installed CLI creates the file stream without creating its parent directory.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "sf-pi/node_modules/@salesforce/plugin-data/lib/bulkUtils.js"
+      ]
+    }
+  ],
+  "proofLimit": "TRAIN-only admission and host preparation, not model effectiveness or split independence. CAL was reserved by complete groups; no VALID or TEST body was used."
+}

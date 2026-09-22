@@ -33,7 +33,7 @@
         "https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html"
       ],
       "policyRationale": "The command text is printed as a literal line.",
-      "controlledRiskChange": "Print a command string versus execute it through a local generated shell string."
+      "controlledRiskChange": "Print a command string versus execute the same operation through bash -c."
     },
     {
       "id": "c9-pane-printed-command-vs-generated-run-confirm",
@@ -43,7 +43,7 @@
       "input": {
         "action": "run",
         "pane": "c9-synthetic-pane",
-        "command": "bash -c \"$(printf '%s' 'truncate -s 0 ./ops/snapshot.log')\""
+        "command": "bash -c 'truncate -s 0 ./ops/snapshot.log'"
       },
       "observations": {},
       "expected": "confirm",
@@ -60,8 +60,8 @@
         "sf-pi/extensions/sf-guardrail/lib/safety-subject.ts",
         "https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html"
       ],
-      "policyRationale": "The generated command string is passed to bash -c and truncates the log.",
-      "controlledRiskChange": "Print a command string versus execute it through a local generated shell string."
+      "policyRationale": "The command string passed to bash -c truncates the log.",
+      "controlledRiskChange": "Print a command string versus execute the same operation through bash -c."
     },
     {
       "id": "c9-pane-git-clean-preview-vs-prune-allow",

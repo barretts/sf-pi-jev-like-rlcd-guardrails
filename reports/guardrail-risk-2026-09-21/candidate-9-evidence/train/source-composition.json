@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "purpose": "candidate9_source_composition",
+  "qualification": false,
+  "modelCalls": 0,
+  "externalOperationsExecuted": 0,
+  "c8ValidBodyRead": false,
+  "heldOutTestRead": false,
+  "source": {
+    "inheritedC8FitSha256": "17f6672fffe913aacdbf44394119bc0b14fbab5db4cc87fccf21c66da449cdc5",
+    "promotedC8CalibrationSha256": "7371877d67874e8d55c418b678d9d808207bb4e645d1868d4e44ad8d5d57144f",
+    "partSha256": {
+      "shell": "ca0edf464a05db07d1714c62afe90865cf20dcb068f468fd41203937dcf2bb42",
+      "pane": "19f4968fb2981ecbb1bcbbc539b6a39aef91eda70e2913bff784a3d269d9b86c",
+      "salesforce-cli": "e5c393665461086c25a26b910eb6ce4efcb4e7c252300f7e654a7101378e8103",
+      "data360": "126a76a4b5bcbb47fc2332201bcab1ba675acc2db05492b55b58ed7082bb0279",
+      "soql": "ee0e7ba939291204f6d84cf03ba547ebf5c99a0f6d51cbcecd5d68d01233319b",
+      "canvas": "7c64df997b720146674e3d5c345692bbf748c7113c9cd0533396bd1c641b7108",
+      "browser": "d81359df8b15a9614ad292223993f1ee56a7e1af8404c974684361f461196311"
+    },
+    "scriptSha256": "3b655f39ff06c5608eac2717468c0e821aa38fedb1576f42f63393e82f09ce7f"
+  },
+  "outputs": {
+    "source.json": "e1eddcfea45e7742d9bfa16742aa7a1e54db9925bf8c2fcf35c419ea6aa8fac4",
+    "split-plan.json": "2fae11e25f5c8bb68fc5c2b280d6b5cb991b05819e771cecaedf64c4fb7e5e3c",
+    "fit-pairs.json": "6968cabe4f1972c41b4438d9150ac06b1809b2cb93606b7119fffcd0196a358d",
+    "controls.json": "040f6c39edc050af5edc089681624bc2018f812ae8556429141c7a614ba17ee2"
+  },
+  "counts": {
+    "cases": 182,
+    "groups": 91,
+    "fitPairs": 70,
+    "calibrationPairs": 21,
+    "controls": 6,
+    "allow": 91,
+    "confirm": 91,
+    "exactPriorOperationOverlap": 0,
+    "exactPriorCommandOverlap": 0
+  },
+  "perLane": [
+    {
+      "family": "shell",
+      "groups": 13,
+      "fitGroups": 10,
+      "calibrationGroups": 3,
+      "cases": 26,
+      "controls": 1,
+      "sha256": "ca0edf464a05db07d1714c62afe90865cf20dcb068f468fd41203937dcf2bb42"
+    },
+    {
+      "family": "herdr_pane",
+      "groups": 13,
+      "fitGroups": 10,
+      "calibrationGroups": 3,
+      "cases": 26,
+      "controls": 0,
+      "sha256": "19f4968fb2981ecbb1bcbbc539b6a39aef91eda70e2913bff784a3d269d9b86c"
+    },
+    {
+      "family": "salesforce_cli",
+      "groups": 13,
+      "fitGroups": 10,
+      "calibrationGroups": 3,
+      "cases": 26,
+      "controls": 2,
+      "sha256": "e5c393665461086c25a26b910eb6ce4efcb4e7c252300f7e654a7101378e8103"
+    },
+    {
+      "family": "data360",
+      "groups": 13,
+      "fitGroups": 10,
+      "calibrationGroups": 3,
+      "cases": 26,
+      "controls": 0,
+      "sha256": "126a76a4b5bcbb47fc2332201bcab1ba675acc2db05492b55b58ed7082bb0279"
+    },
+    {
+      "family": "soql",
+      "groups": 13,
+      "fitGroups": 10,
+      "calibrationGroups": 3,
+      "cases": 26,
+      "controls": 0,
+      "sha256": "ee0e7ba939291204f6d84cf03ba547ebf5c99a0f6d51cbcecd5d68d01233319b"
+    },
+    {
+      "family": "canvas",
+      "groups": 13,
+      "fitGroups": 10,
+      "calibrationGroups": 3,
+      "cases": 26,
+      "controls": 0,
+      "sha256": "7c64df997b720146674e3d5c345692bbf748c7113c9cd0533396bd1c641b7108"
+    },
+    {
+      "family": "browser",
+      "groups": 13,
+      "fitGroups": 10,
+      "calibrationGroups": 3,
+      "cases": 26,
+      "controls": 3,
+      "sha256": "d81359df8b15a9614ad292223993f1ee56a7e1af8404c974684361f461196311"
+    }
+  ],
+  "proofLimit": "Exact overlap against admitted C8 FIT/CAL does not prove semantic independence. No C8 VALID or held-out TEST body is read; independent blind overlap review is required after source freeze."
+}

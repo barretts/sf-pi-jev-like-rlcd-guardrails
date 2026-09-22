@@ -33,10 +33,7 @@
                       "name": "C9_Source__dll",
                       "type": "dataLakeObject"
                     },
-                    "fields": [
-                      "source_id__c",
-                      "queryText__c"
-                    ],
+                    "fields": ["source_id__c", "queryText__c"],
                     "sampleDetails": {
                       "sortBy": [],
                       "type": "TopN"
@@ -60,9 +57,7 @@
                       }
                     ]
                   },
-                  "sources": [
-                    "LOAD_DATASET0"
-                  ]
+                  "sources": ["LOAD_DATASET0"]
                 }
               }
             }
@@ -121,10 +116,7 @@
                       "name": "C9_Source__dll",
                       "type": "dataLakeObject"
                     },
-                    "fields": [
-                      "source_id__c",
-                      "queryText__c"
-                    ],
+                    "fields": ["source_id__c", "queryText__c"],
                     "sampleDetails": {
                       "sortBy": [],
                       "type": "TopN"
@@ -148,9 +140,7 @@
                       }
                     ]
                   },
-                  "sources": [
-                    "LOAD_DATASET0"
-                  ]
+                  "sources": ["LOAD_DATASET0"]
                 }
               }
             }
@@ -498,10 +488,7 @@
                       "name": "C9_Source__dll",
                       "type": "dataLakeObject"
                     },
-                    "fields": [
-                      "source_id__c",
-                      "queryText__c"
-                    ],
+                    "fields": ["source_id__c", "queryText__c"],
                     "sampleDetails": {
                       "sortBy": [],
                       "type": "TopN"
@@ -525,9 +512,7 @@
                       }
                     ]
                   },
-                  "sources": [
-                    "LOAD_DATASET0"
-                  ]
+                  "sources": ["LOAD_DATASET0"]
                 }
               }
             }
@@ -977,17 +962,12 @@
             "masterLabel": "C9 Review Action",
             "description": "Synthetic C9 action.",
             "dataspace": "default",
-            "dataActionTargetNames": [
-              "C9_Review_Webhook"
-            ],
+            "dataActionTargetNames": ["C9_Review_Webhook"],
             "dataActionSources": [
               {
                 "sourceName": "C9_Profile__dlm",
                 "sourceType": "DataModelEntity",
-                "sourceCdcSubscriptions": [
-                  "CREATE",
-                  "UPDATE"
-                ]
+                "sourceCdcSubscriptions": ["CREATE", "UPDATE"]
               }
             ],
             "actionConditionExpression": "",

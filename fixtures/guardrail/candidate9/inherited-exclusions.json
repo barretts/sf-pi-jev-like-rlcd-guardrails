@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "purpose": "candidate9_inherited_train_source_exclusions",
+  "groups": [
+    {
+      "group_id": "c7-data360-dlo-list-vs-delete",
+      "reason": "The risky DELETE targets /ssot/data-lake-objects/C7TicketEvent__dlm, a DMO suffix under the DLO endpoint. This is not a source-valid DLO deletion contrast.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "sf-pi/extensions/sf-data360/lib/agent-observability/platform-tracing.ts"
+      ]
+    },
+    {
+      "group_id": "c8-data360-get-vs-post",
+      "reason": "The risky sf api request rest command supplies --body ./fixtures/c8-insight.json without the CLI's @ file-body prefix, and that file is absent from the C9 source tree. It would send a literal path instead of the claimed JSON body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/calibration.jsonl",
+        "https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_api_request_rest.html"
+      ]
+    },
+    {
+      "group_id": "train-salesforce-production-validation",
+      "reason": "The sf project deploy validate command has no manifest, source-dir, metadata, or metadata-dir selector, although the installed CLI requires exactly one. It exits during flag validation before a deployment validation can occur.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "sf-pi/node_modules/@salesforce/plugin-deploy-retrieve/lib/commands/project/deploy/validate.js"
+      ]
+    },
+    {
+      "group_id": "c8-tree-import-target",
+      "reason": "The tree import requests ./fixtures/c8-seed-plan.json, which is absent from the C9 source tree. The asserted complete import fixture cannot be replayed.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/calibration.jsonl",
+        "fixtures/guardrail/candidate8/train-recovery.json"
+      ]
+    },
+    {
+      "group_id": "c8-apex-test-vs-run",
+      "reason": "The Apex execution side references ./apex/c8-repair.apex, which is absent from the C9 source tree, so the claimed readable script cannot be validated.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "fixtures/guardrail/candidate8/train-recovery.json"
+      ]
+    },
+    {
+      "group_id": "c7-apex-test-status-vs-anonymous",
+      "reason": "The Apex execution side references ./scripts/reconcile-case.apex, which is absent from the C9 source tree, so the claimed readable script cannot be validated.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/calibration.jsonl",
+        "fixtures/guardrail/candidate7/train-contrasts.json"
+      ]
+    },
+    {
+      "group_id": "c5-draft-salesforce-tree-import-org-fact",
+      "reason": "The tree import command hard-codes an older temporary worktree's absolute fixture path. That dependency is not part of the C9 checkout or source-pinned runtime and would break when the old worktree is removed.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "fixtures/guardrail/candidate5/train-supplement.json"
+      ]
+    },
+    {
+      "group_id": "c6-supp-data360-members-read-vs-upsert",
+      "reason": "The risky data-space members upsert nests members and filter conditions as objects where the Data 360 request schema requires arrays; the request would fail schema validation.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/calibration.jsonl",
+        "sf-pi/extensions/sf-data360/registry/examples.json",
+        "https://developer.salesforce.com/docs/data/connectapi/references/spec"
+      ]
+    },
+    {
+      "group_id": "c8-canvas-lookup-vs-access",
+      "reason": "The Canvas access.set request names a user without the method's required prior direct-share condition; the source preconditions do not establish it.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "fixtures/guardrail/candidate8/train-recovery.json",
+        "https://docs.slack.dev/reference/methods/canvases.access.set/"
+      ]
+    },
+    {
+      "group_id": "c7-task-query-vs-bulk-export",
+      "reason": "The bulk export writes under ./exports, but that directory is not established in the source fixture; the installed CLI creates the file stream without creating its parent directory.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/calibration.jsonl",
+        "sf-pi/node_modules/@salesforce/plugin-data/lib/bulkUtils.js"
+      ]
+    },
+    {
+      "group_id": "c8-soql-metadata-vs-export",
+      "reason": "The bulk export writes under ./exports, but that directory is not established in the source fixture; the installed CLI creates the file stream without creating its parent directory.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "sf-pi/node_modules/@salesforce/plugin-data/lib/bulkUtils.js"
+      ]
+    }
+  ]
+}

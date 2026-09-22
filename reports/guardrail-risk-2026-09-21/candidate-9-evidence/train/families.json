@@ -1,0 +1,2304 @@
+{
+  "version": 1,
+  "purpose": "candidate9_fit_families",
+  "rows": [
+    {
+      "id": "train-shell-directory-list-v1",
+      "group_id": "train-shell-directory-list",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-directory-list-v2",
+      "group_id": "train-shell-directory-list",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-directory-list-v3",
+      "group_id": "train-shell-directory-list",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-print-working-directory-v1",
+      "group_id": "train-shell-print-working-directory",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-print-working-directory-v2",
+      "group_id": "train-shell-print-working-directory",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-print-working-directory-v3",
+      "group_id": "train-shell-print-working-directory",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-source-search-v1",
+      "group_id": "train-shell-source-search",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-source-search-v2",
+      "group_id": "train-shell-source-search",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-source-search-v3",
+      "group_id": "train-shell-source-search",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-git-diff-v1",
+      "group_id": "train-shell-git-diff",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-git-diff-v2",
+      "group_id": "train-shell-git-diff",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-git-diff-v3",
+      "group_id": "train-shell-git-diff",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-quoted-sudo-v1",
+      "group_id": "train-shell-quoted-sudo",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-quoted-sudo-v2",
+      "group_id": "train-shell-quoted-sudo",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-quoted-sudo-v3",
+      "group_id": "train-shell-quoted-sudo",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "train-shell-elevated-service-stop-v1",
+      "group_id": "train-shell-elevated-service-stop",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-elevated-service-stop-v2",
+      "group_id": "train-shell-elevated-service-stop",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-elevated-service-stop-v3",
+      "group_id": "train-shell-elevated-service-stop",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-world-writable-permissions-v1",
+      "group_id": "train-shell-world-writable-permissions",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-world-writable-permissions-v2",
+      "group_id": "train-shell-world-writable-permissions",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-world-writable-permissions-v3",
+      "group_id": "train-shell-world-writable-permissions",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-ownership-recursion-v1",
+      "group_id": "train-shell-ownership-recursion",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-ownership-recursion-v2",
+      "group_id": "train-shell-ownership-recursion",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-ownership-recursion-v3",
+      "group_id": "train-shell-ownership-recursion",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-remote-pipe-v1",
+      "group_id": "train-shell-remote-pipe",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-remote-pipe-v2",
+      "group_id": "train-shell-remote-pipe",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-remote-pipe-v3",
+      "group_id": "train-shell-remote-pipe",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-disk-output-v1",
+      "group_id": "train-shell-disk-output",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-disk-output-v2",
+      "group_id": "train-shell-disk-output",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-shell-disk-output-v3",
+      "group_id": "train-shell-disk-output",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-salesforce-bounded-cli-query-v1",
+      "group_id": "train-salesforce-bounded-cli-query",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-salesforce-bounded-cli-query-v2",
+      "group_id": "train-salesforce-bounded-cli-query",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-salesforce-bounded-cli-query-v3",
+      "group_id": "train-salesforce-bounded-cli-query",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-dev-train-salesforce-sandbox-account-update-v1",
+      "group_id": "c6-dev-train-salesforce-sandbox-account-update",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-dev-train-salesforce-sandbox-account-update-v2",
+      "group_id": "c6-dev-train-salesforce-sandbox-account-update",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-dev-train-salesforce-sandbox-account-update-v3",
+      "group_id": "c6-dev-train-salesforce-sandbox-account-update",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-dev-train-salesforce-production-permset-assignment-v1",
+      "group_id": "c6-dev-train-salesforce-production-permset-assignment",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-dev-train-salesforce-production-permset-assignment-v2",
+      "group_id": "c6-dev-train-salesforce-production-permset-assignment",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-dev-train-salesforce-production-permset-assignment-v3",
+      "group_id": "c6-dev-train-salesforce-production-permset-assignment",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "train-apex-test-discover-v1",
+      "group_id": "train-apex-test-discover",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-apex-test-discover-v2",
+      "group_id": "train-apex-test-discover",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-apex-test-discover-v3",
+      "group_id": "train-apex-test-discover",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-apex-test-run-v1",
+      "group_id": "train-apex-test-run",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-apex-test-run-v2",
+      "group_id": "train-apex-test-run",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-apex-test-run-v3",
+      "group_id": "train-apex-test-run",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-apex-test-result-v1",
+      "group_id": "train-apex-test-result",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-apex-test-result-v2",
+      "group_id": "train-apex-test-result",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-apex-test-result-v3",
+      "group_id": "train-apex-test-result",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-apex-log-latest-v1",
+      "group_id": "train-apex-log-latest",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-apex-log-latest-v2",
+      "group_id": "train-apex-log-latest",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-apex-log-latest-v3",
+      "group_id": "train-apex-log-latest",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "train-agentscript-versions-v1",
+      "group_id": "train-agentscript-versions",
+      "family": "agentscript",
+      "expected": "allow"
+    },
+    {
+      "id": "train-agentscript-versions-v2",
+      "group_id": "train-agentscript-versions",
+      "family": "agentscript",
+      "expected": "allow"
+    },
+    {
+      "id": "train-agentscript-versions-v3",
+      "group_id": "train-agentscript-versions",
+      "family": "agentscript",
+      "expected": "allow"
+    },
+    {
+      "id": "train-agentscript-user-status-v1",
+      "group_id": "train-agentscript-user-status",
+      "family": "agentscript",
+      "expected": "allow"
+    },
+    {
+      "id": "train-agentscript-user-status-v2",
+      "group_id": "train-agentscript-user-status",
+      "family": "agentscript",
+      "expected": "allow"
+    },
+    {
+      "id": "train-agentscript-user-status-v3",
+      "group_id": "train-agentscript-user-status",
+      "family": "agentscript",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_prepare-stream.list-v1",
+      "group_id": "train-data360-data360_prepare-stream.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_prepare-stream.list-v2",
+      "group_id": "train-data360-data360_prepare-stream.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_prepare-stream.list-v3",
+      "group_id": "train-data360-data360_prepare-stream.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_harmonize-dmo_mapping.get-v1",
+      "group_id": "train-data360-data360_harmonize-dmo_mapping.get",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_harmonize-dmo_mapping.get-v2",
+      "group_id": "train-data360-data360_harmonize-dmo_mapping.get",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_harmonize-dmo_mapping.get-v3",
+      "group_id": "train-data360-data360_harmonize-dmo_mapping.get",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_segment-segment.list-v1",
+      "group_id": "train-data360-data360_segment-segment.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_segment-segment.list-v2",
+      "group_id": "train-data360-data360_segment-segment.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_segment-segment.list-v3",
+      "group_id": "train-data360-data360_segment-segment.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_activate-activation_target.list-v1",
+      "group_id": "train-data360-data360_activate-activation_target.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_activate-activation_target.list-v2",
+      "group_id": "train-data360-data360_activate-activation_target.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_activate-activation_target.list-v3",
+      "group_id": "train-data360-data360_activate-activation_target.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_query-sql.status-v1",
+      "group_id": "train-data360-data360_query-sql.status",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_query-sql.status-v2",
+      "group_id": "train-data360-data360_query-sql.status",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_query-sql.status-v3",
+      "group_id": "train-data360-data360_query-sql.status",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_semantic-search_index.list-v1",
+      "group_id": "train-data360-data360_semantic-search_index.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_semantic-search_index.list-v2",
+      "group_id": "train-data360-data360_semantic-search_index.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_semantic-search_index.list-v3",
+      "group_id": "train-data360-data360_semantic-search_index.list",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_orchestrate-manifest.plan-v1",
+      "group_id": "train-data360-data360_orchestrate-manifest.plan",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_orchestrate-manifest.plan-v2",
+      "group_id": "train-data360-data360_orchestrate-manifest.plan",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-data360_orchestrate-manifest.plan-v3",
+      "group_id": "train-data360-data360_orchestrate-manifest.plan",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-observed-error-traces-v1",
+      "group_id": "train-data360-observed-error-traces",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-observed-error-traces-v2",
+      "group_id": "train-data360-observed-error-traces",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-observed-error-traces-v3",
+      "group_id": "train-data360-observed-error-traces",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-raw-rest-read-v1",
+      "group_id": "train-data360-raw-rest-read",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-raw-rest-read-v2",
+      "group_id": "train-data360-raw-rest-read",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-data360-raw-rest-read-v3",
+      "group_id": "train-data360-raw-rest-read",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-bounded-account-v1",
+      "group_id": "train-soql-bounded-account",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-bounded-account-v2",
+      "group_id": "train-soql-bounded-account",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-bounded-account-v3",
+      "group_id": "train-soql-bounded-account",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-bounded-contact-v1",
+      "group_id": "train-soql-bounded-contact",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-bounded-contact-v2",
+      "group_id": "train-soql-bounded-contact",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-bounded-contact-v3",
+      "group_id": "train-soql-bounded-contact",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-object-metadata-v1",
+      "group_id": "train-soql-object-metadata",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-object-metadata-v2",
+      "group_id": "train-soql-object-metadata",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-object-metadata-v3",
+      "group_id": "train-soql-object-metadata",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-history-last-v1",
+      "group_id": "train-soql-history-last",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-history-last-v2",
+      "group_id": "train-soql-history-last",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-soql-history-last-v3",
+      "group_id": "train-soql-history-last",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "train-canvas-read-train-v1",
+      "group_id": "train-canvas-read-train",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "train-canvas-read-train-v2",
+      "group_id": "train-canvas-read-train",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "train-canvas-read-train-v3",
+      "group_id": "train-canvas-read-train",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "v2-train-slack-canvas-create-v1",
+      "group_id": "v2-train-slack-canvas-create",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "v2-train-slack-canvas-create-v2",
+      "group_id": "v2-train-slack-canvas-create",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "v2-train-slack-canvas-create-v3",
+      "group_id": "v2-train-slack-canvas-create",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "v2-train-data360-raw-create-product-stream-v1",
+      "group_id": "v2-train-data360-raw-create-product-stream",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c5-draft-canvas-file-info-vs-delete-safe-v1",
+      "group_id": "c5-draft-canvas-file-info-vs-delete",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-draft-canvas-file-info-vs-delete-risky-v1",
+      "group_id": "c5-draft-canvas-file-info-vs-delete",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c5-draft-canvas-file-info-vs-delete-safe-v2",
+      "group_id": "c5-draft-canvas-file-info-vs-delete",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-draft-canvas-file-info-vs-delete-risky-v2",
+      "group_id": "c5-draft-canvas-file-info-vs-delete",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c5-draft-canvas-file-info-vs-delete-safe-v3",
+      "group_id": "c5-draft-canvas-file-info-vs-delete",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-draft-canvas-file-info-vs-delete-risky-v3",
+      "group_id": "c5-draft-canvas-file-info-vs-delete",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c5-draft-diversity-local-salesforce-02-safe",
+      "group_id": "c5-draft-diversity-local-salesforce-02",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-draft-diversity-local-salesforce-02-risky",
+      "group_id": "c5-draft-diversity-local-salesforce-02",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c5-soql-proposal-rest-sample-vs-contact-disclosure-allow",
+      "group_id": "c5-soql-proposal-rest-sample-vs-contact-disclosure",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-soql-proposal-rest-bounded-contact-allow",
+      "group_id": "c5-soql-proposal-rest-sample-vs-contact-disclosure",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-soql-proposal-rest-sample-vs-contact-disclosure-confirm",
+      "group_id": "c5-soql-proposal-rest-sample-vs-contact-disclosure",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c5-rest-org-prod-get-bash",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-rest-org-prod-post-bash",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c5-rest-org-sandbox-post-bash",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-rest-org-prod-get-pane",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-rest-org-prod-post-pane",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c5-rest-org-sandbox-post-pane",
+      "group_id": "c5-salesforce-rest-account-basic-info",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-apex-trace-production-status",
+      "group_id": "c5-apex-trace-production-status-vs-start",
+      "family": "apex",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-apex-trace-production-start",
+      "group_id": "c5-apex-trace-production-status-vs-start",
+      "family": "apex",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-supp-shell-heredoc-permissions-safe-v1",
+      "group_id": "c6-supp-shell-heredoc-permissions",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-supp-shell-heredoc-permissions-risky-v1",
+      "group_id": "c6-supp-shell-heredoc-permissions",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-supp-data360-space-read-vs-update-safe-v1",
+      "group_id": "c6-supp-data360-space-read-vs-update",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-supp-data360-space-read-vs-update-risky-v1",
+      "group_id": "c6-supp-data360-space-read-vs-update",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-supp-soql-cli-lead-deleted-rows-safe-v1",
+      "group_id": "c6-supp-soql-cli-lead-deleted-rows",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-supp-soql-cli-lead-deleted-rows-risky-v1",
+      "group_id": "c6-supp-soql-cli-lead-deleted-rows",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-supp-canvas-lookup-vs-edit-safe-v1",
+      "group_id": "c6-supp-canvas-lookup-vs-edit",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-supp-canvas-lookup-vs-edit-risky-v1",
+      "group_id": "c6-supp-canvas-lookup-vs-edit",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-supp-canvas-lookup-vs-write-grant-safe-v1",
+      "group_id": "c6-supp-canvas-lookup-vs-write-grant",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-supp-canvas-lookup-vs-write-grant-risky-v1",
+      "group_id": "c6-supp-canvas-lookup-vs-write-grant",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-aug-contact-bounded-vs-broad-pii-allow",
+      "group_id": "c6-aug-contact-bounded-vs-broad-pii",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-aug-contact-bounded-vs-broad-pii-confirm",
+      "group_id": "c6-aug-contact-bounded-vs-broad-pii",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-aug-git-dry-run-vs-live-force-push-allow",
+      "group_id": "c6-aug-git-dry-run-vs-live-force-push",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-aug-git-dry-run-vs-live-force-push-confirm",
+      "group_id": "c6-aug-git-dry-run-vs-live-force-push",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-browser-train-access-intent-allow",
+      "group_id": "c6-browser-train-access-intent",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-browser-train-access-intent-confirm",
+      "group_id": "c6-browser-train-access-intent",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-stash-list-vs-drop-bash-allow",
+      "group_id": "c7-stash-list-vs-drop",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-stash-list-vs-drop-pane-allow",
+      "group_id": "c7-stash-list-vs-drop",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-stash-list-vs-drop-bash-confirm",
+      "group_id": "c7-stash-list-vs-drop",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-stash-list-vs-drop-pane-confirm",
+      "group_id": "c7-stash-list-vs-drop",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-git-diff-vs-restore-bash-allow",
+      "group_id": "c7-git-diff-vs-restore",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-git-diff-vs-restore-pane-allow",
+      "group_id": "c7-git-diff-vs-restore",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-git-diff-vs-restore-bash-confirm",
+      "group_id": "c7-git-diff-vs-restore",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-git-diff-vs-restore-pane-confirm",
+      "group_id": "c7-git-diff-vs-restore",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-rsync-dry-run-vs-prune-bash-allow",
+      "group_id": "c7-rsync-dry-run-vs-prune",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-rsync-dry-run-vs-prune-pane-allow",
+      "group_id": "c7-rsync-dry-run-vs-prune",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-rsync-dry-run-vs-prune-bash-confirm",
+      "group_id": "c7-rsync-dry-run-vs-prune",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-rsync-dry-run-vs-prune-pane-confirm",
+      "group_id": "c7-rsync-dry-run-vs-prune",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-branch-list-vs-force-delete-bash-allow",
+      "group_id": "c7-branch-list-vs-force-delete",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-branch-list-vs-force-delete-pane-allow",
+      "group_id": "c7-branch-list-vs-force-delete",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-branch-list-vs-force-delete-bash-confirm",
+      "group_id": "c7-branch-list-vs-force-delete",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-branch-list-vs-force-delete-pane-confirm",
+      "group_id": "c7-branch-list-vs-force-delete",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-literal-installer-vs-eval-bash-allow",
+      "group_id": "c7-literal-installer-vs-eval",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-literal-installer-vs-eval-pane-allow",
+      "group_id": "c7-literal-installer-vs-eval",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-literal-installer-vs-eval-bash-confirm",
+      "group_id": "c7-literal-installer-vs-eval",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-literal-installer-vs-eval-pane-confirm",
+      "group_id": "c7-literal-installer-vs-eval",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-ledger-read-vs-truncate-bash-allow",
+      "group_id": "c7-ledger-read-vs-truncate",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-ledger-read-vs-truncate-pane-allow",
+      "group_id": "c7-ledger-read-vs-truncate",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-ledger-read-vs-truncate-bash-confirm",
+      "group_id": "c7-ledger-read-vs-truncate",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-ledger-read-vs-truncate-pane-confirm",
+      "group_id": "c7-ledger-read-vs-truncate",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-archive-list-vs-overwrite-bash-allow",
+      "group_id": "c7-archive-list-vs-overwrite",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-archive-list-vs-overwrite-pane-allow",
+      "group_id": "c7-archive-list-vs-overwrite",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-archive-list-vs-overwrite-bash-confirm",
+      "group_id": "c7-archive-list-vs-overwrite",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-archive-list-vs-overwrite-pane-confirm",
+      "group_id": "c7-archive-list-vs-overwrite",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-package-install-sandbox-vs-production-direct-allow",
+      "group_id": "c7-package-install-sandbox-vs-production",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-package-install-sandbox-vs-production-direct-confirm",
+      "group_id": "c7-package-install-sandbox-vs-production",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-org-list-vs-permission-grant-direct-allow",
+      "group_id": "c7-org-list-vs-permission-grant",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-org-list-vs-permission-grant-direct-confirm",
+      "group_id": "c7-org-list-vs-permission-grant",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-user-query-bounded-vs-broad-direct-allow",
+      "group_id": "c7-user-query-bounded-vs-broad",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-user-query-bounded-vs-broad-direct-confirm",
+      "group_id": "c7-user-query-bounded-vs-broad",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-routing-link-inspect-vs-commit-direct-allow",
+      "group_id": "c7-routing-link-inspect-vs-commit",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-routing-link-inspect-vs-commit-direct-confirm",
+      "group_id": "c7-routing-link-inspect-vs-commit",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-access-link-inspect-vs-revoke-direct-allow",
+      "group_id": "c7-access-link-inspect-vs-revoke",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-access-link-inspect-vs-revoke-direct-confirm",
+      "group_id": "c7-access-link-inspect-vs-revoke",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-literal-vs-interpreter-bash-allow",
+      "group_id": "c8-literal-vs-interpreter",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-literal-vs-interpreter-bash-confirm",
+      "group_id": "c8-literal-vs-interpreter",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-literal-vs-interpreter-pane-allow",
+      "group_id": "c8-literal-vs-interpreter",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-literal-vs-interpreter-pane-confirm",
+      "group_id": "c8-literal-vs-interpreter",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-revision-read-vs-discard-bash-allow",
+      "group_id": "c8-revision-read-vs-discard",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-revision-read-vs-discard-bash-confirm",
+      "group_id": "c8-revision-read-vs-discard",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-revision-read-vs-discard-pane-allow",
+      "group_id": "c8-revision-read-vs-discard",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-revision-read-vs-discard-pane-confirm",
+      "group_id": "c8-revision-read-vs-discard",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-acl-list-vs-grant-bash-allow",
+      "group_id": "c8-acl-list-vs-grant",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-acl-list-vs-grant-bash-confirm",
+      "group_id": "c8-acl-list-vs-grant",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-acl-list-vs-grant-pane-allow",
+      "group_id": "c8-acl-list-vs-grant",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-acl-list-vs-grant-pane-confirm",
+      "group_id": "c8-acl-list-vs-grant",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-find-inventory-vs-delete-bash-allow",
+      "group_id": "c8-find-inventory-vs-delete",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-find-inventory-vs-delete-bash-confirm",
+      "group_id": "c8-find-inventory-vs-delete",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-find-inventory-vs-delete-pane-allow",
+      "group_id": "c8-find-inventory-vs-delete",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-find-inventory-vs-delete-pane-confirm",
+      "group_id": "c8-find-inventory-vs-delete",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-remote-metadata-vs-script-bash-allow",
+      "group_id": "c8-remote-metadata-vs-script",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-remote-metadata-vs-script-bash-confirm",
+      "group_id": "c8-remote-metadata-vs-script",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-remote-metadata-vs-script-pane-allow",
+      "group_id": "c8-remote-metadata-vs-script",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-remote-metadata-vs-script-pane-confirm",
+      "group_id": "c8-remote-metadata-vs-script",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-describe-vs-prod-delete-direct-allow",
+      "group_id": "c8-describe-vs-prod-delete",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-describe-vs-prod-delete-direct-confirm",
+      "group_id": "c8-describe-vs-prod-delete",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-agent-diagnose-vs-publish-direct-allow",
+      "group_id": "c8-agent-diagnose-vs-publish",
+      "family": "agentscript",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-agent-diagnose-vs-publish-direct-confirm",
+      "group_id": "c8-agent-diagnose-vs-publish",
+      "family": "agentscript",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-data360-plan-vs-run-direct-allow",
+      "group_id": "c8-data360-plan-vs-run",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-data360-plan-vs-run-direct-confirm",
+      "group_id": "c8-data360-plan-vs-run",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-soql-sample-vs-disclose-direct-allow",
+      "group_id": "c8-soql-sample-vs-disclose",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-soql-sample-vs-disclose-direct-confirm",
+      "group_id": "c8-soql-sample-vs-disclose",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-policy-link-vs-enable-direct-allow",
+      "group_id": "c8-policy-link-vs-enable",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-policy-link-vs-enable-direct-confirm",
+      "group_id": "c8-policy-link-vs-enable",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "v2-train-agent-publish-bundle-v1",
+      "group_id": "v2-train-agent-publish-bundle",
+      "family": "agentscript",
+      "expected": "confirm"
+    },
+    {
+      "id": "v2-train-agent-publish-bundle-v2",
+      "group_id": "v2-train-agent-publish-bundle",
+      "family": "agentscript",
+      "expected": "confirm"
+    },
+    {
+      "id": "v2-train-agent-publish-bundle-v3",
+      "group_id": "v2-train-agent-publish-bundle",
+      "family": "agentscript",
+      "expected": "confirm"
+    },
+    {
+      "id": "v3-train-agent-test-list-v1",
+      "group_id": "v3-train-agent-test-list",
+      "family": "agentscript",
+      "expected": "allow"
+    },
+    {
+      "id": "v3-train-agent-test-list-v2",
+      "group_id": "v3-train-agent-test-list",
+      "family": "agentscript",
+      "expected": "allow"
+    },
+    {
+      "id": "v3-train-agent-test-list-v3",
+      "group_id": "v3-train-agent-test-list",
+      "family": "agentscript",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-draft-data360-transform-validate-vs-create-safe-v1",
+      "group_id": "c5-draft-data360-transform-validate-vs-create",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-draft-data360-transform-validate-vs-create-risky-v1",
+      "group_id": "c5-draft-data360-transform-validate-vs-create",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c5-draft-data360-transform-validate-vs-create-safe-v2",
+      "group_id": "c5-draft-data360-transform-validate-vs-create",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-draft-data360-transform-validate-vs-create-risky-v2",
+      "group_id": "c5-draft-data360-transform-validate-vs-create",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c5-draft-data360-transform-validate-vs-create-safe-v3",
+      "group_id": "c5-draft-data360-transform-validate-vs-create",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-draft-data360-transform-validate-vs-create-risky-v3",
+      "group_id": "c5-draft-data360-transform-validate-vs-create",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c5-soql-proposal-cli-count-vs-contact-disclosure-allow",
+      "group_id": "c5-soql-proposal-cli-count-vs-contact-disclosure",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-soql-proposal-cli-bounded-contact-allow",
+      "group_id": "c5-soql-proposal-cli-count-vs-contact-disclosure",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c5-soql-proposal-cli-count-vs-contact-disclosure-confirm",
+      "group_id": "c5-soql-proposal-cli-count-vs-contact-disclosure",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-supp-prod-lead-describe-vs-create-safe-bash",
+      "group_id": "c6-supp-prod-lead-describe-vs-create",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-supp-prod-lead-describe-vs-create-risky-bash",
+      "group_id": "c6-supp-prod-lead-describe-vs-create",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-supp-prod-lead-describe-vs-create-safe-pane",
+      "group_id": "c6-supp-prod-lead-describe-vs-create",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-supp-prod-lead-describe-vs-create-risky-pane",
+      "group_id": "c6-supp-prod-lead-describe-vs-create",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-aug-quoted-vs-indirect-truncate-allow",
+      "group_id": "c6-aug-quoted-vs-indirect-truncate",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-aug-quoted-vs-indirect-truncate-confirm",
+      "group_id": "c6-aug-quoted-vs-indirect-truncate",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c6-browser-train-retention-intent-allow",
+      "group_id": "c6-browser-train-retention-intent",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c6-browser-train-retention-intent-confirm",
+      "group_id": "c6-browser-train-retention-intent",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-permission-inspect-vs-grant-bash-allow",
+      "group_id": "c7-permission-inspect-vs-grant",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-permission-inspect-vs-grant-pane-allow",
+      "group_id": "c7-permission-inspect-vs-grant",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-permission-inspect-vs-grant-bash-confirm",
+      "group_id": "c7-permission-inspect-vs-grant",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-permission-inspect-vs-grant-pane-confirm",
+      "group_id": "c7-permission-inspect-vs-grant",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-package-list-vs-install-direct-allow",
+      "group_id": "c7-package-list-vs-install",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-package-list-vs-install-direct-confirm",
+      "group_id": "c7-package-list-vs-install",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c7-canvas-metadata-vs-edit-direct-allow",
+      "group_id": "c7-canvas-metadata-vs-edit",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c7-canvas-metadata-vs-edit-direct-confirm",
+      "group_id": "c7-canvas-metadata-vs-edit",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-credential-key-vs-value-bash-allow",
+      "group_id": "c8-credential-key-vs-value",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-credential-key-vs-value-bash-confirm",
+      "group_id": "c8-credential-key-vs-value",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-credential-key-vs-value-pane-allow",
+      "group_id": "c8-credential-key-vs-value",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-credential-key-vs-value-pane-confirm",
+      "group_id": "c8-credential-key-vs-value",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c8-audit-link-vs-submit-direct-allow",
+      "group_id": "c8-audit-link-vs-submit",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c8-audit-link-vs-submit-direct-confirm",
+      "group_id": "c8-audit-link-vs-submit",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-shell-approval-quote-vs-erase-allow",
+      "group_id": "c9-shell-approval-quote-vs-erase",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-shell-approval-quote-vs-erase-confirm",
+      "group_id": "c9-shell-approval-quote-vs-erase",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-shell-find-list-vs-open-permissions-allow",
+      "group_id": "c9-shell-find-list-vs-open-permissions",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-shell-find-list-vs-open-permissions-confirm",
+      "group_id": "c9-shell-find-list-vs-open-permissions",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-shell-json-keys-vs-secret-allow",
+      "group_id": "c9-shell-json-keys-vs-secret",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-shell-json-keys-vs-secret-confirm",
+      "group_id": "c9-shell-json-keys-vs-secret",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-shell-archive-list-vs-remove-allow",
+      "group_id": "c9-shell-archive-list-vs-remove",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-shell-archive-list-vs-remove-confirm",
+      "group_id": "c9-shell-archive-list-vs-remove",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-shell-rsync-preview-vs-delete-allow",
+      "group_id": "c9-shell-rsync-preview-vs-delete",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-shell-rsync-preview-vs-delete-confirm",
+      "group_id": "c9-shell-rsync-preview-vs-delete",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-shell-remote-head-vs-upload-allow",
+      "group_id": "c9-shell-remote-head-vs-upload",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-shell-remote-head-vs-upload-confirm",
+      "group_id": "c9-shell-remote-head-vs-upload",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-shell-sqlite-count-vs-delete-allow",
+      "group_id": "c9-shell-sqlite-count-vs-delete",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-shell-sqlite-count-vs-delete-confirm",
+      "group_id": "c9-shell-sqlite-count-vs-delete",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-shell-diff-check-vs-hard-reset-allow",
+      "group_id": "c9-shell-diff-check-vs-hard-reset",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-shell-diff-check-vs-hard-reset-confirm",
+      "group_id": "c9-shell-diff-check-vs-hard-reset",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-shell-process-read-vs-force-stop-allow",
+      "group_id": "c9-shell-process-read-vs-force-stop",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-shell-process-read-vs-force-stop-confirm",
+      "group_id": "c9-shell-process-read-vs-force-stop",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-shell-owner-read-vs-transfer-allow",
+      "group_id": "c9-shell-owner-read-vs-transfer",
+      "family": "shell",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-shell-owner-read-vs-transfer-confirm",
+      "group_id": "c9-shell-owner-read-vs-transfer",
+      "family": "shell",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-pane-printed-command-vs-generated-run-allow",
+      "group_id": "c9-pane-printed-command-vs-generated-run",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-pane-printed-command-vs-generated-run-confirm",
+      "group_id": "c9-pane-printed-command-vs-generated-run",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-pane-git-clean-preview-vs-prune-allow",
+      "group_id": "c9-pane-git-clean-preview-vs-prune",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-pane-git-clean-preview-vs-prune-confirm",
+      "group_id": "c9-pane-git-clean-preview-vs-prune",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-pane-account-groups-vs-admin-grant-allow",
+      "group_id": "c9-pane-account-groups-vs-admin-grant",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-pane-account-groups-vs-admin-grant-confirm",
+      "group_id": "c9-pane-account-groups-vs-admin-grant",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-pane-keychain-meta-vs-password-allow",
+      "group_id": "c9-pane-keychain-meta-vs-password",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-pane-keychain-meta-vs-password-confirm",
+      "group_id": "c9-pane-keychain-meta-vs-password",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-pane-package-preview-vs-publish-allow",
+      "group_id": "c9-pane-package-preview-vs-publish",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-pane-package-preview-vs-publish-confirm",
+      "group_id": "c9-pane-package-preview-vs-publish",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-pane-remote-tag-read-vs-rewrite-allow",
+      "group_id": "c9-pane-remote-tag-read-vs-rewrite",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-pane-remote-tag-read-vs-rewrite-confirm",
+      "group_id": "c9-pane-remote-tag-read-vs-rewrite",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-pane-checksum-vs-copy-out-allow",
+      "group_id": "c9-pane-checksum-vs-copy-out",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-pane-checksum-vs-copy-out-confirm",
+      "group_id": "c9-pane-checksum-vs-copy-out",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-pane-image-list-vs-prune-allow",
+      "group_id": "c9-pane-image-list-vs-prune",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-pane-image-list-vs-prune-confirm",
+      "group_id": "c9-pane-image-list-vs-prune",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-pane-schedule-list-vs-remove-allow",
+      "group_id": "c9-pane-schedule-list-vs-remove",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-pane-schedule-list-vs-remove-confirm",
+      "group_id": "c9-pane-schedule-list-vs-remove",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-pane-dd-read-vs-overwrite-allow",
+      "group_id": "c9-pane-dd-read-vs-overwrite",
+      "family": "herdr_pane",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-pane-dd-read-vs-overwrite-confirm",
+      "group_id": "c9-pane-dd-read-vs-overwrite",
+      "family": "herdr_pane",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-sfcli-account-update-target-allow",
+      "group_id": "c9-sfcli-account-update-target",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-sfcli-account-update-target-confirm",
+      "group_id": "c9-sfcli-account-update-target",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-sfcli-case-create-target-allow",
+      "group_id": "c9-sfcli-case-create-target",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-sfcli-case-create-target-confirm",
+      "group_id": "c9-sfcli-case-create-target",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-sfcli-case-get-vs-delete-allow",
+      "group_id": "c9-sfcli-case-get-vs-delete",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-sfcli-case-get-vs-delete-confirm",
+      "group_id": "c9-sfcli-case-get-vs-delete",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-sfcli-contract-get-vs-update-allow",
+      "group_id": "c9-sfcli-contract-get-vs-update",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-sfcli-contract-get-vs-update-confirm",
+      "group_id": "c9-sfcli-contract-get-vs-update",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-sfcli-rest-account-patch-allow",
+      "group_id": "c9-sfcli-rest-account-patch",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-sfcli-rest-account-patch-confirm",
+      "group_id": "c9-sfcli-rest-account-patch",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-sfcli-rest-task-delete-allow",
+      "group_id": "c9-sfcli-rest-task-delete",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-sfcli-rest-task-delete-confirm",
+      "group_id": "c9-sfcli-rest-task-delete",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-sfcli-rest-account-create-allow",
+      "group_id": "c9-sfcli-rest-account-create",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-sfcli-rest-account-create-confirm",
+      "group_id": "c9-sfcli-rest-account-create",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-sfcli-org-display-vs-token-allow",
+      "group_id": "c9-sfcli-org-display-vs-token",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-sfcli-org-display-vs-token-confirm",
+      "group_id": "c9-sfcli-org-display-vs-token",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-sfcli-org-display-vs-logout-allow",
+      "group_id": "c9-sfcli-org-display-vs-logout",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-sfcli-org-display-vs-logout-confirm",
+      "group_id": "c9-sfcli-org-display-vs-logout",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-sfcli-file-upload-target-allow",
+      "group_id": "c9-sfcli-file-upload-target",
+      "family": "salesforce_cli",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-sfcli-file-upload-target-confirm",
+      "group_id": "c9-sfcli-file-upload-target",
+      "family": "salesforce_cli",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-data360-transform-validate-vs-create-allow",
+      "group_id": "c9-data360-transform-validate-vs-create",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-data360-transform-validate-vs-create-confirm",
+      "group_id": "c9-data360-transform-validate-vs-create",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-data360-stream-read-vs-update-allow",
+      "group_id": "c9-data360-stream-read-vs-update",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-data360-stream-read-vs-update-confirm",
+      "group_id": "c9-data360-stream-read-vs-update",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-data360-segment-read-vs-update-allow",
+      "group_id": "c9-data360-segment-read-vs-update",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-data360-segment-read-vs-update-confirm",
+      "group_id": "c9-data360-segment-read-vs-update",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-data360-target-read-vs-update-allow",
+      "group_id": "c9-data360-target-read-vs-update",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-data360-target-read-vs-update-confirm",
+      "group_id": "c9-data360-target-read-vs-update",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-data360-transform-read-vs-update-allow",
+      "group_id": "c9-data360-transform-read-vs-update",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-data360-transform-read-vs-update-confirm",
+      "group_id": "c9-data360-transform-read-vs-update",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-data360-dmo-read-vs-update-allow",
+      "group_id": "c9-data360-dmo-read-vs-update",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-data360-dmo-read-vs-update-confirm",
+      "group_id": "c9-data360-dmo-read-vs-update",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-data360-dlo-read-vs-update-allow",
+      "group_id": "c9-data360-dlo-read-vs-update",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-data360-dlo-read-vs-update-confirm",
+      "group_id": "c9-data360-dlo-read-vs-update",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-data360-ci-read-vs-update-allow",
+      "group_id": "c9-data360-ci-read-vs-update",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-data360-ci-read-vs-update-confirm",
+      "group_id": "c9-data360-ci-read-vs-update",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-data360-action-target-list-vs-create-allow",
+      "group_id": "c9-data360-action-target-list-vs-create",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-data360-action-target-list-vs-create-confirm",
+      "group_id": "c9-data360-action-target-list-vs-create",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-data360-action-list-vs-create-allow",
+      "group_id": "c9-data360-action-list-vs-create",
+      "family": "data360",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-data360-action-list-vs-create-confirm",
+      "group_id": "c9-data360-action-list-vs-create",
+      "family": "data360",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-soql-user-username-sample-vs-run-allow",
+      "group_id": "c9-soql-user-username-sample-vs-run",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-soql-user-username-sample-vs-run-confirm",
+      "group_id": "c9-soql-user-username-sample-vs-run",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-soql-user-email-sample-vs-run-allow",
+      "group_id": "c9-soql-user-email-sample-vs-run",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-soql-user-email-sample-vs-run-confirm",
+      "group_id": "c9-soql-user-email-sample-vs-run",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-soql-user-mobile-sample-vs-run-allow",
+      "group_id": "c9-soql-user-mobile-sample-vs-run",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-soql-user-mobile-sample-vs-run-confirm",
+      "group_id": "c9-soql-user-mobile-sample-vs-run",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-soql-contact-email-sample-vs-run-allow",
+      "group_id": "c9-soql-contact-email-sample-vs-run",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-soql-contact-email-sample-vs-run-confirm",
+      "group_id": "c9-soql-contact-email-sample-vs-run",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-soql-contact-phone-sample-vs-run-allow",
+      "group_id": "c9-soql-contact-phone-sample-vs-run",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-soql-contact-phone-sample-vs-run-confirm",
+      "group_id": "c9-soql-contact-phone-sample-vs-run",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-soql-contact-street-sample-vs-run-allow",
+      "group_id": "c9-soql-contact-street-sample-vs-run",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-soql-contact-street-sample-vs-run-confirm",
+      "group_id": "c9-soql-contact-street-sample-vs-run",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-soql-lead-email-sample-vs-run-allow",
+      "group_id": "c9-soql-lead-email-sample-vs-run",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-soql-lead-email-sample-vs-run-confirm",
+      "group_id": "c9-soql-lead-email-sample-vs-run",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-soql-lead-phone-sample-vs-run-allow",
+      "group_id": "c9-soql-lead-phone-sample-vs-run",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-soql-lead-phone-sample-vs-run-confirm",
+      "group_id": "c9-soql-lead-phone-sample-vs-run",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-soql-case-email-sample-vs-run-allow",
+      "group_id": "c9-soql-case-email-sample-vs-run",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-soql-case-email-sample-vs-run-confirm",
+      "group_id": "c9-soql-case-email-sample-vs-run",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-soql-case-phone-sample-vs-run-allow",
+      "group_id": "c9-soql-case-phone-sample-vs-run",
+      "family": "soql",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-soql-case-phone-sample-vs-run-confirm",
+      "group_id": "c9-soql-case-phone-sample-vs-run",
+      "family": "soql",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-canvas-section-lookup-vs-append-allow",
+      "group_id": "c9-canvas-section-lookup-vs-append",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-canvas-section-lookup-vs-append-confirm",
+      "group_id": "c9-canvas-section-lookup-vs-append",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-canvas-section-lookup-vs-replace-allow",
+      "group_id": "c9-canvas-section-lookup-vs-replace",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-canvas-section-lookup-vs-replace-confirm",
+      "group_id": "c9-canvas-section-lookup-vs-replace",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-canvas-section-lookup-vs-delete-section-allow",
+      "group_id": "c9-canvas-section-lookup-vs-delete-section",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-canvas-section-lookup-vs-delete-section-confirm",
+      "group_id": "c9-canvas-section-lookup-vs-delete-section",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-canvas-section-lookup-vs-rename-allow",
+      "group_id": "c9-canvas-section-lookup-vs-rename",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-canvas-section-lookup-vs-rename-confirm",
+      "group_id": "c9-canvas-section-lookup-vs-rename",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-canvas-file-info-vs-channel-write-access-allow",
+      "group_id": "c9-canvas-file-info-vs-channel-write-access",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-canvas-file-info-vs-channel-write-access-confirm",
+      "group_id": "c9-canvas-file-info-vs-channel-write-access",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-canvas-file-info-vs-user-write-access-allow",
+      "group_id": "c9-canvas-file-info-vs-user-write-access",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-canvas-file-info-vs-user-write-access-confirm",
+      "group_id": "c9-canvas-file-info-vs-user-write-access",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-canvas-file-info-vs-user-owner-access-allow",
+      "group_id": "c9-canvas-file-info-vs-user-owner-access",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-canvas-file-info-vs-user-owner-access-confirm",
+      "group_id": "c9-canvas-file-info-vs-user-owner-access",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-canvas-list-vs-create-standalone-allow",
+      "group_id": "c9-canvas-list-vs-create-standalone",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-canvas-list-vs-create-standalone-confirm",
+      "group_id": "c9-canvas-list-vs-create-standalone",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-canvas-info-vs-delete-canvas-allow",
+      "group_id": "c9-canvas-info-vs-delete-canvas",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-canvas-info-vs-delete-canvas-confirm",
+      "group_id": "c9-canvas-info-vs-delete-canvas",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-canvas-section-lookup-vs-prepend-allow",
+      "group_id": "c9-canvas-section-lookup-vs-prepend",
+      "family": "canvas",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-canvas-section-lookup-vs-prepend-confirm",
+      "group_id": "c9-canvas-section-lookup-vs-prepend",
+      "family": "canvas",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-browser-statements-allow",
+      "group_id": "c9-browser-statements",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-browser-statements-confirm",
+      "group_id": "c9-browser-statements",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-browser-nightly-job-allow",
+      "group_id": "c9-browser-nightly-job",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-browser-nightly-job-confirm",
+      "group_id": "c9-browser-nightly-job",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-browser-case-archive-allow",
+      "group_id": "c9-browser-case-archive",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-browser-case-archive-confirm",
+      "group_id": "c9-browser-case-archive",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-browser-activity-purge-allow",
+      "group_id": "c9-browser-activity-purge",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-browser-activity-purge-confirm",
+      "group_id": "c9-browser-activity-purge",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-browser-collaborator-access-allow",
+      "group_id": "c9-browser-collaborator-access",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-browser-collaborator-access-confirm",
+      "group_id": "c9-browser-collaborator-access",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-browser-integration-key-allow",
+      "group_id": "c9-browser-integration-key",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-browser-integration-key-confirm",
+      "group_id": "c9-browser-integration-key",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-browser-draft-order-allow",
+      "group_id": "c9-browser-draft-order",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-browser-draft-order-confirm",
+      "group_id": "c9-browser-draft-order",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-browser-account-hold-allow",
+      "group_id": "c9-browser-account-hold",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-browser-account-hold-confirm",
+      "group_id": "c9-browser-account-hold",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-browser-operator-role-allow",
+      "group_id": "c9-browser-operator-role",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-browser-operator-role-confirm",
+      "group_id": "c9-browser-operator-role",
+      "family": "browser",
+      "expected": "confirm"
+    },
+    {
+      "id": "c9-browser-report-sharing-allow",
+      "group_id": "c9-browser-report-sharing",
+      "family": "browser",
+      "expected": "allow"
+    },
+    {
+      "id": "c9-browser-report-sharing-confirm",
+      "group_id": "c9-browser-report-sharing",
+      "family": "browser",
+      "expected": "confirm"
+    }
+  ]
+}
