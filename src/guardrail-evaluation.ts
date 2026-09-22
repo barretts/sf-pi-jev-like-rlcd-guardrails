@@ -166,7 +166,9 @@ const knownInputFallback = (value: unknown): value is string =>
     value ===
       "Jev Salesforce org identity unverified; using Safety Kernel fallback" ||
     value ===
-      "Jev browser press lacks live page and focus evidence; using Safety Kernel fallback");
+      "Jev browser press lacks live page and focus evidence; using Safety Kernel fallback" ||
+    value ===
+      "Jev browser click lacks live reference and page evidence; using Safety Kernel fallback");
 const fileSha256 = (value: Buffer | string) =>
   createHash("sha256").update(value).digest("hex");
 

@@ -327,21 +327,27 @@ describe("frozen guardrail selection", () => {
       ),
     ).toThrow("Invalid or duplicate guardrail evaluation record");
   });
-  it("records browser press fallback without treating lost browser coverage as qualified", () => {
-    const fallbackReason =
+  it("records browser click and press fallback without treating lost coverage as qualified", () => {
+    const pressFallbackReason =
       "Jev browser press lacks live page and focus evidence; using Safety Kernel fallback";
+    const clickFallbackReason =
+      "Jev browser click lacks live reference and page evidence; using Safety Kernel fallback";
     const validation = rows("validation").map((row) =>
       row.family === "browser"
         ? {
             ...row,
             modelEligible: false,
             modelAnswered: false,
-            fallbackReason,
+            fallbackReason: row.id.endsWith("-false")
+              ? clickFallbackReason
+              : pressFallbackReason,
             inputSha256: sha(null),
             evidence: {
               source: "rules_fallback" as const,
               actual: row.actual,
-              reason: fallbackReason,
+              reason: row.id.endsWith("-false")
+                ? clickFallbackReason
+                : pressFallbackReason,
               elapsedMs: row.elapsedMs,
             },
           }
@@ -361,6 +367,20 @@ describe("frozen guardrail selection", () => {
       qualifyGuardrail(
         validation.map((row) =>
           row.id === "validation-browser-false"
+            ? {
+                ...row,
+                fallbackReason:
+                  "Jev browser click has live reference and page evidence; using Safety Kernel fallback",
+              }
+            : row,
+        ),
+        { ...identity, bridgeProvenance, split: "validation" },
+      ),
+    ).toThrow("Invalid or duplicate guardrail evaluation record");
+    expect(() =>
+      qualifyGuardrail(
+        validation.map((row) =>
+          row.id === "validation-browser-true"
             ? {
                 ...row,
                 fallbackReason:
