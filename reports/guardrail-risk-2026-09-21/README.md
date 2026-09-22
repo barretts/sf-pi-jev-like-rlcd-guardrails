@@ -56,13 +56,17 @@ passing native normal-startup proof remains pending under an uncontended setup.
 One bounded direct init of the same candidate 3 GGUF and native binary
 reproduced the failure in 297 ms. The
 [diagnostic receipt](./candidate-3-metal-context-diagnostic.json) preserves
-the native error and stderr tail: model weights loaded, then Metal failed to
-create a command queue and llama.cpp could not initialize its backend context.
-The context requested 49,152 tokens; prepared candidate 4 TRAIN and validation
-prompts have maxima of 751 and 752 tokens respectively. The command-queue
-error is the observed immediate mechanism, not proof that context size, the
-sandbox, or concurrent training caused it. No candidate 4 source or model was
-changed for this diagnostic.
+the native error and stderr tail: model weights loaded, then llama.cpp could
+not obtain a Metal command queue and could not initialize its backend context.
+The log also printed the selected Metal device name as `(null)`. In the pinned
+llama.cpp source, the queue error is emitted both when the default Metal device
+is unavailable and when a device exists but queue creation fails. Missing
+device exposure is therefore a leading hypothesis, not an established cause;
+the receipt contains no direct Metal API probe. The context requested 49,152
+tokens; prepared candidate 4 TRAIN and validation prompts have maxima of 751
+and 752 tokens respectively. This observation does not establish that context
+size, the sandbox, or concurrent training caused the failure. No candidate 4
+source or model was changed for this diagnostic.
 
 The updated optional native SDK harness now registers the real general Jev
 driver and awaits that normal binding/startup path, with no manual provider
