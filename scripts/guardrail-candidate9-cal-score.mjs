@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** C9 TRAIN-CAL scoring core. Source admission and model loading are locked until sealed. */
+/** C9 TRAIN-CAL scorer core. It opens no corpus file. */
 import { createHash } from "node:crypto";
 import { performance } from "node:perf_hooks";
 import { canonical } from "../dist/core.js";
@@ -12,6 +12,22 @@ import {
 } from "../dist/guardrail.js";
 
 const baseModel = "google/gemma-3-1b-it";
+export const C9_CAL_SOURCE_PINS = Object.freeze({
+  // Filled only after the independent TRAIN admission is committed.
+  admissionSha256: null,
+  hostCommit: "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a",
+  baselineSha256:
+    "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421",
+  policySha256:
+    "e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347",
+  blindValidManifestSha256:
+    "b878ada2dde3d6b594b275f69e0dc372586bd8ba370c1ba03d33b0199ea502cc",
+  compilerLimits: Object.freeze({
+    maxModelLen: 2048,
+    maxBatchSize: 32,
+    maxBatchTokens: 2048,
+  }),
+});
 const hex64 = (value) =>
   typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
@@ -207,11 +223,3 @@ export async function scoreCandidate9Calibration(
     ...(complete ? {} : { failures }),
   };
 }
-
-if (
-  process.argv[1] &&
-  process.argv[1].endsWith("guardrail-candidate9-cal-score.mjs")
-)
-  fail(
-    "real C9 scoring locked until final admission, host, model, and seal pins are committed",
-  );
