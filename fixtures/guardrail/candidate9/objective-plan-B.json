@@ -3,8 +3,8 @@
   "purpose": "candidate9_train_only",
   "arm": "B",
   "objective": "guardrail_train_balanced_symmetric_v1",
-  "pair_manifest_sha256": "b6b062a09a774c4c9907deb99992ec3b1e5f897274181a6c570c7e4494c607d9",
-  "family_manifest_sha256": "10ea2d9610e991b4f541c82378715d2e68d09e68829bf4e8c0de4366c0e6f14c",
+  "pair_manifest_sha256": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+  "family_manifest_sha256": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
   "loss": {
     "ce_weight": 1.0,
     "anchor_weight": 1.0,
