@@ -160,3 +160,14 @@ preflight. Since both prospective VALID candidates failed the usability gate,
 there is no selected model to freeze, no held-out TEST score, and no basis to
 enable enforcement. Future work needs a new prospective campaign rather than
 post-hoc adjustment of these candidates' cutoff or criteria.
+
+The final delivery checkout passed `npm run check`, `npm run build`,
+`npm run format:check`, and the full `npm test` suite (52 files, 1,076 tests).
+The full suite used local loopback access and the verified native binary
+(SHA-256 `7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96`).
+An initial sandboxed suite attempt failed 35 tests because it could not bind
+`127.0.0.1` and the isolated delivery worktree lacked the native binary link;
+the same suite passed after those test-environment prerequisites were supplied.
+The separate sf-pi evaluation host passed 98 focused tests (one optional test
+skipped), 31 runtime-surface tests, TypeScript checking, and targeted lint.
+These checks establish source and bridge behavior, not model qualification.
