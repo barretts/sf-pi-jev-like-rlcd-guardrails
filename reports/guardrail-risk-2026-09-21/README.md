@@ -222,6 +222,9 @@ contains all 165 validation records / 55 groups through the actual SF bridge
 and local Jev worker. The facts remain authored fixtures and dangerous tools
 were not executed. All 144 eligible calls answered with zero execution errors;
 fallback did not conceal a failure.
+The [validation error-group analysis](./candidate-3-error-groups.md) separates
+correlated request variants and shows that candidate 4's prospective TRAIN
+supplement does not directly cover the two unsafe-allow operation groups.
 
 | Validation criterion        | Candidate 3 | Baseline / requirement         | Result   |
 | --------------------------- | ----------: | ------------------------------ | -------- |
