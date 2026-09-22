@@ -443,7 +443,7 @@
         "target_org": "C9DataQA",
         "params": {
           "method": "GET",
-          "path": "/ssot/data-transforms/C9_Transform"
+          "path": "/ssot/data-transforms/1dtKa00000C9rE1"
         },
         "dry_run": false
       },
@@ -457,7 +457,7 @@
       "family": "data360",
       "fixturePreconditions": [
         "C9DataQA is independently verified as an authenticated Salesforce sandbox, with permissions for the synthetic resources.",
-        "The resource at /ssot/data-transforms/C9_Transform exists; the PUT body is complete for the synthetic organization's supported API version.",
+        "The resource at /ssot/data-transforms/1dtKa00000C9rE1 exists; the PUT body is complete for the synthetic organization's supported API version.",
         "This is a mocked tool request. No Salesforce, Slack, shell, or network operation is executed."
       ],
       "sourceEvidence": [
@@ -482,7 +482,7 @@
         "target_org": "C9DataQA",
         "params": {
           "method": "PUT",
-          "path": "/ssot/data-transforms/C9_Transform",
+          "path": "/ssot/data-transforms/1dtKa00000C9rE1",
           "body": {
             "label": "C9 Transform Revised",
             "name": "C9_Account_Review",
@@ -545,7 +545,7 @@
       "family": "data360",
       "fixturePreconditions": [
         "C9DataQA is independently verified as an authenticated Salesforce sandbox, with permissions for the synthetic resources.",
-        "The resource at /ssot/data-transforms/C9_Transform exists; the PUT body is complete for the synthetic organization's supported API version.",
+        "The resource at /ssot/data-transforms/1dtKa00000C9rE1 exists; the PUT body is complete for the synthetic organization's supported API version.",
         "This is a mocked tool request. No Salesforce, Slack, shell, or network operation is executed."
       ],
       "sourceEvidence": [
@@ -611,7 +611,24 @@
           "method": "PATCH",
           "path": "/ssot/data-model-objects/C9_Profile__dlm",
           "body": {
-            "label": "C9 Profile Revised"
+            "name": "C9_Profile",
+            "label": "C9 Profile Revised",
+            "dataSpaceName": "default",
+            "category": "PROFILE",
+            "fields": [
+              {
+                "name": "Id__c",
+                "label": "ID",
+                "isPrimaryKey": true,
+                "dataType": "Text"
+              },
+              {
+                "name": "Name__c",
+                "label": "Name",
+                "isPrimaryKey": false,
+                "dataType": "Text"
+              }
+            ]
           }
         },
         "dry_run": false
