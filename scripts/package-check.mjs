@@ -9,7 +9,22 @@ const [pack] = JSON.parse(
   execFileSync("npm", ["pack", "--dry-run", "--json"], { encoding: "utf8" }),
 );
 const paths = pack.files.map((file) => file.path);
+// The installed CUDA importer resolves these relative to its own package root.
+const cudaRuntimeFiles = [
+  "rfdt/cuda_worker.py",
+  "rfdt/cuda_import.py",
+  "rfdt/cuda_campaign.py",
+  "rfdt/cuda_campaign_launch.py",
+  "rfdt/cuda_memory_monitor.py",
+  "rfdt/cuda_launch.py",
+  "rfdt/cuda_reload.py",
+  "rfdt/cuda_precision_diagnostic.py",
+  "rfdt/cuda_cal_diagnostic.py",
+  "fixtures/guardrail/candidate10/cuda-campaign.json",
+  "fixtures/guardrail/candidate9/objective-plan-B.json",
+];
 for (const required of [
+  ...cudaRuntimeFiles,
   "dist/index.js",
   "dist/index.d.ts",
   "dist/extension.js",
@@ -69,6 +84,18 @@ assert.ok(
     /^integrations\/sf-pi-guardrail\/[^/]+\.patch$/.test(path),
   ),
   "Package missing the SF Guardrail integration patch",
+);
+assert.ok(
+  paths.includes(
+    "integrations/sf-pi-guardrail/candidate9-sf-pi-from-4f901db9.patch",
+  ),
+  "Package missing the current baseline-bound SF Guardrail integration patch",
+);
+assert.ok(
+  !paths.some((path) =>
+    /^integrations\/sf-pi-guardrail\/candidate[5-8]-.*\.patch$/.test(path),
+  ),
+  "Package contains superseded candidate integration patches",
 );
 assert.ok(
   !paths.some((path) =>
@@ -133,6 +160,13 @@ if (process.argv.includes("--install")) {
     encoding: "utf8",
     maxBuffer: 16 * 1024 * 1024,
   });
+  for (const file of cudaRuntimeFiles) {
+    assert.deepEqual(
+      readFileSync(join(directory, "node_modules", manifest.name, file)),
+      readFileSync(file),
+      `Installed CUDA runtime file differs from source: ${file}`,
+    );
+  }
   const environment = Object.fromEntries(
     Object.entries(process.env).filter(([key]) => !key.startsWith("JEV_")),
   );
@@ -215,6 +249,8 @@ void [backend, classifier, preparePrompt];
     library_import: true,
     extension_import: true,
     types_consumer: true,
+    cuda_runtime_files: cudaRuntimeFiles.length,
+    cuda_campaign_and_objective: "installed byte identity verified",
     cli_help: true,
     server_help: true,
     absent_model_doctor: "actionable error, exit 1",
