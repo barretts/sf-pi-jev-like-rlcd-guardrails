@@ -11,23 +11,23 @@
     "scorerProtocolSha256": "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
     "hostCommit": "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a",
     "hostRuntimeSha256": "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421",
-    "c9SourceSha256": "7bb32a0120734b986e0003af99cf928f7ff7a9444f7c339311268d85667be7c4",
-    "pairsSha256": "b6b062a09a774c4c9907deb99992ec3b1e5f897274181a6c570c7e4494c607d9",
-    "familiesSha256": "10ea2d9610e991b4f541c82378715d2e68d09e68829bf4e8c0de4366c0e6f14c",
-    "sourceCompositionReceiptSha256": "1c4d6fef249d9a6e6886a6b6ffa6b03e0427fbdd659b6628daac1c29c9986fcb",
-    "hostProjectionReceiptSha256": "78f56137d5a3440bb53a71fcb8efbcb5e9a57584c5a80fc1655fb4fac6a4f641",
+    "c9SourceSha256": "c19cfc20cb13e80e8fe05c3c01ea9085078b9b38ba887f9f60033db0409e3434",
+    "pairsSha256": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+    "familiesSha256": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+    "sourceCompositionReceiptSha256": "c0f49d2782d019c470ff39ca25ee015c20208e5349cb3e3c37813ae6408e959e",
+    "hostProjectionReceiptSha256": "6f5906f65a52750910b7a304a000428257276b66d31f6d424fefa45a91a5cdec",
     "inheritedBashFamilySha256": "1ba4aa1c083d8c62d14edc965af9c8ebaeb4893aebac04057f3622f80537b2fe",
-    "inheritedSourceExclusionSha256": "eab62acc975c447cdad34846f68493aeb239dbabaaef012bc7e4a419bea01285",
+    "inheritedSourceExclusionSha256": "f6012e412120da72185d7ab395c5a9414e256fb7553e5630ab89589c6e84d98a",
     "inheritedPairsSha256": "5d966c78f0b2ea2193a99a8f007cbd84327594c66d4e9bb62f42f8440a233b04",
-    "calibrationBaselineReceiptSha256": "c4b383d62b895e5d7a289d8c0c7e0bdca189c4358e1b0da1e311c8c27e3b04da",
-    "hostControlsReceiptSha256": "e38adafd9c060aabd10a9d59d6bd892ebe20603fc35f71c34e71448b416bbd8e",
+    "calibrationBaselineReceiptSha256": "39f5f409a659d4a6bba0b2b1ed3a83df787df709e46f314ebacf883071bc8e12",
+    "hostControlsReceiptSha256": "a2029554d9505285d7becad529906b9c36efe05d59b9ee568b3c5a3c8fdd6633",
     "overlapReceiptSha256": null,
     "scriptSha256": "00f7e74a8a1af03f0f7f037a42e116bf43616ea967d74a01aa621d8da4bc39fc"
   },
   "fit": {
-    "sha256": "c7083d575a8143dca592ea3bab2085057810e3503c290438d7544558305798ee",
-    "rows": 357,
-    "groups": 144
+    "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+    "rows": 327,
+    "groups": 133
   },
   "calibration": {
     "sha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
@@ -36,15 +36,15 @@
     "notPassedToFit": true
   },
   "counts": {
-    "inheritedRows": 217,
+    "inheritedRows": 191,
     "inheritedHostPreparedRows": 270,
-    "inheritedSourceExcludedGroups": 19,
-    "newFitRows": 140,
-    "pairs": 93,
-    "inheritedPairs": 23,
-    "newPairs": 70,
-    "fitAllow": 213,
-    "fitConfirm": 144,
+    "inheritedSourceExcludedGroups": 28,
+    "newFitRows": 136,
+    "pairs": 86,
+    "inheritedPairs": 18,
+    "newPairs": 68,
+    "fitAllow": 200,
+    "fitConfirm": 127,
     "exactFitCalibrationOperationOverlap": 0
   },
   "familyCounts": {
@@ -64,19 +64,19 @@
       "confirm": 16
     },
     "canvas": {
-      "rows": 34,
-      "allow": 17,
-      "confirm": 17
+      "rows": 29,
+      "allow": 16,
+      "confirm": 13
     },
     "data360": {
-      "rows": 58,
-      "allow": 42,
-      "confirm": 16
+      "rows": 54,
+      "allow": 39,
+      "confirm": 15
     },
     "herdr_pane": {
-      "rows": 56,
-      "allow": 30,
-      "confirm": 26
+      "rows": 47,
+      "allow": 26,
+      "confirm": 21
     },
     "salesforce_cli": {
       "rows": 39,
@@ -84,14 +84,14 @@
       "confirm": 19
     },
     "shell": {
-      "rows": 62,
-      "allow": 33,
-      "confirm": 29
+      "rows": 54,
+      "allow": 30,
+      "confirm": 24
     },
     "soql": {
-      "rows": 48,
-      "allow": 32,
-      "confirm": 16
+      "rows": 44,
+      "allow": 30,
+      "confirm": 14
     }
   },
   "excludedInheritedGroups": [
@@ -247,6 +247,78 @@
       "evidence": [
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
         "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "train-data360-raw-rest-read",
+      "reason": "Independent sealed-split review adjudicated this inherited raw Data 360 GET group as a replay of the same normalized REST request route. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "candidate9_final_blind_overlap_receipt_pending"
+      ]
+    },
+    {
+      "group_id": "v2-train-data360-raw-create-product-stream",
+      "reason": "Independent sealed-split review adjudicated this inherited Product2 stream-creation group as a controlled-risk replay despite generated resource names and org differences. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "candidate9_final_blind_overlap_receipt_pending"
+      ]
+    },
+    {
+      "group_id": "c7-user-query-bounded-vs-broad",
+      "reason": "Independent sealed-split review adjudicated this inherited SOQL group as the same unbounded query projection, object, and scope across CLI and native surfaces despite an org-name difference. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "candidate9_final_blind_overlap_receipt_pending"
+      ]
+    },
+    {
+      "group_id": "c8-soql-sample-vs-disclose",
+      "reason": "Independent sealed-split review adjudicated this inherited SOQL group as the same unbounded query projection, object, and scope across CLI and native surfaces despite an org-name difference. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "candidate9_final_blind_overlap_receipt_pending"
+      ]
+    },
+    {
+      "group_id": "c7-rsync-dry-run-vs-prune",
+      "reason": "Independent sealed-split review adjudicated this inherited shell group as the same rsync --delete dry-run-to-live controlled change despite path and output-flag differences. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "candidate9_final_blind_overlap_receipt_pending"
+      ]
+    },
+    {
+      "group_id": "v2-train-slack-canvas-create",
+      "reason": "Independent sealed-split review adjudicated this inherited Canvas creation group as a related variant of the same create operation, even though the channel destination differs. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "candidate9_final_blind_overlap_receipt_pending"
+      ]
+    },
+    {
+      "group_id": "train-shell-remote-pipe",
+      "reason": "Independent sealed-split review adjudicated this inherited remote installer group as the same curl-to-interpreter controlled change. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "candidate9_final_blind_overlap_receipt_pending"
+      ]
+    },
+    {
+      "group_id": "c8-find-inventory-vs-delete",
+      "reason": "Independent sealed-split review adjudicated this inherited cache-inventory-to-deletion group as a related controlled-risk variant. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "candidate9_final_blind_overlap_receipt_pending"
+      ]
+    },
+    {
+      "group_id": "c8-credential-key-vs-value",
+      "reason": "Independent sealed-split review adjudicated this inherited credential-name-to-value disclosure group as the same controlled change across shell syntax. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "candidate9_final_blind_overlap_receipt_pending"
       ]
     }
   ],

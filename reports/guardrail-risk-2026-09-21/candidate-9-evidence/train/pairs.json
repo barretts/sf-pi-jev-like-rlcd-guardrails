@@ -26,18 +26,6 @@
       "risky_id": "c8-acl-list-vs-grant-pane-confirm"
     },
     {
-      "pair_id": "c8-find-inventory-vs-delete-bash",
-      "group_id": "c8-find-inventory-vs-delete",
-      "safe_id": "c8-find-inventory-vs-delete-bash-allow",
-      "risky_id": "c8-find-inventory-vs-delete-bash-confirm"
-    },
-    {
-      "pair_id": "c8-find-inventory-vs-delete-pane",
-      "group_id": "c8-find-inventory-vs-delete",
-      "safe_id": "c8-find-inventory-vs-delete-pane-allow",
-      "risky_id": "c8-find-inventory-vs-delete-pane-confirm"
-    },
-    {
       "pair_id": "c8-remote-metadata-vs-script-bash",
       "group_id": "c8-remote-metadata-vs-script",
       "safe_id": "c8-remote-metadata-vs-script-bash-allow",
@@ -68,22 +56,10 @@
       "risky_id": "c8-data360-plan-vs-run-direct-confirm"
     },
     {
-      "pair_id": "c8-soql-sample-vs-disclose-direct",
-      "group_id": "c8-soql-sample-vs-disclose",
-      "safe_id": "c8-soql-sample-vs-disclose-direct-allow",
-      "risky_id": "c8-soql-sample-vs-disclose-direct-confirm"
-    },
-    {
       "pair_id": "c8-policy-link-vs-enable-direct",
       "group_id": "c8-policy-link-vs-enable",
       "safe_id": "c8-policy-link-vs-enable-direct-allow",
       "risky_id": "c8-policy-link-vs-enable-direct-confirm"
-    },
-    {
-      "pair_id": "c8-inherited-c7-rsync-dry-run-vs-prune",
-      "group_id": "c7-rsync-dry-run-vs-prune",
-      "safe_id": "c7-rsync-dry-run-vs-prune-bash-allow",
-      "risky_id": "c7-rsync-dry-run-vs-prune-bash-confirm"
     },
     {
       "pair_id": "c8-inherited-c7-ledger-read-vs-truncate",
@@ -96,12 +72,6 @@
       "group_id": "c7-package-install-sandbox-vs-production",
       "safe_id": "c7-package-install-sandbox-vs-production-direct-allow",
       "risky_id": "c7-package-install-sandbox-vs-production-direct-confirm"
-    },
-    {
-      "pair_id": "c8-inherited-c7-user-query-bounded-vs-broad",
-      "group_id": "c7-user-query-bounded-vs-broad",
-      "safe_id": "c7-user-query-bounded-vs-broad-direct-allow",
-      "risky_id": "c7-user-query-bounded-vs-broad-direct-confirm"
     },
     {
       "pair_id": "c8-inherited-c7-routing-link-inspect-vs-commit",
@@ -204,12 +174,6 @@
       "group_id": "c9-pane-db-identity-vs-drop",
       "safe_id": "c9-pane-db-identity-vs-drop-allow",
       "risky_id": "c9-pane-db-identity-vs-drop-confirm"
-    },
-    {
-      "pair_id": "c9-pane-git-clean-preview-vs-prune",
-      "group_id": "c9-pane-git-clean-preview-vs-prune",
-      "safe_id": "c9-pane-git-clean-preview-vs-prune-allow",
-      "risky_id": "c9-pane-git-clean-preview-vs-prune-confirm"
     },
     {
       "pair_id": "c9-pane-account-groups-vs-admin-grant",
@@ -480,12 +444,6 @@
       "group_id": "c9-canvas-file-info-vs-user-owner-access",
       "safe_id": "c9-canvas-file-info-vs-user-owner-access-allow",
       "risky_id": "c9-canvas-file-info-vs-user-owner-access-confirm"
-    },
-    {
-      "pair_id": "c9-canvas-list-vs-create-standalone",
-      "group_id": "c9-canvas-list-vs-create-standalone",
-      "safe_id": "c9-canvas-list-vs-create-standalone-allow",
-      "risky_id": "c9-canvas-list-vs-create-standalone-confirm"
     },
     {
       "pair_id": "c9-canvas-info-vs-delete-canvas",

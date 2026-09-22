@@ -11,29 +11,29 @@
     "promotedC8CalibrationSha256": "7371877d67874e8d55c418b678d9d808207bb4e645d1868d4e44ad8d5d57144f",
     "partSha256": {
       "shell": "7d71f9331a49d7c74d6323e0a66feb03e5cee5e831d0a4761c2e348af8fed65d",
-      "pane": "f977c64304ef68e8c326c6fe861fa8a73fee5c8bdabaecfe2f2e2ac3d3d6adaf",
+      "pane": "b5ef2dcfd418829ea014b19eef38a72c1a919d65fd5921216aae1d47bb775e74",
       "salesforce-cli": "649d88ea379adf82d4ef6501d1db1febdeb4d31d201e46dd2a46fdfe79fbc670",
       "data360": "15cf29ec98ffbb113b5fb8bec8090e8db8b1e2e17b6bc100b5da155c6725c38c",
       "soql": "64cd3a031d18acdf51e555b121fc4679ce76369e2a643bb747b164a37073297a",
-      "canvas": "66b64c5072e345a28755341df534f6f2f840d61ae42ad81eef56ecfb46d63b27",
+      "canvas": "7b606209675444aa576c5af355f9e1824de484584421027fd685fd7ef5bb985e",
       "browser": "d81359df8b15a9614ad292223993f1ee56a7e1af8404c974684361f461196311"
     },
-    "scriptSha256": "3b655f39ff06c5608eac2717468c0e821aa38fedb1576f42f63393e82f09ce7f"
+    "scriptSha256": "0eda761a714ddcd79de65c3fc8caa2a731152a660c4f9d6cb7e7e3f326404f45"
   },
   "outputs": {
-    "source.json": "7bb32a0120734b986e0003af99cf928f7ff7a9444f7c339311268d85667be7c4",
-    "split-plan.json": "dfb1246360db162b48272a91700bded741b18f8d8e054e733d623883aa0dcf52",
-    "fit-pairs.json": "929449d2cf2b97cd90366f2dae8b529a407e8f09ebe4d1b3ec1ae013fd1f759a",
+    "source.json": "c19cfc20cb13e80e8fe05c3c01ea9085078b9b38ba887f9f60033db0409e3434",
+    "split-plan.json": "fe7dbf7ba03c5a35630bbf476cd5290577f6c797e655426b35245d921a67c39c",
+    "fit-pairs.json": "b42b221705457e3855b21f3e60f0cbbff4dc70979abbdca83fb633c79644725e",
     "controls.json": "040f6c39edc050af5edc089681624bc2018f812ae8556429141c7a614ba17ee2"
   },
   "counts": {
-    "cases": 182,
-    "groups": 91,
-    "fitPairs": 70,
+    "cases": 178,
+    "groups": 89,
+    "fitPairs": 68,
     "calibrationPairs": 21,
     "controls": 6,
-    "allow": 91,
-    "confirm": 91,
+    "allow": 89,
+    "confirm": 89,
     "exactPriorOperationOverlap": 0,
     "exactPriorCommandOverlap": 0
   },
@@ -49,12 +49,12 @@
     },
     {
       "family": "herdr_pane",
-      "groups": 13,
-      "fitGroups": 10,
+      "groups": 12,
+      "fitGroups": 9,
       "calibrationGroups": 3,
-      "cases": 26,
+      "cases": 24,
       "controls": 0,
-      "sha256": "f977c64304ef68e8c326c6fe861fa8a73fee5c8bdabaecfe2f2e2ac3d3d6adaf"
+      "sha256": "b5ef2dcfd418829ea014b19eef38a72c1a919d65fd5921216aae1d47bb775e74"
     },
     {
       "family": "salesforce_cli",
@@ -85,12 +85,12 @@
     },
     {
       "family": "canvas",
-      "groups": 13,
-      "fitGroups": 10,
+      "groups": 12,
+      "fitGroups": 9,
       "calibrationGroups": 3,
-      "cases": 26,
+      "cases": 24,
       "controls": 0,
-      "sha256": "66b64c5072e345a28755341df534f6f2f840d61ae42ad81eef56ecfb46d63b27"
+      "sha256": "7b606209675444aa576c5af355f9e1824de484584421027fd685fd7ef5bb985e"
     },
     {
       "family": "browser",

@@ -176,9 +176,12 @@ for (let index = 0; index < lanes.length; index++) {
     [...calSet].every((group) => byGroup.has(group)),
     `${file} CAL group has no complete source pair`,
   );
+  // Two FIT groups were removed after independent blind split review. Keep the
+  // three CAL groups and every other lane's original reservation unchanged.
+  const expectedFitGroups = file === "pane" || file === "canvas" ? 9 : 10;
   need(
-    byGroup.size === 13 && calSet.size === 3,
-    `${file} must reserve 10 FIT and three CAL contrast groups`,
+    byGroup.size === expectedFitGroups + 3 && calSet.size === 3,
+    `${file} must reserve ${expectedFitGroups} FIT and three CAL contrast groups`,
   );
   for (const control of part.controls ?? []) {
     need(

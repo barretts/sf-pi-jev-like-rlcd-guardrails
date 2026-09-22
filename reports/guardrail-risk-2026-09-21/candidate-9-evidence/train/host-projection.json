@@ -7,7 +7,7 @@
   "c8ValidBodyRead": false,
   "heldOutTestRead": false,
   "source": {
-    "c9SourceSha256": "7bb32a0120734b986e0003af99cf928f7ff7a9444f7c339311268d85667be7c4",
+    "c9SourceSha256": "c19cfc20cb13e80e8fe05c3c01ea9085078b9b38ba887f9f60033db0409e3434",
     "inheritedC8FitSha256": "17f6672fffe913aacdbf44394119bc0b14fbab5db4cc87fccf21c66da449cdc5",
     "promotedC8CalibrationSha256": "7371877d67874e8d55c418b678d9d808207bb4e645d1868d4e44ad8d5d57144f",
     "browserTrainSourceSha256": {
@@ -29,17 +29,17 @@
   },
   "projectedNew": {
     "file": "new-prepared.jsonl",
-    "sha256": "86cb7f823cc75d545fabaf6c0e89e90556185b0203170f7c7f07f264906d61db",
-    "rows": 182,
-    "groups": 91
+    "sha256": "cf82844f7b42e040e31f343532f712cf8d1bd983bc9cb78b1516f2d46110ba40",
+    "rows": 178,
+    "groups": 89
   },
   "counts": {
     "inheritedRows": 273,
     "inheritedPreparedRows": 270,
     "inheritedAdmittedRows": 270,
     "inheritedExcludedGroups": 1,
-    "newRows": 182,
-    "newPreparedRows": 182,
+    "newRows": 178,
+    "newPreparedRows": 178,
     "newFailures": 0
   },
   "excludedPriorGroups": [
@@ -3349,28 +3349,6 @@
       "route": "commandGate"
     },
     {
-      "id": "c9-pane-git-clean-preview-vs-prune-allow",
-      "groupId": "c9-pane-git-clean-preview-vs-prune",
-      "kind": "new",
-      "gate": "model_prepared",
-      "factRoute": "none",
-      "baselineAction": "allow",
-      "ruleId": null,
-      "inputSha256": "d2ac239f5e367a8c15bb86720e69e29c1fe7aa7f646f0a3b55c35a782e3706de",
-      "route": "no_rule_decision"
-    },
-    {
-      "id": "c9-pane-git-clean-preview-vs-prune-confirm",
-      "groupId": "c9-pane-git-clean-preview-vs-prune",
-      "kind": "new",
-      "gate": "model_prepared",
-      "factRoute": "none",
-      "baselineAction": "confirm",
-      "ruleId": "git-clean-fd",
-      "inputSha256": "c8ab04870332e19e598dc342eaac041d2734f06c20289fa317192df21abab040",
-      "route": "commandGate"
-    },
-    {
       "id": "c9-pane-account-groups-vs-admin-grant-allow",
       "groupId": "c9-pane-account-groups-vs-admin-grant",
       "kind": "new",
@@ -4622,28 +4600,6 @@
       "baselineAction": "allow",
       "ruleId": null,
       "inputSha256": "468c1df89b942d9d91dc83db993bedf49671fbf3cce73f4a281b8aeab20b0560",
-      "route": "no_rule_decision"
-    },
-    {
-      "id": "c9-canvas-list-vs-create-standalone-allow",
-      "groupId": "c9-canvas-list-vs-create-standalone",
-      "kind": "new",
-      "gate": "model_prepared",
-      "factRoute": "none",
-      "baselineAction": "allow",
-      "ruleId": null,
-      "inputSha256": "64eb573ec162424a9d68c89beafdde3d9e6a43dbedd53263f7ed22276aabf244",
-      "route": "no_rule_decision"
-    },
-    {
-      "id": "c9-canvas-list-vs-create-standalone-confirm",
-      "groupId": "c9-canvas-list-vs-create-standalone",
-      "kind": "new",
-      "gate": "model_prepared",
-      "factRoute": "none",
-      "baselineAction": "allow",
-      "ruleId": null,
-      "inputSha256": "3ed045c47c10a90c59b4c22753101f77ab653a08cf6fa78222ab450760c3566f",
       "route": "no_rule_decision"
     },
     {

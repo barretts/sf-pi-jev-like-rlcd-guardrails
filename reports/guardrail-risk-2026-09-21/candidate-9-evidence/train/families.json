@@ -129,24 +129,6 @@
       "expected": "confirm"
     },
     {
-      "id": "train-shell-remote-pipe-v1",
-      "group_id": "train-shell-remote-pipe",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "train-shell-remote-pipe-v2",
-      "group_id": "train-shell-remote-pipe",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "train-shell-remote-pipe-v3",
-      "group_id": "train-shell-remote-pipe",
-      "family": "herdr_pane",
-      "expected": "confirm"
-    },
-    {
       "id": "train-salesforce-bounded-cli-query-v1",
       "group_id": "train-salesforce-bounded-cli-query",
       "family": "soql",
@@ -453,24 +435,6 @@
       "expected": "allow"
     },
     {
-      "id": "train-data360-raw-rest-read-v1",
-      "group_id": "train-data360-raw-rest-read",
-      "family": "data360",
-      "expected": "allow"
-    },
-    {
-      "id": "train-data360-raw-rest-read-v2",
-      "group_id": "train-data360-raw-rest-read",
-      "family": "data360",
-      "expected": "allow"
-    },
-    {
-      "id": "train-data360-raw-rest-read-v3",
-      "group_id": "train-data360-raw-rest-read",
-      "family": "data360",
-      "expected": "allow"
-    },
-    {
       "id": "train-soql-bounded-account-v1",
       "group_id": "train-soql-bounded-account",
       "family": "soql",
@@ -559,30 +523,6 @@
       "group_id": "train-canvas-read-train",
       "family": "canvas",
       "expected": "allow"
-    },
-    {
-      "id": "v2-train-slack-canvas-create-v1",
-      "group_id": "v2-train-slack-canvas-create",
-      "family": "canvas",
-      "expected": "confirm"
-    },
-    {
-      "id": "v2-train-slack-canvas-create-v2",
-      "group_id": "v2-train-slack-canvas-create",
-      "family": "canvas",
-      "expected": "confirm"
-    },
-    {
-      "id": "v2-train-slack-canvas-create-v3",
-      "group_id": "v2-train-slack-canvas-create",
-      "family": "canvas",
-      "expected": "confirm"
-    },
-    {
-      "id": "v2-train-data360-raw-create-product-stream-v1",
-      "group_id": "v2-train-data360-raw-create-product-stream",
-      "family": "data360",
-      "expected": "confirm"
     },
     {
       "id": "c5-draft-canvas-file-info-vs-delete-safe-v1",
@@ -807,30 +747,6 @@
       "expected": "confirm"
     },
     {
-      "id": "c7-rsync-dry-run-vs-prune-bash-allow",
-      "group_id": "c7-rsync-dry-run-vs-prune",
-      "family": "shell",
-      "expected": "allow"
-    },
-    {
-      "id": "c7-rsync-dry-run-vs-prune-pane-allow",
-      "group_id": "c7-rsync-dry-run-vs-prune",
-      "family": "herdr_pane",
-      "expected": "allow"
-    },
-    {
-      "id": "c7-rsync-dry-run-vs-prune-bash-confirm",
-      "group_id": "c7-rsync-dry-run-vs-prune",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "c7-rsync-dry-run-vs-prune-pane-confirm",
-      "group_id": "c7-rsync-dry-run-vs-prune",
-      "family": "herdr_pane",
-      "expected": "confirm"
-    },
-    {
       "id": "c7-branch-list-vs-force-delete-bash-allow",
       "group_id": "c7-branch-list-vs-force-delete",
       "family": "shell",
@@ -927,18 +843,6 @@
       "expected": "confirm"
     },
     {
-      "id": "c7-user-query-bounded-vs-broad-direct-allow",
-      "group_id": "c7-user-query-bounded-vs-broad",
-      "family": "soql",
-      "expected": "allow"
-    },
-    {
-      "id": "c7-user-query-bounded-vs-broad-direct-confirm",
-      "group_id": "c7-user-query-bounded-vs-broad",
-      "family": "soql",
-      "expected": "confirm"
-    },
-    {
       "id": "c7-routing-link-inspect-vs-commit-direct-allow",
       "group_id": "c7-routing-link-inspect-vs-commit",
       "family": "browser",
@@ -1011,30 +915,6 @@
       "expected": "confirm"
     },
     {
-      "id": "c8-find-inventory-vs-delete-bash-allow",
-      "group_id": "c8-find-inventory-vs-delete",
-      "family": "shell",
-      "expected": "allow"
-    },
-    {
-      "id": "c8-find-inventory-vs-delete-bash-confirm",
-      "group_id": "c8-find-inventory-vs-delete",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "c8-find-inventory-vs-delete-pane-allow",
-      "group_id": "c8-find-inventory-vs-delete",
-      "family": "herdr_pane",
-      "expected": "allow"
-    },
-    {
-      "id": "c8-find-inventory-vs-delete-pane-confirm",
-      "group_id": "c8-find-inventory-vs-delete",
-      "family": "herdr_pane",
-      "expected": "confirm"
-    },
-    {
       "id": "c8-remote-metadata-vs-script-bash-allow",
       "group_id": "c8-remote-metadata-vs-script",
       "family": "shell",
@@ -1092,18 +972,6 @@
       "id": "c8-data360-plan-vs-run-direct-confirm",
       "group_id": "c8-data360-plan-vs-run",
       "family": "data360",
-      "expected": "confirm"
-    },
-    {
-      "id": "c8-soql-sample-vs-disclose-direct-allow",
-      "group_id": "c8-soql-sample-vs-disclose",
-      "family": "soql",
-      "expected": "allow"
-    },
-    {
-      "id": "c8-soql-sample-vs-disclose-direct-confirm",
-      "group_id": "c8-soql-sample-vs-disclose",
-      "family": "soql",
       "expected": "confirm"
     },
     {
@@ -1269,30 +1137,6 @@
       "expected": "confirm"
     },
     {
-      "id": "c8-credential-key-vs-value-bash-allow",
-      "group_id": "c8-credential-key-vs-value",
-      "family": "shell",
-      "expected": "allow"
-    },
-    {
-      "id": "c8-credential-key-vs-value-bash-confirm",
-      "group_id": "c8-credential-key-vs-value",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "c8-credential-key-vs-value-pane-allow",
-      "group_id": "c8-credential-key-vs-value",
-      "family": "herdr_pane",
-      "expected": "allow"
-    },
-    {
-      "id": "c8-credential-key-vs-value-pane-confirm",
-      "group_id": "c8-credential-key-vs-value",
-      "family": "herdr_pane",
-      "expected": "confirm"
-    },
-    {
       "id": "c8-audit-link-vs-submit-direct-allow",
       "group_id": "c8-audit-link-vs-submit",
       "family": "browser",
@@ -1433,18 +1277,6 @@
     {
       "id": "c9-pane-db-identity-vs-drop-confirm",
       "group_id": "c9-pane-db-identity-vs-drop",
-      "family": "herdr_pane",
-      "expected": "confirm"
-    },
-    {
-      "id": "c9-pane-git-clean-preview-vs-prune-allow",
-      "group_id": "c9-pane-git-clean-preview-vs-prune",
-      "family": "herdr_pane",
-      "expected": "allow"
-    },
-    {
-      "id": "c9-pane-git-clean-preview-vs-prune-confirm",
-      "group_id": "c9-pane-git-clean-preview-vs-prune",
       "family": "herdr_pane",
       "expected": "confirm"
     },
@@ -1985,18 +1817,6 @@
     {
       "id": "c9-canvas-file-info-vs-user-owner-access-confirm",
       "group_id": "c9-canvas-file-info-vs-user-owner-access",
-      "family": "canvas",
-      "expected": "confirm"
-    },
-    {
-      "id": "c9-canvas-list-vs-create-standalone-allow",
-      "group_id": "c9-canvas-list-vs-create-standalone",
-      "family": "canvas",
-      "expected": "allow"
-    },
-    {
-      "id": "c9-canvas-list-vs-create-standalone-confirm",
-      "group_id": "c9-canvas-list-vs-create-standalone",
       "family": "canvas",
       "expected": "confirm"
     },

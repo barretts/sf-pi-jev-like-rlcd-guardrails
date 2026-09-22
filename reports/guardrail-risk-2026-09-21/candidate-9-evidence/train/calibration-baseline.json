@@ -11,8 +11,8 @@
   "source": {
     "hostCommit": "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a",
     "scriptSha256": "46e412b3d6622d129eb3d4be5e95c04cd020fc16f4609d88930f885d1ca07376",
-    "hostProjectionReceiptSha256": "78f56137d5a3440bb53a71fcb8efbcb5e9a57584c5a80fc1655fb4fac6a4f641",
-    "c9SourceSha256": "7bb32a0120734b986e0003af99cf928f7ff7a9444f7c339311268d85667be7c4"
+    "hostProjectionReceiptSha256": "6f5906f65a52750910b7a304a000428257276b66d31f6d424fefa45a91a5cdec",
+    "c9SourceSha256": "c19cfc20cb13e80e8fe05c3c01ea9085078b9b38ba887f9f60033db0409e3434"
   },
   "records": [
     {

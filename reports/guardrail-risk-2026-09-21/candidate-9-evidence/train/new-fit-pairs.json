@@ -69,12 +69,6 @@
       "risky_id": "c9-pane-db-identity-vs-drop-confirm"
     },
     {
-      "pair_id": "c9-pane-git-clean-preview-vs-prune",
-      "group_id": "c9-pane-git-clean-preview-vs-prune",
-      "safe_id": "c9-pane-git-clean-preview-vs-prune-allow",
-      "risky_id": "c9-pane-git-clean-preview-vs-prune-confirm"
-    },
-    {
       "pair_id": "c9-pane-account-groups-vs-admin-grant",
       "group_id": "c9-pane-account-groups-vs-admin-grant",
       "safe_id": "c9-pane-account-groups-vs-admin-grant-allow",
@@ -343,12 +337,6 @@
       "group_id": "c9-canvas-file-info-vs-user-owner-access",
       "safe_id": "c9-canvas-file-info-vs-user-owner-access-allow",
       "risky_id": "c9-canvas-file-info-vs-user-owner-access-confirm"
-    },
-    {
-      "pair_id": "c9-canvas-list-vs-create-standalone",
-      "group_id": "c9-canvas-list-vs-create-standalone",
-      "safe_id": "c9-canvas-list-vs-create-standalone-allow",
-      "risky_id": "c9-canvas-list-vs-create-standalone-confirm"
     },
     {
       "pair_id": "c9-canvas-info-vs-delete-canvas",
