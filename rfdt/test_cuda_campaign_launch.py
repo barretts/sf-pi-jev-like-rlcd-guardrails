@@ -15,7 +15,7 @@ class LaunchTests(unittest.TestCase):
         code = inputs / 'code'
         code.mkdir(parents=True)
         hashes = {}
-        for name in ('cuda_campaign.py', 'cuda_worker.py', 'cuda_memory_monitor.py', 'worker.py'):
+        for name in ('cuda_campaign.py', 'cuda_worker.py', 'cuda_memory_monitor.py', 'worker.py', 'gemma3_fp32.py'):
             (code / name).write_text('# frozen ' + name)
             hashes[name] = launch.digest(code / name)
         fixture = Path(__file__).resolve().parents[1] / 'fixtures/guardrail/candidate10/cuda-campaign.json'
@@ -73,7 +73,7 @@ class LaunchTests(unittest.TestCase):
             code = Path(temporary)
             with self.assertRaisesRegex(ValueError, 'exactly'):
                 launch.verify_code(code, {})
-            hashes = {name: '0' * 64 for name in ['cuda_campaign.py', 'cuda_worker.py', 'cuda_memory_monitor.py', 'worker.py']}
+            hashes = {name: '0' * 64 for name in ['cuda_campaign.py', 'cuda_worker.py', 'cuda_memory_monitor.py', 'worker.py', 'gemma3_fp32.py']}
             source = code / 'source'
             source.write_text('code')
             (code / 'cuda_campaign.py').symlink_to(source)

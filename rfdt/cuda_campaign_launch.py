@@ -23,9 +23,9 @@ def digest(path: Path) -> str:
 
 
 def verify_code(code: Path, expected: dict) -> None:
-    names = {"cuda_campaign.py", "cuda_worker.py", "cuda_memory_monitor.py", "worker.py"}
+    names = {"cuda_campaign.py", "cuda_worker.py", "cuda_memory_monitor.py", "worker.py", "gemma3_fp32.py"}
     if not isinstance(expected, dict) or set(expected) != names:
-        raise ValueError("Pin exactly the four campaign code hashes")
+        raise ValueError("Pin exactly the five campaign code hashes")
     for name in sorted(names):
         sha = expected[name]
         if not isinstance(sha, str) or len(sha) != 64 or any(c not in "0123456789abcdef" for c in sha):
@@ -265,7 +265,7 @@ def parser() -> argparse.ArgumentParser:
     command = argparse.ArgumentParser(description=__doc__)
     command.add_argument("--inputs", required=True)
     command.add_argument("--code-sha256-json", required=True,
-                         help="Externally pinned JSON map of all four Python code SHA256 hashes")
+                         help="Externally pinned JSON map of all five Python code SHA256 hashes")
     command.add_argument("--run-root", required=True)
     command.add_argument("--adapter-tag", required=True)
     command.add_argument("--mode", choices=["probe", "train"], required=True)
