@@ -20,24 +20,33 @@ const coreFile = resolve(root, "scripts/guardrail-candidate8-host-core.mjs");
 const evalFile = fileURLToPath(import.meta.url);
 const runtimeDir = resolve(root, "dist");
 
-// These bytes come from the corrected VALID-only commit 44b4fd1. A future
-// host/protocol re-pin must be a separate reviewed source change before scoring.
+// These bytes come from the corrected VALID-only v2 commit 0f9199c. The
+// model-specific scoring protocol is separately frozen from TRAIN-CAL.
 export const C8_VALID_SEAL = Object.freeze({
   sourceSha256:
     "a95f61b055d4e214d1e0245b1b87f417a06ddbd1fb10a6f1c3e003ea2d1dbad8",
   schemaSha256:
     "55a0586830ce1f116f246261f14a4ff0d7cee1b0a3a16f162309940f8aab94f2",
   preflightSha256:
-    "d7f021ad051b3c4842dd8ae219ba08f3e17796e23a42803fc8bf4544e0c3571c",
+    "e0418dee9dff8ce13506219f70b0a99470c9ba8421f7635b873e541aa1537acc",
   rubricSha256:
     "cad1720e8ee31c153985ee98af010671d323917c0ef30c7ebd61c3832b318ae6",
   stubSha256:
     "6f2de20efc26434e87510be0e9e7dd40e035a0ae449a43ce12c1d17acab68dce",
-  sfPiCommit: "bc7862b078997d2c60aa908979b5cbf59f83db80",
+  sfPiCommit: "d86cdcfcfa02e419a4255291d16e56c48a5f2ade",
   hostRuntimeSha256:
-    "6ec845e7365d2948ecf502326bcabbb7b042b7d300437516db3b299fd390078e",
-  protocolSha256:
+    "927c25ebee99f59ea349bcd6d5da06c9a999255e4e99d7658ee0f113da96e4f2",
+  promptProtocolSha256:
     "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
+  decisionBaseProtocolSha256:
+    "f4f00541c9ce815ca17d19400488f5e4e999c87e9712b7c0ec17419068e85f9b",
+  jevRuntimeCommit: "c8d276d9a4157c7d825a0960b3e886a6d508c499",
+  runtimeCoreSha256:
+    "2ee6c409a12b6a4f7b7a7d63c37d84923740e46f8732f625a65d0f39ef04bdf6",
+  runtimeGuardrailSha256:
+    "dd649ad57e7711c820f7d67dc25f0ce217bb9d02b317a78dc2b0b156a94b47ff",
+  runtimeCalibrationSha256:
+    "45a53e0888a76ffe5ba227c530b58c3ab51ee52a744fae95b6877117738e85fb",
   cases: 96,
   groups: 48,
   modelPrepared: 58,
@@ -76,6 +85,10 @@ export async function readCandidate8SealedSources() {
     valid: sourceFile,
     schema: schemaFile,
     preflight: preflightFile,
+    preflightScript: resolve(
+      root,
+      "scripts/guardrail-candidate8-valid-preflight.mjs",
+    ),
     rubric: rubricFile,
     stub: stubFile,
     core: coreFile,
@@ -102,9 +115,14 @@ export async function readCandidate8SealedSources() {
       !bytes[name].equals(committedBytes(files[name]))
     )
       throw new Error(`C8 VALID ${name} differs from the sealed commit`);
-  for (const name of ["core", "evaluator"])
+  for (const name of ["core", "evaluator", "preflightScript"])
     if (!bytes[name].equals(committedBytes(files[name])))
       throw new Error(`C8 VALID ${name} is not committed`);
+  if (
+    JSON.parse(bytes.preflight).preflight_script_sha256 !==
+    sha(bytes.preflightScript)
+  )
+    throw new Error("C8 VALID model-free preflight source changed");
   return {
     files,
     bytes,
@@ -128,7 +146,17 @@ export function verifyCandidate8ValidPopulation(source, receipt) {
     receipt.rubric_sha256 !== C8_VALID_SEAL.rubricSha256 ||
     receipt.host_commit !== C8_VALID_SEAL.sfPiCommit ||
     receipt.host_baseline_sha256 !== C8_VALID_SEAL.hostRuntimeSha256 ||
-    receipt.model_protocol_sha256 !== C8_VALID_SEAL.protocolSha256 ||
+    receipt.model_protocol_sha256 !== C8_VALID_SEAL.promptProtocolSha256 ||
+    receipt.scorer_prompt_sha256 !== C8_VALID_SEAL.promptProtocolSha256 ||
+    receipt.decision_base_protocol_sha256 !==
+      C8_VALID_SEAL.decisionBaseProtocolSha256 ||
+    receipt.jev_runtime_commit !== C8_VALID_SEAL.jevRuntimeCommit ||
+    receipt.jev_runtime_core_js_sha256 !== C8_VALID_SEAL.runtimeCoreSha256 ||
+    receipt.jev_runtime_guardrail_js_sha256 !==
+      C8_VALID_SEAL.runtimeGuardrailSha256 ||
+    receipt.jev_runtime_calibration_js_sha256 !==
+      C8_VALID_SEAL.runtimeCalibrationSha256 ||
+    !isHash(receipt.preflight_script_sha256) ||
     receipt.label_review !== "machine_authored_human_review_pending" ||
     !Array.isArray(receipt.status) ||
     receipt.status.length !== source.cases.length
@@ -300,6 +328,7 @@ async function readRuntimeIdentity() {
     "backend.js",
     "core.js",
     "guardrail.js",
+    "guardrail-calibration.js",
     "guardrail-extension.js",
     "guardrail-evaluation.js",
     "models.js",
@@ -352,7 +381,7 @@ async function loadRealCandidate(values, runtime) {
     freeze.preflightSha256 !== C8_VALID_SEAL.preflightSha256 ||
     freeze.sfPiCommit !== C8_VALID_SEAL.sfPiCommit ||
     freeze.hostRuntimeSha256 !== C8_VALID_SEAL.hostRuntimeSha256 ||
-    freeze.protocolSha256 !== C8_VALID_SEAL.protocolSha256 ||
+    freeze.protocolSha256 !== C8_VALID_SEAL.promptProtocolSha256 ||
     freeze.modelId !== values["model-id"] ||
     freeze.modelSha256 !== values["model-sha256"] ||
     freeze.modelFile !== values["model-file"] ||
@@ -429,6 +458,10 @@ async function main() {
     );
   if (fake && process.env.C8_VALID_FAKE_PROVIDER_TEST !== "1")
     throw new Error("Fake provider requires explicit test-harness mode");
+  if (!fake)
+    throw new Error(
+      "Real C8 VALID scoring is disabled until final qualification host and model-specific TRAIN-CAL freeze are pinned",
+    );
   if (
     !fake &&
     (!isHash(values["model-sha256"]) ||
@@ -448,17 +481,27 @@ async function main() {
     encoding: "utf8",
   }).trim();
   const runtimeIdentity = await readRuntimeIdentity();
+  if (
+    runtimeIdentity["core.js"] !== C8_VALID_SEAL.runtimeCoreSha256 ||
+    runtimeIdentity["guardrail.js"] !== C8_VALID_SEAL.runtimeGuardrailSha256 ||
+    runtimeIdentity["guardrail-calibration.js"] !==
+      C8_VALID_SEAL.runtimeCalibrationSha256
+  )
+    throw new Error("C8 Jev v2 compiled runtime differs from VALID preflight");
   const [
     { GUARDRAIL_PROTOCOL_SHA256, GUARDRAIL_LIMITS, validateGuardrailInput },
     { registerGuardrailProvider, guardrailConfig },
     { canonical },
+    { C8_BASE_PROTOCOL_SHA256 },
   ] = await Promise.all([
     import(pathToFileURL(resolve(runtimeDir, "guardrail.js")).href),
     import(pathToFileURL(resolve(runtimeDir, "guardrail-extension.js")).href),
     import(pathToFileURL(resolve(runtimeDir, "core.js")).href),
+    import(pathToFileURL(resolve(runtimeDir, "guardrail-calibration.js")).href),
   ]);
   if (
-    GUARDRAIL_PROTOCOL_SHA256 !== C8_VALID_SEAL.protocolSha256 ||
+    GUARDRAIL_PROTOCOL_SHA256 !== C8_VALID_SEAL.promptProtocolSha256 ||
+    C8_BASE_PROTOCOL_SHA256 !== C8_VALID_SEAL.decisionBaseProtocolSha256 ||
     GUARDRAIL_LIMITS.deadlineMs !== 750
   )
     throw new Error(
@@ -478,7 +521,7 @@ async function main() {
       stubFile,
       hostCommit: C8_VALID_SEAL.sfPiCommit,
       hostRuntimeSha256: C8_VALID_SEAL.hostRuntimeSha256,
-      protocolSha256: C8_VALID_SEAL.protocolSha256,
+      protocolSha256: C8_VALID_SEAL.promptProtocolSha256,
       expectedModelSha256: candidate?.modelSha256 ?? "f".repeat(64),
       validateInput: validateGuardrailInput,
       createProvider: fake
@@ -488,7 +531,7 @@ async function main() {
               request.providers.push({
                 version: 1,
                 id: "jev",
-                protocolSha256: C8_VALID_SEAL.protocolSha256,
+                protocolSha256: C8_VALID_SEAL.promptProtocolSha256,
                 modelSha256,
                 qualified: false,
                 async evaluate(input) {
@@ -506,7 +549,7 @@ async function main() {
             );
             return {
               status: () => ({
-                protocolSha256: C8_VALID_SEAL.protocolSha256,
+                protocolSha256: C8_VALID_SEAL.promptProtocolSha256,
                 modelSha256,
               }),
               async dispose() {},
@@ -573,7 +616,8 @@ async function main() {
         evalHead,
         sfPiCommit: C8_VALID_SEAL.sfPiCommit,
         sfPiRuntimeSha256: C8_VALID_SEAL.hostRuntimeSha256,
-        protocolSha256: C8_VALID_SEAL.protocolSha256,
+        promptProtocolSha256: C8_VALID_SEAL.promptProtocolSha256,
+        decisionBaseProtocolSha256: C8_VALID_SEAL.decisionBaseProtocolSha256,
         runtimeIdentity,
         model: candidate,
       },

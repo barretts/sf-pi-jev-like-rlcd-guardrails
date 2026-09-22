@@ -261,6 +261,9 @@ export async function runCandidate8HostRows({
   hostRuntimeSha256,
   protocolSha256,
   expectedModelSha256,
+  expectedCalibrationSha256,
+  expectedMinimumAllowScore,
+  expectedPolicySha256,
   validateInput,
   createProvider,
   onPreparedCall,
@@ -299,6 +302,7 @@ export async function runCandidate8HostRows({
         jevRiskEligible,
         jevRiskPolicyFloor,
         jevBrowserClickEvidenceFingerprint,
+        getJevRiskPolicySha256,
         JEV_RISK_PROVIDER_EVENT,
       },
       { clearSharedSfEnvironment, restoreFromSessionEntries },
@@ -330,6 +334,14 @@ export async function runCandidate8HostRows({
       providerRuntime.status().modelSha256 !== expectedModelSha256
     )
       throw new Error("Provider model differs from pinned C8 candidate");
+    if (
+      expectedCalibrationSha256 &&
+      (providerRuntime.status().calibrationSha256 !==
+        expectedCalibrationSha256 ||
+        providerRuntime.status().minimumAllowScore !==
+          expectedMinimumAllowScore)
+    )
+      throw new Error("Provider calibration differs from pinned C8 freeze");
     const calls = observeProviderCalls(
       pi,
       JEV_RISK_PROVIDER_EVENT,
@@ -383,6 +395,7 @@ export async function runCandidate8HostRows({
               )
             : rawBaseline;
       const baseline = baselineDecision?.action ?? "allow";
+      const policySha256 = getJevRiskPolicySha256(config);
       if (baseline !== preflight.baseline_action)
         throw new Error(`C8 baseline changed since preflight: ${row.id}`);
       const eligible = jevRiskEligible(input);
@@ -408,6 +421,12 @@ export async function runCandidate8HostRows({
         throw new Error(`C8 model routing changed since preflight: ${row.id}`);
       if (routing === "model_prepared")
         assertCandidate8PreparedCall(row, newCalls[0], preflight);
+      if (
+        routing === "model_prepared" &&
+        expectedPolicySha256 &&
+        policySha256 !== expectedPolicySha256
+      )
+        throw new Error(`C8 effective policy differs from freeze: ${row.id}`);
       if (routing === "model_prepared")
         await onPreparedCall?.({
           id: row.id,
@@ -433,6 +452,10 @@ export async function runCandidate8HostRows({
           (comparison.source === "jev" &&
             (comparison.modelSha256 !== providerRuntime.status().modelSha256 ||
               comparison.protocolSha256 !== protocolSha256 ||
+              (expectedCalibrationSha256 &&
+                (comparison.calibrationSha256 !== expectedCalibrationSha256 ||
+                  comparison.minimumAllowScore !==
+                    expectedMinimumAllowScore)) ||
               comparison.inputSha256 !== newCalls[0]?.inputSha256 ||
               comparison.actual !==
                 (comparison.prediction === "allow" ? "allow" : "confirm"))))
@@ -453,9 +476,7 @@ export async function runCandidate8HostRows({
         modelAnswered: routing === "model_prepared" && source === "jev",
         inputSha256: newCalls[0]?.inputSha256 ?? null,
         allowScore: comparison?.allowScore ?? null,
-        effectivePolicySha256: digest(
-          JSON.parse(JSON.stringify(config.policies)),
-        ),
+        effectivePolicySha256: policySha256,
         policyFloor: Boolean(floor),
         ...(routing === "pre_model_fallback"
           ? {
@@ -490,6 +511,14 @@ export async function runCandidate8HostRows({
       providerRuntime.status().modelSha256 !== expectedModelSha256
     )
       throw new Error("C8 provider model changed during replay");
+    if (
+      expectedCalibrationSha256 &&
+      (providerRuntime.status().calibrationSha256 !==
+        expectedCalibrationSha256 ||
+        providerRuntime.status().minimumAllowScore !==
+          expectedMinimumAllowScore)
+    )
+      throw new Error("C8 provider calibration changed during replay");
     return { records, coldInitializationMs, providerCalls: calls.length };
   } finally {
     await providerRuntime?.dispose?.();

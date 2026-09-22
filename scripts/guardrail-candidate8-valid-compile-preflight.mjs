@@ -65,7 +65,7 @@ const [
   import(pathToFileURL(resolve(dist, "backend.js")).href),
   import(pathToFileURL(resolve(dist, "models.js")).href),
 ]);
-if (GUARDRAIL_PROTOCOL_SHA256 !== C8_VALID_SEAL.protocolSha256)
+if (GUARDRAIL_PROTOCOL_SHA256 !== C8_VALID_SEAL.promptProtocolSha256)
   throw new Error("C8 prompt protocol differs from VALID preflight");
 const artifact = await verifyArtifact(
   modelFile,
@@ -114,7 +114,7 @@ try {
     stubFile: resolve(root, "scripts/guardrail-v3-research-detect-stub.mjs"),
     hostCommit: C8_VALID_SEAL.sfPiCommit,
     hostRuntimeSha256: C8_VALID_SEAL.hostRuntimeSha256,
-    protocolSha256: C8_VALID_SEAL.protocolSha256,
+    protocolSha256: C8_VALID_SEAL.promptProtocolSha256,
     expectedModelSha256: "f".repeat(64),
     validateInput: validateGuardrailInput,
     createProvider: async (pi, event) => {
@@ -122,7 +122,7 @@ try {
         request.providers.push({
           version: 1,
           id: "jev",
-          protocolSha256: C8_VALID_SEAL.protocolSha256,
+          protocolSha256: C8_VALID_SEAL.promptProtocolSha256,
           modelSha256: "f".repeat(64),
           qualified: false,
           async evaluate(input) {
@@ -140,7 +140,7 @@ try {
       );
       return {
         status: () => ({
-          protocolSha256: C8_VALID_SEAL.protocolSha256,
+          protocolSha256: C8_VALID_SEAL.promptProtocolSha256,
           modelSha256: "f".repeat(64),
         }),
         async dispose() {},
@@ -208,7 +208,7 @@ try {
     preflightSha256: C8_VALID_SEAL.preflightSha256,
     sfPiCommit: C8_VALID_SEAL.sfPiCommit,
     hostRuntimeSha256: C8_VALID_SEAL.hostRuntimeSha256,
-    protocolSha256: C8_VALID_SEAL.protocolSha256,
+    protocolSha256: C8_VALID_SEAL.promptProtocolSha256,
     referenceModelSha256: reference.modelSha256,
     nativeCompilerSha256: reference.nativeBinarySha256,
     aggregate,
