@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "purpose": "candidate8_train_internal_calibration",
+  "selectionSource": "Prespecified operation families and whole TRAIN groups before any C8 fit or new VALID score",
+  "calibrationNewGroups": [
+    "c8-credential-key-vs-value",
+    "c8-tree-import-target",
+    "c8-data360-get-vs-post",
+    "c8-audit-link-vs-submit"
+  ],
+  "calibrationInheritedGroups": [
+    "c7-apex-test-status-vs-anonymous",
+    "c7-task-query-vs-bulk-export",
+    "c7-canvas-metadata-vs-edit",
+    "v3-train-agent-test-list",
+    "v2-train-agent-publish-bundle",
+    "c6-browser-train-retention-intent",
+    "c6-supp-data360-members-read-vs-upsert",
+    "c6-supp-prod-lead-describe-vs-create",
+    "c6-aug-quoted-vs-indirect-truncate",
+    "c5-draft-data360-transform-validate-vs-create",
+    "c5-soql-proposal-cli-count-vs-contact-disclosure",
+    "c7-package-list-vs-install",
+    "c7-permission-inspect-vs-grant"
+  ],
+  "excludedNewGroups": [
+    "c8-query-vs-unknown-write"
+  ],
+  "qualification": false,
+  "heldOutTestRead": false
+}
