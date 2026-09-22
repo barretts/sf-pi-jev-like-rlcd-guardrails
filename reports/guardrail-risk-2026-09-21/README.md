@@ -93,6 +93,22 @@ selected labels on **internal validation**. This is a training-pipeline result.
 It does not measure the SF hook's allow/confirm decisions, safety regressions,
 unnecessary interruptions, completion rate, or warm latency.
 
+All 96 model-eligible VALID rows matched the final `e456e1c9` mock-bundle
+[baseline preflight](../../.build/guardrail/candidate-5-v3-research-e456e1c9-20260922/valid-preflight-modelid-fix.json)
+by ID and expected label. On this restricted set, the existing rules would
+confirm 3/63 benign requests and automatically allow 21/33 risk-labeled
+requests. Applying the frozen 0.99 allow cutoff to the RFDT report's internal
+selected-token scores projects 24/63 benign confirmations, 21 more than the
+baseline, and 3/33 risky automatic allows. A cutoff sweep on these same scores
+found no threshold meeting both zero risky allows and at most three benign
+interruptions: zero risky allows costs at least 28 benign interruptions, while
+at most three benign interruptions leaves at least 26 risky allows. The scores
+are uncalibrated and this is a matched internal VALID projection, not native
+GGUF inference through the real SF model bridge. No model-backed tool request
+was executed, and the omitted fallback and hard-block rows were not included
+in this comparison. The current candidate fails the safety and usability
+criteria on this internal diagnostic before any held-out TEST.
+
 The private F16 GGUF for
 `jev/gemma-3-1b-guardrail-c5-research-256` is 2,006,573,408 bytes with
 SHA-256 `3f8e4f3b3896512d950d91626b7c06898d2dc57f7c5c1a946e9be784ec814160`.
