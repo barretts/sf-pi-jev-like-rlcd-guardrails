@@ -17,6 +17,8 @@ afterEach(async () => {
 
 describe("guardrail RFDT preparation", () => {
   it.each([
+    {},
+    { trainingReady: null },
     { trainingReady: false, status: "review-only; TRAIN coverage gaps remain" },
     { trainingReady: true, status: "diagnostic; no qualification baseline" },
     {
@@ -67,8 +69,42 @@ describe("guardrail RFDT preparation", () => {
 
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain(
-      "Guardrail bundle is diagnostic or review-only; training is not ready",
+      "Guardrail bundle is not explicitly training-ready",
     );
     expect(existsSync(run)).toBe(false);
+  });
+
+  it("accepts explicit readiness before checking the training split", async () => {
+    const directory = await mkdtemp(
+      join(tmpdir(), "jev-guardrail-train-readiness-"),
+    );
+    owned.push(directory);
+    const bundle = join(directory, "bundle.json");
+    await writeFile(
+      bundle,
+      JSON.stringify({
+        trainingReady: true,
+        status: "TRAIN/VALIDATION only; qualification pending",
+        records: [{ id: "held", split: "train", modelEligible: false }],
+      }),
+    );
+    const result = spawnSync(
+      process.execPath,
+      [
+        resolve("scripts/guardrail-train.mjs"),
+        "prepare",
+        "--bundle",
+        bundle,
+        "--checkpoint",
+        join(directory, "nonexistent-checkpoint"),
+        "--run",
+        join(directory, "run"),
+      ],
+      { encoding: "utf8" },
+    );
+
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("TRAIN and validation both required");
+    expect(result.stderr).not.toContain("not explicitly training-ready");
   });
 });

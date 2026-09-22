@@ -66,13 +66,11 @@ if (command === "prepare") {
   const bytes = await readFile(resolve(values.bundle));
   const bundle = JSON.parse(bytes);
   if (
-    bundle.trainingReady === false ||
+    bundle.trainingReady !== true ||
     bundle.diagnosticOnly === true ||
     /^(?:review-only|diagnostic)(?:\b|;|:)/i.test(bundle.status ?? "")
   )
-    throw new Error(
-      "Guardrail bundle is diagnostic or review-only; training is not ready",
-    );
+    throw new Error("Guardrail bundle is not explicitly training-ready");
   if (!Array.isArray(bundle.records) || !bundle.records.length)
     throw new Error("Empty baseline bundle");
   const examples = bundle.records
