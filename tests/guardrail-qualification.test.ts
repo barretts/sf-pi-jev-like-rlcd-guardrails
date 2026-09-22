@@ -214,7 +214,8 @@ describe("frozen guardrail selection", () => {
     expect(report.metrics.ineligibleFallbacks).toBe(1);
     expect(report.gates.integratedExecution).toBe(true);
     expect(report.gates.completeModelExecution).toBe(true);
-    const { fallbackReason: _omittedReason, ...withoutFallbackReason } = fallback;
+    const withoutFallbackReason = { ...fallback };
+    delete withoutFallbackReason.fallbackReason;
     const concealed = qualifyGuardrail(
       [
         ...rows("validation"),
