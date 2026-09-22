@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "scope": "Actual Pi AgentSession.prompt and ExtensionRunner; local scripted inference and counter-only custom tools; no local Jev candidate inference or external operations.",
+  "workflow": "Two identical bash requests: one confirmation followed by an exact session grant reuse.",
+  "modelInitialization": "Scripted stub provider; initializationMs measures SDK session setup.",
+  "measurements": [
+    {
+      "mode": "off",
+      "acceptedOutcomes": 2,
+      "confirmationCount": 1,
+      "sessionGrantCount": 1,
+      "retries": 0,
+      "errors": 0,
+      "initializationMs": 6.389249999999947,
+      "workflowMs": 5.889750000000049,
+      "totalElapsedMs": 12.278999999999996
+    },
+    {
+      "mode": "shadow",
+      "acceptedOutcomes": 2,
+      "confirmationCount": 1,
+      "sessionGrantCount": 1,
+      "retries": 0,
+      "errors": 0,
+      "initializationMs": 4.820915999999897,
+      "workflowMs": 8.502459000000044,
+      "totalElapsedMs": 13.323374999999942
+    }
+  ]
+}

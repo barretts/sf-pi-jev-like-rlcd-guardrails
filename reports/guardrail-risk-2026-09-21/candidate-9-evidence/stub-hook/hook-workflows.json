@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "scope": "real Pi hook with stub tools and stub risk provider",
+  "rows": [
+    {
+      "mode": "off",
+      "operations": 3,
+      "accepted": 3,
+      "executed": 3,
+      "confirmations": 2,
+      "retries": 0,
+      "totalElapsedMs": 0.2101249999996071,
+      "coldInitialization": "stub provider; no model loading",
+      "execution": "local stub only"
+    },
+    {
+      "mode": "shadow",
+      "operations": 3,
+      "accepted": 3,
+      "executed": 3,
+      "confirmations": 2,
+      "retries": 0,
+      "totalElapsedMs": 1.5142500000001746,
+      "coldInitialization": "stub provider; no model loading",
+      "execution": "local stub only"
+    },
+    {
+      "mode": "enforce",
+      "operations": 3,
+      "accepted": 3,
+      "executed": 3,
+      "confirmations": 2,
+      "retries": 0,
+      "totalElapsedMs": 1.8524999999999636,
+      "coldInitialization": "stub provider; no model loading",
+      "execution": "local stub only"
+    }
+  ]
+}

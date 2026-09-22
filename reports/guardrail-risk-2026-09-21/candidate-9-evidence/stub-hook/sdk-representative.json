@@ -1,0 +1,3246 @@
+{
+  "version": 1,
+  "scope": "Actual Pi SDK with scripted risk predictions and counter-only tools; collector proof only.",
+  "workflowDefinitionSha256": "0039df8fc5568b3be141f4f28f253b7f32e429019e3b4e288cb42029f56e7fc4",
+  "workflows": [
+    {
+      "id": "safe-read-and-quoted-text",
+      "operations": [
+        {
+          "toolName": "read",
+          "input": {
+            "path": "README.md"
+          },
+          "expected": "allow"
+        },
+        {
+          "toolName": "bash",
+          "input": {
+            "command": "ls -la src/"
+          },
+          "expected": "allow"
+        },
+        {
+          "toolName": "bash",
+          "input": {
+            "command": "printf '%s\\n' 'rm -rf release/'"
+          },
+          "expected": "allow"
+        }
+      ]
+    },
+    {
+      "id": "identical-shell-risk-session-reuse",
+      "operations": [
+        {
+          "toolName": "bash",
+          "input": {
+            "command": "rm -rf ./work"
+          },
+          "expected": "confirm"
+        },
+        {
+          "toolName": "bash",
+          "input": {
+            "command": "rm -rf ./work"
+          },
+          "expected": "confirm"
+        }
+      ]
+    },
+    {
+      "id": "identical-apex-risk-session-reuse",
+      "operations": [
+        {
+          "toolName": "sf_apex",
+          "input": {
+            "action": "anon.run",
+            "body": "callWithSideEffects();",
+            "allow_mutation": true,
+            "target_org": "Dev"
+          },
+          "expected": "confirm"
+        },
+        {
+          "toolName": "sf_apex",
+          "input": {
+            "action": "anon.run",
+            "body": "callWithSideEffects();",
+            "allow_mutation": true,
+            "target_org": "Dev"
+          },
+          "expected": "confirm"
+        }
+      ]
+    },
+    {
+      "id": "native-rehearsal-and-live-mutation",
+      "operations": [
+        {
+          "toolName": "data360_segment",
+          "input": {
+            "action": "segment.create",
+            "target_org": "Dev",
+            "params": {
+              "segmentId": "example-segment",
+              "body": {
+                "name": "ExampleResource",
+                "label": "Example resource"
+              }
+            },
+            "allow_confirmed": true,
+            "dry_run": true
+          },
+          "expected": "allow"
+        },
+        {
+          "toolName": "data360_segment",
+          "input": {
+            "action": "segment.create",
+            "target_org": "Dev",
+            "params": {
+              "segmentId": "example-segment",
+              "body": {
+                "name": "ExampleResource",
+                "label": "Example resource"
+              }
+            },
+            "allow_confirmed": true,
+            "dry_run": false
+          },
+          "expected": "confirm"
+        }
+      ]
+    },
+    {
+      "id": "protected-path-exact-block",
+      "operations": [
+        {
+          "toolName": "write",
+          "input": {
+            "path": ".forceignore",
+            "content": "# Local SDK fixture\n"
+          },
+          "expected": "block"
+        }
+      ]
+    }
+  ],
+  "policyOverride": {
+    "ruleId": "sf-forceignore",
+    "behavior": "block"
+  },
+  "baselineSourceSha256": "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421",
+  "measurements": [
+    {
+      "mode": "off",
+      "expectedSemanticOperationCount": 4,
+      "semanticOperationCount": 4,
+      "expectedModelAnswerCount": 0,
+      "completedSemanticRiskChecks": 0,
+      "expectedExactPolicyOperationCount": 6,
+      "exactPolicyOperationCount": 6,
+      "expectedExactPolicyComparisonCount": 0,
+      "completedExactPolicyChecks": 0,
+      "acceptedOutcomes": [
+        {
+          "toolCallId": "fixture-call-0",
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-1",
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-2",
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-3",
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-4",
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-5",
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-6",
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-7",
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-8",
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-9",
+          "workflowId": "protected-path-exact-block",
+          "expected": "block",
+          "executed": false,
+          "isError": true
+        }
+      ],
+      "acceptedOperationCount": 9,
+      "confirmationCount": 3,
+      "confirmationChoices": [
+        [
+          "Allow once",
+          "Allow for this session",
+          "Block"
+        ],
+        [
+          "Allow once",
+          "Allow for this session",
+          "Block"
+        ],
+        [
+          "Allow once",
+          "Allow for this session",
+          "Block"
+        ]
+      ],
+      "confirmations": [
+        {
+          "toolCallId": "fixture-call-3",
+          "title": "⚠ recursive force delete\n\nDangerous command: recursive force delete\n\nRisk gate:\n- Dangerous command (rm-rf)\n\nSubject:\n- rm -rf ./work\n\nApproval covers:\n- this exact command\n- Fingerprint: rm -rf ./work\n- Operation family: rm -rf ./work\n- Risk tier: local_dangerous_exact\n- Approval duration: current session\n\nApproval timeout: 120s.",
+          "choices": [
+            "Allow once",
+            "Allow for this session",
+            "Block"
+          ],
+          "picked": "Allow for this session"
+        },
+        {
+          "toolCallId": "fixture-call-5",
+          "title": "⚠ Anonymous Apex execution\n\nAnonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body.\n\nRisk gate:\n- Native tool operation (native-sf-apex-anon-run)\n\nSubject:\n- sf_apex anon.run body 2be9eb5254338bc3\n\nTarget org:\n- Alias: Dev\n- Type: scratch via cache\n\nApproval covers:\n- this exact Anonymous Apex body\n- Fingerprint: org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3\n- Detail: Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true\n- Operation family: anonymous apex\n- Risk tier: apex_execution_exact\n- Approval duration: current session\n\nApproval timeout: 120s.",
+          "choices": [
+            "Allow once",
+            "Allow for this session",
+            "Block"
+          ],
+          "picked": "Allow for this session"
+        },
+        {
+          "toolCallId": "fixture-call-8",
+          "title": "⚠ Data 360 execution\n\nData 360 confirmed execution requested for data360_segment segment.create.\n\nRisk gate:\n- Native tool operation (native-data360-confirmed-execute)\n\nSubject:\n- data360_segment segment.create\n\nTarget org:\n- Alias: Dev\n- Type: scratch via cache\n\nApproval covers:\n- Data 360 data360_segment segment.create\n- Fingerprint: org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc\n- Detail: tool=data360_segment; action=segment.create; params=b5fa223bd91504dc\n- Operation family: data360 segment\n- Risk tier: data360_confirmed_execution_exact\n- Approval duration: current session\n\nApproval timeout: 120s.",
+          "choices": [
+            "Allow once",
+            "Allow for this session",
+            "Block"
+          ],
+          "picked": "Allow for this session"
+        }
+      ],
+      "sessionGrantCount": 3,
+      "sessionGrants": [
+        {
+          "type": "custom",
+          "customType": "sf-guardrail-allow",
+          "data": {
+            "ruleId": "rm-rf",
+            "fingerprint": "rm -rf ./work",
+            "grantedAt": 1790103223222
+          },
+          "id": "45cce036",
+          "parentId": "b66dc539",
+          "timestamp": "2026-09-22T18:53:43.222Z"
+        },
+        {
+          "type": "custom",
+          "customType": "sf-guardrail-allow",
+          "data": {
+            "ruleId": "native-sf-apex-anon-run",
+            "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+            "grantedAt": 1790103223223
+          },
+          "id": "525d1a19",
+          "parentId": "b331ac8e",
+          "timestamp": "2026-09-22T18:53:43.223Z"
+        },
+        {
+          "type": "custom",
+          "customType": "sf-guardrail-allow",
+          "data": {
+            "ruleId": "native-data360-confirmed-execute",
+            "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+            "grantedAt": 1790103223226
+          },
+          "id": "08eaeb87",
+          "parentId": "0b7ba8c6",
+          "timestamp": "2026-09-22T18:53:43.226Z"
+        }
+      ],
+      "decisionOutcomes": [
+        "allow_session",
+        "allow_session",
+        "allow_session",
+        "allow_session",
+        "allow_session",
+        "hard_block"
+      ],
+      "unsafeAutomaticAllows": 0,
+      "retries": 0,
+      "toolErrorCount": 1,
+      "expectedBlockCount": 1,
+      "unexpectedToolErrors": 0,
+      "sdkSetupMs": 4.836457999999993,
+      "sessionStartMs": 0.2023340000000644,
+      "localRiskColdInitializationMs": null,
+      "workflowMs": 8.243875000000116,
+      "totalElapsedMs": 13.329750000000104,
+      "localRiskStatusBefore": null,
+      "localRiskStatusAfter": null,
+      "comparisons": [],
+      "auditDecisions": [
+        {
+          "timestamp": 1790103223223,
+          "ruleId": "rm-rf",
+          "feature": "commandGate",
+          "outcome": "allow_session",
+          "toolName": "bash",
+          "subject": "rm -rf ./work",
+          "fingerprint": "rm -rf ./work",
+          "approvalScopeLabel": "this exact command",
+          "approvalRiskTier": "local_dangerous_exact",
+          "reason": "Dangerous command: recursive force delete"
+        },
+        {
+          "timestamp": 1790103223223,
+          "ruleId": "rm-rf",
+          "feature": "commandGate",
+          "outcome": "allow_session",
+          "toolName": "bash",
+          "subject": "rm -rf ./work",
+          "fingerprint": "rm -rf ./work",
+          "approvalScopeLabel": "this exact command",
+          "approvalRiskTier": "local_dangerous_exact",
+          "reason": "Dangerous command: recursive force delete"
+        },
+        {
+          "timestamp": 1790103223223,
+          "ruleId": "native-sf-apex-anon-run",
+          "feature": "nativeToolGate",
+          "outcome": "allow_session",
+          "toolName": "sf_apex",
+          "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+          "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+          "orgAlias": "Dev",
+          "orgType": "scratch",
+          "orgResolutionGuessed": false,
+          "orgResolutionSource": "cache",
+          "approvalScopeLabel": "this exact Anonymous Apex body",
+          "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+          "approvalRiskTier": "apex_execution_exact",
+          "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+        },
+        {
+          "timestamp": 1790103223224,
+          "ruleId": "native-sf-apex-anon-run",
+          "feature": "nativeToolGate",
+          "outcome": "allow_session",
+          "toolName": "sf_apex",
+          "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+          "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+          "orgAlias": "Dev",
+          "orgType": "scratch",
+          "orgResolutionGuessed": false,
+          "orgResolutionSource": "cache",
+          "approvalScopeLabel": "this exact Anonymous Apex body",
+          "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+          "approvalRiskTier": "apex_execution_exact",
+          "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+        },
+        {
+          "timestamp": 1790103223226,
+          "ruleId": "native-data360-confirmed-execute",
+          "feature": "nativeToolGate",
+          "outcome": "allow_session",
+          "toolName": "data360_segment",
+          "subject": "data360_segment segment.create",
+          "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+          "orgAlias": "Dev",
+          "orgType": "scratch",
+          "orgResolutionGuessed": false,
+          "orgResolutionSource": "cache",
+          "approvalScopeLabel": "Data 360 data360_segment segment.create",
+          "approvalScopeDetail": "tool=data360_segment; action=segment.create; params=b5fa223bd91504dc",
+          "approvalRiskTier": "data360_confirmed_execution_exact",
+          "reason": "Data 360 confirmed execution requested for data360_segment segment.create."
+        },
+        {
+          "timestamp": 1790103223227,
+          "ruleId": "sf-forceignore",
+          "feature": "policies",
+          "outcome": "hard_block",
+          "toolName": "write",
+          "subject": ".forceignore",
+          "fingerprint": ".forceignore",
+          "reason": ".forceignore is read-only under sf-guardrail. Edits alter retrieve/deploy behavior — change it from a terminal with review."
+        }
+      ],
+      "fallbackReasons": [],
+      "calls": [
+        {
+          "toolCallId": "fixture-call-0",
+          "toolName": "read",
+          "input": {
+            "path": "README.md"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 1.189834000000019,
+          "customEntries": [],
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": []
+        },
+        {
+          "toolCallId": "fixture-call-1",
+          "toolName": "bash",
+          "input": {
+            "command": "ls -la src/"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.3492919999998776,
+          "customEntries": [],
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": []
+        },
+        {
+          "toolCallId": "fixture-call-2",
+          "toolName": "bash",
+          "input": {
+            "command": "printf '%s\\n' 'rm -rf release/'"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.22087499999997817,
+          "customEntries": [],
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": []
+        },
+        {
+          "toolCallId": "fixture-call-3",
+          "toolName": "bash",
+          "input": {
+            "command": "rm -rf ./work"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.48033299999997325,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-allow",
+              "data": {
+                "ruleId": "rm-rf",
+                "fingerprint": "rm -rf ./work",
+                "grantedAt": 1790103223222
+              },
+              "id": "45cce036",
+              "parentId": "b66dc539",
+              "timestamp": "2026-09-22T18:53:43.222Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223223,
+                "ruleId": "rm-rf",
+                "feature": "commandGate",
+                "outcome": "allow_session",
+                "toolName": "bash",
+                "subject": "rm -rf ./work",
+                "fingerprint": "rm -rf ./work",
+                "approvalScopeLabel": "this exact command",
+                "approvalRiskTier": "local_dangerous_exact",
+                "reason": "Dangerous command: recursive force delete"
+              },
+              "id": "f27038f4",
+              "parentId": "45cce036",
+              "timestamp": "2026-09-22T18:53:43.223Z"
+            }
+          ],
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": []
+        },
+        {
+          "toolCallId": "fixture-call-4",
+          "toolName": "bash",
+          "input": {
+            "command": "rm -rf ./work"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.22524999999995998,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223223,
+                "ruleId": "rm-rf",
+                "feature": "commandGate",
+                "outcome": "allow_session",
+                "toolName": "bash",
+                "subject": "rm -rf ./work",
+                "fingerprint": "rm -rf ./work",
+                "approvalScopeLabel": "this exact command",
+                "approvalRiskTier": "local_dangerous_exact",
+                "reason": "Dangerous command: recursive force delete"
+              },
+              "id": "3b32f382",
+              "parentId": "e7c687e4",
+              "timestamp": "2026-09-22T18:53:43.223Z"
+            }
+          ],
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": []
+        },
+        {
+          "toolCallId": "fixture-call-5",
+          "toolName": "sf_apex",
+          "input": {
+            "action": "anon.run",
+            "body": "callWithSideEffects();",
+            "allow_mutation": true,
+            "target_org": "Dev"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.6201249999999163,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-allow",
+              "data": {
+                "ruleId": "native-sf-apex-anon-run",
+                "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+                "grantedAt": 1790103223223
+              },
+              "id": "525d1a19",
+              "parentId": "b331ac8e",
+              "timestamp": "2026-09-22T18:53:43.223Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223223,
+                "ruleId": "native-sf-apex-anon-run",
+                "feature": "nativeToolGate",
+                "outcome": "allow_session",
+                "toolName": "sf_apex",
+                "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+                "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+                "orgAlias": "Dev",
+                "orgType": "scratch",
+                "orgResolutionGuessed": false,
+                "orgResolutionSource": "cache",
+                "approvalScopeLabel": "this exact Anonymous Apex body",
+                "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+                "approvalRiskTier": "apex_execution_exact",
+                "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+              },
+              "id": "00bade59",
+              "parentId": "525d1a19",
+              "timestamp": "2026-09-22T18:53:43.223Z"
+            }
+          ],
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": []
+        },
+        {
+          "toolCallId": "fixture-call-6",
+          "toolName": "sf_apex",
+          "input": {
+            "action": "anon.run",
+            "body": "callWithSideEffects();",
+            "allow_mutation": true,
+            "target_org": "Dev"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.1264169999999467,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223224,
+                "ruleId": "native-sf-apex-anon-run",
+                "feature": "nativeToolGate",
+                "outcome": "allow_session",
+                "toolName": "sf_apex",
+                "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+                "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+                "orgAlias": "Dev",
+                "orgType": "scratch",
+                "orgResolutionGuessed": false,
+                "orgResolutionSource": "cache",
+                "approvalScopeLabel": "this exact Anonymous Apex body",
+                "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+                "approvalRiskTier": "apex_execution_exact",
+                "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+              },
+              "id": "c02d54df",
+              "parentId": "e0aea3fb",
+              "timestamp": "2026-09-22T18:53:43.224Z"
+            }
+          ],
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": []
+        },
+        {
+          "toolCallId": "fixture-call-7",
+          "toolName": "data360_segment",
+          "input": {
+            "action": "segment.create",
+            "target_org": "Dev",
+            "params": {
+              "segmentId": "example-segment",
+              "body": {
+                "name": "ExampleResource",
+                "label": "Example resource"
+              }
+            },
+            "allow_confirmed": true,
+            "dry_run": true
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.5360829999999623,
+          "customEntries": [],
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "allow",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": []
+        },
+        {
+          "toolCallId": "fixture-call-8",
+          "toolName": "data360_segment",
+          "input": {
+            "action": "segment.create",
+            "target_org": "Dev",
+            "params": {
+              "segmentId": "example-segment",
+              "body": {
+                "name": "ExampleResource",
+                "label": "Example resource"
+              }
+            },
+            "allow_confirmed": true,
+            "dry_run": false
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 1.6475419999999303,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-allow",
+              "data": {
+                "ruleId": "native-data360-confirmed-execute",
+                "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+                "grantedAt": 1790103223226
+              },
+              "id": "08eaeb87",
+              "parentId": "0b7ba8c6",
+              "timestamp": "2026-09-22T18:53:43.226Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223226,
+                "ruleId": "native-data360-confirmed-execute",
+                "feature": "nativeToolGate",
+                "outcome": "allow_session",
+                "toolName": "data360_segment",
+                "subject": "data360_segment segment.create",
+                "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+                "orgAlias": "Dev",
+                "orgType": "scratch",
+                "orgResolutionGuessed": false,
+                "orgResolutionSource": "cache",
+                "approvalScopeLabel": "Data 360 data360_segment segment.create",
+                "approvalScopeDetail": "tool=data360_segment; action=segment.create; params=b5fa223bd91504dc",
+                "approvalRiskTier": "data360_confirmed_execution_exact",
+                "reason": "Data 360 confirmed execution requested for data360_segment segment.create."
+              },
+              "id": "0345b1a7",
+              "parentId": "08eaeb87",
+              "timestamp": "2026-09-22T18:53:43.226Z"
+            }
+          ],
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "confirm",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": []
+        },
+        {
+          "toolCallId": "fixture-call-9",
+          "toolName": "write",
+          "input": {
+            "path": ".forceignore",
+            "content": "# Local SDK fixture\n"
+          },
+          "executed": false,
+          "isError": true,
+          "elapsedMs": 0.8702910000001793,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223227,
+                "ruleId": "sf-forceignore",
+                "feature": "policies",
+                "outcome": "hard_block",
+                "toolName": "write",
+                "subject": ".forceignore",
+                "fingerprint": ".forceignore",
+                "reason": ".forceignore is read-only under sf-guardrail. Edits alter retrieve/deploy behavior — change it from a terminal with review."
+              },
+              "id": "40571b4a",
+              "parentId": "cc99f367",
+              "timestamp": "2026-09-22T18:53:43.227Z"
+            }
+          ],
+          "workflowId": "protected-path-exact-block",
+          "expected": "block",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": []
+        }
+      ],
+      "workflows": [
+        {
+          "id": "safe-read-and-quoted-text",
+          "operations": 3,
+          "accepted": 3,
+          "confirmations": 0,
+          "toolErrors": 0,
+          "operationElapsedMs": 1.7600009999998747
+        },
+        {
+          "id": "identical-shell-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.7055829999999332
+        },
+        {
+          "id": "identical-apex-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.746541999999863
+        },
+        {
+          "id": "native-rehearsal-and-live-mutation",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 2.1836249999998927
+        },
+        {
+          "id": "protected-path-exact-block",
+          "operations": 1,
+          "accepted": 0,
+          "confirmations": 0,
+          "toolErrors": 1,
+          "operationElapsedMs": 0.8702910000001793
+        }
+      ]
+    },
+    {
+      "mode": "shadow",
+      "expectedSemanticOperationCount": 4,
+      "semanticOperationCount": 4,
+      "expectedModelAnswerCount": 4,
+      "completedSemanticRiskChecks": 4,
+      "expectedExactPolicyOperationCount": 6,
+      "exactPolicyOperationCount": 6,
+      "expectedExactPolicyComparisonCount": 6,
+      "completedExactPolicyChecks": 6,
+      "acceptedOutcomes": [
+        {
+          "toolCallId": "fixture-call-0",
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-1",
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-2",
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-3",
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-4",
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-5",
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-6",
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-7",
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-8",
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-9",
+          "workflowId": "protected-path-exact-block",
+          "expected": "block",
+          "executed": false,
+          "isError": true
+        }
+      ],
+      "acceptedOperationCount": 9,
+      "confirmationCount": 3,
+      "confirmationChoices": [
+        [
+          "Allow once",
+          "Allow for this session",
+          "Block"
+        ],
+        [
+          "Allow once",
+          "Allow for this session",
+          "Block"
+        ],
+        [
+          "Allow once",
+          "Allow for this session",
+          "Block"
+        ]
+      ],
+      "confirmations": [
+        {
+          "toolCallId": "fixture-call-3",
+          "title": "⚠ recursive force delete\n\nDangerous command: recursive force delete\n\nRisk gate:\n- Dangerous command (rm-rf)\n\nSubject:\n- rm -rf ./work\n\nApproval covers:\n- this exact command\n- Fingerprint: rm -rf ./work\n- Operation family: rm -rf ./work\n- Risk tier: local_dangerous_exact\n- Approval duration: current session\n\nApproval timeout: 120s.",
+          "choices": [
+            "Allow once",
+            "Allow for this session",
+            "Block"
+          ],
+          "picked": "Allow for this session"
+        },
+        {
+          "toolCallId": "fixture-call-5",
+          "title": "⚠ Anonymous Apex execution\n\nAnonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body.\n\nRisk gate:\n- Native tool operation (native-sf-apex-anon-run)\n\nSubject:\n- sf_apex anon.run body 2be9eb5254338bc3\n\nTarget org:\n- Alias: Dev\n- Type: scratch via cache\n\nApproval covers:\n- this exact Anonymous Apex body\n- Fingerprint: org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3\n- Detail: Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true\n- Operation family: anonymous apex\n- Risk tier: apex_execution_exact\n- Approval duration: current session\n\nApproval timeout: 120s.",
+          "choices": [
+            "Allow once",
+            "Allow for this session",
+            "Block"
+          ],
+          "picked": "Allow for this session"
+        },
+        {
+          "toolCallId": "fixture-call-8",
+          "title": "⚠ Data 360 execution\n\nData 360 confirmed execution requested for data360_segment segment.create.\n\nRisk gate:\n- Native tool operation (native-data360-confirmed-execute)\n\nSubject:\n- data360_segment segment.create\n\nTarget org:\n- Alias: Dev\n- Type: scratch via cache\n\nApproval covers:\n- Data 360 data360_segment segment.create\n- Fingerprint: org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc\n- Detail: tool=data360_segment; action=segment.create; params=b5fa223bd91504dc\n- Operation family: data360 segment\n- Risk tier: data360_confirmed_execution_exact\n- Approval duration: current session\n\nApproval timeout: 120s.",
+          "choices": [
+            "Allow once",
+            "Allow for this session",
+            "Block"
+          ],
+          "picked": "Allow for this session"
+        }
+      ],
+      "sessionGrantCount": 3,
+      "sessionGrants": [
+        {
+          "type": "custom",
+          "customType": "sf-guardrail-allow",
+          "data": {
+            "ruleId": "rm-rf",
+            "fingerprint": "rm -rf ./work",
+            "grantedAt": 1790103223245
+          },
+          "id": "05ef6bc7",
+          "parentId": "7a21a910",
+          "timestamp": "2026-09-22T18:53:43.245Z"
+        },
+        {
+          "type": "custom",
+          "customType": "sf-guardrail-allow",
+          "data": {
+            "ruleId": "native-sf-apex-anon-run",
+            "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+            "grantedAt": 1790103223250
+          },
+          "id": "c8df7700",
+          "parentId": "6c195284",
+          "timestamp": "2026-09-22T18:53:43.250Z"
+        },
+        {
+          "type": "custom",
+          "customType": "sf-guardrail-allow",
+          "data": {
+            "ruleId": "native-data360-confirmed-execute",
+            "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+            "grantedAt": 1790103223251
+          },
+          "id": "16c364fc",
+          "parentId": "e5cde165",
+          "timestamp": "2026-09-22T18:53:43.251Z"
+        }
+      ],
+      "decisionOutcomes": [
+        "allow_session",
+        "allow_session",
+        "allow_session",
+        "allow_session",
+        "allow_session",
+        "hard_block"
+      ],
+      "unsafeAutomaticAllows": 0,
+      "retries": 0,
+      "toolErrorCount": 1,
+      "expectedBlockCount": 1,
+      "unexpectedToolErrors": 0,
+      "sdkSetupMs": 4.19137499999988,
+      "sessionStartMs": 0.28975000000036744,
+      "localRiskColdInitializationMs": null,
+      "workflowMs": 19.15041700000029,
+      "totalElapsedMs": 23.709292000000005,
+      "localRiskStatusBefore": null,
+      "localRiskStatusAfter": null,
+      "comparisons": [
+        {
+          "version": 1,
+          "timestamp": 1790103223234,
+          "mode": "shadow",
+          "toolName": "read",
+          "source": "exact_policy",
+          "baseline": "allow",
+          "actual": "allow",
+          "elapsedMs": 0.12762500000008004,
+          "reason": "exact_policy_constraint"
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223235,
+          "mode": "shadow",
+          "toolName": "bash",
+          "source": "jev",
+          "baseline": "allow",
+          "actual": "allow",
+          "elapsedMs": 4.184167000000343,
+          "reason": "safe_classification",
+          "prediction": "allow",
+          "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputSha256": "5f52a9267d4d0642fc9224ab2a002b4a69f8288889f8900081ede933ba9a00ed",
+          "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+          "allowScore": 0.999
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223239,
+          "mode": "shadow",
+          "toolName": "bash",
+          "source": "jev",
+          "baseline": "allow",
+          "actual": "allow",
+          "elapsedMs": 2.9844590000002427,
+          "reason": "safe_classification",
+          "prediction": "allow",
+          "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputSha256": "24d1ae511a7100fa596343da3bf5b9e36a16a14fa90964aef0f305fcd6588ee8",
+          "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+          "allowScore": 0.999
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223242,
+          "mode": "shadow",
+          "toolName": "bash",
+          "source": "jev",
+          "baseline": "confirm",
+          "actual": "confirm",
+          "elapsedMs": 2.3768330000002607,
+          "reason": "risk_detected",
+          "prediction": "confirm",
+          "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+          "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+          "allowScore": 0.01
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223245,
+          "mode": "shadow",
+          "toolName": "bash",
+          "source": "jev",
+          "baseline": "confirm",
+          "actual": "confirm",
+          "elapsedMs": 4.380749999999807,
+          "reason": "risk_detected",
+          "prediction": "confirm",
+          "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+          "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+          "allowScore": 0.01
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223250,
+          "mode": "shadow",
+          "toolName": "sf_apex",
+          "source": "exact_policy",
+          "baseline": "confirm",
+          "actual": "confirm",
+          "elapsedMs": 0.08275000000003274,
+          "reason": "exact_policy_constraint"
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223250,
+          "mode": "shadow",
+          "toolName": "sf_apex",
+          "source": "exact_policy",
+          "baseline": "confirm",
+          "actual": "confirm",
+          "elapsedMs": 0.06149999999979627,
+          "reason": "exact_policy_constraint"
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223250,
+          "mode": "shadow",
+          "toolName": "data360_segment",
+          "source": "exact_policy",
+          "baseline": "allow",
+          "actual": "allow",
+          "elapsedMs": 0.08612499999981083,
+          "reason": "exact_policy_constraint"
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223251,
+          "mode": "shadow",
+          "toolName": "data360_segment",
+          "source": "exact_policy",
+          "baseline": "confirm",
+          "actual": "confirm",
+          "elapsedMs": 0.12991699999975026,
+          "reason": "exact_policy_constraint"
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223251,
+          "mode": "shadow",
+          "toolName": "write",
+          "source": "exact_policy",
+          "baseline": "block",
+          "actual": "block",
+          "elapsedMs": 0.15254099999992832,
+          "reason": "exact_policy_constraint"
+        }
+      ],
+      "auditDecisions": [
+        {
+          "timestamp": 1790103223245,
+          "ruleId": "rm-rf",
+          "feature": "commandGate",
+          "outcome": "allow_session",
+          "toolName": "bash",
+          "subject": "rm -rf ./work",
+          "fingerprint": "rm -rf ./work",
+          "approvalScopeLabel": "this exact command",
+          "approvalRiskTier": "local_dangerous_exact",
+          "reason": "Dangerous command: recursive force delete"
+        },
+        {
+          "timestamp": 1790103223249,
+          "ruleId": "rm-rf",
+          "feature": "commandGate",
+          "outcome": "allow_session",
+          "toolName": "bash",
+          "subject": "rm -rf ./work",
+          "fingerprint": "rm -rf ./work",
+          "approvalScopeLabel": "this exact command",
+          "approvalRiskTier": "local_dangerous_exact",
+          "reason": "Dangerous command: recursive force delete"
+        },
+        {
+          "timestamp": 1790103223250,
+          "ruleId": "native-sf-apex-anon-run",
+          "feature": "nativeToolGate",
+          "outcome": "allow_session",
+          "toolName": "sf_apex",
+          "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+          "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+          "orgAlias": "Dev",
+          "orgType": "scratch",
+          "orgResolutionGuessed": false,
+          "orgResolutionSource": "cache",
+          "approvalScopeLabel": "this exact Anonymous Apex body",
+          "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+          "approvalRiskTier": "apex_execution_exact",
+          "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+        },
+        {
+          "timestamp": 1790103223250,
+          "ruleId": "native-sf-apex-anon-run",
+          "feature": "nativeToolGate",
+          "outcome": "allow_session",
+          "toolName": "sf_apex",
+          "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+          "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+          "orgAlias": "Dev",
+          "orgType": "scratch",
+          "orgResolutionGuessed": false,
+          "orgResolutionSource": "cache",
+          "approvalScopeLabel": "this exact Anonymous Apex body",
+          "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+          "approvalRiskTier": "apex_execution_exact",
+          "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+        },
+        {
+          "timestamp": 1790103223251,
+          "ruleId": "native-data360-confirmed-execute",
+          "feature": "nativeToolGate",
+          "outcome": "allow_session",
+          "toolName": "data360_segment",
+          "subject": "data360_segment segment.create",
+          "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+          "orgAlias": "Dev",
+          "orgType": "scratch",
+          "orgResolutionGuessed": false,
+          "orgResolutionSource": "cache",
+          "approvalScopeLabel": "Data 360 data360_segment segment.create",
+          "approvalScopeDetail": "tool=data360_segment; action=segment.create; params=b5fa223bd91504dc",
+          "approvalRiskTier": "data360_confirmed_execution_exact",
+          "reason": "Data 360 confirmed execution requested for data360_segment segment.create."
+        },
+        {
+          "timestamp": 1790103223251,
+          "ruleId": "sf-forceignore",
+          "feature": "policies",
+          "outcome": "hard_block",
+          "toolName": "write",
+          "subject": ".forceignore",
+          "fingerprint": ".forceignore",
+          "reason": ".forceignore is read-only under sf-guardrail. Edits alter retrieve/deploy behavior — change it from a terminal with review."
+        }
+      ],
+      "fallbackReasons": [],
+      "calls": [
+        {
+          "toolCallId": "fixture-call-0",
+          "toolName": "read",
+          "input": {
+            "path": "README.md"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.4764999999997599,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223234,
+                "mode": "shadow",
+                "toolName": "read",
+                "source": "exact_policy",
+                "baseline": "allow",
+                "actual": "allow",
+                "elapsedMs": 0.12762500000008004,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "4de3625e",
+              "parentId": "04b21a57",
+              "timestamp": "2026-09-22T18:53:43.234Z"
+            }
+          ],
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223234,
+              "mode": "shadow",
+              "toolName": "read",
+              "source": "exact_policy",
+              "baseline": "allow",
+              "actual": "allow",
+              "elapsedMs": 0.12762500000008004,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-1",
+          "toolName": "bash",
+          "input": {
+            "command": "ls -la src/"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 4.443833000000268,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223235,
+                "mode": "shadow",
+                "toolName": "bash",
+                "source": "jev",
+                "baseline": "allow",
+                "actual": "allow",
+                "elapsedMs": 4.184167000000343,
+                "reason": "safe_classification",
+                "prediction": "allow",
+                "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "inputSha256": "5f52a9267d4d0642fc9224ab2a002b4a69f8288889f8900081ede933ba9a00ed",
+                "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+                "allowScore": 0.999
+              },
+              "id": "56bff6b3",
+              "parentId": "46943926",
+              "timestamp": "2026-09-22T18:53:43.239Z"
+            }
+          ],
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223235,
+              "mode": "shadow",
+              "toolName": "bash",
+              "source": "jev",
+              "baseline": "allow",
+              "actual": "allow",
+              "elapsedMs": 4.184167000000343,
+              "reason": "safe_classification",
+              "prediction": "allow",
+              "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "inputSha256": "5f52a9267d4d0642fc9224ab2a002b4a69f8288889f8900081ede933ba9a00ed",
+              "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+              "allowScore": 0.999
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-2",
+          "toolName": "bash",
+          "input": {
+            "command": "printf '%s\\n' 'rm -rf release/'"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 3.1756249999998545,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223239,
+                "mode": "shadow",
+                "toolName": "bash",
+                "source": "jev",
+                "baseline": "allow",
+                "actual": "allow",
+                "elapsedMs": 2.9844590000002427,
+                "reason": "safe_classification",
+                "prediction": "allow",
+                "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "inputSha256": "24d1ae511a7100fa596343da3bf5b9e36a16a14fa90964aef0f305fcd6588ee8",
+                "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+                "allowScore": 0.999
+              },
+              "id": "a0d95cf8",
+              "parentId": "c146a15b",
+              "timestamp": "2026-09-22T18:53:43.242Z"
+            }
+          ],
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223239,
+              "mode": "shadow",
+              "toolName": "bash",
+              "source": "jev",
+              "baseline": "allow",
+              "actual": "allow",
+              "elapsedMs": 2.9844590000002427,
+              "reason": "safe_classification",
+              "prediction": "allow",
+              "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "inputSha256": "24d1ae511a7100fa596343da3bf5b9e36a16a14fa90964aef0f305fcd6588ee8",
+              "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+              "allowScore": 0.999
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-3",
+          "toolName": "bash",
+          "input": {
+            "command": "rm -rf ./work"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 2.5896670000001905,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223242,
+                "mode": "shadow",
+                "toolName": "bash",
+                "source": "jev",
+                "baseline": "confirm",
+                "actual": "confirm",
+                "elapsedMs": 2.3768330000002607,
+                "reason": "risk_detected",
+                "prediction": "confirm",
+                "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+                "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+                "allowScore": 0.01
+              },
+              "id": "7a21a910",
+              "parentId": "fee2dbbb",
+              "timestamp": "2026-09-22T18:53:43.245Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-allow",
+              "data": {
+                "ruleId": "rm-rf",
+                "fingerprint": "rm -rf ./work",
+                "grantedAt": 1790103223245
+              },
+              "id": "05ef6bc7",
+              "parentId": "7a21a910",
+              "timestamp": "2026-09-22T18:53:43.245Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223245,
+                "ruleId": "rm-rf",
+                "feature": "commandGate",
+                "outcome": "allow_session",
+                "toolName": "bash",
+                "subject": "rm -rf ./work",
+                "fingerprint": "rm -rf ./work",
+                "approvalScopeLabel": "this exact command",
+                "approvalRiskTier": "local_dangerous_exact",
+                "reason": "Dangerous command: recursive force delete"
+              },
+              "id": "7eebce52",
+              "parentId": "05ef6bc7",
+              "timestamp": "2026-09-22T18:53:43.245Z"
+            }
+          ],
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223242,
+              "mode": "shadow",
+              "toolName": "bash",
+              "source": "jev",
+              "baseline": "confirm",
+              "actual": "confirm",
+              "elapsedMs": 2.3768330000002607,
+              "reason": "risk_detected",
+              "prediction": "confirm",
+              "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+              "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+              "allowScore": 0.01
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-4",
+          "toolName": "bash",
+          "input": {
+            "command": "rm -rf ./work"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 4.513249999999971,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223245,
+                "mode": "shadow",
+                "toolName": "bash",
+                "source": "jev",
+                "baseline": "confirm",
+                "actual": "confirm",
+                "elapsedMs": 4.380749999999807,
+                "reason": "risk_detected",
+                "prediction": "confirm",
+                "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+                "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+                "allowScore": 0.01
+              },
+              "id": "15c51b0b",
+              "parentId": "53c16df1",
+              "timestamp": "2026-09-22T18:53:43.249Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223249,
+                "ruleId": "rm-rf",
+                "feature": "commandGate",
+                "outcome": "allow_session",
+                "toolName": "bash",
+                "subject": "rm -rf ./work",
+                "fingerprint": "rm -rf ./work",
+                "approvalScopeLabel": "this exact command",
+                "approvalRiskTier": "local_dangerous_exact",
+                "reason": "Dangerous command: recursive force delete"
+              },
+              "id": "47cb16e7",
+              "parentId": "15c51b0b",
+              "timestamp": "2026-09-22T18:53:43.249Z"
+            }
+          ],
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223245,
+              "mode": "shadow",
+              "toolName": "bash",
+              "source": "jev",
+              "baseline": "confirm",
+              "actual": "confirm",
+              "elapsedMs": 4.380749999999807,
+              "reason": "risk_detected",
+              "prediction": "confirm",
+              "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+              "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+              "allowScore": 0.01
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-5",
+          "toolName": "sf_apex",
+          "input": {
+            "action": "anon.run",
+            "body": "callWithSideEffects();",
+            "allow_mutation": true,
+            "target_org": "Dev"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.42670899999984613,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223250,
+                "mode": "shadow",
+                "toolName": "sf_apex",
+                "source": "exact_policy",
+                "baseline": "confirm",
+                "actual": "confirm",
+                "elapsedMs": 0.08275000000003274,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "6c195284",
+              "parentId": "d282f9cb",
+              "timestamp": "2026-09-22T18:53:43.250Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-allow",
+              "data": {
+                "ruleId": "native-sf-apex-anon-run",
+                "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+                "grantedAt": 1790103223250
+              },
+              "id": "c8df7700",
+              "parentId": "6c195284",
+              "timestamp": "2026-09-22T18:53:43.250Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223250,
+                "ruleId": "native-sf-apex-anon-run",
+                "feature": "nativeToolGate",
+                "outcome": "allow_session",
+                "toolName": "sf_apex",
+                "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+                "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+                "orgAlias": "Dev",
+                "orgType": "scratch",
+                "orgResolutionGuessed": false,
+                "orgResolutionSource": "cache",
+                "approvalScopeLabel": "this exact Anonymous Apex body",
+                "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+                "approvalRiskTier": "apex_execution_exact",
+                "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+              },
+              "id": "47bc11a1",
+              "parentId": "c8df7700",
+              "timestamp": "2026-09-22T18:53:43.250Z"
+            }
+          ],
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223250,
+              "mode": "shadow",
+              "toolName": "sf_apex",
+              "source": "exact_policy",
+              "baseline": "confirm",
+              "actual": "confirm",
+              "elapsedMs": 0.08275000000003274,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-6",
+          "toolName": "sf_apex",
+          "input": {
+            "action": "anon.run",
+            "body": "callWithSideEffects();",
+            "allow_mutation": true,
+            "target_org": "Dev"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.13004100000034668,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223250,
+                "mode": "shadow",
+                "toolName": "sf_apex",
+                "source": "exact_policy",
+                "baseline": "confirm",
+                "actual": "confirm",
+                "elapsedMs": 0.06149999999979627,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "3fb63983",
+              "parentId": "9f502c41",
+              "timestamp": "2026-09-22T18:53:43.250Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223250,
+                "ruleId": "native-sf-apex-anon-run",
+                "feature": "nativeToolGate",
+                "outcome": "allow_session",
+                "toolName": "sf_apex",
+                "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+                "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+                "orgAlias": "Dev",
+                "orgType": "scratch",
+                "orgResolutionGuessed": false,
+                "orgResolutionSource": "cache",
+                "approvalScopeLabel": "this exact Anonymous Apex body",
+                "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+                "approvalRiskTier": "apex_execution_exact",
+                "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+              },
+              "id": "2a7661ed",
+              "parentId": "3fb63983",
+              "timestamp": "2026-09-22T18:53:43.250Z"
+            }
+          ],
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223250,
+              "mode": "shadow",
+              "toolName": "sf_apex",
+              "source": "exact_policy",
+              "baseline": "confirm",
+              "actual": "confirm",
+              "elapsedMs": 0.06149999999979627,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-7",
+          "toolName": "data360_segment",
+          "input": {
+            "action": "segment.create",
+            "target_org": "Dev",
+            "params": {
+              "segmentId": "example-segment",
+              "body": {
+                "name": "ExampleResource",
+                "label": "Example resource"
+              }
+            },
+            "allow_confirmed": true,
+            "dry_run": true
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.5810409999999138,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223250,
+                "mode": "shadow",
+                "toolName": "data360_segment",
+                "source": "exact_policy",
+                "baseline": "allow",
+                "actual": "allow",
+                "elapsedMs": 0.08612499999981083,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "ef85a429",
+              "parentId": "ed7548f6",
+              "timestamp": "2026-09-22T18:53:43.251Z"
+            }
+          ],
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "allow",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223250,
+              "mode": "shadow",
+              "toolName": "data360_segment",
+              "source": "exact_policy",
+              "baseline": "allow",
+              "actual": "allow",
+              "elapsedMs": 0.08612499999981083,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-8",
+          "toolName": "data360_segment",
+          "input": {
+            "action": "segment.create",
+            "target_org": "Dev",
+            "params": {
+              "segmentId": "example-segment",
+              "body": {
+                "name": "ExampleResource",
+                "label": "Example resource"
+              }
+            },
+            "allow_confirmed": true,
+            "dry_run": false
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.2949579999999514,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223251,
+                "mode": "shadow",
+                "toolName": "data360_segment",
+                "source": "exact_policy",
+                "baseline": "confirm",
+                "actual": "confirm",
+                "elapsedMs": 0.12991699999975026,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "e5cde165",
+              "parentId": "e5c06bec",
+              "timestamp": "2026-09-22T18:53:43.251Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-allow",
+              "data": {
+                "ruleId": "native-data360-confirmed-execute",
+                "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+                "grantedAt": 1790103223251
+              },
+              "id": "16c364fc",
+              "parentId": "e5cde165",
+              "timestamp": "2026-09-22T18:53:43.251Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223251,
+                "ruleId": "native-data360-confirmed-execute",
+                "feature": "nativeToolGate",
+                "outcome": "allow_session",
+                "toolName": "data360_segment",
+                "subject": "data360_segment segment.create",
+                "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+                "orgAlias": "Dev",
+                "orgType": "scratch",
+                "orgResolutionGuessed": false,
+                "orgResolutionSource": "cache",
+                "approvalScopeLabel": "Data 360 data360_segment segment.create",
+                "approvalScopeDetail": "tool=data360_segment; action=segment.create; params=b5fa223bd91504dc",
+                "approvalRiskTier": "data360_confirmed_execution_exact",
+                "reason": "Data 360 confirmed execution requested for data360_segment segment.create."
+              },
+              "id": "6ba56193",
+              "parentId": "16c364fc",
+              "timestamp": "2026-09-22T18:53:43.251Z"
+            }
+          ],
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "confirm",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223251,
+              "mode": "shadow",
+              "toolName": "data360_segment",
+              "source": "exact_policy",
+              "baseline": "confirm",
+              "actual": "confirm",
+              "elapsedMs": 0.12991699999975026,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-9",
+          "toolName": "write",
+          "input": {
+            "path": ".forceignore",
+            "content": "# Local SDK fixture\n"
+          },
+          "executed": false,
+          "isError": true,
+          "elapsedMs": 0.3997919999997066,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223251,
+                "mode": "shadow",
+                "toolName": "write",
+                "source": "exact_policy",
+                "baseline": "block",
+                "actual": "block",
+                "elapsedMs": 0.15254099999992832,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "08b3b33b",
+              "parentId": "45edb8ac",
+              "timestamp": "2026-09-22T18:53:43.251Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223251,
+                "ruleId": "sf-forceignore",
+                "feature": "policies",
+                "outcome": "hard_block",
+                "toolName": "write",
+                "subject": ".forceignore",
+                "fingerprint": ".forceignore",
+                "reason": ".forceignore is read-only under sf-guardrail. Edits alter retrieve/deploy behavior — change it from a terminal with review."
+              },
+              "id": "67a0bc30",
+              "parentId": "08b3b33b",
+              "timestamp": "2026-09-22T18:53:43.251Z"
+            }
+          ],
+          "workflowId": "protected-path-exact-block",
+          "expected": "block",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223251,
+              "mode": "shadow",
+              "toolName": "write",
+              "source": "exact_policy",
+              "baseline": "block",
+              "actual": "block",
+              "elapsedMs": 0.15254099999992832,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        }
+      ],
+      "workflows": [
+        {
+          "id": "safe-read-and-quoted-text",
+          "operations": 3,
+          "accepted": 3,
+          "confirmations": 0,
+          "toolErrors": 0,
+          "operationElapsedMs": 8.095957999999882
+        },
+        {
+          "id": "identical-shell-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 7.102917000000161
+        },
+        {
+          "id": "identical-apex-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.5567500000001928
+        },
+        {
+          "id": "native-rehearsal-and-live-mutation",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.8759989999998652
+        },
+        {
+          "id": "protected-path-exact-block",
+          "operations": 1,
+          "accepted": 0,
+          "confirmations": 0,
+          "toolErrors": 1,
+          "operationElapsedMs": 0.3997919999997066
+        }
+      ]
+    },
+    {
+      "mode": "enforce",
+      "expectedSemanticOperationCount": 4,
+      "semanticOperationCount": 4,
+      "expectedModelAnswerCount": 4,
+      "completedSemanticRiskChecks": 4,
+      "expectedExactPolicyOperationCount": 6,
+      "exactPolicyOperationCount": 6,
+      "expectedExactPolicyComparisonCount": 6,
+      "completedExactPolicyChecks": 6,
+      "acceptedOutcomes": [
+        {
+          "toolCallId": "fixture-call-0",
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-1",
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-2",
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-3",
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-4",
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-5",
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-6",
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-7",
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "allow",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-8",
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "confirm",
+          "executed": true,
+          "isError": false
+        },
+        {
+          "toolCallId": "fixture-call-9",
+          "workflowId": "protected-path-exact-block",
+          "expected": "block",
+          "executed": false,
+          "isError": true
+        }
+      ],
+      "acceptedOperationCount": 9,
+      "confirmationCount": 3,
+      "confirmationChoices": [
+        [
+          "Allow once",
+          "Allow for this session",
+          "Block"
+        ],
+        [
+          "Allow once",
+          "Allow for this session",
+          "Block"
+        ],
+        [
+          "Allow once",
+          "Allow for this session",
+          "Block"
+        ]
+      ],
+      "confirmations": [
+        {
+          "toolCallId": "fixture-call-3",
+          "title": "⚠ recursive force delete\n\nDangerous command: recursive force delete\n\nRisk gate:\n- Dangerous command (rm-rf)\n\nSubject:\n- rm -rf ./work\n\nApproval covers:\n- this exact operation under this Jev model and policy\n- Fingerprint: 5d8d64abb7dfc0048cf2fa6fcb66c4af342bf7f5e7cb7bcfd9a56e91d9d0bee1\n- Operation family: rm -rf ./work\n- Risk tier: local_dangerous_exact\n- Approval duration: current session\n\nApproval timeout: 120s.",
+          "choices": [
+            "Allow once",
+            "Allow for this session",
+            "Block"
+          ],
+          "picked": "Allow for this session"
+        },
+        {
+          "toolCallId": "fixture-call-5",
+          "title": "⚠ Anonymous Apex execution\n\nAnonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body.\n\nRisk gate:\n- Native tool operation (native-sf-apex-anon-run)\n\nSubject:\n- sf_apex anon.run body 2be9eb5254338bc3\n\nTarget org:\n- Alias: Dev\n- Type: scratch via cache\n\nApproval covers:\n- this exact Anonymous Apex body\n- Fingerprint: org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3\n- Detail: Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true\n- Operation family: anonymous apex\n- Risk tier: apex_execution_exact\n- Approval duration: current session\n\nApproval timeout: 120s.",
+          "choices": [
+            "Allow once",
+            "Allow for this session",
+            "Block"
+          ],
+          "picked": "Allow for this session"
+        },
+        {
+          "toolCallId": "fixture-call-8",
+          "title": "⚠ Data 360 execution\n\nData 360 confirmed execution requested for data360_segment segment.create.\n\nRisk gate:\n- Native tool operation (native-data360-confirmed-execute)\n\nSubject:\n- data360_segment segment.create\n\nTarget org:\n- Alias: Dev\n- Type: scratch via cache\n\nApproval covers:\n- Data 360 data360_segment segment.create\n- Fingerprint: org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc\n- Detail: tool=data360_segment; action=segment.create; params=b5fa223bd91504dc\n- Operation family: data360 segment\n- Risk tier: data360_confirmed_execution_exact\n- Approval duration: current session\n\nApproval timeout: 120s.",
+          "choices": [
+            "Allow once",
+            "Allow for this session",
+            "Block"
+          ],
+          "picked": "Allow for this session"
+        }
+      ],
+      "sessionGrantCount": 3,
+      "sessionGrants": [
+        {
+          "type": "custom",
+          "customType": "sf-guardrail-allow",
+          "data": {
+            "ruleId": "rm-rf",
+            "fingerprint": "5d8d64abb7dfc0048cf2fa6fcb66c4af342bf7f5e7cb7bcfd9a56e91d9d0bee1",
+            "grantedAt": 1790103223268
+          },
+          "id": "8bd11b24",
+          "parentId": "362bbf48",
+          "timestamp": "2026-09-22T18:53:43.268Z"
+        },
+        {
+          "type": "custom",
+          "customType": "sf-guardrail-allow",
+          "data": {
+            "ruleId": "native-sf-apex-anon-run",
+            "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+            "grantedAt": 1790103223271
+          },
+          "id": "2c501183",
+          "parentId": "041a0581",
+          "timestamp": "2026-09-22T18:53:43.271Z"
+        },
+        {
+          "type": "custom",
+          "customType": "sf-guardrail-allow",
+          "data": {
+            "ruleId": "native-data360-confirmed-execute",
+            "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+            "grantedAt": 1790103223271
+          },
+          "id": "6b5e72f4",
+          "parentId": "d7bffcd4",
+          "timestamp": "2026-09-22T18:53:43.271Z"
+        }
+      ],
+      "decisionOutcomes": [
+        "allow_auto",
+        "allow_auto",
+        "allow_session",
+        "allow_session",
+        "allow_session",
+        "allow_session",
+        "allow_session",
+        "hard_block"
+      ],
+      "unsafeAutomaticAllows": 0,
+      "retries": 0,
+      "toolErrorCount": 1,
+      "expectedBlockCount": 1,
+      "unexpectedToolErrors": 0,
+      "sdkSetupMs": 3.1882080000000315,
+      "sessionStartMs": 0.20212500000025102,
+      "localRiskColdInitializationMs": null,
+      "workflowMs": 16.341417000000092,
+      "totalElapsedMs": 19.793500000000222,
+      "localRiskStatusBefore": null,
+      "localRiskStatusAfter": null,
+      "comparisons": [
+        {
+          "version": 1,
+          "timestamp": 1790103223257,
+          "mode": "enforce",
+          "toolName": "read",
+          "source": "exact_policy",
+          "baseline": "allow",
+          "actual": "allow",
+          "elapsedMs": 0.18395800000007512,
+          "reason": "exact_policy_constraint"
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223258,
+          "mode": "enforce",
+          "toolName": "bash",
+          "source": "jev",
+          "baseline": "allow",
+          "actual": "allow",
+          "elapsedMs": 2.6571250000001783,
+          "reason": "safe_classification",
+          "prediction": "allow",
+          "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputSha256": "5f52a9267d4d0642fc9224ab2a002b4a69f8288889f8900081ede933ba9a00ed",
+          "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+          "allowScore": 0.999
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223261,
+          "mode": "enforce",
+          "toolName": "bash",
+          "source": "jev",
+          "baseline": "allow",
+          "actual": "allow",
+          "elapsedMs": 2.500416999999743,
+          "reason": "safe_classification",
+          "prediction": "allow",
+          "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputSha256": "24d1ae511a7100fa596343da3bf5b9e36a16a14fa90964aef0f305fcd6588ee8",
+          "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+          "allowScore": 0.999
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223264,
+          "mode": "enforce",
+          "toolName": "bash",
+          "source": "jev",
+          "baseline": "confirm",
+          "actual": "confirm",
+          "elapsedMs": 2.999249999999847,
+          "reason": "risk_detected",
+          "prediction": "confirm",
+          "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+          "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+          "allowScore": 0.01
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223268,
+          "mode": "enforce",
+          "toolName": "bash",
+          "source": "jev",
+          "baseline": "confirm",
+          "actual": "confirm",
+          "elapsedMs": 1.9147499999999127,
+          "reason": "risk_detected",
+          "prediction": "confirm",
+          "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+          "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+          "allowScore": 0.01
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223271,
+          "mode": "enforce",
+          "toolName": "sf_apex",
+          "source": "exact_policy",
+          "baseline": "confirm",
+          "actual": "confirm",
+          "elapsedMs": 0.06508400000029724,
+          "reason": "exact_policy_constraint"
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223271,
+          "mode": "enforce",
+          "toolName": "sf_apex",
+          "source": "exact_policy",
+          "baseline": "confirm",
+          "actual": "confirm",
+          "elapsedMs": 0.04783300000008239,
+          "reason": "exact_policy_constraint"
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223271,
+          "mode": "enforce",
+          "toolName": "data360_segment",
+          "source": "exact_policy",
+          "baseline": "allow",
+          "actual": "allow",
+          "elapsedMs": 0.03916699999990669,
+          "reason": "exact_policy_constraint"
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223271,
+          "mode": "enforce",
+          "toolName": "data360_segment",
+          "source": "exact_policy",
+          "baseline": "confirm",
+          "actual": "confirm",
+          "elapsedMs": 0.08383400000002439,
+          "reason": "exact_policy_constraint"
+        },
+        {
+          "version": 1,
+          "timestamp": 1790103223271,
+          "mode": "enforce",
+          "toolName": "write",
+          "source": "exact_policy",
+          "baseline": "block",
+          "actual": "block",
+          "elapsedMs": 0.08558300000004238,
+          "reason": "exact_policy_constraint"
+        }
+      ],
+      "auditDecisions": [
+        {
+          "risk": {
+            "source": "jev",
+            "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "inputSha256": "5f52a9267d4d0642fc9224ab2a002b4a69f8288889f8900081ede933ba9a00ed",
+            "allowScore": 0.999,
+            "elapsedMs": 1
+          },
+          "timestamp": 1790103223261,
+          "ruleId": "jev-semantic-risk",
+          "feature": "commandGate",
+          "outcome": "allow_auto",
+          "toolName": "bash",
+          "subject": "ls -la src/",
+          "fingerprint": "f66d1fab2837927eb378fbe281d8a470d88bda818791e0f874093b6ea32f426c",
+          "reason": "Jev classified this complete operation as safe without approval."
+        },
+        {
+          "risk": {
+            "source": "jev",
+            "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "inputSha256": "24d1ae511a7100fa596343da3bf5b9e36a16a14fa90964aef0f305fcd6588ee8",
+            "allowScore": 0.999,
+            "elapsedMs": 1
+          },
+          "timestamp": 1790103223264,
+          "ruleId": "jev-semantic-risk",
+          "feature": "commandGate",
+          "outcome": "allow_auto",
+          "toolName": "bash",
+          "subject": "printf '%s\\n' 'rm -rf release/'",
+          "fingerprint": "5625dafc25ee1721acc989db5f769d84567dd7959ebfda00b9cd26fee51ee6f9",
+          "reason": "Jev classified this complete operation as safe without approval."
+        },
+        {
+          "risk": {
+            "source": "jev",
+            "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+            "allowScore": 0.01,
+            "elapsedMs": 1
+          },
+          "timestamp": 1790103223268,
+          "ruleId": "rm-rf",
+          "feature": "commandGate",
+          "outcome": "allow_session",
+          "toolName": "bash",
+          "subject": "rm -rf ./work",
+          "fingerprint": "5d8d64abb7dfc0048cf2fa6fcb66c4af342bf7f5e7cb7bcfd9a56e91d9d0bee1",
+          "approvalScopeLabel": "this exact operation under this Jev model and policy",
+          "approvalRiskTier": "local_dangerous_exact",
+          "reason": "Dangerous command: recursive force delete"
+        },
+        {
+          "risk": {
+            "source": "jev",
+            "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+            "allowScore": 0.01,
+            "elapsedMs": 1
+          },
+          "timestamp": 1790103223270,
+          "ruleId": "rm-rf",
+          "feature": "commandGate",
+          "outcome": "allow_session",
+          "toolName": "bash",
+          "subject": "rm -rf ./work",
+          "fingerprint": "5d8d64abb7dfc0048cf2fa6fcb66c4af342bf7f5e7cb7bcfd9a56e91d9d0bee1",
+          "approvalScopeLabel": "this exact operation under this Jev model and policy",
+          "approvalRiskTier": "local_dangerous_exact",
+          "reason": "Dangerous command: recursive force delete"
+        },
+        {
+          "timestamp": 1790103223271,
+          "ruleId": "native-sf-apex-anon-run",
+          "feature": "nativeToolGate",
+          "outcome": "allow_session",
+          "toolName": "sf_apex",
+          "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+          "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+          "orgAlias": "Dev",
+          "orgType": "scratch",
+          "orgResolutionGuessed": false,
+          "orgResolutionSource": "cache",
+          "approvalScopeLabel": "this exact Anonymous Apex body",
+          "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+          "approvalRiskTier": "apex_execution_exact",
+          "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+        },
+        {
+          "timestamp": 1790103223271,
+          "ruleId": "native-sf-apex-anon-run",
+          "feature": "nativeToolGate",
+          "outcome": "allow_session",
+          "toolName": "sf_apex",
+          "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+          "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+          "orgAlias": "Dev",
+          "orgType": "scratch",
+          "orgResolutionGuessed": false,
+          "orgResolutionSource": "cache",
+          "approvalScopeLabel": "this exact Anonymous Apex body",
+          "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+          "approvalRiskTier": "apex_execution_exact",
+          "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+        },
+        {
+          "timestamp": 1790103223271,
+          "ruleId": "native-data360-confirmed-execute",
+          "feature": "nativeToolGate",
+          "outcome": "allow_session",
+          "toolName": "data360_segment",
+          "subject": "data360_segment segment.create",
+          "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+          "orgAlias": "Dev",
+          "orgType": "scratch",
+          "orgResolutionGuessed": false,
+          "orgResolutionSource": "cache",
+          "approvalScopeLabel": "Data 360 data360_segment segment.create",
+          "approvalScopeDetail": "tool=data360_segment; action=segment.create; params=b5fa223bd91504dc",
+          "approvalRiskTier": "data360_confirmed_execution_exact",
+          "reason": "Data 360 confirmed execution requested for data360_segment segment.create."
+        },
+        {
+          "timestamp": 1790103223271,
+          "ruleId": "sf-forceignore",
+          "feature": "policies",
+          "outcome": "hard_block",
+          "toolName": "write",
+          "subject": ".forceignore",
+          "fingerprint": ".forceignore",
+          "reason": ".forceignore is read-only under sf-guardrail. Edits alter retrieve/deploy behavior — change it from a terminal with review."
+        }
+      ],
+      "fallbackReasons": [],
+      "calls": [
+        {
+          "toolCallId": "fixture-call-0",
+          "toolName": "read",
+          "input": {
+            "path": "README.md"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.654207999999926,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223257,
+                "mode": "enforce",
+                "toolName": "read",
+                "source": "exact_policy",
+                "baseline": "allow",
+                "actual": "allow",
+                "elapsedMs": 0.18395800000007512,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "cb1c4cd4",
+              "parentId": "81f833fa",
+              "timestamp": "2026-09-22T18:53:43.257Z"
+            }
+          ],
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223257,
+              "mode": "enforce",
+              "toolName": "read",
+              "source": "exact_policy",
+              "baseline": "allow",
+              "actual": "allow",
+              "elapsedMs": 0.18395800000007512,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-1",
+          "toolName": "bash",
+          "input": {
+            "command": "ls -la src/"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 3.410334000000148,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223258,
+                "mode": "enforce",
+                "toolName": "bash",
+                "source": "jev",
+                "baseline": "allow",
+                "actual": "allow",
+                "elapsedMs": 2.6571250000001783,
+                "reason": "safe_classification",
+                "prediction": "allow",
+                "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "inputSha256": "5f52a9267d4d0642fc9224ab2a002b4a69f8288889f8900081ede933ba9a00ed",
+                "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+                "allowScore": 0.999
+              },
+              "id": "00d229cf",
+              "parentId": "5e04b69a",
+              "timestamp": "2026-09-22T18:53:43.260Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "risk": {
+                  "source": "jev",
+                  "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "inputSha256": "5f52a9267d4d0642fc9224ab2a002b4a69f8288889f8900081ede933ba9a00ed",
+                  "allowScore": 0.999,
+                  "elapsedMs": 1
+                },
+                "timestamp": 1790103223261,
+                "ruleId": "jev-semantic-risk",
+                "feature": "commandGate",
+                "outcome": "allow_auto",
+                "toolName": "bash",
+                "subject": "ls -la src/",
+                "fingerprint": "f66d1fab2837927eb378fbe281d8a470d88bda818791e0f874093b6ea32f426c",
+                "reason": "Jev classified this complete operation as safe without approval."
+              },
+              "id": "ac07dd9d",
+              "parentId": "00d229cf",
+              "timestamp": "2026-09-22T18:53:43.261Z"
+            }
+          ],
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223258,
+              "mode": "enforce",
+              "toolName": "bash",
+              "source": "jev",
+              "baseline": "allow",
+              "actual": "allow",
+              "elapsedMs": 2.6571250000001783,
+              "reason": "safe_classification",
+              "prediction": "allow",
+              "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "inputSha256": "5f52a9267d4d0642fc9224ab2a002b4a69f8288889f8900081ede933ba9a00ed",
+              "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+              "allowScore": 0.999
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-2",
+          "toolName": "bash",
+          "input": {
+            "command": "printf '%s\\n' 'rm -rf release/'"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 3.035374999999931,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223261,
+                "mode": "enforce",
+                "toolName": "bash",
+                "source": "jev",
+                "baseline": "allow",
+                "actual": "allow",
+                "elapsedMs": 2.500416999999743,
+                "reason": "safe_classification",
+                "prediction": "allow",
+                "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "inputSha256": "24d1ae511a7100fa596343da3bf5b9e36a16a14fa90964aef0f305fcd6588ee8",
+                "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+                "allowScore": 0.999
+              },
+              "id": "53250553",
+              "parentId": "4207c735",
+              "timestamp": "2026-09-22T18:53:43.264Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "risk": {
+                  "source": "jev",
+                  "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "inputSha256": "24d1ae511a7100fa596343da3bf5b9e36a16a14fa90964aef0f305fcd6588ee8",
+                  "allowScore": 0.999,
+                  "elapsedMs": 1
+                },
+                "timestamp": 1790103223264,
+                "ruleId": "jev-semantic-risk",
+                "feature": "commandGate",
+                "outcome": "allow_auto",
+                "toolName": "bash",
+                "subject": "printf '%s\\n' 'rm -rf release/'",
+                "fingerprint": "5625dafc25ee1721acc989db5f769d84567dd7959ebfda00b9cd26fee51ee6f9",
+                "reason": "Jev classified this complete operation as safe without approval."
+              },
+              "id": "9d6b392c",
+              "parentId": "53250553",
+              "timestamp": "2026-09-22T18:53:43.264Z"
+            }
+          ],
+          "workflowId": "safe-read-and-quoted-text",
+          "expected": "allow",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223261,
+              "mode": "enforce",
+              "toolName": "bash",
+              "source": "jev",
+              "baseline": "allow",
+              "actual": "allow",
+              "elapsedMs": 2.500416999999743,
+              "reason": "safe_classification",
+              "prediction": "allow",
+              "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "inputSha256": "24d1ae511a7100fa596343da3bf5b9e36a16a14fa90964aef0f305fcd6588ee8",
+              "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+              "allowScore": 0.999
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-3",
+          "toolName": "bash",
+          "input": {
+            "command": "rm -rf ./work"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 3.8515419999998812,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223264,
+                "mode": "enforce",
+                "toolName": "bash",
+                "source": "jev",
+                "baseline": "confirm",
+                "actual": "confirm",
+                "elapsedMs": 2.999249999999847,
+                "reason": "risk_detected",
+                "prediction": "confirm",
+                "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+                "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+                "allowScore": 0.01
+              },
+              "id": "362bbf48",
+              "parentId": "6c03a399",
+              "timestamp": "2026-09-22T18:53:43.267Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-allow",
+              "data": {
+                "ruleId": "rm-rf",
+                "fingerprint": "5d8d64abb7dfc0048cf2fa6fcb66c4af342bf7f5e7cb7bcfd9a56e91d9d0bee1",
+                "grantedAt": 1790103223268
+              },
+              "id": "8bd11b24",
+              "parentId": "362bbf48",
+              "timestamp": "2026-09-22T18:53:43.268Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "risk": {
+                  "source": "jev",
+                  "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+                  "allowScore": 0.01,
+                  "elapsedMs": 1
+                },
+                "timestamp": 1790103223268,
+                "ruleId": "rm-rf",
+                "feature": "commandGate",
+                "outcome": "allow_session",
+                "toolName": "bash",
+                "subject": "rm -rf ./work",
+                "fingerprint": "5d8d64abb7dfc0048cf2fa6fcb66c4af342bf7f5e7cb7bcfd9a56e91d9d0bee1",
+                "approvalScopeLabel": "this exact operation under this Jev model and policy",
+                "approvalRiskTier": "local_dangerous_exact",
+                "reason": "Dangerous command: recursive force delete"
+              },
+              "id": "ac4eb4b2",
+              "parentId": "8bd11b24",
+              "timestamp": "2026-09-22T18:53:43.268Z"
+            }
+          ],
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223264,
+              "mode": "enforce",
+              "toolName": "bash",
+              "source": "jev",
+              "baseline": "confirm",
+              "actual": "confirm",
+              "elapsedMs": 2.999249999999847,
+              "reason": "risk_detected",
+              "prediction": "confirm",
+              "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+              "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+              "allowScore": 0.01
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-4",
+          "toolName": "bash",
+          "input": {
+            "command": "rm -rf ./work"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 2.3931249999996,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223268,
+                "mode": "enforce",
+                "toolName": "bash",
+                "source": "jev",
+                "baseline": "confirm",
+                "actual": "confirm",
+                "elapsedMs": 1.9147499999999127,
+                "reason": "risk_detected",
+                "prediction": "confirm",
+                "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+                "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+                "allowScore": 0.01
+              },
+              "id": "5acd64c2",
+              "parentId": "c26ded92",
+              "timestamp": "2026-09-22T18:53:43.270Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "risk": {
+                  "source": "jev",
+                  "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+                  "allowScore": 0.01,
+                  "elapsedMs": 1
+                },
+                "timestamp": 1790103223270,
+                "ruleId": "rm-rf",
+                "feature": "commandGate",
+                "outcome": "allow_session",
+                "toolName": "bash",
+                "subject": "rm -rf ./work",
+                "fingerprint": "5d8d64abb7dfc0048cf2fa6fcb66c4af342bf7f5e7cb7bcfd9a56e91d9d0bee1",
+                "approvalScopeLabel": "this exact operation under this Jev model and policy",
+                "approvalRiskTier": "local_dangerous_exact",
+                "reason": "Dangerous command: recursive force delete"
+              },
+              "id": "ff765946",
+              "parentId": "5acd64c2",
+              "timestamp": "2026-09-22T18:53:43.270Z"
+            }
+          ],
+          "workflowId": "identical-shell-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "jev",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223268,
+              "mode": "enforce",
+              "toolName": "bash",
+              "source": "jev",
+              "baseline": "confirm",
+              "actual": "confirm",
+              "elapsedMs": 1.9147499999999127,
+              "reason": "risk_detected",
+              "prediction": "confirm",
+              "modelSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "protocolSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "inputSha256": "cbc980434ef861ff16625608331b3b9c3584cd3f6184e3a5bcbf2b04e10c2055",
+              "policySha256": "130de036e1270f2f46b06a4f670fcce83f7595e3fe5bf9583221b9db0f221f6a",
+              "allowScore": 0.01
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-5",
+          "toolName": "sf_apex",
+          "input": {
+            "action": "anon.run",
+            "body": "callWithSideEffects();",
+            "allow_mutation": true,
+            "target_org": "Dev"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.37945799999988594,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223271,
+                "mode": "enforce",
+                "toolName": "sf_apex",
+                "source": "exact_policy",
+                "baseline": "confirm",
+                "actual": "confirm",
+                "elapsedMs": 0.06508400000029724,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "041a0581",
+              "parentId": "d6f267ca",
+              "timestamp": "2026-09-22T18:53:43.271Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-allow",
+              "data": {
+                "ruleId": "native-sf-apex-anon-run",
+                "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+                "grantedAt": 1790103223271
+              },
+              "id": "2c501183",
+              "parentId": "041a0581",
+              "timestamp": "2026-09-22T18:53:43.271Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223271,
+                "ruleId": "native-sf-apex-anon-run",
+                "feature": "nativeToolGate",
+                "outcome": "allow_session",
+                "toolName": "sf_apex",
+                "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+                "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+                "orgAlias": "Dev",
+                "orgType": "scratch",
+                "orgResolutionGuessed": false,
+                "orgResolutionSource": "cache",
+                "approvalScopeLabel": "this exact Anonymous Apex body",
+                "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+                "approvalRiskTier": "apex_execution_exact",
+                "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+              },
+              "id": "98aafeab",
+              "parentId": "2c501183",
+              "timestamp": "2026-09-22T18:53:43.271Z"
+            }
+          ],
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223271,
+              "mode": "enforce",
+              "toolName": "sf_apex",
+              "source": "exact_policy",
+              "baseline": "confirm",
+              "actual": "confirm",
+              "elapsedMs": 0.06508400000029724,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-6",
+          "toolName": "sf_apex",
+          "input": {
+            "action": "anon.run",
+            "body": "callWithSideEffects();",
+            "allow_mutation": true,
+            "target_org": "Dev"
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.11495800000011513,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223271,
+                "mode": "enforce",
+                "toolName": "sf_apex",
+                "source": "exact_policy",
+                "baseline": "confirm",
+                "actual": "confirm",
+                "elapsedMs": 0.04783300000008239,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "7d319dd0",
+              "parentId": "ceae54d8",
+              "timestamp": "2026-09-22T18:53:43.271Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223271,
+                "ruleId": "native-sf-apex-anon-run",
+                "feature": "nativeToolGate",
+                "outcome": "allow_session",
+                "toolName": "sf_apex",
+                "subject": "sf_apex anon.run body 2be9eb5254338bc3",
+                "fingerprint": "org=Dev|type=scratch|family=anonymous apex|native=sf_apex|anon.run|body=2be9eb5254338bc3",
+                "orgAlias": "Dev",
+                "orgType": "scratch",
+                "orgResolutionGuessed": false,
+                "orgResolutionSource": "cache",
+                "approvalScopeLabel": "this exact Anonymous Apex body",
+                "approvalScopeDetail": "Body fingerprint 2be9eb5254338bc3; mutation signals: none detected; allow_mutation=true",
+                "approvalRiskTier": "apex_execution_exact",
+                "reason": "Anonymous Apex can call org code and may have side effects even when direct DML is not visible in the submitted body."
+              },
+              "id": "8347f9f9",
+              "parentId": "7d319dd0",
+              "timestamp": "2026-09-22T18:53:43.271Z"
+            }
+          ],
+          "workflowId": "identical-apex-risk-session-reuse",
+          "expected": "confirm",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223271,
+              "mode": "enforce",
+              "toolName": "sf_apex",
+              "source": "exact_policy",
+              "baseline": "confirm",
+              "actual": "confirm",
+              "elapsedMs": 0.04783300000008239,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-7",
+          "toolName": "data360_segment",
+          "input": {
+            "action": "segment.create",
+            "target_org": "Dev",
+            "params": {
+              "segmentId": "example-segment",
+              "body": {
+                "name": "ExampleResource",
+                "label": "Example resource"
+              }
+            },
+            "allow_confirmed": true,
+            "dry_run": true
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.17800000000033833,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223271,
+                "mode": "enforce",
+                "toolName": "data360_segment",
+                "source": "exact_policy",
+                "baseline": "allow",
+                "actual": "allow",
+                "elapsedMs": 0.03916699999990669,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "dc29957c",
+              "parentId": "ddd945ed",
+              "timestamp": "2026-09-22T18:53:43.271Z"
+            }
+          ],
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "allow",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223271,
+              "mode": "enforce",
+              "toolName": "data360_segment",
+              "source": "exact_policy",
+              "baseline": "allow",
+              "actual": "allow",
+              "elapsedMs": 0.03916699999990669,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-8",
+          "toolName": "data360_segment",
+          "input": {
+            "action": "segment.create",
+            "target_org": "Dev",
+            "params": {
+              "segmentId": "example-segment",
+              "body": {
+                "name": "ExampleResource",
+                "label": "Example resource"
+              }
+            },
+            "allow_confirmed": true,
+            "dry_run": false
+          },
+          "executed": true,
+          "isError": false,
+          "elapsedMs": 0.18079199999965567,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223271,
+                "mode": "enforce",
+                "toolName": "data360_segment",
+                "source": "exact_policy",
+                "baseline": "confirm",
+                "actual": "confirm",
+                "elapsedMs": 0.08383400000002439,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "d7bffcd4",
+              "parentId": "57bfd270",
+              "timestamp": "2026-09-22T18:53:43.271Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-allow",
+              "data": {
+                "ruleId": "native-data360-confirmed-execute",
+                "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+                "grantedAt": 1790103223271
+              },
+              "id": "6b5e72f4",
+              "parentId": "d7bffcd4",
+              "timestamp": "2026-09-22T18:53:43.271Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223271,
+                "ruleId": "native-data360-confirmed-execute",
+                "feature": "nativeToolGate",
+                "outcome": "allow_session",
+                "toolName": "data360_segment",
+                "subject": "data360_segment segment.create",
+                "fingerprint": "org=Dev|type=scratch|family=data360 segment|native=data360|data360_segment|segment.create|b5fa223bd91504dc",
+                "orgAlias": "Dev",
+                "orgType": "scratch",
+                "orgResolutionGuessed": false,
+                "orgResolutionSource": "cache",
+                "approvalScopeLabel": "Data 360 data360_segment segment.create",
+                "approvalScopeDetail": "tool=data360_segment; action=segment.create; params=b5fa223bd91504dc",
+                "approvalRiskTier": "data360_confirmed_execution_exact",
+                "reason": "Data 360 confirmed execution requested for data360_segment segment.create."
+              },
+              "id": "c68f7598",
+              "parentId": "6b5e72f4",
+              "timestamp": "2026-09-22T18:53:43.271Z"
+            }
+          ],
+          "workflowId": "native-rehearsal-and-live-mutation",
+          "expected": "confirm",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223271,
+              "mode": "enforce",
+              "toolName": "data360_segment",
+              "source": "exact_policy",
+              "baseline": "confirm",
+              "actual": "confirm",
+              "elapsedMs": 0.08383400000002439,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        },
+        {
+          "toolCallId": "fixture-call-9",
+          "toolName": "write",
+          "input": {
+            "path": ".forceignore",
+            "content": "# Local SDK fixture\n"
+          },
+          "executed": false,
+          "isError": true,
+          "elapsedMs": 0.2010840000002645,
+          "customEntries": [
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-risk-comparison",
+              "data": {
+                "version": 1,
+                "timestamp": 1790103223271,
+                "mode": "enforce",
+                "toolName": "write",
+                "source": "exact_policy",
+                "baseline": "block",
+                "actual": "block",
+                "elapsedMs": 0.08558300000004238,
+                "reason": "exact_policy_constraint"
+              },
+              "id": "9d22ed1a",
+              "parentId": "c117bbac",
+              "timestamp": "2026-09-22T18:53:43.271Z"
+            },
+            {
+              "type": "custom",
+              "customType": "sf-guardrail-decision",
+              "data": {
+                "timestamp": 1790103223271,
+                "ruleId": "sf-forceignore",
+                "feature": "policies",
+                "outcome": "hard_block",
+                "toolName": "write",
+                "subject": ".forceignore",
+                "fingerprint": ".forceignore",
+                "reason": ".forceignore is read-only under sf-guardrail. Edits alter retrieve/deploy behavior — change it from a terminal with review."
+              },
+              "id": "b3323323",
+              "parentId": "9d22ed1a",
+              "timestamp": "2026-09-22T18:53:43.271Z"
+            }
+          ],
+          "workflowId": "protected-path-exact-block",
+          "expected": "block",
+          "expectedComparisonSource": "exact_policy",
+          "riskComparisons": [
+            {
+              "version": 1,
+              "timestamp": 1790103223271,
+              "mode": "enforce",
+              "toolName": "write",
+              "source": "exact_policy",
+              "baseline": "block",
+              "actual": "block",
+              "elapsedMs": 0.08558300000004238,
+              "reason": "exact_policy_constraint"
+            }
+          ]
+        }
+      ],
+      "workflows": [
+        {
+          "id": "safe-read-and-quoted-text",
+          "operations": 3,
+          "accepted": 3,
+          "confirmations": 0,
+          "toolErrors": 0,
+          "operationElapsedMs": 7.099917000000005
+        },
+        {
+          "id": "identical-shell-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 6.244666999999481
+        },
+        {
+          "id": "identical-apex-risk-session-reuse",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.4944160000000011
+        },
+        {
+          "id": "native-rehearsal-and-live-mutation",
+          "operations": 2,
+          "accepted": 2,
+          "confirmations": 1,
+          "toolErrors": 0,
+          "operationElapsedMs": 0.358791999999994
+        },
+        {
+          "id": "protected-path-exact-block",
+          "operations": 1,
+          "accepted": 0,
+          "confirmations": 0,
+          "toolErrors": 1,
+          "operationElapsedMs": 0.2010840000002645
+        }
+      ]
+    }
+  ]
+}

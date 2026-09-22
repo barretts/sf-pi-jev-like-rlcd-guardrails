@@ -25,7 +25,8 @@ scripted risk predictions, off/shadow isolation, fallback, approvals, audit,
 hard blocks, and representative workflows through Pi. This is host behavior
 evidence; it does not measure a C9 model. A C9 model must later complete a
 fresh shadow comparison and a real Pi SDK run with counter-only tools before
-any enforcement claim.
+any enforcement claim. The [retained stub-hook receipts](./candidate-9-evidence/stub-hook/README.md)
+record the exact host, patch identity, and test proof boundary.
 
 The focused host command was:
 
