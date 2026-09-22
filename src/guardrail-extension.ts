@@ -2,6 +2,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { createHash } from "node:crypto";
 import { constants } from "node:fs";
 import { open } from "node:fs/promises";
+import { isAbsolute } from "node:path";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
 import { types } from "node:util";
@@ -19,6 +20,7 @@ import {
   verifyC8Calibration,
 } from "./guardrail-calibration.js";
 import { verifyC8HeldoutQualification } from "./guardrail-c8-qualification.js";
+import { verifyC9Calibration } from "./guardrail-c9-calibration.js";
 import {
   GUARDRAIL_LIMITS,
   GUARDRAIL_PROTOCOL_SHA256,
@@ -59,8 +61,13 @@ export function registerGuardrailProvider(
   const config = guardrailConfig(env);
   const calibrationPath = env.JEV_GUARDRAIL_CALIBRATION;
   const calibrationSha256 = env.JEV_GUARDRAIL_CALIBRATION_SHA256;
-  const calibrated =
+  const c8Calibrated =
     calibrationPath !== undefined || calibrationSha256 !== undefined;
+  const c9CalibrationPath = env.JEV_GUARDRAIL_C9_CALIBRATION;
+  const c9CalibrationSha256 = env.JEV_GUARDRAIL_C9_CALIBRATION_SHA256;
+  const c9Calibrated =
+    c9CalibrationPath !== undefined || c9CalibrationSha256 !== undefined;
+  const calibrated = c8Calibrated || c9Calibrated;
   const c8FreezePath = env.JEV_GUARDRAIL_C8_FREEZE;
   const c8FreezeSha256 = env.JEV_GUARDRAIL_C8_FREEZE_SHA256;
   const c8QualificationPath = env.JEV_GUARDRAIL_C8_QUALIFICATION;
@@ -129,11 +136,31 @@ export function registerGuardrailProvider(
     runtime.warming = (async () => {
       await waitFor(retirement, runtime.controller.signal);
       assertCurrent(runtime);
-      if (calibrated && qualificationPath !== undefined)
+      if (
+        c9Calibrated &&
+        (c8Calibrated ||
+          c8QualificationConfigured ||
+          qualificationPath !== undefined ||
+          qualificationSha256 !== undefined)
+      )
+        throw new Error(
+          "C9 TRAIN calibration cannot inherit C7 or C8 qualification",
+        );
+      if (
+        c9Calibrated &&
+        (!c9CalibrationPath ||
+          !isAbsolute(c9CalibrationPath) ||
+          !c9CalibrationSha256 ||
+          !/^[a-f0-9]{64}$/.test(c9CalibrationSha256))
+      )
+        throw new Error(
+          "C9 calibration requires an absolute file and operator-pinned SHA-256",
+        );
+      if (c8Calibrated && qualificationPath !== undefined)
         throw new Error(
           "C8 TRAIN calibration cannot inherit a C7 qualification receipt",
         );
-      if (c8QualificationConfigured && !calibrated)
+      if (c8QualificationConfigured && !c8Calibrated)
         throw new Error(
           "C8 held-out qualification requires a selected TRAIN cutoff",
         );
@@ -150,7 +177,7 @@ export function registerGuardrailProvider(
           "C8 enforcement requires separately pinned freeze and qualification files",
         );
       if (
-        calibrated &&
+        c8Calibrated &&
         (!calibrationPath ||
           !calibrationSha256 ||
           !/^[a-f0-9]{64}$/.test(calibrationSha256))
@@ -222,7 +249,7 @@ export function registerGuardrailProvider(
         qualificationBaselineSha256 = qualification.baselineSourceSha256;
         qualified = true;
       }
-      if (calibrated) {
+      if (c8Calibrated) {
         const raw = await readQualification(
           calibrationPath!,
           runtime.controller.signal,
@@ -297,6 +324,50 @@ export function registerGuardrailProvider(
           runtime.qualificationSha256 = c8QualificationSha256!;
         }
       }
+      if (c9Calibrated) {
+        const raw = await readQualification(
+          c9CalibrationPath!,
+          runtime.controller.signal,
+        );
+        if (
+          createHash("sha256").update(raw).digest("hex") !== c9CalibrationSha256
+        )
+          throw new Error(
+            "C9 calibration SHA-256 does not match the operator pin",
+          );
+        const binary = await hashArtifact(
+          config.binary,
+          runtime.controller.signal,
+        );
+        if (
+          binary.sha256 !== binaryBeforeWarmup!.sha256 ||
+          binary.size !== binaryBeforeWarmup!.size
+        )
+          throw new Error(
+            "Guardrail scoring binary changed during C9 calibration warmup",
+          );
+        const receipt = verifyC9Calibration(
+          JSON.parse(raw.toString("utf8")),
+          artifact.sha256,
+          binary.sha256,
+        );
+        if (
+          !receipt.accepted ||
+          receipt.reason !== "selected" ||
+          !Number.isFinite(receipt.minimumAllowScore) ||
+          receipt.minimumAllowScore! < 0.5 ||
+          receipt.minimumAllowScore! >= 1 ||
+          !/^[a-f0-9]{64}$/.test(receipt.scoringProtocolSha256 ?? "")
+        )
+          throw new Error(
+            "C9 TRAIN calibration did not select a usable cutoff",
+          );
+        runtime.minimumAllowScore = receipt.minimumAllowScore;
+        runtime.scoringProtocolSha256 = receipt.scoringProtocolSha256;
+        runtime.calibrationPolicySha256 = receipt.input.policySha256;
+        runtime.calibrationBaselineSha256 = receipt.input.baselineSha256;
+        // TRAIN-CAL selection permits shadow scoring only; C9 has no held-out qualification.
+      }
       assertCurrent(runtime);
       if (
         runtime.backend instanceof NativeBackend &&
@@ -331,7 +402,10 @@ export function registerGuardrailProvider(
     id: "jev",
     get protocolSha256() {
       return calibrated
-        ? (current?.scoringProtocolSha256 ?? C8_BASE_PROTOCOL_SHA256)
+        ? (current?.scoringProtocolSha256 ??
+            (c9Calibrated
+              ? GUARDRAIL_PROTOCOL_SHA256
+              : C8_BASE_PROTOCOL_SHA256))
         : GUARDRAIL_PROTOCOL_SHA256;
     },
     get modelSha256() {
@@ -356,7 +430,11 @@ export function registerGuardrailProvider(
         : null;
     },
     get calibrationSha256() {
-      return calibrated && enabled() ? calibrationSha256 : null;
+      return calibrated && enabled()
+        ? c9Calibrated
+          ? c9CalibrationSha256
+          : calibrationSha256
+        : null;
     },
     get calibrationPolicySha256() {
       return calibrated && enabled()
@@ -471,11 +549,15 @@ export function registerGuardrailProvider(
         : current?.warming
           ? "warming"
           : (current?.classifier?.status.state ?? "cold"),
-    calibration: calibrated
-      ? provider.qualified
-        ? "train_cutoff_heldout_qualified"
-        : "train_selected_cutoff_unqualified"
-      : "uncalibrated",
+    calibration: c9Calibrated
+      ? current?.ready && current.minimumAllowScore !== null
+        ? "c9_train_selected_cutoff_unqualified"
+        : "c9_calibration_unverified"
+      : c8Calibrated
+        ? provider.qualified
+          ? "train_cutoff_heldout_qualified"
+          : "train_selected_cutoff_unqualified"
+        : "uncalibrated",
     lastError,
   });
   const reset = () => {
