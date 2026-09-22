@@ -16,7 +16,7 @@ test("C9 VALID source, inventories, and model-free host receipt remain bound", a
       bytes("blind-c9-20260922/manifest.json"),
       bytes("blind-c9-20260922/case.schema.json"),
       bytes("fixtures/guardrail/RUBRIC.md"),
-      bytes("reports/guardrail-risk-2026-09-21/candidate-9-evidence/valid/preflight-bdbf629.json"),
+      bytes("reports/guardrail-risk-2026-09-21/candidate-9-evidence/valid/preflight-4f7fae0.json"),
     ]);
   const source = JSON.parse(sourceBytes), manifest = JSON.parse(manifestBytes);
   const preflight = JSON.parse(preflightBytes);
@@ -62,4 +62,5 @@ test("C9 VALID source, inventories, and model-free host receipt remain bound", a
   assert.deepEqual(routing, { model_prepared: 116, rules_fallback: 39, pre_model_fallback: 5 });
   assert.equal(preflight.status.filter((row) => row.expected === "hard_block" && row.baseline_action === "block").length, 2);
   assert.equal(preflight.status.some((row) => row.routing === "preparation_error"), false);
+  assert.equal(preflight.status.find((row) => row.id === "c9-valid-144")?.baseline_action, "confirm");
 });

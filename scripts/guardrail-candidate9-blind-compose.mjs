@@ -64,9 +64,9 @@ const manifest = {
   },
   host: {
     repo: "sf-pi",
-    commit: "bdbf6292f383a8b2e12cd236aafb2be9c335f463",
-    baseline_identity_sha256: "1e5e8167f25ce8fb440d7bf8054be44a27d67c0fa71272a5558b01204c24bd0e",
-    default_policy_sha256: "06aa441885847cce10b5432120b535657b780726b83327cbfd170b1b455bef22",
+    commit: "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a",
+    baseline_identity_sha256: "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421",
+    default_policy_sha256: "e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347",
   },
   inventory: {
     ids: cases.map((row) => row.id),

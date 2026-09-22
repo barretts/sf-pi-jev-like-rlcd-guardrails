@@ -95,7 +95,7 @@ try {
     { evaluateSafety },
     { jevRiskEligible, jevRiskPolicyFloor, prepareJevRiskInput, getJevRiskPolicySha256 },
     { clearSharedSfEnvironment, restoreFromSessionEntries },
-    { writeLatestBrowserSnapshotRefs },
+    { writeLatestBrowserSnapshotRefs, markLatestBrowserSnapshotStale },
     { calculateJevRiskBaselineIdentity },
   ] = await Promise.all([
     sfImport("extensions/sf-guardrail/lib/config.ts"),
@@ -176,10 +176,12 @@ try {
       if (
         capture.snapshotSha256 !== browserPage.snapshotSha256 ||
         !capture.refs.some(
-          (ref) => ref.ref === operation.ref && ref.label === browserRef.label,
+          (ref) => ref.ref === operation.ref.replace(/^@/, "") && ref.label === browserRef.label,
         )
       )
         throw new Error(`Invalid authored browser observation: ${row.id}`);
+      if (browserRef?.status === "stale")
+        markLatestBrowserSnapshotStale(sessionId, "C9 mocked navigation invalidated the captured ref");
     }
     let config = readBundledConfig();
     const behaviors = row.fixture.policyBehaviors;
@@ -293,7 +295,7 @@ try {
   if (hostCommit !== manifest.host.commit ||
       hostBaselineIdentity.sha256 !== manifest.host.baseline_identity_sha256 ||
       getJevRiskPolicySha256(readBundledConfig()) !== manifest.host.default_policy_sha256)
-    throw new Error("C9 host differs from sealed manifest");
+    throw new Error(`C9 host differs from sealed manifest: commit=${hostCommit} baseline=${hostBaselineIdentity.sha256} policy=${getJevRiskPolicySha256(readBundledConfig())}`);
   const receipt = {
     version: 1,
     source: "blind-c9-20260922/valid.json",
