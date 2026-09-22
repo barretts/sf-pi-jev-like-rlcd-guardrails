@@ -1,0 +1,16 @@
+
+> sf-pi@0.284.0 test
+> vitest run extensions/sf-guardrail/tests
+
+
+ RUN  v5.0.0 /private/tmp/sf-pi-guardrail-c9-host-20260922
+
+
+ Test Files  34 passed (34)
+      Tests  430 passed | 2 skipped (432)
+   Start at  20:54:01
+   Duration  6.39s (import 58%, tests 34%, transform 7%)
+
+    Isolate  34 workers spawned · ~216ms startup each (spawn + environment, per file)
+             at least ~350ms faster with isolate: false — reuses workers across files instead of one per file
+
