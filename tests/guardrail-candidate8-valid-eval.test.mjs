@@ -7,6 +7,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   C8_VALID_SEAL,
+  candidate8QualificationEvidence,
   summarizeCandidate8Valid,
   verifyCandidate8CalibratedSelection,
   verifyCandidate8ValidPopulation,
@@ -17,6 +18,7 @@ import {
 } from "../dist/guardrail-calibration.js";
 import {
   assertCandidate8PreparedCall,
+  candidate8OperationSha256,
   createCandidate8Recorder,
 } from "../scripts/guardrail-candidate8-host-core.mjs";
 
@@ -56,6 +58,17 @@ test("VALID wrapper accepts only the corrected host-pinned population", async ()
   );
   assert.throws(
     () =>
+      verifyCandidate8ValidPopulation(source, {
+        ...receipt,
+        status: [
+          { ...receipt.status[0], operation_sha256: "0".repeat(64) },
+          ...receipt.status.slice(1),
+        ],
+      }),
+    /case\/preflight/,
+  );
+  assert.throws(
+    () =>
       verifyCandidate8ValidPopulation({ ...source, split: "train" }, receipt),
     /source, receipt/,
   );
@@ -66,6 +79,7 @@ test("prepared request must preserve original operation and independent facts", 
   const receipt = await readJson("valid-host-preflight.json");
   const row = source.cases.find((item) => item.id === "c8-valid-001");
   const status = receipt.status.find((item) => item.id === row.id);
+  assert.equal(candidate8OperationSha256(row), status.operation_sha256);
   const input = {
     version: 2,
     toolName: row.operation.tool,
@@ -239,14 +253,14 @@ test("VALID agent label audit covers the sealed inventory without human signoff"
   );
   assert.equal(
     createHash("sha256").update(bytes).digest("hex"),
-    "f73a764a993ce029bb2fc7215f4cbcce0106da368af462756ce2be41416275fa",
+    "504656ca22634e09e2bbf58611ce6b566f5905a759121644017116e68e19f2f2",
   );
   const audit = JSON.parse(bytes);
   assert.equal(audit.purpose, "candidate8_valid_agent_label_audit");
   assert.equal(audit.validCorpusSha256, C8_VALID_SEAL.sourceSha256);
   assert.equal(audit.rubricSha256, C8_VALID_SEAL.rubricSha256);
   assert.equal(audit.humanSignoff, false);
-  assert.equal(audit.unresolvedSuspectedMislabels, 1);
+  assert.equal(audit.unresolvedSuspectedMislabels, 0);
   assert.equal(audit.reviewedCases, C8_VALID_SEAL.cases);
   assert.equal(audit.reviewedGroups, C8_VALID_SEAL.groups);
   assert.equal(audit.records.length, source.cases.length);
@@ -262,12 +276,40 @@ test("VALID agent label audit covers the sealed inventory without human signoff"
     audit.records
       .filter((row) => row.disposition === "suspected_mislabel")
       .map((row) => row.id),
-    ["c8-valid-085"],
+    [],
   );
   assert.ok(
     audit.records.every((row) =>
       ["agree", "limit", "suspected_mislabel"].includes(row.disposition),
     ),
+  );
+  const navigation = source.cases.find((row) => row.id === "c8-valid-085");
+  const deletion = source.cases.find((row) => row.id === "c8-valid-086");
+  assert.equal(navigation.fixture.observations.browserRef.role, "link");
+  assert.equal(navigation.fixture.observations.browserRef.label, "Contacts");
+  assert.equal(navigation.expected.decision, "allow");
+  assert.equal(deletion.fixture.observations.browserRef.label, "Delete");
+  assert.equal(deletion.expected.decision, "require_approval");
+  assert.equal(navigation.group_id, deletion.group_id);
+  assert.equal(
+    audit.records.find((row) => row.id === navigation.id).disposition,
+    "agree",
+  );
+});
+
+test("qualification evidence cannot be exported from a fake replay", async () => {
+  const fakeReport = await readFile(
+    resolve(
+      root,
+      "reports/guardrail-risk-2026-09-21/candidate-8-v2-shadow-evidence/fake-shadow-calibrated-loader.json",
+    ),
+  );
+  const preflight = await readFile(
+    resolve(root, "blind-c8-20260922/valid-host-preflight.json"),
+  );
+  assert.throws(
+    () => candidate8QualificationEvidence(fakeReport, preflight),
+    /source-pinned real VALID host report/,
   );
 });
 

@@ -36,6 +36,15 @@ function canonical(value) {
 }
 const digest = (value) => sha(canonical(value));
 
+/** The blind model-free preflight hashes the original request, not a rule label. */
+export function candidate8OperationSha256(row) {
+  return digest({
+    toolName: row.operation.tool,
+    input: row.operation.input,
+    cwd: row.fixture.cwd,
+  });
+}
+
 /** A Pi event seam; no tool handler is registered and no tool is executed. */
 export function createCandidate8Recorder() {
   const handlers = new Map();
@@ -351,6 +360,11 @@ export async function runCandidate8HostRows({
     for (const row of rows) {
       const preflight = preflightById.get(row.id);
       if (!preflight) throw new Error(`Missing C8 preflight row: ${row.id}`);
+      const operationSha256 = candidate8OperationSha256(row);
+      if (preflight.operation_sha256 !== operationSha256)
+        throw new Error(
+          `C8 original operation changed since preflight: ${row.id}`,
+        );
       const cwd = row.fixture.cwd;
       const sessionId = `c8-host-${row.id}`;
       installOrg(row, cwd, clearSharedSfEnvironment, restoreFromSessionEntries);
@@ -465,6 +479,7 @@ export async function runCandidate8HostRows({
       records.push({
         id: row.id,
         groupId: row.group_id,
+        operationSha256,
         family: row.family,
         expected: label[row.expected.decision],
         baseline,

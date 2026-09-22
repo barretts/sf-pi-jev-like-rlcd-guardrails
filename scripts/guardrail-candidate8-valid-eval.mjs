@@ -6,7 +6,10 @@ import { lstat, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { runCandidate8HostRows } from "./guardrail-candidate8-host-core.mjs";
+import {
+  candidate8OperationSha256,
+  runCandidate8HostRows,
+} from "./guardrail-candidate8-host-core.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const buildRoot = resolve(root, ".build/guardrail");
@@ -20,26 +23,26 @@ const coreFile = resolve(root, "scripts/guardrail-candidate8-host-core.mjs");
 const evalFile = fileURLToPath(import.meta.url);
 const runtimeDir = resolve(root, "dist");
 
-// These bytes come from the corrected VALID-only v2 commit 0f9199c. The
+// These bytes come from the corrected VALID-only final-host commit d3c26c. The
 // model-specific scoring protocol is separately frozen from TRAIN-CAL.
 export const C8_VALID_SEAL = Object.freeze({
   sourceSha256:
-    "a95f61b055d4e214d1e0245b1b87f417a06ddbd1fb10a6f1c3e003ea2d1dbad8",
+    "83c6568bca079f1148feb92ee2b2ecc87f72cfc0d2466ac4838b58cec6bb2714",
   schemaSha256:
     "55a0586830ce1f116f246261f14a4ff0d7cee1b0a3a16f162309940f8aab94f2",
   preflightSha256:
-    "e0418dee9dff8ce13506219f70b0a99470c9ba8421f7635b873e541aa1537acc",
+    "6e1105e8b78ee030d61b9321fd51cd6bb95978d3f504ff966b5232f99bd04bba",
   rubricSha256:
     "cad1720e8ee31c153985ee98af010671d323917c0ef30c7ebd61c3832b318ae6",
   stubSha256:
     "6f2de20efc26434e87510be0e9e7dd40e035a0ae449a43ce12c1d17acab68dce",
-  sfPiCommit: "d86cdcfcfa02e419a4255291d16e56c48a5f2ade",
+  sfPiCommit: "bdbf6292f383a8b2e12cd236aafb2be9c335f463",
   hostRuntimeSha256:
-    "927c25ebee99f59ea349bcd6d5da06c9a999255e4e99d7658ee0f113da96e4f2",
+    "1e5e8167f25ce8fb440d7bf8054be44a27d67c0fa71272a5558b01204c24bd0e",
   policySha256:
     "06aa441885847cce10b5432120b535657b780726b83327cbfd170b1b455bef22",
   calBaselineReceiptSha256:
-    "59e99e7bfbc810a7b86e14a9d09cd11ec12edf3d7c1ed278d0ee5bdf4e3fc93f",
+    "29d7b1e2cf29f1e11e607d5ee4325b535684718b8c6a1953cc04ae658a309a80",
   calAdmissionSha256:
     "c5203e21a9fdad729e6cddd166f923a671654b0968f89d330992f1ca6558f680",
   calFitSha256:
@@ -50,16 +53,16 @@ export const C8_VALID_SEAL = Object.freeze({
     "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
   decisionBaseProtocolSha256:
     "f4f00541c9ce815ca17d19400488f5e4e999c87e9712b7c0ec17419068e85f9b",
-  jevRuntimeCommit: "c8d276d9a4157c7d825a0960b3e886a6d508c499",
+  jevRuntimeCommit: "b65f981696316856a9dc67244be76f679b00a575",
   runtimeCoreSha256:
     "2ee6c409a12b6a4f7b7a7d63c37d84923740e46f8732f625a65d0f39ef04bdf6",
   runtimeGuardrailSha256:
     "dd649ad57e7711c820f7d67dc25f0ce217bb9d02b317a78dc2b0b156a94b47ff",
   runtimeCalibrationSha256:
-    "45a53e0888a76ffe5ba227c530b58c3ab51ee52a744fae95b6877117738e85fb",
+    "559a0a696955d5cc58c0143c7b2a33a84ba7ce4cf92c6cfda1b79123de58247f",
   cases: 96,
   groups: 48,
-  modelPrepared: 58,
+  modelPrepared: 59,
   riskyPrepared: 21,
   preModelFallbacks: 6,
   exactBlocks: 3,
@@ -157,6 +160,8 @@ export function verifyCandidate8ValidPopulation(source, receipt) {
     receipt.host_commit !== C8_VALID_SEAL.sfPiCommit ||
     receipt.host_baseline_sha256 !== C8_VALID_SEAL.hostRuntimeSha256 ||
     receipt.model_protocol_sha256 !== C8_VALID_SEAL.promptProtocolSha256 ||
+    receipt.operation_sha256_contract !==
+      "sha256(jev canonical({toolName,input:originalOperation,cwd}))" ||
     receipt.scorer_prompt_sha256 !== C8_VALID_SEAL.promptProtocolSha256 ||
     receipt.decision_base_protocol_sha256 !==
       C8_VALID_SEAL.decisionBaseProtocolSha256 ||
@@ -185,6 +190,9 @@ export function verifyCandidate8ValidPopulation(source, receipt) {
       ids.has(row.id) ||
       row.id !== status?.id ||
       row.family !== status.family ||
+      row.group_id !== status.group_id ||
+      status.expected !== row.expected?.decision ||
+      status.operation_sha256 !== candidate8OperationSha256(row) ||
       row.fixture?.cwd !== "/workspace/c8-valid" ||
       !Array.isArray(row.fixture.facts) ||
       !row.fixture.facts.length ||
@@ -201,8 +209,6 @@ export function verifyCandidate8ValidPopulation(source, receipt) {
       ) ||
       (status.routing === "model_prepared") !==
         isHash(status.risk_input_sha256) ||
-      (status.routing === "model_prepared" &&
-        status.expected !== row.expected.decision) ||
       (row.expected.decision === "hard_block" &&
         (status.baseline_action !== "block" ||
           status.routing !== "rules_fallback"))
@@ -330,6 +336,67 @@ export function summarizeCandidate8Valid(records, providerKind) {
     gates,
     idealWarmP95Below500Ms:
       metrics.warmP95Ms !== null && metrics.warmP95Ms < 500,
+  };
+}
+
+/** Export the host result for the separate, fail-closed C8 verifier. */
+export function candidate8QualificationEvidence(reportBytes, preflightBytes) {
+  const report = JSON.parse(reportBytes);
+  const preflightJson = preflightBytes.toString("utf8");
+  if (
+    report.providerKind !== "real" ||
+    report.executionSurface !== "sf_guardrail_bridge_shadow" ||
+    report.source?.valid !== C8_VALID_SEAL.sourceSha256 ||
+    report.source?.preflight !== C8_VALID_SEAL.preflightSha256 ||
+    report.source?.sfPiCommit !== C8_VALID_SEAL.sfPiCommit ||
+    !report.source?.model ||
+    !Array.isArray(report.records) ||
+    report.records.length !== C8_VALID_SEAL.cases ||
+    sha(preflightBytes) !== C8_VALID_SEAL.preflightSha256 ||
+    report.elapsedBasis !== "host_total_including_preparation_queue"
+  )
+    throw new Error(
+      "Only a complete, source-pinned real VALID host report can export evidence",
+    );
+  return {
+    split: "validation",
+    corpusSha256: C8_VALID_SEAL.sourceSha256,
+    hostReportSha256: sha(reportBytes),
+    preflightJson,
+    preflightSha256: C8_VALID_SEAL.preflightSha256,
+    elapsedBasis: "host_total_including_preparation_queue",
+    records: report.records.map((row) => ({
+      id: row.id,
+      groupId: row.groupId,
+      family: row.family,
+      expected: row.expected,
+      baseline: row.baseline,
+      actual: row.actual,
+      modelEligible: row.modelEligible,
+      modelAnswered: row.modelAnswered,
+      modelCalls: row.modelCalls,
+      policyFloor: row.policyFloor,
+      operationSha256: row.operationSha256,
+      inputSha256: row.inputSha256,
+      elapsedMs: row.elapsedMs,
+      source: row.source,
+      ...(row.source === "jev"
+        ? {
+            prediction: row.prediction,
+            allowScore: row.allowScore,
+            modelSha256: row.comparison?.modelSha256,
+            protocolSha256: row.comparison?.protocolSha256,
+            calibrationSha256: row.comparison?.calibrationSha256,
+            minimumAllowScore: row.comparison?.minimumAllowScore,
+            policySha256: row.effectivePolicySha256,
+          }
+        : row.source === "rules_fallback"
+          ? {
+              fallbackReason:
+                row.fallbackReason ?? row.error ?? row.comparison?.reason,
+            }
+          : {}),
+    })),
   };
 }
 
@@ -669,6 +736,7 @@ async function main() {
       executionSurface: "sf_guardrail_bridge_shadow",
       externalOperationsExecuted: 0,
       mockedHostFacts: true,
+      elapsedBasis: "host_total_including_preparation_queue",
       coldInitializationMs: result.coldInitializationMs,
       source: {
         ...sources.hashes,
@@ -689,11 +757,22 @@ async function main() {
         "Cold model initialization is separate from warm full-path risk latency.",
       ],
     };
-    await writeFile(
-      resolve(outputDir, "report.json"),
-      `${JSON.stringify(report, null, 2)}\n`,
-      { flag: "wx", mode: 0o600 },
-    );
+    const reportBytes = Buffer.from(`${JSON.stringify(report, null, 2)}\n`);
+    await writeFile(resolve(outputDir, "report.json"), reportBytes, {
+      flag: "wx",
+      mode: 0o600,
+    });
+    if (!fake) {
+      const evidence = candidate8QualificationEvidence(
+        reportBytes,
+        sources.bytes.preflight,
+      );
+      await writeFile(
+        resolve(outputDir, "qualification-evidence.json"),
+        `${JSON.stringify(evidence, null, 2)}\n`,
+        { flag: "wx", mode: 0o600 },
+      );
+    }
     console.log(
       JSON.stringify({
         output: resolve(outputDir, "report.json"),

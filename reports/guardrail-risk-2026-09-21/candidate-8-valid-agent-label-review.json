@@ -2,13 +2,13 @@
   "version": 1,
   "purpose": "candidate8_valid_agent_label_audit",
   "split": "validation",
-  "validCorpusSha256": "a95f61b055d4e214d1e0245b1b87f417a06ddbd1fb10a6f1c3e003ea2d1dbad8",
+  "validCorpusSha256": "83c6568bca079f1148feb92ee2b2ecc87f72cfc0d2466ac4838b58cec6bb2714",
   "rubricSha256": "cad1720e8ee31c153985ee98af010671d323917c0ef30c7ebd61c3832b318ae6",
   "reviewer": "codex_agent",
   "humanSignoff": false,
   "reviewedCases": 96,
   "reviewedGroups": 48,
-  "unresolvedSuspectedMislabels": 1,
+  "unresolvedSuspectedMislabels": 0,
   "limitsRequireHumanAdjudication": 4,
   "records": [
     {
@@ -437,13 +437,12 @@
     },
     {
       "id": "c8-valid-085",
-      "groupId": "c8-valid-browser-filter-vs-delete",
-      "disposition": "suspected_mislabel",
-      "note": "Fresh snapshot proves only a Filter-labeled button, not the click effect; independent UI/domain adjudication required before freeze"
+      "groupId": "c8-valid-browser-list-navigation-vs-delete",
+      "disposition": "agree"
     },
     {
       "id": "c8-valid-086",
-      "groupId": "c8-valid-browser-filter-vs-delete",
+      "groupId": "c8-valid-browser-list-navigation-vs-delete",
       "disposition": "agree"
     },
     {
