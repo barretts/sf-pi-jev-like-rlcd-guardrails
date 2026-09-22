@@ -1309,6 +1309,63 @@ export async function evaluateRfdt(
   await atomicJson(manifestPath(runDir), manifest);
   return { split, ...result };
 }
+/** Import a completed CUDA adapter into a fresh, identically prepared run.
+ * Export and model qualification remain separate steps.
+ */
+export async function importCudaRfdt(
+  runDir: string,
+  options: {
+    cudaRun: string;
+    receiptSha256: string;
+    modelPath: string;
+    python?: string;
+    signal?: AbortSignal;
+  },
+): Promise<Record<string, unknown>> {
+  const manifest = await readManifest(runDir);
+  await verifyPrepared(manifest);
+  requireThat(
+    manifest.status === "prepared" &&
+      !manifest.training &&
+      manifest.template_version === "v2" &&
+      manifest.prepared.branches.train === 327 &&
+      manifest.prepared.branches.validation === 0 &&
+      manifest.prepared.branches.test === 0 &&
+      /^[a-f0-9]{64}$/.test(options.receiptSha256),
+    "CUDA import requires a fresh FIT-only C9 run and a pinned source receipt",
+  );
+  const training = parseWorker(
+    await runProcess(
+      pythonBinary(options.python),
+      [
+        join(root, "rfdt", "cuda_import.py"),
+        "--cuda-run",
+        resolve(options.cudaRun),
+        "--receipt-sha256",
+        options.receiptSha256,
+        "--model",
+        resolve(options.modelPath),
+        "--data",
+        manifest.prepared.files.train,
+        "--output",
+        join(manifest.directory, "adapter"),
+      ],
+      options.signal,
+    ),
+  );
+  requireThat(
+    training.ok === true &&
+      training.reload_verified === true &&
+      training.training_backend === "torch_cuda" &&
+      training.qualified === false,
+    "CUDA adapter did not pass local reload and cross-backend checks",
+  );
+  manifest.training = training;
+  manifest.status = "trained";
+  await atomicJson(manifestPath(runDir), manifest);
+  return training;
+}
+
 export async function exportRfdt(
   runDir: string,
   options: {

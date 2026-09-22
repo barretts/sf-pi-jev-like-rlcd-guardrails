@@ -17,6 +17,7 @@ import {
   evaluateRfdt,
   normalizeRfdtTarget,
   prepareRfdt,
+  importCudaRfdt,
   labelRfdt,
   validateRfdtExample,
   type RfdtExample,
@@ -769,6 +770,16 @@ describe("RFDT native preparation", () => {
       target_provenance: { route: { source: "supplied" } },
     });
     expect(disposed).toBe(false);
+    await expect(
+      importCudaRfdt(run, {
+        cudaRun: join(dir, "other-session"),
+        receiptSha256: "a".repeat(64),
+        modelPath: join(dir, "base"),
+      }),
+    ).rejects.toThrow(/fresh FIT-only C9 run/);
+    expect(
+      JSON.parse(await readFile(join(run, "manifest.json"), "utf8")).status,
+    ).toBe("prepared");
     await expect(
       prepareRfdt(input, { outputDir: run, backend }),
     ).rejects.toThrow(/already has a manifest/);

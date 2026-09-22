@@ -27,6 +27,7 @@ export const cliHelp = `Jev local classifier and training workflow
   jev rfdt prepare --input JSONL [--output-dir DIRECTORY] [--template v2]
   jev rfdt label --input JSONL --output JSONL --teacher-url URL --teacher-model MODEL_ID
   jev rfdt train --run DIRECTORY [--steps 8] [--model-path DIRECTORY]
+  jev rfdt import-cuda --run DIRECTORY --cuda-run DIRECTORY --receipt-sha256 SHA256 --model-path DIRECTORY
   jev rfdt evaluate --run DIRECTORY [--split validation|test] [--model-path DIRECTORY]
   jev rfdt export --run DIRECTORY [--model MODEL_ID] [--output FILE] [--model-path DIRECTORY]
   jev rfdt approve --run DIRECTORY [--registry FILE]
@@ -85,6 +86,8 @@ export async function runCli(
       output: { type: "string" },
       "output-dir": { type: "string" },
       run: { type: "string" },
+      "cuda-run": { type: "string" },
+      "receipt-sha256": { type: "string" },
       steps: { type: "string" },
       split: { type: "string" },
       "model-path": { type: "string" },
@@ -312,6 +315,16 @@ export async function runCli(
           await rfdt.trainRfdt(required(values, "run"), {
             ...common,
             steps: values.steps ? positive(values.steps, "steps") : undefined,
+          }),
+          values.output,
+        );
+      else if (action === "import-cuda")
+        await output(
+          await rfdt.importCudaRfdt(required(values, "run"), {
+            ...common,
+            modelPath: required(values, "model-path"),
+            cudaRun: required(values, "cuda-run"),
+            receiptSha256: required(values, "receipt-sha256"),
           }),
           values.output,
         );

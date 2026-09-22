@@ -22,6 +22,8 @@
     "dist",
     "native",
     "rfdt/worker.py",
+    "rfdt/cuda_worker.py",
+    "rfdt/cuda_import.py",
     "rfdt/requirements.txt",
     "rfdt/requirements.lock",
     "routing/feature_worker.py",
