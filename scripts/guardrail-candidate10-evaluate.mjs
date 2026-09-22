@@ -106,24 +106,78 @@ const requiredRuntime = [
   "scripts/guardrail-v3-research-detect-stub.mjs",
 ];
 export { requiredRuntime as C10_EVALUATION_RUNTIME_FILES };
+export const C11_CAMPAIGN_SHA256 =
+  "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd";
+export const C11_SOURCE_RUNTIME = Object.freeze({
+  "rfdt/c11_cuda_campaign.py":
+    "b840cb0097d47418bb0f050572b3e1f74c335867c0ff7602f09c2933771b90c4",
+  "rfdt/c11_fit_sampler.py":
+    "846b022a3d624a8104fb9908c5f66e10eb53a9cdd2014f09b0b277e406370b03",
+  "rfdt/cuda_worker.py":
+    "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+  "rfdt/worker.py":
+    "24d608084f09763033e8fbf9b2a5ac01c31a1e18281e1c53b5cd1d2dd5de56ff",
+  "rfdt/gemma3_fp32.py":
+    "ce62f5b1928d981c3276776f9100f10f252f3904337774be63a74347b46a5256",
+  "rfdt/cuda_memory_monitor.py":
+    "f6b0ef11392451e053bcebf0c4a8b10e7e340cb67c46c1f1bbcaac07154949b4",
+  "rfdt/cuda_campaign_launch.py":
+    "05c23f68e40d7f112146591cf9926c18cc732dbe622f64ac3d3cad5aae0a348f",
+  "rfdt/cuda_import.py":
+    "58d1489997e144eb32d8379c6df35a6a10ec44d8f470944b1bb23b188aacb407",
+  "fixtures/guardrail/candidate9/objective-plan-B.json":
+    "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+});
+export const C11_EVALUATION_RUNTIME_FILES = Object.freeze([
+  ...new Set([
+    ...requiredRuntime,
+    ...Object.keys(C11_SOURCE_RUNTIME),
+    "scripts/guardrail-candidate10-manifest.mjs",
+    "scripts/guardrail-candidate10-q8.mjs",
+    "scripts/guardrail-candidate11-manifest.mjs",
+    "scripts/guardrail-candidate11-evaluate.mjs",
+    "scripts/guardrail-candidate11-diagnostic-valid.mjs",
+    "scripts/guardrail-candidate11-q8.mjs",
+    "scripts/guardrail-cuda-export-check.mjs",
+    "scripts/guardrail-candidate9-quantizer-libraries.mjs",
+  ]),
+]);
 const fail = (message) => {
   throw new Error(`C10 evaluation: ${message}`);
 };
 export function validateC10Manifest(manifest) {
+  return validateManifest(manifest, false);
+}
+export function validateC11Manifest(manifest) {
+  return validateManifest(manifest, true);
+}
+function validateManifest(manifest, candidate11) {
   if (
     manifest?.version !== 1 ||
-    manifest.purpose !== "candidate10_native_evaluation" ||
+    manifest.purpose !==
+      (candidate11
+        ? "candidate11_native_evaluation"
+        : "candidate10_native_evaluation") ||
     ![128, 256, 512, 1024].includes(manifest.checkpoint) ||
     !["f16", "q8_0"].includes(manifest.format) ||
     !/^jev\/[A-Za-z0-9._-]+$/.test(manifest.modelId ?? "") ||
     !isAbsolute(manifest.sfPi ?? "") ||
     !isAbsolute(manifest.sfDeps ?? "") ||
-    requiredFiles.some(
+    (candidate11
+      ? [...requiredFiles, "sourceLaunch", "sourceSnapshot", "registryQ8"]
+      : requiredFiles
+    ).some(
       (name) =>
         !isAbsolute(manifest.files?.[name]?.path ?? "") ||
         !hex(manifest.files[name].sha256),
     ) ||
-    requiredRuntime.some((name) => !hex(manifest.runtime?.[name])) ||
+    (candidate11 ? C11_EVALUATION_RUNTIME_FILES : requiredRuntime).some(
+      (name) => !hex(manifest.runtime?.[name]),
+    ) ||
+    (candidate11 &&
+      Object.entries(C11_SOURCE_RUNTIME).some(
+        ([name, digest]) => manifest.runtime?.[name] !== digest,
+      )) ||
     Object.keys(manifest.runtime ?? {}).some(
       (name) => isAbsolute(name) || name.split("/").includes(".."),
     ) ||
@@ -132,12 +186,16 @@ export function validateC10Manifest(manifest) {
         manifest.valid?.[name]?.sha256 !== digest ||
         !isAbsolute(manifest.valid[name].path ?? ""),
     ) ||
-    manifest.files.campaign.sha256 !== C10_CAMPAIGN_SHA256 ||
+    manifest.files.campaign.sha256 !==
+      (candidate11 ? C11_CAMPAIGN_SHA256 : C10_CAMPAIGN_SHA256) ||
     manifest.files.admission.sha256 !== C9_CAL_SOURCE_PINS.admissionSha256 ||
     manifest.files.fit.sha256 !== fitSha ||
     manifest.files.cal.sha256 !== calSha ||
     manifest.files.baseline.sha256 !== baselineSha ||
-    manifest.files.baselineFreeze.sha256 !== C10_HOST.freezeSha256
+    manifest.files.baselineFreeze.sha256 !== C10_HOST.freezeSha256 ||
+    (candidate11 &&
+      manifest.files.quantizerBinary.sha256 !==
+        "e2c48c541efe39436f0edbbbfe0e65c9185e1bb1d6295fcfb28ebc38c1e77985")
   )
     fail(
       "incomplete frozen campaign, runtime, source, artifact, or VALID manifest pins",
@@ -462,21 +520,291 @@ export function c10ValidationDecision(selection, diagnosticValid = false) {
         candidateAdmission: selection.accepted === true,
       };
 }
+export function verifyC11Checkpoint({
+  campaign,
+  run,
+  imported,
+  receipt,
+  runtime,
+  checkpoint,
+  originalObjective,
+  launch,
+  snapshot,
+  receiptSha256,
+  requireSourceProvenance = false,
+}) {
+  if (
+    requireSourceProvenance &&
+    (!launch ||
+      typeof launch !== "object" ||
+      Array.isArray(launch) ||
+      !snapshot ||
+      typeof snapshot !== "object" ||
+      Array.isArray(snapshot))
+  )
+    fail("C11 historical launch and snapshot provenance missing or changed");
+  const source = receipt?.source;
+  const training = { ...run.training };
+  delete training.fusion;
+  const precision = {
+    base: "float32",
+    lora: "float32",
+    attention: "eager",
+    tf32: false,
+  };
+  const code = Object.fromEntries(
+    [
+      "c11_cuda_campaign.py",
+      "c11_fit_sampler.py",
+      "cuda_worker.py",
+      "worker.py",
+      "gemma3_fp32.py",
+      "cuda_memory_monitor.py",
+    ].map((name) => [name, runtime[`rfdt/${name}`]]),
+  );
+  const originalPin =
+    runtime["fixtures/guardrail/candidate9/objective-plan-B.json"];
+  if (
+    Object.entries(C11_SOURCE_RUNTIME).some(
+      ([name, digest]) => runtime[name] !== digest,
+    ) ||
+    ![128, 256, 512, 1024].includes(checkpoint) ||
+    receipt.mode !== "train" ||
+    receipt.qualified !== false ||
+    receipt.adapter_changed !== true ||
+    receipt.steps !== checkpoint ||
+    receipt.checkpoint_step !== checkpoint ||
+    source?.experiment !== "candidate11" ||
+    source.mode !== "train" ||
+    source.steps !== checkpoint ||
+    source.checkpoint_step !== checkpoint ||
+    source.campaign_steps !== 1024 ||
+    source.campaign_sha256 !== C11_CAMPAIGN_SHA256 ||
+    canonical(source.campaign) !== canonical(campaign) ||
+    source.initialization !== campaign.initialization ||
+    source.initialization !==
+      "original_google_gemma_base_fresh_lora_empty_optimizer" ||
+    source.sampler_source_sha256 !== code["c11_fit_sampler.py"] ||
+    canonical(source.source_objective_plan) !== canonical(originalObjective) ||
+    canonical(source.objective) !==
+      canonical({
+        ...originalObjective,
+        purpose: "candidate11_train_only",
+        sampler: campaign.sampler,
+        steps: 1024,
+      }) ||
+    source.inputs?.train !== preparedSha ||
+    source.inputs?.plan !== originalPin ||
+    source.inputs?.pairs !== campaign.pair_manifest_sha256 ||
+    source.inputs?.families !== campaign.family_manifest_sha256 ||
+    canonical(source.inputs?.base) !==
+      canonical({
+        "model.safetensors":
+          "3d4ef8d71c14db7e448a09ebe891cfb6bf32c57a9b44499ae0d1c098e48516b6",
+        "config.json":
+          "19cb5d28c97778271ba2b3c3df47bf76bdd6706724777a2318b3522230afe91e",
+        "tokenizer.json":
+          "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795",
+      }) ||
+    source.source_sha256 !== code["c11_cuda_campaign.py"] ||
+    source.contract_sha256 !== code["worker.py"] ||
+    source.objective_worker_sha256 !== code["cuda_worker.py"] ||
+    canonical(source.precision) !== canonical(precision) ||
+    canonical(campaign.precision) !== canonical(precision) ||
+    canonical(campaign.source_sha256) !==
+      canonical({
+        "worker.py": code["worker.py"],
+        "cuda_worker.py": code["cuda_worker.py"],
+        "c11_fit_sampler.py": code["c11_fit_sampler.py"],
+      }) ||
+    run.status !== "exported" ||
+    run.base_model !== "google/gemma-3-1b-it" ||
+    run.template_version !== "v2" ||
+    imported.ok !== true ||
+    imported.reload_verified !== true ||
+    imported.adapter_changed !== true ||
+    imported.qualified !== false ||
+    imported.training_backend !== "torch_cuda" ||
+    imported.cuda_campaign_sha256 !== C11_CAMPAIGN_SHA256 ||
+    imported.checkpoint_step !== checkpoint ||
+    canonical(imported.local_precision) !== canonical(precision) ||
+    imported.local_architecture?.helper_sha256 !== code["gemma3_fp32.py"] ||
+    canonical(imported.cuda_source) !== canonical(receipt) ||
+    canonical(training) !== canonical(imported)
+  )
+    fail(
+      "C11 checkpoint, fresh initialization, sampler, objective, or import/source identity changed",
+    );
+  if (
+    run.training.fusion?.fused !== true ||
+    run.training.fusion.fusion_dtype !== "float32" ||
+    run.training.fusion.adapter_sha256 !== receipt.adapter_sha256 ||
+    run.training.fusion.tokenizer_projection?.prompt_parity
+      ?.training_data_sha256 !== preparedSha
+  )
+    fail(
+      "C11 exported FP32 fusion is not bound to the imported adapter and prepared TRAIN",
+    );
+  const reload = receipt.saved_adapter_reload;
+  if (
+    reload?.ok !== true ||
+    reload.rows !== 327 ||
+    reload.margin_delta_limit !== 1e-5 ||
+    !Number.isFinite(reload.max_margin_delta) ||
+    reload.max_margin_delta < 0 ||
+    reload.max_margin_delta > 1e-5 ||
+    reload.adapter_sha256 !== receipt.adapter_sha256 ||
+    reload.fit_margins_sha256 !== receipt.fit_margins_sha256 ||
+    canonical(reload.precision) !== canonical(precision)
+  )
+    fail("C11 original saved-adapter reload proof changed");
+  if (
+    snapshot &&
+    (!launch ||
+      snapshot.producer_sha256 !== runtime["rfdt/cuda_campaign_launch.py"] ||
+      snapshot.checkpoint_receipt_sha256 !== receiptSha256 ||
+      snapshot.checkpoint_step !== checkpoint ||
+      snapshot.worker_pid !== launch.worker_pid ||
+      snapshot.worker_sha256 !== code["c11_cuda_campaign.py"] ||
+      snapshot.monitor_sha256 !== code["cuda_memory_monitor.py"])
+  )
+    fail(
+      "C11 snapshot is not bound to the selected receipt and historical producer",
+    );
+  if (
+    launch &&
+    (launch.purpose !== "candidate11_cuda_fit_only_campaign" ||
+      launch.mode !== "train" ||
+      launch.campaign_sha256 !== C11_CAMPAIGN_SHA256 ||
+      launch.launcher_sha256 !== runtime["rfdt/cuda_campaign_launch.py"] ||
+      canonical(launch.code_sha256) !== canonical(code) ||
+      launch.worker_sha256 !== code["c11_cuda_campaign.py"] ||
+      launch.objective_worker_sha256 !== code["cuda_worker.py"] ||
+      launch.rfdt_contract_sha256 !== code["worker.py"] ||
+      launch.watchdog_sha256 !== code["cuda_memory_monitor.py"] ||
+      launch.monitor_sha256 !== code["cuda_memory_monitor.py"] ||
+      launch.prepared_fit_sha256 !== preparedSha ||
+      launch.plan_sha256 !== originalPin ||
+      launch.qualification !== false ||
+      launch.hard_budget_bytes !== 8_000_000_000 ||
+      launch.allocator_cap_bytes !== 6_500_000_000 ||
+      launch.stop_dedicated_delta_bytes !== 7_500_000_000 ||
+      launch.shared_growth_limit_bytes !== 128_000_000 ||
+      launch.stop_total_dedicated_bytes !== 16_000_000_000)
+  )
+    fail(
+      "C11 historical launch producer, code, or memory stop identity changed",
+    );
+}
+export function c11Q8SourceIdentity(run, imported, runtime) {
+  return {
+    checkpoint: imported.checkpoint_step,
+    runId: run.id,
+    receiptSha256: imported.cuda_receipt_sha256,
+    campaignSha256: imported.cuda_campaign_sha256,
+    source: imported.cuda_source.source,
+    localArchitecture: imported.local_architecture,
+    runtime: Object.fromEntries(
+      Object.keys(C11_SOURCE_RUNTIME).map((name) => [name, runtime[name]]),
+    ),
+  };
+}
+export function verifyC11PrecisionAttempt(proof, modelSha, nativeSha) {
+  if (
+    proof?.purpose !== "cuda_export_fit_precision_check_only" ||
+    proof.qualified !== false ||
+    proof.admitted !== 327 ||
+    proof.modelSha256 !== modelSha ||
+    proof.nativeBinarySha256 !== nativeSha ||
+    !Array.isArray(proof.records) ||
+    proof.answered !== proof.records.length ||
+    proof.records.length > 327 ||
+    new Set(proof.records.map((row) => row.sourceId)).size !==
+      proof.records.length ||
+    proof.records.some(
+      (row) =>
+        typeof row.sourceId !== "string" ||
+        !row.sourceId ||
+        !Number.isFinite(row.margin) ||
+        !Number.isFinite(row.referenceMargin),
+    ) ||
+    typeof proof.ok !== "boolean" ||
+    (proof.failure !== null && typeof proof.failure !== "string") ||
+    proof.maxProbabilityDeltaLimit !== 0.05 ||
+    proof.decisiveMargin !== 0.5
+  )
+    fail(
+      "C11 retained precision attempt provenance or margin inventory changed",
+    );
+  const probability = (margin) => 1 / (1 + Math.exp(-margin));
+  const maximum = proof.records.length
+    ? Math.max(
+        ...proof.records.map((row) =>
+          Math.abs(probability(row.margin) - probability(row.referenceMargin)),
+        ),
+      )
+    : null;
+  const flips = proof.records.filter(
+    (row) =>
+      Math.abs(row.referenceMargin) >= 0.5 &&
+      row.referenceMargin * row.margin <= 0,
+  ).length;
+  if (
+    proof.decisiveSignFlips !== flips ||
+    (maximum === null
+      ? proof.maxProbabilityDelta !== null
+      : !Number.isFinite(proof.maxProbabilityDelta) ||
+        Math.abs(proof.maxProbabilityDelta - maximum) > 1e-12) ||
+    proof.ok !==
+      (!proof.failure &&
+        proof.records.length === 327 &&
+        maximum <= 0.05 &&
+        flips === 0)
+  )
+    fail("C11 retained precision attempt aggregates changed");
+}
 export async function evaluateC10(manifest, outputDir) {
-  return evaluateC10Run(manifest, outputDir, false);
+  return evaluateRun(manifest, outputDir, false, false);
 }
 /** Explicit functionality benchmark; never grants candidate admission or enforcement. */
 export async function evaluateC10Diagnostic(manifest, outputDir) {
-  return evaluateC10Run(manifest, outputDir, true);
+  return evaluateRun(manifest, outputDir, true, false);
 }
-async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
-  validateC10Manifest(manifest);
+export async function evaluateC11(manifest, outputDir, dependencies) {
+  return evaluateRun(manifest, outputDir, false, true, dependencies);
+}
+export async function evaluateC11Diagnostic(manifest, outputDir, dependencies) {
+  return evaluateRun(manifest, outputDir, true, true, dependencies);
+}
+async function evaluateRun(
+  manifest,
+  outputDir,
+  diagnosticValid,
+  candidate11,
+  dependencies,
+) {
+  (candidate11 ? validateC11Manifest : validateC10Manifest)(manifest);
+  const candidate = candidate11 ? "candidate11" : "candidate10";
+  const campaignSha256 = candidate11
+    ? C11_CAMPAIGN_SHA256
+    : C10_CAMPAIGN_SHA256;
+  const api = {
+    json,
+    pinned,
+    capture,
+    backendModule,
+    verifyArtifact,
+    verifyTrainedArtifactExport,
+    verifyQuantizerRuntime,
+    runCandidate8HostRows,
+    ...dependencies,
+  };
   await mkdir(outputDir, { recursive: false });
   const report = {
     version: 1,
     purpose: diagnosticValid
-      ? "candidate10_diagnostic_valid_benchmark"
-      : "candidate10_native_evaluation",
+      ? `${candidate}_diagnostic_valid_benchmark`
+      : `${candidate}_native_evaluation`,
     qualified: false,
     ...(diagnosticValid
       ? {
@@ -494,7 +822,7 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
     failures: [],
   };
   try {
-    const freeze = await json(manifest.files.baselineFreeze);
+    const freeze = await api.json(manifest.files.baselineFreeze);
     if (
       freeze.purpose !== "candidate10_prospective_baseline_freeze" ||
       freeze.host?.commit !== C10_HOST.commit ||
@@ -504,16 +832,41 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
       freeze.equivalence?.validation?.differingCases !== 0
     )
       fail("prospective baseline freeze changed");
-    const before = await capture(manifest);
-    const campaign = await json(manifest.files.campaign);
-    const run = await json(manifest.files.runManifest);
-    const imported = await json(manifest.files.importReport);
+    const before = await api.capture(manifest);
+    const campaign = await api.json(manifest.files.campaign);
+    const run = await api.json(manifest.files.runManifest);
+    const imported = await api.json(manifest.files.importReport);
     report.localArchitecture = await verifyC10LocalArchitecture(
       imported,
       manifest.runtime,
     );
-    const local = await json(manifest.files.localPrecision);
-    const sourceReceipt = await json(manifest.files.sourceReceipt);
+    const local = await api.json(manifest.files.localPrecision);
+    const sourceReceipt = await api.json(manifest.files.sourceReceipt);
+    if (candidate11) {
+      verifyC10PreparedInputs(run, before.preparedTrain);
+      verifyC11Checkpoint({
+        campaign,
+        run,
+        imported,
+        receipt: sourceReceipt,
+        runtime: manifest.runtime,
+        checkpoint: manifest.checkpoint,
+        launch: await api.json(manifest.files.sourceLaunch),
+        snapshot: await api.json(manifest.files.sourceSnapshot),
+        receiptSha256: manifest.files.sourceReceipt.sha256,
+        requireSourceProvenance: true,
+        originalObjective: await api.json({
+          path: resolve(
+            root,
+            "fixtures/guardrail/candidate9/objective-plan-B.json",
+          ),
+          sha256:
+            manifest.runtime[
+              "fixtures/guardrail/candidate9/objective-plan-B.json"
+            ],
+        }),
+      });
+    }
     if (
       canonical(sourceReceipt) !== canonical(imported.cuda_source) ||
       imported.cuda_receipt_sha256 !== manifest.files.sourceReceipt.sha256 ||
@@ -547,7 +900,7 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
       run.prepared?.branches?.train !== 327 ||
       run.prepared?.branches?.validation !== 0 ||
       run.prepared?.branches?.test !== 0 ||
-      imported.cuda_campaign_sha256 !== C10_CAMPAIGN_SHA256 ||
+      imported.cuda_campaign_sha256 !== campaignSha256 ||
       imported.checkpoint_step !== manifest.checkpoint ||
       imported.local_precision?.base !== "float32" ||
       imported.local_precision?.attention !== "eager" ||
@@ -566,14 +919,20 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
       local.decisive_sign_flips !== 0
     )
       fail("complete FP32 CUDA checkpoint/import/equivalence proof required");
-    const f16 = await json(manifest.files.precisionF16);
-    const q8 = await json(manifest.files.precisionQ8);
+    const f16 = await api.json(manifest.files.precisionF16);
+    const q8 = await api.json(manifest.files.precisionQ8);
     report.precisionChecks = { f16, q8_0: q8 };
     report.precisionOutcomes = {};
     for (const [format, proof, modelSha] of [
       ["f16", f16, manifest.files.modelF16.sha256],
       ["q8_0", q8, manifest.files.modelQ8.sha256],
     ]) {
+      if (candidate11)
+        verifyC11PrecisionAttempt(
+          proof,
+          modelSha,
+          manifest.files.nativeBinary.sha256,
+        );
       if (
         proof.modelSha256 !== modelSha ||
         proof.nativeBinarySha256 !== manifest.files.nativeBinary.sha256 ||
@@ -592,8 +951,42 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
     }
     if (!report.precisionOutcomes[manifest.format].passed)
       fail("selected export failed its FIT precision check");
-    const quantization = await json(manifest.files.quantizationManifest);
+    const quantization = await api.json(manifest.files.quantizationManifest);
+    const descriptor = await api.json(manifest.files.artifact);
+    if (candidate11) {
+      const q8Artifact = await api.verifyArtifact(
+        manifest.files.modelQ8.path,
+        "classifier",
+        quantization.output?.modelId,
+        { registryPath: manifest.files.registryQ8.path },
+      );
+      if (
+        quantization.output?.registrySha256 !==
+          manifest.files.registryQ8.sha256 ||
+        quantization.sourceWeights?.id !== descriptor.id ||
+        quantization.sourceWeights?.training_run !== run.id ||
+        quantization.sourceWeights?.base_model !== "google/gemma-3-1b-it" ||
+        quantization.sourceWeights?.template_version !== "v2" ||
+        quantization.output?.id !== descriptor.id + "-q8" ||
+        quantization.output?.modelId !== quantization.output.id ||
+        quantization.output?.training_run !== run.id ||
+        quantization.output?.base_model !== "google/gemma-3-1b-it" ||
+        quantization.output?.template_version !== "v2" ||
+        q8Artifact.training_run !== run.id ||
+        q8Artifact.base_model !== "google/gemma-3-1b-it" ||
+        q8Artifact.template_version !== "v2" ||
+        q8Artifact.sha256 !== manifest.files.modelQ8.sha256
+      )
+        fail(
+          "C11 retained Q8 registry, lineage, model, or training provenance changed",
+        );
+    }
     if (
+      (candidate11 &&
+        (quantization.purpose !== "candidate11_fit_only_q8_derivation" ||
+          quantization.qualified !== false ||
+          canonical(quantization.sourceCheckpoint) !==
+            canonical(c11Q8SourceIdentity(run, imported, manifest.runtime)))) ||
       quantization.qualification !== false ||
       quantization.sourceWeights?.sha256 !== manifest.files.modelF16.sha256 ||
       resolve(quantization.sourceWeights?.file ?? "") !==
@@ -610,25 +1003,26 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
         manifest.files.quantizerBinary.sha256
     )
       fail("Q8 same-weight quantization provenance incomplete");
-    await verifyQuantizerRuntime(
+    await api.verifyQuantizerRuntime(
       manifest.files.quantizerBinary.path,
       quantization.quantizer.runtimeLibraries,
       quantization.quantizer.runtimeLibraryLinks,
     );
-    const localMarginsBytes = await pinned(manifest.files.localFitMargins);
+    const localMarginsBytes = await api.pinned(manifest.files.localFitMargins);
     if (sha(localMarginsBytes) !== imported.local_fit_margins_sha256)
       fail("local FIT reference changed");
+    const localRows = localMarginsBytes
+      .toString()
+      .trim()
+      .split("\n")
+      .map((line) => {
+        const row = JSON.parse(line);
+        return row;
+      });
     const localMargins = new Map(
-      localMarginsBytes
-        .toString()
-        .trim()
-        .split("\n")
-        .map((line) => {
-          const row = JSON.parse(line);
-          return [row.source_id, row.margin];
-        }),
+      localRows.map((row) => [row.source_id, row.margin]),
     );
-    const sourceRows = (await pinned(manifest.files.sourceFitMargins))
+    const sourceRows = (await api.pinned(manifest.files.sourceFitMargins))
       .toString()
       .trim()
       .split("\n")
@@ -641,6 +1035,7 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
         ? 1 / (1 + Math.exp(-margin))
         : Math.exp(margin) / (1 + Math.exp(margin));
     if (
+      (candidate11 && localRows.length !== 327) ||
       sourceRows.length !== 327 ||
       sourceMargins.size !== 327 ||
       localMargins.size !== 327 ||
@@ -677,15 +1072,14 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
     const precision = manifest.format === "f16" ? f16 : q8;
     if (precision.modelSha256 !== manifest.files.model.sha256)
       fail("selected precision proof belongs to another model");
-    const artifact = await verifyArtifact(
+    const artifact = await api.verifyArtifact(
       manifest.files.model.path,
       "classifier",
       manifest.modelId,
       { registryPath: manifest.files.registry.path },
     );
-    const descriptor = await json(manifest.files.artifact);
     assertC10ArtifactPaths(descriptor, manifest.files);
-    const exported = await verifyTrainedArtifactExport(descriptor);
+    const exported = await api.verifyTrainedArtifactExport(descriptor);
     if (
       artifact.training_run !== run.id ||
       exported.training_run !== run.id ||
@@ -694,12 +1088,12 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
       exported.sha256 !== f16.modelSha256
     )
       fail("model not bound to admitted trained export");
-    const fit = (await pinned(manifest.files.fit))
+    const fit = (await api.pinned(manifest.files.fit))
       .toString()
       .trim()
       .split("\n")
       .map(JSON.parse);
-    const rows = (await pinned(manifest.files.cal))
+    const rows = (await api.pinned(manifest.files.cal))
       .toString()
       .trim()
       .split("\n")
@@ -713,7 +1107,7 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
     )
       fail("FIT/CAL inventory changed");
     const prepared = prepareCandidate9CalibrationRows(rows, groups);
-    const config = backendModule.configFromEnv({
+    const config = api.backendModule.configFromEnv({
       JEV_DEVICE: "metal",
       JEV_MODEL_ID: artifact.id,
       JEV_MODEL_FILE: manifest.files.model.path,
@@ -725,8 +1119,8 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
       queueTimeoutMs: 750,
       requestTimeoutMs: 750,
     });
-    const native = new backendModule.NativeBackend(config);
-    const classifier = new backendModule.Classifier(config, native);
+    const native = new api.backendModule.NativeBackend(config);
+    const classifier = new api.backendModule.Classifier(config, native);
     const records = [];
     try {
       const started = performance.now();
@@ -779,22 +1173,22 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
     }
     const calibration = {
       version: 1,
-      purpose: "candidate10_train_calibration_only",
+      purpose: `${candidate}_train_calibration_only`,
       qualified: false,
       elapsedBasis:
         "direct_jev_risk_check_including_prompt_preparation_and_queue",
       modelSha256: artifact.sha256,
       nativeBinarySha256: manifest.files.nativeBinary.sha256,
-      campaignSha256: C10_CAMPAIGN_SHA256,
+      campaignSha256: campaignSha256,
       checkpoint: manifest.checkpoint,
       records,
     };
     report.calibration = calibration;
     report.selection = selectC10Cutoff(
       records,
-      await json(manifest.files.baseline),
+      await api.json(manifest.files.baseline),
     );
-    if (canonical(before) !== canonical(await capture(manifest)))
+    if (canonical(before) !== canonical(await api.capture(manifest)))
       fail("identity changed during CAL");
     await writeFile(
       resolve(outputDir, "calibration.json"),
@@ -808,9 +1202,9 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
     }
     // Formal admission still requires accepted CAL. The separately named diagnostic
     // API explicitly benchmarks fixed .5 outcomes without granting admission.
-    const validSource = await json(manifest.valid.source);
-    const validManifest = await json(manifest.valid.manifest);
-    const preflight = await json(manifest.valid.preflight);
+    const validSource = await api.json(manifest.valid.source);
+    const validManifest = await api.json(manifest.valid.manifest);
+    const preflight = await api.json(manifest.valid.preflight);
     const byId = verifyCandidate10ValidPopulation(
       validSource,
       validManifest,
@@ -841,10 +1235,10 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
         canonical({
           version: 1,
           purpose: diagnosticValid
-            ? "candidate10_fixed_cutoff_diagnostic_scoring"
-            : "candidate10_frozen_selected_token_scoring",
+            ? `${candidate}_fixed_cutoff_diagnostic_scoring`
+            : `${candidate}_frozen_selected_token_scoring`,
           promptProtocolSha256: guardrail.GUARDRAIL_PROTOCOL_SHA256,
-          campaignSha256: C10_CAMPAIGN_SHA256,
+          campaignSha256: campaignSha256,
           checkpoint: manifest.checkpoint,
           modelSha256: artifact.sha256,
           nativeBinarySha256: manifest.files.nativeBinary.sha256,
@@ -856,7 +1250,7 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
       minimumAllowScore: decision.minimumAllowScore,
       expectedPrepared: 116,
     };
-    const replay = await runCandidate8HostRows({
+    const replay = await api.runCandidate8HostRows({
       rows: validSource.cases,
       preflightById: byId,
       sfPi: manifest.sfPi,
@@ -871,7 +1265,7 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
       expectedPolicySha256: pins.policySha256,
       validateInput: guardrail.validateGuardrailInput,
       createProvider: createCandidate9ShadowProvider({
-        backendModule,
+        backendModule: api.backendModule,
         guardrail,
         config,
         pins,
@@ -884,8 +1278,8 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
     report.validation = {
       ...summary,
       purpose: diagnosticValid
-        ? "candidate10_unqualified_valid_diagnostic"
-        : "candidate10_prospective_valid_observation",
+        ? `${candidate}_unqualified_valid_diagnostic`
+        : `${candidate}_prospective_valid_observation`,
       ...(diagnosticValid
         ? {
             diagnosticOnly: true,
@@ -909,8 +1303,8 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
       report.validation.fullAccuracy >= 0.9;
     report.validation.gates.modelEligibleAccuracyAtLeast90 =
       report.validation.modelEligibleAccuracy >= 0.9;
-    for (const pin of Object.values(manifest.valid)) await pinned(pin);
-    if (canonical(before) !== canonical(await capture(manifest)))
+    for (const pin of Object.values(manifest.valid)) await api.pinned(pin);
+    if (canonical(before) !== canonical(await api.capture(manifest)))
       fail("identity changed during VALID");
     report.status = diagnosticValid
       ? "diagnostic_valid_complete"
@@ -930,30 +1324,61 @@ async function evaluateC10Run(manifest, outputDir, diagnosticValid) {
     );
   }
 }
-if (
-  process.argv[1] &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+export async function runC11EvaluationCli(
+  args = process.argv.slice(2),
+  diagnostic = false,
 ) {
+  return runEvaluationCli(args, true, diagnostic);
+}
+async function runEvaluationCli(args, candidate11, diagnostic = false) {
   const { values } = parseArgs({
+    args,
     options: {
       manifest: { type: "string" },
       "manifest-sha256": { type: "string" },
       output: { type: "string" },
     },
   });
-  const manifest = validateC10Manifest(
+  const manifest = (candidate11 ? validateC11Manifest : validateC10Manifest)(
     await json({ path: values.manifest, sha256: values["manifest-sha256"] }),
   );
-  const result = await evaluateC10(manifest, resolve(values.output));
+  if (!isAbsolute(values.output ?? ""))
+    fail("absolute fresh --output required");
+  const evaluate = candidate11
+    ? diagnostic
+      ? evaluateC11Diagnostic
+      : evaluateC11
+    : evaluateC10;
+  const result = await evaluate(manifest, resolve(values.output));
   console.log(
     JSON.stringify({
       status: result.status,
       qualified: false,
+      ...(diagnostic
+        ? {
+            diagnosticOnly: true,
+            enforcementEligible: false,
+            candidateAdmission: false,
+            fixedMinimumAllowScore: 0.5,
+          }
+        : {}),
       selection: result.selection,
       validation: result.validation?.metrics,
       failures: result.failures,
     }),
   );
-  if (!["valid_pass_test_and_hook_pending"].includes(result.status))
+  if (
+    result.status !==
+    (diagnostic
+      ? "diagnostic_valid_complete"
+      : "valid_pass_test_and_hook_pending")
+  )
     process.exitCode = 1;
+}
+
+if (
+  process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
+  await runEvaluationCli(process.argv.slice(2), false);
 }
