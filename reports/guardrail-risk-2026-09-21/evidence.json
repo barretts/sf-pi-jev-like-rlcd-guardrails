@@ -17,6 +17,18 @@
     "externalOperationsExecuted": 0,
     "heldOutLabelsOrRequestsInspectedByAgent": false
   },
+  "browserGuardPrototype": {
+    "checkout": "/private/tmp/agent-browser-guard-prototype",
+    "upstreamCommit": "b0f3962a131292805fe7c4e276e4bf7a50a4e876",
+    "branch": "barretts/guarded-native-input-prototype",
+    "commit": "2c855656161db587d6bdad0017249c1daaaa832b",
+    "nativeDaemonFocusedTestsPassed": 5,
+    "normalSnapshotAndCliPathImplemented": false,
+    "eventTargetRacesResolved": false,
+    "integratedIntoJevOrSfPi": false,
+    "qualifiesBrowserFamily": false,
+    "externalBrowserOrSalesforceOperationsExecuted": false
+  },
   "candidate5TrainSupplementStructuralScreen": {
     "supplementSha256": "a53936a41c035ae249ef2bda017cc36704be9e37e1ab5f7b6e8ed5e9ef849446",
     "authoredTrainRows": 40,

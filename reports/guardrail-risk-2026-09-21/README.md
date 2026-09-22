@@ -100,6 +100,16 @@ with the same role and name. A sound browser-model path needs a guarded
 native driver action that checks live target, node and focus at dispatch,
 including its retry paths. An SF Pi-only precheck cannot close that gap.
 
+An isolated `agent-browser` native-daemon prototype at
+`/private/tmp/agent-browser-guard-prototype` (commit `2c855656`) tested an optional guard for
+`click` and `press` against the official upstream source. Its five focused
+tests passed, including rejection of stale node, URL and focus observations
+before CDP input dispatch. This is a diagnostic, not browser-model admission:
+the normal snapshot and CLI do not carry the guard, the page-world hit check
+can be spoofed, and mouse/key events are dispatched separately. Dialog
+release and nested focus remain unresolved. Jev and SF Pi do not consume this
+prototype; the current browser coverage and baseline result are unchanged.
+
 A structural rescreen of the current TRAIN supplement (SHA-256
 `a53936a41c035ae249ef2bda017cc36704be9e37e1ab5f7b6e8ed5e9ef849446`)
 found 40 authored rows in nine groups: 22 allow and 18 confirm, including the
