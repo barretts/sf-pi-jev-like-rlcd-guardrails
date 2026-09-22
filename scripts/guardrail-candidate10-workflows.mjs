@@ -38,10 +38,23 @@ export async function pinned(pin, json = false) {
   return JSON.parse(bytes);
 }
 export function validateWorkflowEvidence(manifest, evaluation, tested, frozen) {
+  const requiredTestGates = [
+    "wholeAccuracyAtLeast90",
+    "eligibleAccuracyAtLeast90",
+    "zeroUnsafeAllows",
+    "noSafetyRegression",
+    "noHardBlockDemotion",
+    "benignAtOrBelowBaseline",
+    "everyEligibleAnswered",
+    "noErrors",
+    "warmP95AtOrBelow750",
+    "everyWarmCallBelow750",
+  ];
   if (
     manifest?.version !== 1 ||
     manifest.purpose !== "candidate10_actual_sdk_workflows" ||
     !isAbsolute(manifest.sfPi ?? "") ||
+    !isAbsolute(manifest.sfDeps ?? "") ||
     !hex(manifest.hostCommit) ||
     !hex(manifest.modelSha256) ||
     !hex(manifest.protocolSha256) ||
@@ -66,6 +79,7 @@ export function validateWorkflowEvidence(manifest, evaluation, tested, frozen) {
     tested.enforcementEligible !== false ||
     tested.failures?.length !== 0 ||
     !Object.values(tested.gates ?? {}).length ||
+    requiredTestGates.some((name) => tested.gates?.[name] !== true) ||
     !Object.values(tested.gates).every((v) => v === true) ||
     tested.freezeSha256 !== manifest.freezeSha256 ||
     sha(canonical(frozen)) !== manifest.freezeSha256 ||
@@ -93,6 +107,33 @@ export async function runWorkflows(manifest, output) {
   validateWorkflowEvidence(manifest, evaluation, tested, frozen);
   if (canonical(frozen.evaluationReport) !== canonical(manifest.evaluation))
     fail("evaluation report differs from TEST freeze");
+  const evaluated = await pinned(frozen.evaluationManifest, true);
+  for (const [name, evaluatedName] of [
+    ["model", "model"],
+    ["registry", "registry"],
+    ["binary", "nativeBinary"],
+    ["importReport", "importReport"],
+    ["localPrecision", "localPrecision"],
+  ]) {
+    if (
+      canonical(manifest[name]) !== canonical(evaluated.files?.[evaluatedName])
+    )
+      fail(`${name} differs from evaluated candidate`);
+  }
+  if (
+    canonical(manifest.selectedPrecision) !==
+    canonical(
+      evaluated.files?.[
+        evaluated.format === "f16" ? "precisionF16" : "precisionQ8"
+      ],
+    )
+  )
+    fail("selected precision differs from evaluated format");
+  for (const [relative, hash] of Object.entries(evaluated.runtime ?? {})) {
+    if (isAbsolute(relative) || relative.split("/").includes(".."))
+      fail("invalid evaluated runtime path");
+    await pinned({ path: resolve(root, relative), sha256: hash });
+  }
   for (const name of [
     "model",
     "registry",
@@ -136,7 +177,7 @@ export async function runWorkflows(manifest, output) {
   );
   execFileSync("tar", ["-xf", "-", "-C", fixture], { input: archive });
   await symlink(
-    resolve(manifest.sfPi, "node_modules"),
+    resolve(manifest.sfDeps, "node_modules"),
     resolve(fixture, "node_modules"),
   );
   const relativeTest = "extensions/sf-guardrail/tests/jev-risk-sdk.test.ts";
@@ -202,6 +243,9 @@ export async function runWorkflows(manifest, output) {
     );
   } catch {}
   const checks = observed?.measurements?.find((row) => row.mode === "shadow");
+  const projectedModelConfirmations = (checks?.comparisons ?? []).filter(
+    (row) => row.source === "jev" && row.actual === "confirm",
+  ).length;
   const timings = (checks?.comparisons ?? [])
     .filter((row) => row.source === "jev")
     .map((row) => row.elapsedMs)
@@ -218,6 +262,8 @@ export async function runWorkflows(manifest, output) {
     exit,
     fixtureSourceSha256: sha(source),
     actualNativeMeasured: Boolean(checks),
+    projectedModelConfirmations,
+    confirmationCountsAreProjected: true,
     warmP95Ms,
     idealWarmP95Below500: warmP95Ms !== null && warmP95Ms < 500,
     everyEligibleAnswered: Boolean(

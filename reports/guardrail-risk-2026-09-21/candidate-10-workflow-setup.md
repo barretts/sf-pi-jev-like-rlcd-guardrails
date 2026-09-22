@@ -13,7 +13,7 @@ node scripts/guardrail-candidate10-workflows.mjs \
   --output /absolute/new-workflow-evidence
 ```
 
-The input is a version 1 JSON object with `purpose:"candidate10_actual_sdk_workflows"`, `enforce:false`, absolute `sfPi`, pinned `hostCommit`, nonempty `modelId`, and frozen `modelSha256`, `protocolSha256` (selected scoring protocol), `calibrationSha256`, `baselineSha256`, `minimumAllowScore`, and canonical `freezeSha256`. Each of the following fields is `{path:absolute,sha256:SHA256_OF_FILE_BYTES}`:
+The input is a version 1 JSON object with `purpose:"candidate10_actual_sdk_workflows"`, `enforce:false`, absolute `sfPi` and `sfDeps` (the separately installed matching sf-pi dependency workspace), pinned `hostCommit`, nonempty `modelId`, and frozen `modelSha256`, `protocolSha256` (selected scoring protocol), `calibrationSha256`, `baselineSha256`, `minimumAllowScore`, and canonical `freezeSha256`. Each of the following fields is `{path:absolute,sha256:SHA256_OF_FILE_BYTES}`:
 
 - `evaluation`: accepted C10 evaluation report, identical to the freeze's `evaluationReport` pin.
 - `test`: successful C10 held-out corpus report with all gates true and the same canonical freeze hash.
