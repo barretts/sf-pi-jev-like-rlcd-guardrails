@@ -23,7 +23,7 @@ vi.mock("../src/models.js", async (importOriginal) => ({
 }));
 
 const input = {
-  version: 1 as const,
+  version: 2 as const,
   toolName: "bash",
   input: { command: "git status" },
   facts: {},

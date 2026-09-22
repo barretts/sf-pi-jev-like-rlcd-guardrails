@@ -132,7 +132,7 @@ function checkIsolatedClient(
     });
     const classifier = new backend.Classifier(config, adapter);
     const probe = await guardrail.classifyGuardrailRisk(classifier, {
-      version: 1, toolName: "bash", input: { command: "ls" }, facts: {}
+      version: 2, toolName: "bash", input: { command: "ls" }, facts: {}
     }, config.modelId);
     await classifier.dispose();
     let report = data.report;

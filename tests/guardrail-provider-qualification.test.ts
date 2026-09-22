@@ -357,7 +357,7 @@ describe("provider qualification receipt loading", () => {
     }));
     const f = await fixture(passingReport(), worker);
     const input = {
-      version: 1 as const,
+      version: 2 as const,
       toolName: "bash",
       input: { command: "git status" },
       facts: {},
