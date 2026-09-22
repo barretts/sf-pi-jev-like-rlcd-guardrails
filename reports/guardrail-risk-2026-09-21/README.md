@@ -25,6 +25,17 @@ the rebuild. These checks do not establish native driver startup timing,
 qualified enforcement or model effectiveness. API embeddings must await Pi's
 extension binding before executing tools.
 
+The updated optional native SDK harness now registers the real general Jev
+driver and awaits that normal binding/startup path, with no manual provider
+warmup. Seven actual SF source cases passed with the native arm skipped, plus
+TypeScript, file lint and formatting. The frozen ten operations and complete
+eight semantic/two exact-policy comparison requirements are unchanged, as are
+the 33 production sources and their qualification identity. Startup timing is
+inclusive of all handlers and is reported separately from setup, warm workflow
+and total time. Candidate 3's existing native receipt used manual warmup and
+does not prove this updated startup path. Its actual native run and genuinely
+qualified enforcement remain pending.
+
 The isolated worktrees use `barretts/jev-guardrail-risk`: Jev at
 `/private/tmp/simple-jev-ts-guardrail-risk-20260921`, based on `95c0b50`, and sf-pi
 at `/private/tmp/sf-pi-guardrail-risk-20260921`, based on `4f901db9`. The default
@@ -34,16 +45,18 @@ RFDT pipeline. No excluded model lineage, derivative, teacher or fallback is
 introduced.
 
 The SF integration's final local source checkpoint is
-`388990554479450d223dbc4448eb80179246ef2f`; it has not been pushed. Its tree is
-`944cee65cd156f11afa96dde179388f4d06b70e3`. The
+`e09085fd1a05cc836b2f377325aea33f9ced1cf1`; it has not been pushed. Its tree is
+`ef7b70ad1f107ec989ac783f68883815338e6a91`. The
 [baseline-bound integration patch](../../integrations/sf-pi-guardrail/0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch)
-retains its filename and contains four email patches: initial integration
-`beaa11c0`, workflow proof `24546444`, ADR0052 clarification `eab0eac6`, and
-semantic-call completeness checks at the final checkpoint above.
-Its SHA-256 is `a523d5de1648b675adfeea650480a7e0c82c4ac6929c78b9788ad9a3f2e493e1`,
-with 165,300 bytes. Splitting and sequentially applying all four to baseline
-`4f901db9c3f5076ea0305dea33ad6e8856e467da` in a separate temporary index
-reproduced the final tree. The real checkout/index remained unchanged. Runtime
+retains its filename and contains five email patches: initial integration
+`beaa11c0`, workflow proof `24546444`, ADR0052 clarification `eab0eac6`,
+semantic-call completeness checks `38899055`, and normal driver startup in
+the SDK harness at the final checkpoint above.
+Its SHA-256 is `327ca9e5519cd660c1316499311363dfdb56d714b45fa158b984fdacfe224a62`,
+with 175,031 bytes. Splitting and sequentially applying all five to baseline
+`4f901db9c3f5076ea0305dea33ad6e8856e467da` using a private index and object
+store reproduced every intermediate and final tree. The real SF index and all
+1,749 tracked checkout files remained unchanged. Runtime
 baseline SHA-256 stays `0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45`.
 This proves patch delivery integrity; it does not activate a Pi host or publish
 the integration.

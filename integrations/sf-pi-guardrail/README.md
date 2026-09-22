@@ -9,17 +9,20 @@ uses no Jev implementation imports: it discovers one versioned provider through
 | Artifact                               | Revision                                                                                                                             |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | SF Pi baseline                         | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                                                                                           |
-| Local integration commit               | `388990554479450d223dbc4448eb80179246ef2f`                                                                                           |
-| Integration tree                       | `944cee65cd156f11afa96dde179388f4d06b70e3`                                                                                           |
+| Local integration commit               | `e09085fd1a05cc836b2f377325aea33f9ced1cf1`                                                                                           |
+| Integration tree                       | `ef7b70ad1f107ec989ac783f68883815338e6a91`                                                                                           |
 | Runtime qualification baseline SHA-256 | `0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45`                                                                   |
 | Patch                                  | [0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch](./0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch) |
 
-The patch contains four email commits: the provider integration, the optional
-real-model Pi workflow harness, the ADR 0052 historical policy clarification and
-the per-call model-completion check. It includes a base-commit trailer and has SHA-256
-`a523d5de1648b675adfeea650480a7e0c82c4ac6929c78b9788ad9a3f2e493e1`, with 165,300
-bytes. Applying all four commits sequentially to the exact baseline in a separate
-temporary Git index reproduced the integration tree above. It has not been
+The patch contains five email commits: the provider integration, the optional
+real-model Pi workflow harness, the ADR 0052 historical policy clarification,
+the per-call model-completion check and normal Jev session startup in the SDK
+harness. It includes a base-commit trailer and has SHA-256
+`327ca9e5519cd660c1316499311363dfdb56d714b45fa158b984fdacfe224a62`, with 175,031
+bytes. Applying all five commits sequentially to the exact baseline with a private
+Git index and object store reproduced every intermediate and final tree above.
+The real SF index, all 1,749 tracked files and 33 runtime sources remained unchanged.
+It has not been
 pushed or installed in the user's active Pi environment.
 
 ## Local use
@@ -74,6 +77,14 @@ with the same fixed settings and 48 additional TRAIN cases; its results remain
 pending. Current receipts and proof boundaries are in the
 [evidence report](../../reports/guardrail-risk-2026-09-21/README.md). The genuine
 qualified-arm invocation is documented in [GUARDRAIL.md](../../GUARDRAIL.md).
+
+The current optional native arm registers the general Jev driver and awaits
+normal session startup, without manual provider warmup. Seven actual SF source
+tests passed with that arm skipped; TypeScript, file lint and formatting passed.
+The earlier candidate 3 native result used manual provider warmup and does not
+prove this updated driver path. Its native run remains pending after training.
+Startup timing includes all handlers and is separate from setup, warm workflow
+and total elapsed time.
 
 The complete SF suite required environment-specific partitions: the broad run
 passed 4,214 tests with one unrelated AgentScript import timeout, which passed

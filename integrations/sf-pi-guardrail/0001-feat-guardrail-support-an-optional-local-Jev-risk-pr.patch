@@ -1,7 +1,7 @@
 From beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2 Mon Sep 17 00:00:00 2001
 From: Barrett Sonntag <bsonntag@salesforce.com>
 Date: Mon, 21 Sep 2026 18:40:10 -0500
-Subject: [PATCH 1/4] feat(guardrail): support an optional local Jev risk
+Subject: [PATCH 1/5] feat(guardrail): support an optional local Jev risk
  provider
 
 ---
@@ -35,7 +35,7 @@ Subject: [PATCH 1/4] feat(guardrail): support an optional local Jev risk
  create mode 100644 extensions/sf-guardrail/tests/jev-risk.test.ts
 
 diff --git a/.gitignore b/.gitignore
-index 898b0e86..51b7da79 100644
+index 898b0e862ed664d247d4883d6c8270f538b78f7f..51b7da79285a5e2b976fed810a81e9d1e34ef173 100644
 --- a/.gitignore
 +++ b/.gitignore
 @@ -48,6 +48,7 @@ docs/.vitepress/dist/
@@ -47,7 +47,7 @@ index 898b0e86..51b7da79 100644
  
  # Security scan reports
 diff --git a/catalog/index.json b/catalog/index.json
-index fe4232ae..4d9d5ebb 100644
+index fe4232ae85bd69ab6675e8f8819360560845605e..4d9d5ebbfd3512c9fc54a62b49bd6393fe67464c 100644
 --- a/catalog/index.json
 +++ b/catalog/index.json
 @@ -621,11 +621,12 @@
@@ -92,7 +92,7 @@ index fe4232ae..4d9d5ebb 100644
    {
      "id": "sf-herdr",
 diff --git a/docs/adr/0035-sf-guardrail-uses-a-safety-kernel.md b/docs/adr/0035-sf-guardrail-uses-a-safety-kernel.md
-index cab50e08..5d5b9f3c 100644
+index cab50e08be5bf8887b6fbc224f8c8685c4a2ddaa..5d5b9f3ce231ef381ccaf4b75e8eb24675f28ccc 100644
 --- a/docs/adr/0035-sf-guardrail-uses-a-safety-kernel.md
 +++ b/docs/adr/0035-sf-guardrail-uses-a-safety-kernel.md
 @@ -6,6 +6,8 @@ date: 2026-06-13
@@ -106,7 +106,7 @@ index cab50e08..5d5b9f3c 100644
  This keeps the safety behavior testable through one deep interface instead of spreading the product logic across many shallow event-handler seams. Existing helper modules may remain internally where they add locality, but callers should not need to understand separate file-policy, command-gate, org-aware, and approval-scope orchestration to ask whether a tool call is safe.
 diff --git a/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md b/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md
 new file mode 100644
-index 00000000..5a1fcce3
+index 0000000000000000000000000000000000000000..5a1fcce393108d1f26166cb7a42ed46239d7c510
 --- /dev/null
 +++ b/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md
 @@ -0,0 +1,117 @@
@@ -228,7 +228,7 @@ index 00000000..5a1fcce3
 +  and elapsed time. Passing a finite corpus does not establish production
 +  acceptance or safety on every possible operation.
 diff --git a/docs/adr/README.md b/docs/adr/README.md
-index f6cbae65..957c320c 100644
+index f6cbae651a3a3790a32cebae19c99c22dbc22376..957c320cebfbd0a1c79f6aa681c5f4d53475c538 100644
 --- a/docs/adr/README.md
 +++ b/docs/adr/README.md
 @@ -108,6 +108,7 @@ ADRs preserve durable architectural rationale. Runtime code and Behavior Proofs
@@ -240,7 +240,7 @@ index f6cbae65..957c320c 100644
  ## Proposed
  
 diff --git a/docs/extensions/sf-guardrail.md b/docs/extensions/sf-guardrail.md
-index e893fe25..2ddca69f 100644
+index e893fe255c414c905cb384b859ce17935fce1011..2ddca69f77b927445709f36d89b9ef6d88e8807b 100644
 --- a/docs/extensions/sf-guardrail.md
 +++ b/docs/extensions/sf-guardrail.md
 @@ -10,7 +10,7 @@ editLink: false
@@ -262,7 +262,7 @@ index e893fe25..2ddca69f 100644
  - alwaysActive=false but disabling removes the safety layer entirely; the manager surfaces this clearly.
  
 diff --git a/docs/troubleshooting.md b/docs/troubleshooting.md
-index f75e5630..e21285cb 100644
+index f75e5630112d037074ea5aaa0a15a05fb369f2d5..e21285cbf7c3175862a2463f08ab2c9efa828f85 100644
 --- a/docs/troubleshooting.md
 +++ b/docs/troubleshooting.md
 @@ -209,6 +209,9 @@ Jump to an extension's Troubleshooting section to see the full fix. This index i
@@ -276,7 +276,7 @@ index f75e5630..e21285cb 100644
  **[SF Brain](./extensions/sf-brain.md#troubleshooting)**
  
 diff --git a/extensions/sf-guardrail/AGENTS.md b/extensions/sf-guardrail/AGENTS.md
-index db37337b..44faa75f 100644
+index db37337bd533af1a56260e6719ba48ed11520f1b..44faa75f9c128ad5d940342829a907f851037866 100644
 --- a/extensions/sf-guardrail/AGENTS.md
 +++ b/extensions/sf-guardrail/AGENTS.md
 @@ -20,6 +20,7 @@ One-file-per-concern split:
@@ -344,7 +344,7 @@ index db37337b..44faa75f 100644
    are global Pi settings under `sfPi.guardrail`; project-local weakening is
    deferred with project-local rule overrides. Adding either means plumbing
 diff --git a/extensions/sf-guardrail/README.md b/extensions/sf-guardrail/README.md
-index 27bba377..9be46504 100644
+index 27bba377eedf0bd686f33323566213932a58de01..9be46504dfd0e5db8ded3f7cd04ed7ae3a07f86b 100644
 --- a/extensions/sf-guardrail/README.md
 +++ b/extensions/sf-guardrail/README.md
 @@ -20,11 +20,20 @@ fail-closed behavior, session approval memory, and audit path:
@@ -491,7 +491,7 @@ index 27bba377..9be46504 100644
  
  <!-- GENERATED:file-structure:start -->
 diff --git a/extensions/sf-guardrail/index.ts b/extensions/sf-guardrail/index.ts
-index 276ac7d9..16b66c9b 100644
+index 276ac7d92e864ca8421c4958af40d3ababf62ac0..16b66c9b2312a928bdd9621e842d0f65934b8795 100644
 --- a/extensions/sf-guardrail/index.ts
 +++ b/extensions/sf-guardrail/index.ts
 @@ -85,6 +85,13 @@ import {
@@ -597,7 +597,7 @@ index 276ac7d9..16b66c9b 100644
      `  /${COMMAND_NAME} aliases         Edit protected org aliases`,
      `  /${COMMAND_NAME} forget          Clear session allows and project approval grants`,
 diff --git a/extensions/sf-guardrail/lib/approval-ledger.ts b/extensions/sf-guardrail/lib/approval-ledger.ts
-index a5bda32b..85f62dbc 100644
+index a5bda32b9aa4455d2a00787554b2637beb732c2b..85f62dbc94db1e5090ee1ce8e622212070c395c6 100644
 --- a/extensions/sf-guardrail/lib/approval-ledger.ts
 +++ b/extensions/sf-guardrail/lib/approval-ledger.ts
 @@ -90,6 +90,7 @@ export function recordDecision(
@@ -609,7 +609,7 @@ index a5bda32b..85f62dbc 100644
      ruleId: decision.ruleId,
      feature: decision.feature,
 diff --git a/extensions/sf-guardrail/lib/hitl.ts b/extensions/sf-guardrail/lib/hitl.ts
-index d96bfc0d..28b18633 100644
+index d96bfc0df37d67fd989d461c8b66457d8d945e72..28b1863395965385cafaa980fbb4f727c6cfe87c 100644
 --- a/extensions/sf-guardrail/lib/hitl.ts
 +++ b/extensions/sf-guardrail/lib/hitl.ts
 @@ -79,7 +79,8 @@ export async function confirmDecision(
@@ -624,7 +624,7 @@ index d96bfc0d..28b18633 100644
      }
 diff --git a/extensions/sf-guardrail/lib/jev-risk.ts b/extensions/sf-guardrail/lib/jev-risk.ts
 new file mode 100644
-index 00000000..fabef4eb
+index 0000000000000000000000000000000000000000..fabef4ebab2731f447c43f2be3d9566ceb34453d
 --- /dev/null
 +++ b/extensions/sf-guardrail/lib/jev-risk.ts
 @@ -0,0 +1,541 @@
@@ -1171,7 +1171,7 @@ index 00000000..fabef4eb
 +}
 diff --git a/extensions/sf-guardrail/lib/risk-baseline-identity.ts b/extensions/sf-guardrail/lib/risk-baseline-identity.ts
 new file mode 100644
-index 00000000..754d8272
+index 0000000000000000000000000000000000000000..754d8272e46f500721628acc80e2a61082370ab2
 --- /dev/null
 +++ b/extensions/sf-guardrail/lib/risk-baseline-identity.ts
 @@ -0,0 +1,66 @@
@@ -1242,7 +1242,7 @@ index 00000000..754d8272
 +
 +export const getJevRiskBaselineSha256 = (): string => getJevRiskBaselineIdentity().sha256;
 diff --git a/extensions/sf-guardrail/lib/types.ts b/extensions/sf-guardrail/lib/types.ts
-index f84213c6..918eb3fe 100644
+index f84213c6c1819075bdae030ea732c78870ad942f..918eb3fead6a5e83342d49c1ade5b30d5c47e551 100644
 --- a/extensions/sf-guardrail/lib/types.ts
 +++ b/extensions/sf-guardrail/lib/types.ts
 @@ -195,6 +195,15 @@ export interface ApprovalScope {
@@ -1270,7 +1270,7 @@ index f84213c6..918eb3fe 100644
    ruleId: string;
    feature: "policies" | "commandGate" | "orgAwareGate" | "nativeToolGate";
 diff --git a/extensions/sf-guardrail/manifest.json b/extensions/sf-guardrail/manifest.json
-index 9842cb65..7c8c2d18 100644
+index 9842cb65201dc66e0aeea9889f30d96da1539f2e..7c8c2d18a87c08900bd71d4c89f4d0c021664199 100644
 --- a/extensions/sf-guardrail/manifest.json
 +++ b/extensions/sf-guardrail/manifest.json
 @@ -14,22 +14,29 @@
@@ -1307,7 +1307,7 @@ index 9842cb65..7c8c2d18 100644
      ]
 diff --git a/extensions/sf-guardrail/tests/guardrail-corpus.test.ts b/extensions/sf-guardrail/tests/guardrail-corpus.test.ts
 new file mode 100644
-index 00000000..c86d2e9a
+index 0000000000000000000000000000000000000000..c86d2e9ace179c794a255e2e61b0a9cd5a23a8b8
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/guardrail-corpus.test.ts
 @@ -0,0 +1,474 @@
@@ -1787,7 +1787,7 @@ index 00000000..c86d2e9a
 +}
 diff --git a/extensions/sf-guardrail/tests/jev-risk-hook.test.ts b/extensions/sf-guardrail/tests/jev-risk-hook.test.ts
 new file mode 100644
-index 00000000..19e97836
+index 0000000000000000000000000000000000000000..19e978362e9d1d45de1fb0169912a87e7f974a3a
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/jev-risk-hook.test.ts
 @@ -0,0 +1,379 @@
@@ -2172,7 +2172,7 @@ index 00000000..19e97836
 +});
 diff --git a/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
 new file mode 100644
-index 00000000..a9c7a982
+index 0000000000000000000000000000000000000000..a9c7a9822ee2e5e28dfd0820bfe11059f0f219cf
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
 @@ -0,0 +1,460 @@
@@ -2638,7 +2638,7 @@ index 00000000..a9c7a982
 +});
 diff --git a/extensions/sf-guardrail/tests/jev-risk.test.ts b/extensions/sf-guardrail/tests/jev-risk.test.ts
 new file mode 100644
-index 00000000..cbaf9675
+index 0000000000000000000000000000000000000000..cbaf9675091541301707a424a1a3deed472408a9
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/jev-risk.test.ts
 @@ -0,0 +1,312 @@
@@ -2956,14 +2956,11 @@ index 00000000..cbaf9675
 +});
 
 base-commit: 4f901db9c3f5076ea0305dea33ad6e8856e467da
--- 
-2.50.1 (Apple Git-155)
-
 
 From 24546444452df3be40b7ebd86ed669c28fc81c15 Mon Sep 17 00:00:00 2001
 From: Barrett Sonntag <bsonntag@salesforce.com>
 Date: Mon, 21 Sep 2026 19:14:17 -0500
-Subject: [PATCH 2/4] test(guardrail): measure local Jev workflows through Pi
+Subject: [PATCH 2/5] test(guardrail): measure local Jev workflows through Pi
  SDK
 
 ---
@@ -2971,7 +2968,7 @@ Subject: [PATCH 2/4] test(guardrail): measure local Jev workflows through Pi
  1 file changed, 495 insertions(+), 7 deletions(-)
 
 diff --git a/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
-index a9c7a982..355f65e0 100644
+index a9c7a9822ee2e5e28dfd0820bfe11059f0f219cf..355f65e034d5143b4685b2c8ca4599524a95daf0 100644
 --- a/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
 +++ b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
 @@ -1,10 +1,19 @@
@@ -3572,14 +3569,11 @@ index a9c7a982..355f65e0 100644
 +    120_000,
 +  );
  });
--- 
-2.50.1 (Apple Git-155)
-
 
 From eab0eac623c3a8d41dff230ea79c757ada8b08b6 Mon Sep 17 00:00:00 2001
 From: Barrett Sonntag <bsonntag@salesforce.com>
 Date: Mon, 21 Sep 2026 19:34:04 -0500
-Subject: [PATCH 3/4] docs(guardrail): clarify optional semantic provider
+Subject: [PATCH 3/5] docs(guardrail): clarify optional semantic provider
  policy
 
 ---
@@ -3587,7 +3581,7 @@ Subject: [PATCH 3/4] docs(guardrail): clarify optional semantic provider
  1 file changed, 2 insertions(+)
 
 diff --git a/docs/adr/0052-sf-guardrail-is-rule-behavior-only.md b/docs/adr/0052-sf-guardrail-is-rule-behavior-only.md
-index 3b2dd397..299d1866 100644
+index 3b2dd397220b3f627db3bb9ccb5c3ff2e0702fb4..299d186676f25481ac44f22265df9333c2aaa66d 100644
 --- a/docs/adr/0052-sf-guardrail-is-rule-behavior-only.md
 +++ b/docs/adr/0052-sf-guardrail-is-rule-behavior-only.md
 @@ -7,6 +7,8 @@ supersedes: ["0044", "0045"]
@@ -3599,21 +3593,18 @@ index 3b2dd397..299d1866 100644
  SF Guardrail no longer has bulk posture modes, hard-block themes, broad feature master switches, or an internal enabled flag. When the extension is enabled, mediation is controlled by per-rule Rule Behavior only: `off`, `confirm`, or `block`.
  
  The complete disable path is the SF Pi package lifecycle control: disable the `sf-guardrail` extension from the Manager Surface or with `/sf-pi disable sf-guardrail`. This avoids the ambiguous state where the extension is loaded but a hidden internal switch makes it inert.
--- 
-2.50.1 (Apple Git-155)
-
 
 From 388990554479450d223dbc4448eb80179246ef2f Mon Sep 17 00:00:00 2001
 From: Barrett Sonntag <bsonntag@salesforce.com>
 Date: Mon, 21 Sep 2026 19:38:23 -0500
-Subject: [PATCH 4/4] test(guardrail): require complete SDK model comparisons
+Subject: [PATCH 4/5] test(guardrail): require complete SDK model comparisons
 
 ---
  .../sf-guardrail/tests/jev-risk-sdk.test.ts   | 54 +++++++++++++++++++
  1 file changed, 54 insertions(+)
 
 diff --git a/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
-index 355f65e0..ec123cec 100644
+index 355f65e034d5143b4685b2c8ca4599524a95daf0..ec123ceccd6f0e4d1f562afdcb57f8a08647d926 100644
 --- a/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
 +++ b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
 @@ -210,6 +210,8 @@ const representativeWorkflows = [
@@ -3699,6 +3690,156 @@ index 355f65e0..ec123cec 100644
      expect(row.acceptedOutcomes.map((call) => call.executed)).toEqual(
        representativeOperations.map((operation) => operation.expected !== "block"),
      );
--- 
-2.50.1 (Apple Git-155)
 
+From e09085fd1a05cc836b2f377325aea33f9ced1cf1 Mon Sep 17 00:00:00 2001
+From: Barrett Sonntag <bsonntag@salesforce.com>
+Date: Mon, 21 Sep 2026 21:45:40 -0500
+Subject: [PATCH 5/5] test(guardrail): exercise normal Jev startup in native
+ SDK workflows
+
+---
+ .../sf-guardrail/tests/jev-risk-sdk.test.ts   | 63 +++++++++++--------
+ 1 file changed, 37 insertions(+), 26 deletions(-)
+
+diff --git a/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
+index ec123ceccd6f0e4d1f562afdcb57f8a08647d926..27a900831df8fecc3446da435bbcbbf275250588 100644
+--- a/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
++++ b/extensions/sf-guardrail/tests/jev-risk-sdk.test.ts
+@@ -278,9 +278,12 @@ async function sdkTrial(options: {
+   providers?: JevRiskProvider[];
+   pick?: string | ((choices: string[]) => string | undefined);
+   headless?: boolean;
+-  registerLocalRisk?: (pi: ExtensionAPI) => LocalGuardrailRuntime;
++  registerLocalRisk?: (
++    pi: ExtensionAPI,
++    context: { cwd: string; agentDir: string },
++  ) => LocalGuardrailRuntime;
+   requireQualified?: boolean;
+-  warmLocalRisk?: boolean;
++  measureLocalRiskStartup?: boolean;
+ }) {
+   const startedAt = performance.now();
+   const cwd = mkdtempSync(path.join(tmpdir(), "sf-guardrail-sdk-proof-"));
+@@ -345,7 +348,7 @@ async function sdkTrial(options: {
+       sfGuardrail,
+       (pi) => {
+         if (options.registerLocalRisk) {
+-          localRuntime = options.registerLocalRisk(pi);
++          localRuntime = options.registerLocalRisk(pi, { cwd, agentDir: cwd });
+           localRuntimes.push(localRuntime);
+           return;
+         }
+@@ -424,26 +427,22 @@ async function sdkTrial(options: {
+       return picked;
+     },
+   } as ExtensionUIContext;
++  const sdkPreparedAt = performance.now();
++  const sessionStartStartedAt = performance.now();
+   await session.bindExtensions(
+     options.headless ? { mode: "print" } : { mode: "tui", uiContext: ui },
+   );
++  const sessionStartMs = performance.now() - sessionStartStartedAt;
+   expect(session.getActiveToolNames().sort()).toEqual([...toolNames].sort());
+-  const sdkPreparedAt = performance.now();
+-  const localRiskColdStartedAt = performance.now();
+-  if (localRuntime && options.warmLocalRisk !== false) {
+-    await localRuntime.warmup();
+-    if (options.requireQualified) {
+-      expect(
+-        localRuntime.provider.qualified,
+-        "Native enforcement requires genuine qualification",
+-      ).toBe(true);
+-      expect(localRuntime.provider.qualificationBaselineSha256).toBe(getJevRiskBaselineSha256());
+-    }
++  if (localRuntime && options.requireQualified) {
++    expect(
++      localRuntime.provider.qualified,
++      "Native enforcement requires genuine qualification after awaited session_start",
++    ).toBe(true);
++    expect(localRuntime.provider.qualificationBaselineSha256).toBe(getJevRiskBaselineSha256());
+   }
+   const localRiskColdInitializationMs =
+-    localRuntime && options.warmLocalRisk !== false
+-      ? performance.now() - localRiskColdStartedAt
+-      : null;
++    localRuntime && options.measureLocalRiskStartup ? sessionStartMs : null;
+   const localRiskStatusBefore = localRuntime?.status() ?? null;
+   const promptStartedAt = performance.now();
+   await session.prompt("Run the scripted fixture workflow.");
+@@ -476,6 +475,7 @@ async function sdkTrial(options: {
+     localRiskStatusBefore,
+     localRiskStatusAfter: localRuntime?.status() ?? null,
+     localRiskColdInitializationMs,
++    sessionStartMs,
+     sdkSetupMs: sdkPreparedAt - startedAt,
+     initializationMs: promptStartedAt - startedAt,
+     workflowMs: finishedAt - promptStartedAt,
+@@ -569,6 +569,7 @@ function representativeMeasurement(mode: "off" | "shadow" | "enforce", trial: Sd
+     unexpectedToolErrors: calls.filter((record) => record.expected !== "block" && record.isError)
+       .length,
+     sdkSetupMs: trial.sdkSetupMs,
++    sessionStartMs: trial.sessionStartMs,
+     localRiskColdInitializationMs: trial.localRiskColdInitializationMs,
+     workflowMs: trial.workflowMs,
+     totalElapsedMs: trial.totalElapsedMs,
+@@ -911,15 +912,21 @@ describe("Jev risk through Pi SDK tool execution", () => {
+           `Native workflow artifact must be a regular file: ${file}`,
+         ).toBe(true);
+       }
+-      const { registerGuardrailProvider } = (await import(
++      const { registerExtension } = (await import(
+         /* @vite-ignore */ pathToFileURL(nativeWorkflowEnv.module).href
+       )) as {
+-        registerGuardrailProvider(
++        registerExtension(
+           pi: ExtensionAPI,
+-          options: { env: NodeJS.ProcessEnv },
+-        ): LocalGuardrailRuntime;
++          config: undefined,
++          backend: undefined,
++          options: {
++            cwd: string;
++            agentDir: string;
++            guardrailRisk: { env: NodeJS.ProcessEnv };
++          },
++        ): { guardrailRisk: LocalGuardrailRuntime };
+       };
+-      expect(typeof registerGuardrailProvider).toBe("function");
++      expect(typeof registerExtension).toBe("function");
+       const riskEnv: NodeJS.ProcessEnv = {
+         JEV_DEVICE: process.env.JEV_DEVICE ?? "metal",
+         JEV_GUARDRAIL_MODEL_FILE: nativeWorkflowEnv.modelFile,
+@@ -938,9 +945,13 @@ describe("Jev risk through Pi SDK tool execution", () => {
+         vi.stubEnv("SF_GUARDRAIL_JEV_MODE", mode);
+         const trial = await sdkTrial({
+           operations: representativeOperations.map(({ toolName, input }) => ({ toolName, input })),
+-          registerLocalRisk: (pi) => registerGuardrailProvider(pi, { env: riskEnv }),
++          registerLocalRisk: (pi, context) =>
++            registerExtension(pi, undefined, undefined, {
++              ...context,
++              guardrailRisk: { env: { ...riskEnv, SF_GUARDRAIL_JEV_MODE: mode } },
++            }).guardrailRisk,
+           requireQualified: mode === "enforce",
+-          warmLocalRisk: mode !== "off",
++          measureLocalRiskStartup: mode !== "off",
+           pick: preferSessionOrOnce,
+         });
+         measurements.push(representativeMeasurement(mode, trial));
+@@ -952,7 +963,7 @@ describe("Jev risk through Pi SDK tool execution", () => {
+       writeWorkflowReport(nativeWorkflowEnv.output, {
+         version: 1,
+         scope:
+-          "Actual Pi AgentSession.prompt, ExtensionRunner, and real local Jev risk inference; scripted assistant/user choices, mocked org facts, counter-only tools, no external operation execution. Authored training-style workflow evidence, separate from held-out qualification and production acceptance.",
++          "Actual Pi AgentSession.bindExtensions/session_start, AgentSession.prompt, ExtensionRunner, the real general Jev driver, and real local Jev risk inference; scripted assistant/user choices, mocked org facts, counter-only tools, no external operation execution. Authored training-style workflow evidence, separate from held-out qualification and production acceptance.",
+         workflowDefinitionSha256,
+         workflows: representativeWorkflows,
+         policyOverride: representativePolicyOverride,
+@@ -975,7 +986,7 @@ describe("Jev risk through Pi SDK tool execution", () => {
+               enforcement: "Omitted: an unqualified candidate may supply shadow diagnostics only",
+             },
+         timing:
+-          "Off registers a lazy provider and never initializes model weights; its localRiskColdInitializationMs is null. Shadow and enforce explicitly warm their owned native worker before workflowMs. sdkSetupMs measures Pi setup; localRiskColdInitializationMs reports artifact checks and model startup; totalElapsedMs includes both. Scripted selection adds no human deliberation time.",
++          "Off registers the real Jev driver and keeps the risk worker lazy; its localRiskColdInitializationMs is null. Shadow and enforce warm through the driver's awaited session_start before workflowMs, with no manual provider warmup. sdkSetupMs measures Pi setup before binding. sessionStartMs reports complete extension startup; localRiskColdInitializationMs is that inclusive startup duration for opt-in model modes, including artifact/model initialization and other startup handlers. totalElapsedMs includes setup, startup and workflow. Scripted selection adds no human deliberation time.",
+         measurements,
+         enforcementComparison: enforcement
+           ? {

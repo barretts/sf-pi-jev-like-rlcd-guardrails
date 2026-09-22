@@ -147,14 +147,16 @@ The repeated package dry run passed with 171 files, 6,194,598 unpacked bytes and
 1,280,112 tarball bytes after the workflow patch and setup guide update, including
 required guardrail sources, corpus, scripts and patch, with no weights. It used
 a worktree-local npm cache. These size observations precede recording the sizes
-and are not a sealed final archive identity. The SF patch
-contains four email patches: initial integration `beaa11c0`, workflow proof
-`24546444`, ADR0052 clarification `eab0eac6`, and semantic-call completeness
-checks `388990554479450d223dbc4448eb80179246ef2f`. Its SHA-256 is
-`a523d5de1648b675adfeea650480a7e0c82c4ac6929c78b9788ad9a3f2e493e1`,
-with 165,300 bytes. Splitting and applying the four patches sequentially against
-the pinned `4f901db9` baseline in a separate index reproduced final tree
-`944cee65cd156f11afa96dde179388f4d06b70e3`. The real checkout/index remained
+and are not a sealed final archive identity. The current SF patch
+contains five email patches: initial integration `beaa11c0`, workflow proof
+`24546444`, ADR0052 clarification `eab0eac6`, semantic-call completeness
+checks `38899055`, and normal driver startup in the SDK harness
+`e09085fd1a05cc836b2f377325aea33f9ced1cf1`. Its SHA-256 is
+`327ca9e5519cd660c1316499311363dfdb56d714b45fa158b984fdacfe224a62`,
+with 175,031 bytes. Splitting and applying all five sequentially against
+the pinned `4f901db9` baseline using a private index and object store reproduced
+every intermediate tree and final tree `ef7b70ad1f107ec989ac783f68883815338e6a91`.
+The real SF index and all 1,749 tracked checkout files remained
 unchanged; no push or active Pi host change is part of that proof. Runtime
 baseline identity remains `0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45`.
 
@@ -205,6 +207,18 @@ zero model calls and never initialized weights. Off setup/workflow/total were
 enforced both modes. This proves shadow isolation and measures local native
 overhead on this authored fixture; an unqualified model did not execute
 enforce, and no workflow improvement or production acceptance is established.
+
+That candidate 3 native receipt used manual provider warmup and remains
+historical evidence for that path. The updated SDK harness registers the real
+general Jev driver and awaits normal extension binding/session startup before
+workflow execution, with no manual warmup. Its actual SF source tests passed
+seven cases with the native arm skipped; TypeScript, file lint and formatting
+passed. The ten operation definitions and `0039df8f…` workflow identity are
+unchanged, and all 33 runtime qualification sources retain `0f31a950…`.
+Enforcement still requires the genuine provider's matching held-out receipt.
+SDK setup ends before binding; startup timing includes every startup handler;
+warm workflow and total timings are separate. Actual native execution through
+this updated driver path remains pending after training and qualification.
 
 The evaluator's implementation byte-binding additionally covers the backend,
 model-artifact and guardrail-extension peers, using the corresponding `.ts`

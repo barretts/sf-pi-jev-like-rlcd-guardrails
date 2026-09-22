@@ -22,6 +22,26 @@
     "apiEmbeddingRequirement": "Await AgentSession.bindExtensions; createAgentSession alone does not run session_start",
     "headlessStatus": "Read the returned runtime guardrailRisk.status() after binding; slash-command UI notifications have no headless output"
   },
+  "sdkNormalStartupHarness": {
+    "scope": "Actual SF source tests; optional native arm skipped while candidate 4 trains",
+    "registers": "Real general Jev driver with owned cwd/agentDir and isolated operator mode",
+    "startup": "Await AgentSession.bindExtensions/session_start, with no manual provider warmup",
+    "passedTests": 7,
+    "failedTests": 0,
+    "nativeTestsSkipped": 1,
+    "sourceTypeScript": "passed",
+    "fileEslint": "passed",
+    "fileFormat": "passed",
+    "workflowDefinitionSha256": "0039df8fc5568b3be141f4f28f253b7f32e429019e3b4e288cb42029f56e7fc4",
+    "runtimeSourceCountUnchanged": 33,
+    "runtimeBaselineSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
+    "sdkTestSha256": "c681208568ab465b618e866726036ff7f8c28d2daa4c817a350c50cffc8eb7f9",
+    "timing": "SDK setup before binding; inclusive sessionStartMs is opt-in cold initialization, off cold is null; workflow and total elapsed reported separately",
+    "requiresGenuineHeldOutQualificationForEnforce": true,
+    "nativeDriverWorkflowProved": false,
+    "modelQualified": false,
+    "historicalCandidate3NativeReceipt": "Manual provider warmup; does not prove updated driver startup"
+  },
   "workspaces": {
     "branch": "barretts/jev-guardrail-risk",
     "jev": {
@@ -33,9 +53,10 @@
     "sfPi": {
       "path": "/private/tmp/sf-pi-guardrail-risk-20260921",
       "baseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
-      "implementationCommit": "388990554479450d223dbc4448eb80179246ef2f",
+      "implementationCommit": "e09085fd1a05cc836b2f377325aea33f9ced1cf1",
       "pushed": false,
-      "implementationTree": "944cee65cd156f11afa96dde179388f4d06b70e3",
+      "implementationTree": "ef7b70ad1f107ec989ac783f68883815338e6a91",
+      "driverStartupWorkflowCommit": "e09085fd1a05cc836b2f377325aea33f9ced1cf1",
       "initialIntegrationCommit": "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2",
       "workflowProofCommit": "24546444452df3be40b7ebd86ed669c28fc81c15",
       "designClarificationCommit": "eab0eac623c3a8d41dff230ea79c757ada8b08b6"
@@ -1023,13 +1044,13 @@
   },
   "integrationPatch": {
     "file": "integrations/sf-pi-guardrail/0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch",
-    "sha256": "a523d5de1648b675adfeea650480a7e0c82c4ac6929c78b9788ad9a3f2e493e1",
-    "bytes": 165300,
+    "sha256": "327ca9e5519cd660c1316499311363dfdb56d714b45fa158b984fdacfe224a62",
+    "bytes": 175031,
     "baseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
-    "implementationCommit": "388990554479450d223dbc4448eb80179246ef2f",
-    "implementationTree": "944cee65cd156f11afa96dde179388f4d06b70e3",
+    "implementationCommit": "e09085fd1a05cc836b2f377325aea33f9ced1cf1",
+    "implementationTree": "ef7b70ad1f107ec989ac783f68883815338e6a91",
     "temporaryIndexApplyVerified": true,
-    "reproducedTree": "944cee65cd156f11afa96dde179388f4d06b70e3",
+    "reproducedTree": "ef7b70ad1f107ec989ac783f68883815338e6a91",
     "pushed": false,
     "activePiHostChanged": false,
     "claimBoundary": "Pinned patch delivery integrity; not model qualification or host activation",
@@ -1039,17 +1060,36 @@
       "observedPatchSha256": "db3d9350616b3e9709b442fc7a0d4678c17704a06bc82da121ccd86f36e95b7d",
       "observedPatchBytes": 133579,
       "temporaryIndexApplyVerified": true,
-      "scope": "Historical single-email delivery observation; same retained filename now contains the four-email series"
+      "scope": "Historical single-email delivery observation; same retained filename now contains the five-email series"
     },
-    "emailPatches": 4,
+    "fourEmailCheckpoint": {
+      "implementationCommit": "388990554479450d223dbc4448eb80179246ef2f",
+      "implementationTree": "944cee65cd156f11afa96dde179388f4d06b70e3",
+      "observedPatchSha256": "a523d5de1648b675adfeea650480a7e0c82c4ac6929c78b9788ad9a3f2e493e1",
+      "observedPatchBytes": 165300,
+      "emailPatches": 4,
+      "temporaryIndexApplyVerified": true,
+      "proofDirectory": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/guardrail-series-proof-5jq_1h7a",
+      "proofReceiptFile": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/guardrail-series-proof-5jq_1h7a/receipt.json",
+      "proofReceiptSha256": "2631e2b1df24c070e282fce772c0d46310dc0acd2944602622cfd8c272e6ff0c",
+      "scope": "Historical four-email checkpoint; the fifth updates only the SDK harness to use normal driver startup, with unchanged runtime identity"
+    },
+    "emailPatches": 5,
     "commits": [
       "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2",
       "24546444452df3be40b7ebd86ed669c28fc81c15",
       "eab0eac623c3a8d41dff230ea79c757ada8b08b6",
-      "388990554479450d223dbc4448eb80179246ef2f"
+      "388990554479450d223dbc4448eb80179246ef2f",
+      "e09085fd1a05cc836b2f377325aea33f9ced1cf1"
     ],
-    "applyProof": "Split into four email patches and apply sequentially in a separate temporary index from the exact baseline; reproduce final tree",
-    "proofDirectory": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/guardrail-series-proof-5jq_1h7a",
+    "applyProof": "Split five emails and apply sequentially with private index and object store from the exact baseline; reproduce every intermediate and final tree",
+    "proofDirectory": "/private/tmp/jev-risk-cold-start-fix/patch-replay",
+    "proofReceiptFile": "/private/tmp/jev-risk-cold-start-fix/patch-replay/receipt.json",
+    "proofReceiptSha256": "14d4d3d5f884b43b7db553cc010f38f10013f94b113f446f3440195edecce7f4",
+    "proofReceiptBytes": 5482,
+    "privateObjectStore": true,
+    "intermediateTreesMatched": 5,
+    "trackedSfCheckoutFilesUnchanged": 1749,
     "realCheckoutChanged": false,
     "realIndexChanged": false,
     "runtimeBaselineSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
@@ -1077,8 +1117,6 @@
       "proofDirectory": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/guardrail-series-proof-UhJNXM",
       "scope": "Historical two-email delivery checkpoint; later ADR clarification and collector assertions add two mails without runtime-baseline change"
     },
-    "proofReceiptFile": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/guardrail-series-proof-5jq_1h7a/receipt.json",
-    "proofReceiptSha256": "2631e2b1df24c070e282fce772c0d46310dc0acd2944602622cfd8c272e6ff0c",
     "cleanCheckout": true
   },
   "packageDryRun": {

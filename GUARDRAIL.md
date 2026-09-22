@@ -88,7 +88,7 @@ Qualification files are operator-owned local evidence. Their hashes detect accid
 
 ## Reproduce matched Pi workflows
 
-The SF integration's SDK test has an optional real-model workflow arm. It uses `AgentSession.prompt`, the existing guardrail hook, and registered counter-only tools. The assistant requests and user choices are scripted; org facts are mocked. The frozen workflows cover safe reads and harmless quoted commands, identical shell and Apex requests, a Data 360 rehearsal/live pair, and an explicit protected-path block. They are authored independently of held-out test results.
+The SF integration's SDK test has an optional real-model workflow arm. It registers the general Jev driver, awaits normal `AgentSession.bindExtensions`/`session_start`, and then uses `AgentSession.prompt`, the existing guardrail hook, and registered counter-only tools. The assistant requests and user choices are scripted; org facts are mocked. The frozen workflows cover safe reads and harmless quoted commands, identical shell and Apex requests, a Data 360 rehearsal/live pair, and an explicit protected-path block. They are authored independently of held-out test results.
 
 Run this from the SF integration checkout after the candidate has finished training and export. Avoid concurrent model or training work when measuring latency. Supply a new report path:
 
@@ -97,7 +97,7 @@ PI_CODING_AGENT_DIR="$PWD/.build/sdk-proof-agent" \
 SF_DISABLE_LOG_FILE=true \
 JEV_DEVICE=metal \
 GUARDRAIL_SDK_LOCAL_MODEL=1 \
-GUARDRAIL_SDK_LOCAL_JEV_MODULE="$JEV_REPO/dist/guardrail-extension.js" \
+GUARDRAIL_SDK_LOCAL_JEV_MODULE="$JEV_REPO/dist/extension.js" \
 GUARDRAIL_SDK_LOCAL_MODEL_ID=jev/gemma-3-1b-guardrail-candidate-N \
 GUARDRAIL_SDK_LOCAL_MODEL_FILE=/absolute/path/to/exported-candidate.gguf \
 GUARDRAIL_SDK_LOCAL_ARTIFACT_REGISTRY="$JEV_REPO/.build/guardrail/candidate-N/candidate-registry.json" \
@@ -109,7 +109,7 @@ npm test -- --run extensions/sf-guardrail/tests/jev-risk-sdk.test.ts \
 
 Omit `GUARDRAIL_SDK_LOCAL_QUALIFICATION` for an unqualified candidate: the arm runs only `off` and `shadow` and records that enforcement was omitted. A supplied receipt must pass the real provider's verification and match the current SF runtime before `enforce` runs. The explicit model flag makes missing artifacts fail preflight; ordinary source tests skip this arm without loading a model.
 
-The report records accepted operation outcomes, confirmation choices and counts, session grants, retries, errors, comparisons, fallback reasons, and complete per-call audit entries. Baseline `off` stays lazy and has no model startup. Shadow and enforcement warm their owned worker explicitly before workflow timing; cold model initialization, SDK setup, warm workflow time and total elapsed time remain separate. Scripted approval selection adds no human deliberation time. Shadow must preserve the baseline's outcomes and approvals. Current conservative model session handling may add a confirmation for repeated shell requests; the collector exposes this limitation rather than asserting prompt parity.
+The report records accepted operation outcomes, confirmation choices and counts, session grants, retries, errors, comparisons, fallback reasons, and complete per-call audit entries. Baseline `off` stays lazy and has no model startup. Shadow and enforcement warm their owned worker through awaited session startup, with no manual provider warmup. SDK setup ends before extension binding; `sessionStartMs` includes all startup handlers. For opt-in model modes, `localRiskColdInitializationMs` is that inclusive startup duration, including artifact/model initialization and other handlers; it is null for off. Warm workflow time and total elapsed time remain separate. Scripted approval selection adds no human deliberation time. Shadow must preserve the baseline's outcomes and approvals. Current conservative model session handling may add a confirmation for repeated shell requests; the collector exposes this limitation rather than asserting prompt parity.
 
 ## Qualification and proof boundaries
 
