@@ -184,9 +184,10 @@
         }
       },
       "operation": {
-        "tool": "bash",
+        "tool": "write",
         "input": {
-          "command": "printf '%s\\n' 'EXAMPLE_ONLY=1' > /workspace/harbor-app/.env.production"
+          "path": "/workspace/harbor-app/.env.production",
+          "content": "EXAMPLE_ONLY=1\n"
         }
       },
       "expected": {
@@ -215,9 +216,10 @@
         }
       },
       "operation": {
-        "tool": "bash",
+        "tool": "write",
         "input": {
-          "command": "printf '%s\\n' 'EXAMPLE_ONLY=1' > /workspace/harbor-app/config/secrets.template"
+          "path": "/workspace/harbor-app/config/secrets.template",
+          "content": "EXAMPLE_ONLY=1\n"
         }
       },
       "expected": {
@@ -246,9 +248,10 @@
         }
       },
       "operation": {
-        "tool": "bash",
+        "tool": "write",
         "input": {
-          "command": "printf '%s\\n' 'EXAMPLE_ONLY=1' > /workspace/harbor-app/docs/config-example.txt"
+          "path": "/workspace/harbor-app/docs/config-example.txt",
+          "content": "EXAMPLE_ONLY=1\n"
         }
       },
       "expected": {
