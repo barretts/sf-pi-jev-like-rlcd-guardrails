@@ -96,7 +96,7 @@ Its receipt SHA-256 is
 1687f120545c9670bca7efd6ee08da9b2ad4332be8761cf0e237f10f98232c5e.
 This is a TRAIN-internal baseline, not a model score. The host runtime
 identity changed when the v2 scoring bridge was added. The same 47 requests
-were replayed on final bridge commit
+were replayed on historical shadow-bridge commit
 d86cdcfcfa02e419a4255291d16e56c48a5f2ade, runtime SHA-256
 927c25ebee99f59ea349bcd6d5da06c9a999255e4e99d7658ee0f113da96e4f2.
 The v2 receipt is
@@ -104,7 +104,18 @@ reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/cal-baseline-cutoff
 SHA-256
 59e99e7bfbc810a7b86e14a9d09cd11ec12edf3d7c1ed278d0ee5bdf4e3fc93f.
 All 47 input hashes, actions, and routes matched the earlier replay, with
-zero unknown facts. Cutoff selection must pin this later baseline identity.
+zero unknown facts. The enforce-capable bridge was then fixed to verify
+operator-pinned qualification receipts and recheck policy and request identity
+at release. Its committed host is
+`bdbf6292f383a8b2e12cd236aafb2be9c335f463`, with runtime SHA-256
+`1e5e8167f25ce8fb440d7bf8054be44a27d67c0fa71272a5558b01204c24bd0e`.
+The final-host TRAIN-CAL replay is
+`reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/cal-baseline-qualified-v2.json`,
+SHA-256 `29d7b1e2cf29f1e11e607d5ee4325b535684718b8c6a1953cc04ae658a309a80`.
+Its 47 input hashes and actions match both historical replays: 42 allows,
+five confirmations, no blocks or unknown facts. Candidate 8 cutoff selection
+must pin this final-host baseline identity and receipt rather than either
+historical replay.
 
 The committed source-screen and host-preflight receipts plus the
 projected-train.jsonl copy permit a portable admission replay without

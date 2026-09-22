@@ -32,6 +32,11 @@ const hostPins = {
     runtimeSha256:
       "927c25ebee99f59ea349bcd6d5da06c9a999255e4e99d7658ee0f113da96e4f2",
   },
+  qualifiedV2: {
+    commit: "bdbf6292f383a8b2e12cd236aafb2be9c335f463",
+    runtimeSha256:
+      "1e5e8167f25ce8fb440d7bf8054be44a27d67c0fa71272a5558b01204c24bd0e",
+  },
 };
 const browserSources = [
   "fixtures/guardrail/candidate6/browser-train-proposal.json",
