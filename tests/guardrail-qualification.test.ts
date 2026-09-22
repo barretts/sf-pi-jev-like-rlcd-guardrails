@@ -267,8 +267,26 @@ describe("frozen guardrail selection", () => {
     );
     expect(outlier.metrics.modelEligible).toBe(21);
     expect(outlier.metrics.warmP95Ms).toBe(400);
+    expect(outlier.metrics.deadlineMisses).toBe(0);
     expect(outlier.records.some((row) => row.elapsedMs === 700)).toBe(true);
     expect(Object.values(outlier.gates).every(Boolean)).toBe(true);
+    const missedDeadline = qualifyGuardrail(
+      outlier.records.map((row) =>
+        row.id === "validation-shell-true"
+          ? {
+              ...row,
+              elapsedMs: 750,
+              evidence: { ...row.evidence!, elapsedMs: 750 },
+            }
+          : row,
+      ),
+      { ...identity, bridgeProvenance, split: "validation" },
+    );
+    expect(missedDeadline.metrics.warmP95Ms).toBe(400);
+    expect(missedDeadline.metrics.deadlineMisses).toBe(1);
+    expect(missedDeadline.gates.latency).toBe(true);
+    expect(missedDeadline.gates.hardDeadline).toBe(false);
+    expect(missedDeadline.qualified).toBe(false);
     const extendedInventory = [
       ...inventory(),
       ...extra.map(

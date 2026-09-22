@@ -142,6 +142,7 @@ export interface GuardrailQualification {
     errors: number;
     ineligibleFallbacks: number;
     warmP95Ms: number;
+    deadlineMisses: number;
     idealWarmP95Met: boolean;
     improvements: number;
   };
@@ -300,6 +301,9 @@ export function qualifyGuardrail(
       (r) => !r.modelEligible && !r.policyFloor && !!r.fallbackReason,
     ),
     warmP95Ms,
+    deadlineMisses: count(
+      (r) => r.modelEligible && r.elapsedMs >= GUARDRAIL_CRITERIA.deadlineMs,
+    ),
     idealWarmP95Met:
       times.length > 0 && warmP95Ms < GUARDRAIL_CRITERIA.idealWarmP95BelowMs,
     improvements: count(
@@ -318,6 +322,7 @@ export function qualifyGuardrail(
     latency:
       metrics.modelEligible > 0 &&
       metrics.warmP95Ms <= GUARDRAIL_CRITERIA.warmP95MaxMs,
+    hardDeadline: metrics.deadlineMisses === 0,
     completeModelExecution:
       metrics.modelEligible > 0 &&
       metrics.modelAnswered === metrics.modelEligible &&
