@@ -3,7 +3,13 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { lstat, readFile, writeFile } from "node:fs/promises";
+import {
+  lstat,
+  readFile,
+  readdir,
+  readlink,
+  writeFile,
+} from "node:fs/promises";
 import {
   basename,
   dirname,
@@ -80,6 +86,69 @@ export function assertSameScoringIdentity(before, after) {
     names.some((name) => before[name] !== after[name])
   )
     fail("source, model, native scorer, or host changed during CAL scoring");
+}
+async function quantizerRuntimeIdentity(binaryPath) {
+  const dir = dirname(binaryPath);
+  const names = (await readdir(dir)).filter((name) => name.endsWith(".dylib"));
+  const result = {};
+  for (const name of names) {
+    if (!/^[A-Za-z0-9._+-]+\.dylib$/.test(name))
+      fail("quantizer runtime has an invalid library filename");
+    const path = resolve(dir, name);
+    const entry = await lstat(path);
+    if (entry.isSymbolicLink()) result[`link:${name}`] = await readlink(path);
+    else if (entry.isFile()) result[`library:${name}`] = await fileSha(path);
+    else fail("quantizer runtime includes a non-file library");
+  }
+  return result;
+}
+export async function verifyQuantizerRuntime(
+  binaryPath,
+  runtimeLibraries,
+  runtimeLibraryLinks,
+) {
+  if (
+    !runtimeLibraries ||
+    typeof runtimeLibraries !== "object" ||
+    Array.isArray(runtimeLibraries) ||
+    Object.keys(runtimeLibraries).length !== 8 ||
+    !runtimeLibraryLinks ||
+    typeof runtimeLibraryLinks !== "object" ||
+    Array.isArray(runtimeLibraryLinks) ||
+    Object.keys(runtimeLibraryLinks).length < 1
+  )
+    fail("quantizer runtime library inventory is incomplete");
+  const expected = {};
+  for (const [name, digest] of Object.entries(runtimeLibraries)) {
+    if (!/^[A-Za-z0-9._+-]+\.dylib$/.test(name) || !hex64(digest))
+      fail("quantizer runtime library pin is invalid");
+    expected[`library:${name}`] = digest;
+  }
+  for (const [name, target] of Object.entries(runtimeLibraryLinks)) {
+    if (
+      !/^[A-Za-z0-9._+-]+\.dylib$/.test(name) ||
+      !/^[A-Za-z0-9._+-]+\.dylib$/.test(target) ||
+      Object.hasOwn(runtimeLibraries, name) ||
+      (!Object.hasOwn(runtimeLibraries, target) &&
+        !Object.hasOwn(runtimeLibraryLinks, target))
+    )
+      fail("quantizer runtime library link is invalid");
+    expected[`link:${name}`] = target;
+  }
+  const actual = await quantizerRuntimeIdentity(binaryPath);
+  assertSameScoringIdentity(expected, actual);
+  for (const name of Object.keys(runtimeLibraryLinks)) {
+    const seen = new Set([name]);
+    let target = runtimeLibraryLinks[name];
+    while (Object.hasOwn(runtimeLibraryLinks, target)) {
+      if (seen.has(target)) fail("quantizer runtime library link cycle");
+      seen.add(target);
+      target = runtimeLibraryLinks[target];
+    }
+    if (!Object.hasOwn(runtimeLibraries, target))
+      fail("quantizer runtime link does not resolve to a pinned library");
+  }
+  return actual;
 }
 function jsonl(bytes, split) {
   const text = bytes.toString("utf8");
@@ -313,7 +382,12 @@ async function captureScoringIdentity(values) {
   } catch {
     fail("sf-pi host changed during CAL scoring");
   }
-  return capturePinnedFileIdentities(paths);
+  return {
+    ...(await capturePinnedFileIdentities(paths)),
+    ...(values.artifactFormat === "q8_0"
+      ? await quantizerRuntimeIdentity(values.quantizerBinary)
+      : {}),
+  };
 }
 
 function warmupAttempt(source, modelSha256, nativeBinarySha256, reason) {
@@ -388,8 +462,14 @@ export async function verifyInferenceFormat(values, artifact, exported) {
     values.quantizationManifestSha256,
   );
   const rel = relative(root, values.quantizationManifest);
-  if (rel === ".." || rel.startsWith(`..${sep}`) || isAbsolute(rel))
-    fail("Q8_0 manifest must be committed inside Jev");
+  const expectedRel = `reports/guardrail-risk-2026-09-21/candidate-9-evidence/artifacts/${values.arm}-q8.json`;
+  if (
+    rel === ".." ||
+    rel.startsWith(`..${sep}`) ||
+    isAbsolute(rel) ||
+    rel !== expectedRel
+  )
+    fail(`Q8_0 manifest must be committed at ${expectedRel}`);
   const committed = execFileSync("git", ["show", `HEAD:${rel}`], {
     cwd: root,
   });
@@ -424,6 +504,11 @@ export async function verifyInferenceFormat(values, artifact, exported) {
     (await fileSha(exported.file)) !== exported.sha256
   )
     fail("Q8_0 artifact does not derive from the admitted F16 export");
+  await verifyQuantizerRuntime(
+    values.quantizerBinary,
+    manifest.quantizer.runtimeLibraries,
+    manifest.quantizer.runtimeLibraryLinks,
+  );
   return {
     format: "q8_0",
     artifactSha256: artifact.sha256,

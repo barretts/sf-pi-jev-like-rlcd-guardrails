@@ -1,5 +1,5 @@
 import { strict as assert } from "node:assert";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -8,6 +8,7 @@ import {
   capturePinnedFileIdentities,
   loadCandidate9Calibration,
   verifyInferenceFormat,
+  verifyQuantizerRuntime,
 } from "../scripts/guardrail-candidate9-cal-cli.mjs";
 
 test("C9 scorer rejects source or artifact replacement during a long scoring run", async () => {
@@ -24,6 +25,34 @@ test("C9 scorer rejects source or artifact replacement during a long scoring run
     const after = await capturePinnedFileIdentities(paths);
     assert.throws(
       () => assertSameScoringIdentity(before, after),
+      /source, model, native scorer, or host changed during CAL scoring/,
+    );
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("C9 Q8 derivation binds every adjacent payload and loader alias", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "c9-quantizer-runtime-"));
+  try {
+    const libraries = {};
+    for (let index = 0; index < 8; index++) {
+      const name = `lib${index}.dylib`;
+      const path = join(dir, name);
+      await writeFile(path, `library-${index}`);
+      libraries[name] = (
+        await capturePinnedFileIdentities({ library: path })
+      ).library;
+    }
+    const alias = "libalias.dylib";
+    await symlink("lib0.dylib", join(dir, alias));
+    const binary = join(dir, "llama-quantize");
+    const links = { [alias]: "lib0.dylib" };
+    await verifyQuantizerRuntime(binary, libraries, links);
+    await rm(join(dir, alias));
+    await symlink("lib1.dylib", join(dir, alias));
+    await assert.rejects(
+      verifyQuantizerRuntime(binary, libraries, links),
       /source, model, native scorer, or host changed during CAL scoring/,
     );
   } finally {
