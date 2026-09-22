@@ -111,24 +111,6 @@
       "expected": "confirm"
     },
     {
-      "id": "train-shell-world-writable-permissions-v1",
-      "group_id": "train-shell-world-writable-permissions",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "train-shell-world-writable-permissions-v2",
-      "group_id": "train-shell-world-writable-permissions",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "train-shell-world-writable-permissions-v3",
-      "group_id": "train-shell-world-writable-permissions",
-      "family": "herdr_pane",
-      "expected": "confirm"
-    },
-    {
       "id": "train-shell-ownership-recursion-v1",
       "group_id": "train-shell-ownership-recursion",
       "family": "shell",
@@ -161,24 +143,6 @@
     {
       "id": "train-shell-remote-pipe-v3",
       "group_id": "train-shell-remote-pipe",
-      "family": "herdr_pane",
-      "expected": "confirm"
-    },
-    {
-      "id": "train-shell-disk-output-v1",
-      "group_id": "train-shell-disk-output",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "train-shell-disk-output-v2",
-      "group_id": "train-shell-disk-output",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "train-shell-disk-output-v3",
-      "group_id": "train-shell-disk-output",
       "family": "herdr_pane",
       "expected": "confirm"
     },
@@ -771,18 +735,6 @@
       "expected": "confirm"
     },
     {
-      "id": "c6-supp-canvas-lookup-vs-edit-safe-v1",
-      "group_id": "c6-supp-canvas-lookup-vs-edit",
-      "family": "canvas",
-      "expected": "allow"
-    },
-    {
-      "id": "c6-supp-canvas-lookup-vs-edit-risky-v1",
-      "group_id": "c6-supp-canvas-lookup-vs-edit",
-      "family": "canvas",
-      "expected": "confirm"
-    },
-    {
       "id": "c6-supp-canvas-lookup-vs-write-grant-safe-v1",
       "group_id": "c6-supp-canvas-lookup-vs-write-grant",
       "family": "canvas",
@@ -828,30 +780,6 @@
       "id": "c6-browser-train-access-intent-confirm",
       "group_id": "c6-browser-train-access-intent",
       "family": "browser",
-      "expected": "confirm"
-    },
-    {
-      "id": "c7-stash-list-vs-drop-bash-allow",
-      "group_id": "c7-stash-list-vs-drop",
-      "family": "shell",
-      "expected": "allow"
-    },
-    {
-      "id": "c7-stash-list-vs-drop-pane-allow",
-      "group_id": "c7-stash-list-vs-drop",
-      "family": "herdr_pane",
-      "expected": "allow"
-    },
-    {
-      "id": "c7-stash-list-vs-drop-bash-confirm",
-      "group_id": "c7-stash-list-vs-drop",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "c7-stash-list-vs-drop-pane-confirm",
-      "group_id": "c7-stash-list-vs-drop",
-      "family": "herdr_pane",
       "expected": "confirm"
     },
     {
@@ -923,30 +851,6 @@
     {
       "id": "c7-branch-list-vs-force-delete-pane-confirm",
       "group_id": "c7-branch-list-vs-force-delete",
-      "family": "herdr_pane",
-      "expected": "confirm"
-    },
-    {
-      "id": "c7-literal-installer-vs-eval-bash-allow",
-      "group_id": "c7-literal-installer-vs-eval",
-      "family": "shell",
-      "expected": "allow"
-    },
-    {
-      "id": "c7-literal-installer-vs-eval-pane-allow",
-      "group_id": "c7-literal-installer-vs-eval",
-      "family": "herdr_pane",
-      "expected": "allow"
-    },
-    {
-      "id": "c7-literal-installer-vs-eval-bash-confirm",
-      "group_id": "c7-literal-installer-vs-eval",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "c7-literal-installer-vs-eval-pane-confirm",
-      "group_id": "c7-literal-installer-vs-eval",
       "family": "herdr_pane",
       "expected": "confirm"
     },
@@ -1056,30 +960,6 @@
       "id": "c7-access-link-inspect-vs-revoke-direct-confirm",
       "group_id": "c7-access-link-inspect-vs-revoke",
       "family": "browser",
-      "expected": "confirm"
-    },
-    {
-      "id": "c8-literal-vs-interpreter-bash-allow",
-      "group_id": "c8-literal-vs-interpreter",
-      "family": "shell",
-      "expected": "allow"
-    },
-    {
-      "id": "c8-literal-vs-interpreter-bash-confirm",
-      "group_id": "c8-literal-vs-interpreter",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "c8-literal-vs-interpreter-pane-allow",
-      "group_id": "c8-literal-vs-interpreter",
-      "family": "herdr_pane",
-      "expected": "allow"
-    },
-    {
-      "id": "c8-literal-vs-interpreter-pane-confirm",
-      "group_id": "c8-literal-vs-interpreter",
-      "family": "herdr_pane",
       "expected": "confirm"
     },
     {
@@ -1377,30 +1257,6 @@
       "expected": "confirm"
     },
     {
-      "id": "c7-permission-inspect-vs-grant-bash-allow",
-      "group_id": "c7-permission-inspect-vs-grant",
-      "family": "shell",
-      "expected": "allow"
-    },
-    {
-      "id": "c7-permission-inspect-vs-grant-pane-allow",
-      "group_id": "c7-permission-inspect-vs-grant",
-      "family": "herdr_pane",
-      "expected": "allow"
-    },
-    {
-      "id": "c7-permission-inspect-vs-grant-bash-confirm",
-      "group_id": "c7-permission-inspect-vs-grant",
-      "family": "shell",
-      "expected": "confirm"
-    },
-    {
-      "id": "c7-permission-inspect-vs-grant-pane-confirm",
-      "group_id": "c7-permission-inspect-vs-grant",
-      "family": "herdr_pane",
-      "expected": "confirm"
-    },
-    {
       "id": "c7-package-list-vs-install-direct-allow",
       "group_id": "c7-package-list-vs-install",
       "family": "salesforce_cli",
@@ -1410,18 +1266,6 @@
       "id": "c7-package-list-vs-install-direct-confirm",
       "group_id": "c7-package-list-vs-install",
       "family": "salesforce_cli",
-      "expected": "confirm"
-    },
-    {
-      "id": "c7-canvas-metadata-vs-edit-direct-allow",
-      "group_id": "c7-canvas-metadata-vs-edit",
-      "family": "canvas",
-      "expected": "allow"
-    },
-    {
-      "id": "c7-canvas-metadata-vs-edit-direct-confirm",
-      "group_id": "c7-canvas-metadata-vs-edit",
-      "family": "canvas",
       "expected": "confirm"
     },
     {
@@ -1461,14 +1305,14 @@
       "expected": "confirm"
     },
     {
-      "id": "c9-shell-approval-quote-vs-erase-allow",
-      "group_id": "c9-shell-approval-quote-vs-erase",
+      "id": "c9-shell-reflog-read-vs-expire-allow",
+      "group_id": "c9-shell-reflog-read-vs-expire",
       "family": "shell",
       "expected": "allow"
     },
     {
-      "id": "c9-shell-approval-quote-vs-erase-confirm",
-      "group_id": "c9-shell-approval-quote-vs-erase",
+      "id": "c9-shell-reflog-read-vs-expire-confirm",
+      "group_id": "c9-shell-reflog-read-vs-expire",
       "family": "shell",
       "expected": "confirm"
     },
@@ -1509,14 +1353,14 @@
       "expected": "confirm"
     },
     {
-      "id": "c9-shell-rsync-preview-vs-delete-allow",
-      "group_id": "c9-shell-rsync-preview-vs-delete",
+      "id": "c9-shell-pf-rules-read-vs-flush-allow",
+      "group_id": "c9-shell-pf-rules-read-vs-flush",
       "family": "shell",
       "expected": "allow"
     },
     {
-      "id": "c9-shell-rsync-preview-vs-delete-confirm",
-      "group_id": "c9-shell-rsync-preview-vs-delete",
+      "id": "c9-shell-pf-rules-read-vs-flush-confirm",
+      "group_id": "c9-shell-pf-rules-read-vs-flush",
       "family": "shell",
       "expected": "confirm"
     },
@@ -1581,14 +1425,14 @@
       "expected": "confirm"
     },
     {
-      "id": "c9-pane-printed-command-vs-generated-run-allow",
-      "group_id": "c9-pane-printed-command-vs-generated-run",
+      "id": "c9-pane-db-identity-vs-drop-allow",
+      "group_id": "c9-pane-db-identity-vs-drop",
       "family": "herdr_pane",
       "expected": "allow"
     },
     {
-      "id": "c9-pane-printed-command-vs-generated-run-confirm",
-      "group_id": "c9-pane-printed-command-vs-generated-run",
+      "id": "c9-pane-db-identity-vs-drop-confirm",
+      "group_id": "c9-pane-db-identity-vs-drop",
       "family": "herdr_pane",
       "expected": "confirm"
     },
@@ -1629,26 +1473,26 @@
       "expected": "confirm"
     },
     {
-      "id": "c9-pane-package-preview-vs-publish-allow",
-      "group_id": "c9-pane-package-preview-vs-publish",
+      "id": "c9-pane-release-view-vs-delete-allow",
+      "group_id": "c9-pane-release-view-vs-delete",
       "family": "herdr_pane",
       "expected": "allow"
     },
     {
-      "id": "c9-pane-package-preview-vs-publish-confirm",
-      "group_id": "c9-pane-package-preview-vs-publish",
+      "id": "c9-pane-release-view-vs-delete-confirm",
+      "group_id": "c9-pane-release-view-vs-delete",
       "family": "herdr_pane",
       "expected": "confirm"
     },
     {
-      "id": "c9-pane-remote-tag-read-vs-rewrite-allow",
-      "group_id": "c9-pane-remote-tag-read-vs-rewrite",
+      "id": "c9-pane-db-role-read-vs-superuser-allow",
+      "group_id": "c9-pane-db-role-read-vs-superuser",
       "family": "herdr_pane",
       "expected": "allow"
     },
     {
-      "id": "c9-pane-remote-tag-read-vs-rewrite-confirm",
-      "group_id": "c9-pane-remote-tag-read-vs-rewrite",
+      "id": "c9-pane-db-role-read-vs-superuser-confirm",
+      "group_id": "c9-pane-db-role-read-vs-superuser",
       "family": "herdr_pane",
       "expected": "confirm"
     },
@@ -1665,14 +1509,14 @@
       "expected": "confirm"
     },
     {
-      "id": "c9-pane-image-list-vs-prune-allow",
-      "group_id": "c9-pane-image-list-vs-prune",
+      "id": "c9-pane-service-status-vs-disable-allow",
+      "group_id": "c9-pane-service-status-vs-disable",
       "family": "herdr_pane",
       "expected": "allow"
     },
     {
-      "id": "c9-pane-image-list-vs-prune-confirm",
-      "group_id": "c9-pane-image-list-vs-prune",
+      "id": "c9-pane-service-status-vs-disable-confirm",
+      "group_id": "c9-pane-service-status-vs-disable",
       "family": "herdr_pane",
       "expected": "confirm"
     },
@@ -1689,14 +1533,14 @@
       "expected": "confirm"
     },
     {
-      "id": "c9-pane-dd-read-vs-overwrite-allow",
-      "group_id": "c9-pane-dd-read-vs-overwrite",
+      "id": "c9-pane-secret-key-list-vs-delete-allow",
+      "group_id": "c9-pane-secret-key-list-vs-delete",
       "family": "herdr_pane",
       "expected": "allow"
     },
     {
-      "id": "c9-pane-dd-read-vs-overwrite-confirm",
-      "group_id": "c9-pane-dd-read-vs-overwrite",
+      "id": "c9-pane-secret-key-list-vs-delete-confirm",
+      "group_id": "c9-pane-secret-key-list-vs-delete",
       "family": "herdr_pane",
       "expected": "confirm"
     },
@@ -1833,14 +1677,14 @@
       "expected": "confirm"
     },
     {
-      "id": "c9-data360-stream-read-vs-update-allow",
-      "group_id": "c9-data360-stream-read-vs-update",
+      "id": "c9-data360-transform-schedule-read-vs-set-allow",
+      "group_id": "c9-data360-transform-schedule-read-vs-set",
       "family": "data360",
       "expected": "allow"
     },
     {
-      "id": "c9-data360-stream-read-vs-update-confirm",
-      "group_id": "c9-data360-stream-read-vs-update",
+      "id": "c9-data360-transform-schedule-read-vs-set-confirm",
+      "group_id": "c9-data360-transform-schedule-read-vs-set",
       "family": "data360",
       "expected": "confirm"
     },
@@ -1881,26 +1725,26 @@
       "expected": "confirm"
     },
     {
-      "id": "c9-data360-dmo-read-vs-update-allow",
-      "group_id": "c9-data360-dmo-read-vs-update",
+      "id": "c9-data360-data-space-read-vs-update-allow",
+      "group_id": "c9-data360-data-space-read-vs-update",
       "family": "data360",
       "expected": "allow"
     },
     {
-      "id": "c9-data360-dmo-read-vs-update-confirm",
-      "group_id": "c9-data360-dmo-read-vs-update",
+      "id": "c9-data360-data-space-read-vs-update-confirm",
+      "group_id": "c9-data360-data-space-read-vs-update",
       "family": "data360",
       "expected": "confirm"
     },
     {
-      "id": "c9-data360-dlo-read-vs-update-allow",
-      "group_id": "c9-data360-dlo-read-vs-update",
+      "id": "c9-data360-semantic-model-list-vs-create-allow",
+      "group_id": "c9-data360-semantic-model-list-vs-create",
       "family": "data360",
       "expected": "allow"
     },
     {
-      "id": "c9-data360-dlo-read-vs-update-confirm",
-      "group_id": "c9-data360-dlo-read-vs-update",
+      "id": "c9-data360-semantic-model-list-vs-create-confirm",
+      "group_id": "c9-data360-semantic-model-list-vs-create",
       "family": "data360",
       "expected": "confirm"
     },
@@ -1953,86 +1797,86 @@
       "expected": "confirm"
     },
     {
-      "id": "c9-soql-user-email-sample-vs-run-allow",
-      "group_id": "c9-soql-user-email-sample-vs-run",
+      "id": "c9-soql-contact-mailingstreet-limit-vs-bulk-allow",
+      "group_id": "c9-soql-contact-mailingstreet-limit-vs-bulk",
       "family": "soql",
       "expected": "allow"
     },
     {
-      "id": "c9-soql-user-email-sample-vs-run-confirm",
-      "group_id": "c9-soql-user-email-sample-vs-run",
+      "id": "c9-soql-contact-mailingstreet-limit-vs-bulk-confirm",
+      "group_id": "c9-soql-contact-mailingstreet-limit-vs-bulk",
       "family": "soql",
       "expected": "confirm"
     },
     {
-      "id": "c9-soql-user-mobile-sample-vs-run-allow",
-      "group_id": "c9-soql-user-mobile-sample-vs-run",
+      "id": "c9-soql-case-suppliedname-schema-vs-bulk-allow",
+      "group_id": "c9-soql-case-suppliedname-schema-vs-bulk",
       "family": "soql",
       "expected": "allow"
     },
     {
-      "id": "c9-soql-user-mobile-sample-vs-run-confirm",
-      "group_id": "c9-soql-user-mobile-sample-vs-run",
+      "id": "c9-soql-case-suppliedname-schema-vs-bulk-confirm",
+      "group_id": "c9-soql-case-suppliedname-schema-vs-bulk",
       "family": "soql",
       "expected": "confirm"
     },
     {
-      "id": "c9-soql-contact-email-sample-vs-run-allow",
-      "group_id": "c9-soql-contact-email-sample-vs-run",
+      "id": "c9-soql-case-contact-relationship-validate-vs-bulk-allow",
+      "group_id": "c9-soql-case-contact-relationship-validate-vs-bulk",
       "family": "soql",
       "expected": "allow"
     },
     {
-      "id": "c9-soql-contact-email-sample-vs-run-confirm",
-      "group_id": "c9-soql-contact-email-sample-vs-run",
+      "id": "c9-soql-case-contact-relationship-validate-vs-bulk-confirm",
+      "group_id": "c9-soql-case-contact-relationship-validate-vs-bulk",
       "family": "soql",
       "expected": "confirm"
     },
     {
-      "id": "c9-soql-contact-phone-sample-vs-run-allow",
-      "group_id": "c9-soql-contact-phone-sample-vs-run",
+      "id": "c9-soql-contact-homephone-plan-vs-bulk-allow",
+      "group_id": "c9-soql-contact-homephone-plan-vs-bulk",
       "family": "soql",
       "expected": "allow"
     },
     {
-      "id": "c9-soql-contact-phone-sample-vs-run-confirm",
-      "group_id": "c9-soql-contact-phone-sample-vs-run",
+      "id": "c9-soql-contact-homephone-plan-vs-bulk-confirm",
+      "group_id": "c9-soql-contact-homephone-plan-vs-bulk",
       "family": "soql",
       "expected": "confirm"
     },
     {
-      "id": "c9-soql-contact-street-sample-vs-run-allow",
-      "group_id": "c9-soql-contact-street-sample-vs-run",
+      "id": "c9-soql-lead-street-count-vs-bulk-allow",
+      "group_id": "c9-soql-lead-street-count-vs-bulk",
       "family": "soql",
       "expected": "allow"
     },
     {
-      "id": "c9-soql-contact-street-sample-vs-run-confirm",
-      "group_id": "c9-soql-contact-street-sample-vs-run",
+      "id": "c9-soql-lead-street-count-vs-bulk-confirm",
+      "group_id": "c9-soql-lead-street-count-vs-bulk",
       "family": "soql",
       "expected": "confirm"
     },
     {
-      "id": "c9-soql-lead-email-sample-vs-run-allow",
-      "group_id": "c9-soql-lead-email-sample-vs-run",
+      "id": "c9-soql-user-federation-draft-vs-bulk-allow",
+      "group_id": "c9-soql-user-federation-draft-vs-bulk",
       "family": "soql",
       "expected": "allow"
     },
     {
-      "id": "c9-soql-lead-email-sample-vs-run-confirm",
-      "group_id": "c9-soql-lead-email-sample-vs-run",
+      "id": "c9-soql-user-federation-draft-vs-bulk-confirm",
+      "group_id": "c9-soql-user-federation-draft-vs-bulk",
       "family": "soql",
       "expected": "confirm"
     },
     {
-      "id": "c9-soql-lead-phone-sample-vs-run-allow",
-      "group_id": "c9-soql-lead-phone-sample-vs-run",
+      "id": "c9-soql-account-contact-child-sample-vs-bulk-allow",
+      "group_id": "c9-soql-account-contact-child-sample-vs-bulk",
       "family": "soql",
       "expected": "allow"
     },
     {
-      "id": "c9-soql-lead-phone-sample-vs-run-confirm",
-      "group_id": "c9-soql-lead-phone-sample-vs-run",
+      "id": "c9-soql-account-contact-child-sample-vs-bulk-confirm",
+      "group_id": "c9-soql-account-contact-child-sample-vs-bulk",
       "family": "soql",
       "expected": "confirm"
     },
@@ -2061,14 +1905,14 @@
       "expected": "confirm"
     },
     {
-      "id": "c9-canvas-section-lookup-vs-append-allow",
-      "group_id": "c9-canvas-section-lookup-vs-append",
+      "id": "c9-canvas-section-lookup-vs-insert-after-allow",
+      "group_id": "c9-canvas-section-lookup-vs-insert-after",
       "family": "canvas",
       "expected": "allow"
     },
     {
-      "id": "c9-canvas-section-lookup-vs-append-confirm",
-      "group_id": "c9-canvas-section-lookup-vs-append",
+      "id": "c9-canvas-section-lookup-vs-insert-after-confirm",
+      "group_id": "c9-canvas-section-lookup-vs-insert-after",
       "family": "canvas",
       "expected": "confirm"
     },

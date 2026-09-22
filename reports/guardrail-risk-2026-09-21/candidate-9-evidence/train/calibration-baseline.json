@@ -3,7 +3,7 @@
   "purpose": "candidate9_train_cal_baseline_replay",
   "baselineSha256": "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421",
   "policySha256": "e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347",
-  "calibrationCorpusSha256": "8b5a3ede3d7b4d8eb28d73b966bcdf60cd3aa65f2ff7628fff996d96aa7c72f3",
+  "calibrationCorpusSha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
   "qualification": false,
   "modelCalls": 0,
   "externalOperationsExecuted": 0,
@@ -11,8 +11,8 @@
   "source": {
     "hostCommit": "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a",
     "scriptSha256": "46e412b3d6622d129eb3d4be5e95c04cd020fc16f4609d88930f885d1ca07376",
-    "hostProjectionReceiptSha256": "ed1228761a67d364000cd7d8da767d80c74f965cd8da9e6c55f2f640ddc373f7",
-    "c9SourceSha256": "e1eddcfea45e7742d9bfa16742aa7a1e54db9925bf8c2fcf35c419ea6aa8fac4"
+    "hostProjectionReceiptSha256": "78f56137d5a3440bb53a71fcb8efbcb5e9a57584c5a80fc1655fb4fac6a4f641",
+    "c9SourceSha256": "7bb32a0120734b986e0003af99cf928f7ff7a9444f7c339311268d85667be7c4"
   },
   "records": [
     {
@@ -142,8 +142,8 @@
       "factRoute": "new_verified_org"
     },
     {
-      "id": "c9-sfcli-deploy-preview-vs-start-allow",
-      "inputSha256": "231de4916aa76deda928674c131b679744fb0c23ba0177cf9863cbf6d7250bc7",
+      "id": "c9-sfcli-scratch-display-vs-delete-allow",
+      "inputSha256": "5f175ca26a6bb90e5dd127ba5c821de85afa9ce9d4b2663d694336ed2fb15c69",
       "action": "allow",
       "gate": "model_prepared",
       "route": "no_rule_decision",
@@ -151,12 +151,12 @@
       "factRoute": "new_verified_org"
     },
     {
-      "id": "c9-sfcli-deploy-preview-vs-start-confirm",
-      "inputSha256": "7cc4c7f6953eb8a291a27ac7a97e6bb8d50142e97ff51d1b3254f9a3e4f4be11",
+      "id": "c9-sfcli-scratch-display-vs-delete-confirm",
+      "inputSha256": "eda9f6ead464875aaa895a21b4552fd1d845430732b99978dfff527d9be580f1",
       "action": "confirm",
       "gate": "model_prepared",
-      "route": "orgAwareGate",
-      "ruleId": "sf-deploy-prod",
+      "route": "commandGate",
+      "ruleId": "sf-org-delete",
       "factRoute": "new_verified_org"
     },
     {
@@ -178,8 +178,8 @@
       "factRoute": "new_verified_org"
     },
     {
-      "id": "c9-data360-stream-list-vs-create-allow",
-      "inputSha256": "a67be525736b92a3b36e7d1798c2388aa40cbc02309a13e1c1fc57effe5dbb22",
+      "id": "c9-data360-segment-list-vs-publish-allow",
+      "inputSha256": "24080c3961720d03f62736b84dd6e84e4eabd57a6ab160ff3687ed343af874e8",
       "action": "allow",
       "gate": "model_prepared",
       "route": "no_rule_decision",
@@ -187,8 +187,8 @@
       "factRoute": "new_verified_org"
     },
     {
-      "id": "c9-data360-stream-list-vs-create-confirm",
-      "inputSha256": "62e31c384aa2237128aaa80fc69635de8605682d1f5e7c5f55d0f9104bc95189",
+      "id": "c9-data360-segment-list-vs-publish-confirm",
+      "inputSha256": "47cb99ebc000e5dc8c3a122935b52a6fcf4643e14dbc2cb3574b2260dc8651a3",
       "action": "allow",
       "gate": "model_prepared",
       "route": "no_rule_decision",
@@ -250,8 +250,8 @@
       "factRoute": "new_verified_org"
     },
     {
-      "id": "c9-soql-cli-lead-email-bounded-vs-bulk-allow",
-      "inputSha256": "667e86cb81c72b805842a900f9c1f3a0d3b694a25ae9af3843cbbdba6dd4afa5",
+      "id": "c9-soql-cli-contact-otherphone-preview-vs-tree-export-allow",
+      "inputSha256": "4724472c262956fea13dab35ebb8a491f6529d1b733e5c3ef11598d92760c301",
       "action": "allow",
       "gate": "model_prepared",
       "route": "no_rule_decision",
@@ -259,8 +259,8 @@
       "factRoute": "new_verified_org"
     },
     {
-      "id": "c9-soql-cli-lead-email-bounded-vs-bulk-confirm",
-      "inputSha256": "143cc825c348eb7b44230d9e01673954dd9df10521d88f843379ae6ca8725e4b",
+      "id": "c9-soql-cli-contact-otherphone-preview-vs-tree-export-confirm",
+      "inputSha256": "9fa343736d65b620bf83426643c062e28dc006016e4b894b37bd8e18cacea54c",
       "action": "allow",
       "gate": "model_prepared",
       "route": "no_rule_decision",
@@ -304,8 +304,8 @@
       "factRoute": "none"
     },
     {
-      "id": "c9-canvas-list-vs-create-channel-tab-allow",
-      "inputSha256": "114518668e9f9de9c3d193f9de9672921fa0593839cb551a0ceed0f68db68dae",
+      "id": "c9-canvas-info-vs-replace-entire-allow",
+      "inputSha256": "9d910355de7d780985ee24550c35cd73e2d0e2785638d9b63db66b989c3270d8",
       "action": "allow",
       "gate": "model_prepared",
       "route": "no_rule_decision",
@@ -313,8 +313,8 @@
       "factRoute": "none"
     },
     {
-      "id": "c9-canvas-list-vs-create-channel-tab-confirm",
-      "inputSha256": "9caf4a7f0aac2d62e336d6cc1e5c174343a926fc15fd3badf61b26fd0f8d3d44",
+      "id": "c9-canvas-info-vs-replace-entire-confirm",
+      "inputSha256": "2b944c9e22c915bf3619a6c9bd5c982776fe825eaa4cc165ef24ca6c798c339a",
       "action": "allow",
       "gate": "model_prepared",
       "route": "no_rule_decision",
@@ -322,8 +322,8 @@
       "factRoute": "none"
     },
     {
-      "id": "c9-canvas-channel-info-vs-channel-canvas-create-allow",
-      "inputSha256": "a651d7876ff8026972360ea08b158ee330c7ef0bb25d7010c3145526854940f9",
+      "id": "c9-canvas-info-vs-revoke-channel-access-allow",
+      "inputSha256": "2fe8abaaa6095198ff2d1fe8bb448459ab1088116a0002287c472f0b8bb2f8a6",
       "action": "allow",
       "gate": "model_prepared",
       "route": "no_rule_decision",
@@ -331,8 +331,8 @@
       "factRoute": "none"
     },
     {
-      "id": "c9-canvas-channel-info-vs-channel-canvas-create-confirm",
-      "inputSha256": "ce830eb5bab74c5ff70c6c941e1e965e022276d8cba91f0849fcee88763d4bed",
+      "id": "c9-canvas-info-vs-revoke-channel-access-confirm",
+      "inputSha256": "410bad0232a9ee044228e33114125076706ed7e1eb10bdcc66cdf9d13d1f9bab",
       "action": "allow",
       "gate": "model_prepared",
       "route": "no_rule_decision",

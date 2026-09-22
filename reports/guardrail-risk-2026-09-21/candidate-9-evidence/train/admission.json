@@ -1,7 +1,7 @@
 {
   "version": 1,
   "purpose": "candidate9_fit_calibration_admission",
-  "trainingReady": true,
+  "trainingReady": false,
   "qualification": false,
   "modelCalls": 0,
   "c8ValidBodyRead": false,
@@ -11,39 +11,41 @@
     "scorerProtocolSha256": "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
     "hostCommit": "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a",
     "hostRuntimeSha256": "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421",
-    "c9SourceSha256": "e1eddcfea45e7742d9bfa16742aa7a1e54db9925bf8c2fcf35c419ea6aa8fac4",
-    "pairsSha256": "14bf441943af175e9edb403a57763a5f7acbb575ca9f3bf5e8f369417f2f6e29",
-    "familiesSha256": "c0da32e19b86815663d027064cabfc40c93680543b50f83a64fd9106753f8806",
-    "sourceCompositionReceiptSha256": "f05e04ce642bfb768d35785eec6b2e3bede25df1be1c82b1b398bc59942db196",
-    "hostProjectionReceiptSha256": "ed1228761a67d364000cd7d8da767d80c74f965cd8da9e6c55f2f640ddc373f7",
+    "c9SourceSha256": "7bb32a0120734b986e0003af99cf928f7ff7a9444f7c339311268d85667be7c4",
+    "pairsSha256": "b6b062a09a774c4c9907deb99992ec3b1e5f897274181a6c570c7e4494c607d9",
+    "familiesSha256": "10ea2d9610e991b4f541c82378715d2e68d09e68829bf4e8c0de4366c0e6f14c",
+    "sourceCompositionReceiptSha256": "1c4d6fef249d9a6e6886a6b6ffa6b03e0427fbdd659b6628daac1c29c9986fcb",
+    "hostProjectionReceiptSha256": "78f56137d5a3440bb53a71fcb8efbcb5e9a57584c5a80fc1655fb4fac6a4f641",
     "inheritedBashFamilySha256": "1ba4aa1c083d8c62d14edc965af9c8ebaeb4893aebac04057f3622f80537b2fe",
-    "inheritedSourceExclusionSha256": "e2e27c1c4326aebed47006da1fe77dea54842276fb3242a3f66a4ffef7fbc832",
+    "inheritedSourceExclusionSha256": "eab62acc975c447cdad34846f68493aeb239dbabaaef012bc7e4a419bea01285",
     "inheritedPairsSha256": "5d966c78f0b2ea2193a99a8f007cbd84327594c66d4e9bb62f42f8440a233b04",
-    "calibrationBaselineReceiptSha256": "30ade52e146c73cbcabb632cac472a6c926dc9b64cf8f7691469a4019367b374",
-    "hostControlsReceiptSha256": "034f0c2bf9ca715e19fa4d987fe865e82aab101c66783db1eef0fb6a7c84fda6",
-    "scriptSha256": "1a6f5f3983ddb63a62906389b27ab4de1c59f00f3d145ccb9bbeb0c96d98cf3a"
+    "calibrationBaselineReceiptSha256": "c4b383d62b895e5d7a289d8c0c7e0bdca189c4358e1b0da1e311c8c27e3b04da",
+    "hostControlsReceiptSha256": "e38adafd9c060aabd10a9d59d6bd892ebe20603fc35f71c34e71448b416bbd8e",
+    "overlapReceiptSha256": null,
+    "scriptSha256": "00f7e74a8a1af03f0f7f037a42e116bf43616ea967d74a01aa621d8da4bc39fc"
   },
   "fit": {
-    "sha256": "77e7ebc3aa53d8274afb566c5d1401014555d25880f478476ea2704731a127ed",
-    "rows": 383,
-    "groups": 152
+    "sha256": "c7083d575a8143dca592ea3bab2085057810e3503c290438d7544558305798ee",
+    "rows": 357,
+    "groups": 144
   },
   "calibration": {
-    "sha256": "8b5a3ede3d7b4d8eb28d73b966bcdf60cd3aa65f2ff7628fff996d96aa7c72f3",
+    "sha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
     "rows": 42,
     "groups": 21,
     "notPassedToFit": true
   },
   "counts": {
-    "inheritedRows": 243,
+    "inheritedRows": 217,
     "inheritedHostPreparedRows": 270,
-    "inheritedSourceExcludedGroups": 11,
+    "inheritedSourceExcludedGroups": 19,
     "newFitRows": 140,
-    "pairs": 97,
-    "inheritedPairs": 27,
+    "pairs": 93,
+    "inheritedPairs": 23,
     "newPairs": 70,
-    "fitAllow": 223,
-    "fitConfirm": 160
+    "fitAllow": 213,
+    "fitConfirm": 144,
+    "exactFitCalibrationOperationOverlap": 0
   },
   "familyCounts": {
     "agentscript": {
@@ -62,9 +64,9 @@
       "confirm": 16
     },
     "canvas": {
-      "rows": 38,
-      "allow": 19,
-      "confirm": 19
+      "rows": 34,
+      "allow": 17,
+      "confirm": 17
     },
     "data360": {
       "rows": 58,
@@ -72,9 +74,9 @@
       "confirm": 16
     },
     "herdr_pane": {
-      "rows": 66,
-      "allow": 34,
-      "confirm": 32
+      "rows": 56,
+      "allow": 30,
+      "confirm": 26
     },
     "salesforce_cli": {
       "rows": 39,
@@ -82,9 +84,9 @@
       "confirm": 19
     },
     "shell": {
-      "rows": 74,
-      "allow": 37,
-      "confirm": 37
+      "rows": 62,
+      "allow": 33,
+      "confirm": 29
     },
     "soql": {
       "rows": 48,
@@ -182,7 +184,76 @@
         "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
         "sf-pi/node_modules/@salesforce/plugin-data/lib/bulkUtils.js"
       ]
+    },
+    {
+      "group_id": "c7-stash-list-vs-drop",
+      "reason": "An independent aggregate screen against the sealed C9 VALID source found one exact original-operation collision in this inherited FIT group. The whole group is excluded without opening or copying the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "c7-permission-inspect-vs-grant",
+      "reason": "Independent sealed-split review adjudicated this inherited FIT contrast as a normalized-skeleton or controlled-risk replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "train-shell-disk-output",
+      "reason": "Independent sealed-split review adjudicated this inherited FIT group as a normalized-skeleton or controlled-risk replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "train-shell-world-writable-permissions",
+      "reason": "Independent sealed-split review adjudicated this inherited FIT group as a normalized-skeleton or controlled-risk replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "c7-literal-installer-vs-eval",
+      "reason": "Independent sealed-split review adjudicated this inherited quoted-literal contrast as a same controlled-risk-change replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "c8-literal-vs-interpreter",
+      "reason": "Independent sealed-split review adjudicated this inherited quoted-literal contrast as a same controlled-risk-change replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "c6-supp-canvas-lookup-vs-edit",
+      "reason": "Independent sealed-split review adjudicated this inherited Canvas append contrast as a cross-tool controlled-risk replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
+    },
+    {
+      "group_id": "c7-canvas-metadata-vs-edit",
+      "reason": "Independent sealed-split review adjudicated this inherited Canvas append contrast as a cross-tool controlled-risk replay. The complete group is excluded without reading the blind case body.",
+      "evidence": [
+        "reports/guardrail-risk-2026-09-21/candidate-8-evidence/train/fit.jsonl",
+        "reports/guardrail-risk-2026-09-21/candidate-9-evidence/overlap/initial-pre-fit-rejection.json"
+      ]
     }
   ],
-  "proofLimit": "TRAIN-only admission and host preparation, not model effectiveness or split independence. CAL was reserved by complete groups; no VALID or TEST body was used."
+  "overlapAudit": {
+    "status": "pending",
+    "receiptSha256": null,
+    "blindValidSourceSha256": "d7d532c2712bf699133971cb82b0b0c5f21cbe5362a5edd07171b532a58f072f"
+  },
+  "proofLimit": "TRAIN-only admission and host preparation, not model effectiveness. CAL was reserved by complete groups; the independent overlap receipt, when supplied, compares a sealed VALID split without exposing its body to this TRAIN author. No TEST body was used."
 }
