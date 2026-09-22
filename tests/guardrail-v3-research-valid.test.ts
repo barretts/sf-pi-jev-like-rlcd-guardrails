@@ -9,6 +9,7 @@ import {
   selectValidationRows,
   summarizeValidation,
   verifyResearchModelIdentity,
+  verifyResearchTrainingProvenance,
 } from "../scripts/guardrail-v3-research-valid.mjs";
 import { RFDT_BASE_REVISION } from "../dist/rfdt.js";
 
@@ -297,6 +298,149 @@ describe("nonqualifying VALID-only bridge replay", () => {
     }
   });
 
+  it("binds a research export to the reviewed TRAIN/VALID bytes before model replay", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "c5-valid-provenance-"));
+    const modelFile = join(directory, "candidate.gguf");
+    const artifactFile = join(directory, "artifact.json");
+    const runFile = join(directory, "manifest.json");
+    const mergedFile = join(directory, "merged.jsonl");
+    const sourceFile = join(directory, "source.jsonl");
+    const preparedFile = join(directory, "prepared.jsonl");
+    const mergeReceiptFile = join(directory, "merge-receipt.json");
+    const modelBytes = Buffer.from("GGUF synthetic export fixture");
+    const datasetBytes = Buffer.from('{"id":"train"}\n{"id":"valid"}\n');
+    const modelId = "jev/gemma-3-1b-guardrail-c5-research-256";
+    const runId = "rfdt-research-fixture";
+    const runtimeSha256 = "b".repeat(64);
+    const protocolSha256 = "c".repeat(64);
+    const artifact = {
+      version: 1,
+      id: modelId,
+      file: modelFile,
+      base_model: "google/gemma-3-1b-it",
+      base_revision: RFDT_BASE_REVISION,
+      template_version: "v2",
+      training_run: runId,
+      sha256: h(modelBytes),
+      size: modelBytes.length,
+      run_manifest: runFile,
+    };
+    const run = {
+      version: 1,
+      id: runId,
+      status: "exported",
+      directory,
+      base_model: artifact.base_model,
+      base_revision: artifact.base_revision,
+      template_version: artifact.template_version,
+      source: { file: sourceFile, sha256: h(datasetBytes), examples: 2 },
+      prepared: {
+        sha256: "d".repeat(64),
+        dataset_file: preparedFile,
+        dataset_sha256: h(datasetBytes),
+        branches: { train: 1, validation: 1, test: 0 },
+      },
+      exports: {
+        id: modelId,
+        file: modelFile,
+        sha256: h(modelBytes),
+        size: modelBytes.length,
+      },
+    };
+    const merge = {
+      version: 1,
+      purpose: "nonqualifying_v3_research_merged_train_validation",
+      qualification: false,
+      officialCandidate5Admission: false,
+      heldOutContentEmitted: false,
+      rows: { train: 1, validation: 1, test: 0 },
+      dataset: { file: mergedFile, sha256: h(datasetBytes) },
+      source: {
+        model: artifact.base_model,
+        revision: artifact.base_revision,
+        sfPiCommit: "fixture-commit",
+        sfPiRuntimeSha256: runtimeSha256,
+        scorerProtocolSha256: protocolSha256,
+      },
+    };
+    const model = {
+      modelId,
+      modelFile,
+      modelSha256: h(modelBytes),
+      modelSize: modelBytes.length,
+    };
+    const validationSource = {
+      sfPiRuntimeSha256: runtimeSha256,
+      scorerProtocolSha256: protocolSha256,
+    };
+    try {
+      await Promise.all([
+        writeFile(modelFile, modelBytes),
+        writeFile(artifactFile, JSON.stringify(artifact)),
+        writeFile(runFile, JSON.stringify(run)),
+        writeFile(mergedFile, datasetBytes),
+        writeFile(sourceFile, datasetBytes),
+        writeFile(preparedFile, datasetBytes),
+        writeFile(mergeReceiptFile, JSON.stringify(merge)),
+      ]);
+      await expect(
+        verifyResearchTrainingProvenance(
+          artifactFile,
+          mergeReceiptFile,
+          model,
+          validationSource,
+        ),
+      ).resolves.toMatchObject({
+        mergedDatasetSha256: h(datasetBytes),
+        rfdtRunId: runId,
+        trainingSfPiCommit: "fixture-commit",
+      });
+      await expect(
+        verifyResearchTrainingProvenance(
+          artifactFile,
+          mergeReceiptFile,
+          { ...model, modelSha256: pin },
+          validationSource,
+        ),
+      ).rejects.toThrow("reviewed split provenance differ");
+      await expect(
+        verifyResearchTrainingProvenance(
+          artifactFile,
+          mergeReceiptFile,
+          model,
+          { ...validationSource, sfPiRuntimeSha256: pin },
+        ),
+      ).rejects.toThrow("reviewed split provenance differ");
+      await writeFile(
+        runFile,
+        JSON.stringify({
+          ...run,
+          source: { ...run.source, sha256: pin },
+        }),
+      );
+      await expect(
+        verifyResearchTrainingProvenance(
+          artifactFile,
+          mergeReceiptFile,
+          model,
+          validationSource,
+        ),
+      ).rejects.toThrow("not prepared from the reviewed split");
+      await writeFile(runFile, JSON.stringify(run));
+      await writeFile(preparedFile, "changed");
+      await expect(
+        verifyResearchTrainingProvenance(
+          artifactFile,
+          mergeReceiptFile,
+          model,
+          validationSource,
+        ),
+      ).rejects.toThrow("dataset bytes changed");
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
   it("requires --model-id for model evaluation while preflight may omit it", () => {
     const command = resolve("scripts/guardrail-v3-research-valid.mjs");
     const common = [
@@ -325,6 +469,23 @@ describe("nonqualifying VALID-only bridge replay", () => {
     );
     expect(missing.status).not.toBe(0);
     expect(missing.stderr).toContain("--model-id jev/ID");
+    const missingProvenance = spawnSync(
+      process.execPath,
+      [
+        command,
+        ...common,
+        "--model",
+        "candidate.gguf",
+        "--model-id",
+        "jev/candidate",
+        "--registry",
+        "registry.json",
+      ],
+      { encoding: "utf8" },
+    );
+    expect(missingProvenance.status).not.toBe(0);
+    expect(missingProvenance.stderr).toContain("--artifact ARTIFACT_JSON");
+    expect(missingProvenance.stderr).toContain("--merge-receipt MERGE_JSON");
     const preflight = spawnSync(
       process.execPath,
       [command, ...common, "--preflight"],

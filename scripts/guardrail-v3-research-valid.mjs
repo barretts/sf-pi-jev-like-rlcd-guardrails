@@ -18,7 +18,11 @@ import {
   guardrailConfig,
   registerGuardrailProvider,
 } from "../dist/guardrail-extension.js";
-import { hashArtifact, verifyArtifact } from "../dist/models.js";
+import {
+  hashArtifact,
+  verifyArtifact,
+  verifyTrainedArtifactExport,
+} from "../dist/models.js";
 import { RFDT_BASE_MODEL, RFDT_BASE_REVISION } from "../dist/rfdt.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -95,8 +99,89 @@ export async function verifyResearchModelIdentity(
     );
   return {
     modelId,
+    modelFile: file,
     modelSha256: verified.sha256,
+    modelSize: verified.size,
     registrySha256: sha(registryBytes),
+  };
+}
+
+/** Bind the selected export to the reviewed TRAIN/VALID dataset, never TEST. */
+export async function verifyResearchTrainingProvenance(
+  artifactFile,
+  mergeReceiptFile,
+  model,
+  validationSource,
+) {
+  const [artifactBytes, mergeBytes] = await Promise.all([
+    readFile(resolve(artifactFile)),
+    readFile(resolve(mergeReceiptFile)),
+  ]);
+  const artifact = JSON.parse(artifactBytes);
+  const merge = JSON.parse(mergeBytes);
+  if (
+    artifact?.id !== model.modelId ||
+    resolve(artifact?.file ?? "") !== resolve(model.modelFile) ||
+    artifact?.sha256 !== model.modelSha256 ||
+    !pin(merge?.dataset?.sha256) ||
+    typeof merge.dataset.file !== "string" ||
+    !isAbsolute(merge.dataset.file) ||
+    merge.purpose !== "nonqualifying_v3_research_merged_train_validation" ||
+    merge.qualification !== false ||
+    merge.officialCandidate5Admission !== false ||
+    merge.heldOutContentEmitted !== false ||
+    merge.rows?.train < 1 ||
+    merge.rows?.validation < 1 ||
+    merge.rows?.test !== 0 ||
+    merge.source?.model !== RFDT_BASE_MODEL ||
+    merge.source?.revision !== RFDT_BASE_REVISION ||
+    merge.source?.sfPiRuntimeSha256 !== validationSource.sfPiRuntimeSha256 ||
+    merge.source?.scorerProtocolSha256 !== validationSource.scorerProtocolSha256
+  )
+    throw new Error("Research export and reviewed split provenance differ");
+  const verified = await verifyTrainedArtifactExport(artifact);
+  if (
+    verified.id !== model.modelId ||
+    resolve(verified.file) !== resolve(model.modelFile) ||
+    verified.sha256 !== model.modelSha256 ||
+    verified.size !== model.modelSize
+  )
+    throw new Error(
+      "RFDT export differs from selected research registry model",
+    );
+  const runBytes = await readFile(artifact.run_manifest);
+  const run = JSON.parse(runBytes);
+  if (
+    run.source?.sha256 !== merge.dataset.sha256 ||
+    run.prepared?.dataset_sha256 !== merge.dataset.sha256 ||
+    !pin(run.prepared?.sha256) ||
+    run.source?.examples !== merge.rows.train + merge.rows.validation ||
+    run.prepared?.branches?.train !== merge.rows.train ||
+    run.prepared?.branches?.validation !== merge.rows.validation ||
+    run.prepared?.branches?.test !== 0 ||
+    !isAbsolute(run.source?.file ?? "") ||
+    !isAbsolute(run.prepared?.dataset_file ?? "")
+  )
+    throw new Error("RFDT run was not prepared from the reviewed split");
+  const [mergedBytes, sourceBytes, preparedBytes] = await Promise.all([
+    readFile(merge.dataset.file),
+    readFile(run.source.file),
+    readFile(run.prepared.dataset_file),
+  ]);
+  if (
+    [mergedBytes, sourceBytes, preparedBytes].some(
+      (bytes) => sha(bytes) !== merge.dataset.sha256,
+    )
+  )
+    throw new Error("Reviewed or prepared RFDT dataset bytes changed");
+  return {
+    artifactManifestSha256: sha(artifactBytes),
+    mergeReceiptSha256: sha(mergeBytes),
+    rfdtRunManifestSha256: sha(runBytes),
+    rfdtRunId: run.id,
+    rfdtPreparedSha256: run.prepared.sha256,
+    mergedDatasetSha256: merge.dataset.sha256,
+    trainingSfPiCommit: merge.source.sfPiCommit,
   };
 }
 
@@ -340,6 +425,8 @@ async function main() {
       model: { type: "string" },
       "model-id": { type: "string" },
       registry: { type: "string" },
+      artifact: { type: "string" },
+      "merge-receipt": { type: "string" },
       output: { type: "string" },
       preflight: { type: "boolean" },
     },
@@ -349,10 +436,14 @@ async function main() {
       (key) => !values[key],
     ) ||
     (!values.preflight &&
-      (!values.model || !values["model-id"] || !values.registry))
+      (!values.model ||
+        !values["model-id"] ||
+        !values.registry ||
+        !values.artifact ||
+        !values["merge-receipt"]))
   )
     throw new Error(
-      "Required: --bundle JSON --receipt JSON --sf-pi DIR --sf-deps NODE_MODULES --output NEW_JSON [--model GGUF --model-id jev/ID --registry JSON | --preflight]",
+      "Required: --bundle JSON --receipt JSON --sf-pi DIR --sf-deps NODE_MODULES --output NEW_JSON [--model GGUF --model-id jev/ID --registry JSON --artifact ARTIFACT_JSON --merge-receipt MERGE_JSON | --preflight]",
     );
   const output = resolve(values.output);
   if (inside(output, officialRun))
@@ -418,16 +509,28 @@ async function main() {
   let coldInitializationMs = null;
   let modelSha256 = null;
   let artifactRegistrySha256 = null;
+  let trainingProvenance = null;
+  let nativeBinarySha256 = null;
+  let nativeBinaryFile = null;
+  let selectedModel = null;
   try {
     const pi = recorder();
     if (!values.preflight) {
+      const cold = performance.now();
       const selected = await verifyResearchModelIdentity(
         values.model,
         values["model-id"],
         values.registry,
       );
+      selectedModel = selected;
       modelSha256 = selected.modelSha256;
       artifactRegistrySha256 = selected.registrySha256;
+      trainingProvenance = await verifyResearchTrainingProvenance(
+        values.artifact,
+        values["merge-receipt"],
+        selected,
+        bundle.source,
+      );
       const env = {
         ...process.env,
         JEV_DEVICE: "metal",
@@ -436,8 +539,12 @@ async function main() {
         JEV_GUARDRAIL_ARTIFACT_REGISTRY: resolve(values.registry),
       };
       delete env.JEV_GUARDRAIL_QUALIFICATION;
+      const config = guardrailConfig(env);
+      if (config.modelId !== selected.modelId)
+        throw new Error("Research provider selected a different model ID");
+      nativeBinaryFile = config.binary;
+      nativeBinarySha256 = (await hashArtifact(config.binary)).sha256;
       runtime = registerGuardrailProvider(pi, { env });
-      const cold = performance.now();
       await runtime.warmup();
       coldInitializationMs = performance.now() - cold;
       if (
@@ -447,9 +554,6 @@ async function main() {
         runtime.status().qualified !== false
       )
         throw new Error("Research provider model identity changed at warmup");
-      const config = guardrailConfig(env);
-      if (config.modelId !== selected.modelId)
-        throw new Error("Research provider selected a different model ID");
     }
     const cwd = "/example/project";
     for (const row of validation.filter((item) => item.modelEligible)) {
@@ -559,7 +663,17 @@ async function main() {
         (runtime.status().modelSha256 !== modelSha256 ||
           (await hashArtifact(resolve(values.model))).sha256 !== modelSha256 ||
           sha(await readFile(resolve(values.registry))) !==
-            artifactRegistrySha256))
+            artifactRegistrySha256 ||
+          (await hashArtifact(nativeBinaryFile)).sha256 !==
+            nativeBinarySha256 ||
+          canonical(
+            await verifyResearchTrainingProvenance(
+              values.artifact,
+              values["merge-receipt"],
+              selectedModel,
+              bundle.source,
+            ),
+          ) !== canonical(trainingProvenance)))
     )
       throw new Error("Research source or model changed during VALID replay");
     const analysis = values.preflight ? null : summarizeValidation(results);
@@ -582,6 +696,8 @@ async function main() {
         modelId: values.preflight ? null : values["model-id"],
         modelSha256,
         artifactRegistrySha256,
+        ...trainingProvenance,
+        nativeBinarySha256,
       },
       coverage: {
         validationRows: validation.length,
