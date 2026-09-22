@@ -16,9 +16,9 @@ const QUANTIZER_BINARY_SHA256 =
   "e2c48c541efe39436f0edbbbfe0e65c9185e1bb1d6295fcfb28ebc38c1e77985";
 // Evaluator source is frozen before CAL; core changes once on final admission pin.
 const CAL_SCORER_CLI_SHA256 =
-  "76ff31614af2d9647d8ea2c09d45174dbad7f454d79bb43323a2ea40e4f371cb";
+  "cd738c42247a20d4977fbe0e9f30a34afd769c6b0d6af31925e2dc17e43cb3e4";
 const CAL_SCORER_CORE_SHA256 =
-  "f85aa0ac9b411b08a844c2bcd9efa8ee47fb61e29f567dd006353005a822d4f0";
+  "f9a3760ac487d3f836195ab05ed3cfa1d7576271555d9c3ad03afe77efe2ab2f";
 const MAX_JSON_BYTES = 16 * 1_048_576;
 const MAX_MODEL_BYTES = 16 * 1024 * 1_048_576;
 const digest = (value) => createHash("sha256").update(value).digest("hex");
