@@ -445,7 +445,9 @@ export async function runCandidate8HostRows({
         modelAnswered: routing === "model_prepared" && source === "jev",
         inputSha256: newCalls[0]?.inputSha256 ?? null,
         allowScore: comparison?.allowScore ?? null,
-        effectivePolicySha256: digest(config.policies),
+        effectivePolicySha256: digest(
+          JSON.parse(JSON.stringify(config.policies)),
+        ),
         policyFloor: Boolean(floor),
         ...(routing === "pre_model_fallback"
           ? { fallbackReason: comparison?.reason ?? preflight.reason }
