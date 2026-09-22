@@ -1,0 +1,766 @@
+{
+  "version": 1,
+  "id": "rfdt-20260922135403-3f5dfee9",
+  "status": "exported",
+  "base_model": "google/gemma-3-1b-it",
+  "base_revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+  "template_version": "v2",
+  "created_at": "2026-09-22T13:54:08.525Z",
+  "directory": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-128step-v1",
+  "source": {
+    "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-train-admission-20260922-final-v3/admitted-train.jsonl",
+    "sha256": "d31bdb1bcca9bb4866e8dafed3290b4dc15b4b5abb0d9909ef67e855bc066602",
+    "examples": 175
+  },
+  "prepared": {
+    "sha256": "f82690b8631a4d52953ddffa3d8022f5c5faa6b688964884b6196a1512a746d3",
+    "files": {
+      "train": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-128step-v1/train.jsonl",
+      "validation": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-128step-v1/validation.jsonl",
+      "test": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-128step-v1/test.jsonl"
+    },
+    "branches": {
+      "train": 175,
+      "validation": 0,
+      "test": 0
+    },
+    "dataset_file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-128step-v1/dataset.jsonl",
+    "dataset_sha256": "d31bdb1bcca9bb4866e8dafed3290b4dc15b4b5abb0d9909ef67e855bc066602"
+  },
+  "hyperparameters": {
+    "seed": 42,
+    "rank": 16,
+    "scale": 2,
+    "dropout": 0,
+    "layers": 26,
+    "projections": [
+      "self_attn.q_proj",
+      "self_attn.v_proj"
+    ],
+    "batch_size": 1,
+    "accumulation": 8,
+    "learning_rate": 0.0001,
+    "max_prompt_tokens": 2048
+  },
+  "runtime": {
+    "python": "3.13",
+    "mlx": "0.32.2",
+    "mlx_lm_revision": "9d1e356e7cc6549e7d1697adabe2ea01ff8e062c",
+    "transformers": "5.11.0",
+    "converter_torch": "2.11.0"
+  },
+  "training": {
+    "ok": true,
+    "schema_version": 1,
+    "objective": "selected_label_soft_cross_entropy_at_final_real_prompt_position",
+    "template_version": "v2",
+    "provenance": {
+      "base_model": "google/gemma-3-1b-it",
+      "base_revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+      "lineage": "Google Gemma 3",
+      "dependencies": {
+        "python": "3.13.11",
+        "mlx": "0.32.2",
+        "mlx-lm": "0.32.0",
+        "transformers": "5.11.0",
+        "huggingface-hub": "1.32.0",
+        "mlx_lm_revision": "9d1e356e7cc6549e7d1697adabe2ea01ff8e062c"
+      }
+    },
+    "prompt_parity": {
+      "rows_checked": 175,
+      "labels_checked": 350,
+      "rendered_prompt_tokens": true,
+      "answer_label_boundaries": true,
+      "add_special_tokens": false,
+      "template_version": "v2"
+    },
+    "training_data_sha256": "2f58205e90d8d225f6e46d67b1f3a7c5a93e91eaada6dc05b1e8b2f130c522be",
+    "validation_data_sha256": null,
+    "adapter_sha256": "c7d9b310a20c27b335f7d2550cc17bfe91ee42724cc059c97b244b40ed5d9aab",
+    "hyperparameters": {
+      "batch_size": 1,
+      "gradient_accumulation": 8,
+      "learning_rate": 0.0001,
+      "seed": 42,
+      "max_prompt_tokens": 2048,
+      "truncation": false,
+      "lora": {
+        "rank": 16,
+        "scale": 2,
+        "dropout": 0,
+        "keys": [
+          "self_attn.q_proj",
+          "self_attn.v_proj"
+        ]
+      },
+      "layers": 26,
+      "steps": 128
+    },
+    "adapter_dir": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-128step-v1/adapter",
+    "initial_loss": 7.915733413696289,
+    "final_loss": 0.2820039258684431,
+    "steps": 128,
+    "adapter_changed": true,
+    "training_loss_decreased": true,
+    "reload_verified": true,
+    "duration_seconds": 843.106703833997,
+    "history": [
+      {
+        "step": 1,
+        "loss": 7.484390020370483
+      },
+      {
+        "step": 2,
+        "loss": 3.6237072944641113
+      },
+      {
+        "step": 3,
+        "loss": 2.820725440979004
+      },
+      {
+        "step": 4,
+        "loss": 1.5387883186340332
+      },
+      {
+        "step": 5,
+        "loss": 0.47661328315734863
+      },
+      {
+        "step": 6,
+        "loss": 1.034816026687622
+      },
+      {
+        "step": 7,
+        "loss": 1.031970739364624
+      },
+      {
+        "step": 8,
+        "loss": 0.7322466373443604
+      },
+      {
+        "step": 9,
+        "loss": 0.6818559169769287
+      },
+      {
+        "step": 10,
+        "loss": 0.7676742076873779
+      },
+      {
+        "step": 11,
+        "loss": 0.7088661193847656
+      },
+      {
+        "step": 12,
+        "loss": 0.656400203704834
+      },
+      {
+        "step": 13,
+        "loss": 0.5570050477981567
+      },
+      {
+        "step": 14,
+        "loss": 0.5390466451644897
+      },
+      {
+        "step": 15,
+        "loss": 0.550475001335144
+      },
+      {
+        "step": 16,
+        "loss": 0.5522408485412598
+      },
+      {
+        "step": 17,
+        "loss": 0.35087549686431885
+      },
+      {
+        "step": 18,
+        "loss": 0.9278976917266846
+      },
+      {
+        "step": 19,
+        "loss": 0.5535955429077148
+      },
+      {
+        "step": 20,
+        "loss": 0.7163110971450806
+      },
+      {
+        "step": 21,
+        "loss": 0.7604255676269531
+      },
+      {
+        "step": 22,
+        "loss": 0.4669102430343628
+      },
+      {
+        "step": 23,
+        "loss": 0.5345503091812134
+      },
+      {
+        "step": 24,
+        "loss": 0.6362829208374023
+      },
+      {
+        "step": 25,
+        "loss": 0.5726233720779419
+      },
+      {
+        "step": 26,
+        "loss": 0.6403458118438721
+      },
+      {
+        "step": 27,
+        "loss": 0.5227087736129761
+      },
+      {
+        "step": 28,
+        "loss": 0.5070689916610718
+      },
+      {
+        "step": 29,
+        "loss": 0.4684373140335083
+      },
+      {
+        "step": 30,
+        "loss": 0.4444793462753296
+      },
+      {
+        "step": 31,
+        "loss": 0.6612440347671509
+      },
+      {
+        "step": 32,
+        "loss": 0.485762357711792
+      },
+      {
+        "step": 33,
+        "loss": 0.7211469411849976
+      },
+      {
+        "step": 34,
+        "loss": 0.5297480821609497
+      },
+      {
+        "step": 35,
+        "loss": 0.4839639663696289
+      },
+      {
+        "step": 36,
+        "loss": 0.5514727830886841
+      },
+      {
+        "step": 37,
+        "loss": 0.6541893482208252
+      },
+      {
+        "step": 38,
+        "loss": 0.4663815498352051
+      },
+      {
+        "step": 39,
+        "loss": 0.43659889698028564
+      },
+      {
+        "step": 40,
+        "loss": 0.6564334630966187
+      },
+      {
+        "step": 41,
+        "loss": 0.5063165426254272
+      },
+      {
+        "step": 42,
+        "loss": 0.8895864486694336
+      },
+      {
+        "step": 43,
+        "loss": 0.5358048677444458
+      },
+      {
+        "step": 44,
+        "loss": 0.5461387634277344
+      },
+      {
+        "step": 45,
+        "loss": 0.5140080451965332
+      },
+      {
+        "step": 46,
+        "loss": 0.5367612838745117
+      },
+      {
+        "step": 47,
+        "loss": 0.6599663496017456
+      },
+      {
+        "step": 48,
+        "loss": 0.5702037811279297
+      },
+      {
+        "step": 49,
+        "loss": 0.46401071548461914
+      },
+      {
+        "step": 50,
+        "loss": 0.6330164670944214
+      },
+      {
+        "step": 51,
+        "loss": 0.5344879627227783
+      },
+      {
+        "step": 52,
+        "loss": 0.46897315979003906
+      },
+      {
+        "step": 53,
+        "loss": 0.5772550106048584
+      },
+      {
+        "step": 54,
+        "loss": 0.3056527376174927
+      },
+      {
+        "step": 55,
+        "loss": 0.5469427108764648
+      },
+      {
+        "step": 56,
+        "loss": 0.5211082696914673
+      },
+      {
+        "step": 57,
+        "loss": 0.36504268646240234
+      },
+      {
+        "step": 58,
+        "loss": 0.4154444932937622
+      },
+      {
+        "step": 59,
+        "loss": 0.5758193731307983
+      },
+      {
+        "step": 60,
+        "loss": 0.42413032054901123
+      },
+      {
+        "step": 61,
+        "loss": 0.3531494140625
+      },
+      {
+        "step": 62,
+        "loss": 0.5233678817749023
+      },
+      {
+        "step": 63,
+        "loss": 0.45782995223999023
+      },
+      {
+        "step": 64,
+        "loss": 0.6438485383987427
+      },
+      {
+        "step": 65,
+        "loss": 0.21128296852111816
+      },
+      {
+        "step": 66,
+        "loss": 0.698878288269043
+      },
+      {
+        "step": 67,
+        "loss": 0.5728671550750732
+      },
+      {
+        "step": 68,
+        "loss": 0.38003790378570557
+      },
+      {
+        "step": 69,
+        "loss": 0.2779209613800049
+      },
+      {
+        "step": 70,
+        "loss": 0.6712404489517212
+      },
+      {
+        "step": 71,
+        "loss": 0.3232696056365967
+      },
+      {
+        "step": 72,
+        "loss": 0.47638893127441406
+      },
+      {
+        "step": 73,
+        "loss": 0.4841148853302002
+      },
+      {
+        "step": 74,
+        "loss": 0.5357259511947632
+      },
+      {
+        "step": 75,
+        "loss": 0.4799381494522095
+      },
+      {
+        "step": 76,
+        "loss": 0.3194073438644409
+      },
+      {
+        "step": 77,
+        "loss": 0.37139320373535156
+      },
+      {
+        "step": 78,
+        "loss": 0.2662625312805176
+      },
+      {
+        "step": 79,
+        "loss": 0.4833577871322632
+      },
+      {
+        "step": 80,
+        "loss": 0.4108405113220215
+      },
+      {
+        "step": 81,
+        "loss": 0.5976861715316772
+      },
+      {
+        "step": 82,
+        "loss": 0.6093114614486694
+      },
+      {
+        "step": 83,
+        "loss": 0.3504985570907593
+      },
+      {
+        "step": 84,
+        "loss": 0.5848021507263184
+      },
+      {
+        "step": 85,
+        "loss": 0.3779040575027466
+      },
+      {
+        "step": 86,
+        "loss": 0.6194009780883789
+      },
+      {
+        "step": 87,
+        "loss": 0.5131837129592896
+      },
+      {
+        "step": 88,
+        "loss": 0.461414098739624
+      },
+      {
+        "step": 89,
+        "loss": 0.3882232904434204
+      },
+      {
+        "step": 90,
+        "loss": 0.27248644828796387
+      },
+      {
+        "step": 91,
+        "loss": 0.3848891258239746
+      },
+      {
+        "step": 92,
+        "loss": 0.518088698387146
+      },
+      {
+        "step": 93,
+        "loss": 0.5697158575057983
+      },
+      {
+        "step": 94,
+        "loss": 0.39489996433258057
+      },
+      {
+        "step": 95,
+        "loss": 0.30308663845062256
+      },
+      {
+        "step": 96,
+        "loss": 0.5444233417510986
+      },
+      {
+        "step": 97,
+        "loss": 0.08371436595916748
+      },
+      {
+        "step": 98,
+        "loss": 0.5207500457763672
+      },
+      {
+        "step": 99,
+        "loss": 0.587415337562561
+      },
+      {
+        "step": 100,
+        "loss": 0.15602052211761475
+      },
+      {
+        "step": 101,
+        "loss": 0.2852886915206909
+      },
+      {
+        "step": 102,
+        "loss": 0.934870719909668
+      },
+      {
+        "step": 103,
+        "loss": 0.7786144018173218
+      },
+      {
+        "step": 104,
+        "loss": 0.5932728052139282
+      },
+      {
+        "step": 105,
+        "loss": 0.5803850889205933
+      },
+      {
+        "step": 106,
+        "loss": 0.25647783279418945
+      },
+      {
+        "step": 107,
+        "loss": 0.31577157974243164
+      },
+      {
+        "step": 108,
+        "loss": 0.4604952335357666
+      },
+      {
+        "step": 109,
+        "loss": 0.2864803075790405
+      },
+      {
+        "step": 110,
+        "loss": 0.49397099018096924
+      },
+      {
+        "step": 111,
+        "loss": 0.32853901386260986
+      },
+      {
+        "step": 112,
+        "loss": 0.20929229259490967
+      },
+      {
+        "step": 113,
+        "loss": 0.5743976831436157
+      },
+      {
+        "step": 114,
+        "loss": 0.3367873430252075
+      },
+      {
+        "step": 115,
+        "loss": 0.6072856187820435
+      },
+      {
+        "step": 116,
+        "loss": 0.5406786203384399
+      },
+      {
+        "step": 117,
+        "loss": 0.32641732692718506
+      },
+      {
+        "step": 118,
+        "loss": 0.3739604949951172
+      },
+      {
+        "step": 119,
+        "loss": 0.25700509548187256
+      },
+      {
+        "step": 120,
+        "loss": 0.145668625831604
+      },
+      {
+        "step": 121,
+        "loss": 0.19996583461761475
+      },
+      {
+        "step": 122,
+        "loss": 0.25987863540649414
+      },
+      {
+        "step": 123,
+        "loss": 0.362665057182312
+      },
+      {
+        "step": 124,
+        "loss": 0.2480621337890625
+      },
+      {
+        "step": 125,
+        "loss": 0.38676202297210693
+      },
+      {
+        "step": 126,
+        "loss": 0.5416021347045898
+      },
+      {
+        "step": 127,
+        "loss": 0.37078261375427246
+      },
+      {
+        "step": 128,
+        "loss": 0.32662880420684814
+      }
+    ],
+    "validation": null,
+    "memory": {
+      "free_cache_limit_bytes": 268435456,
+      "previous_free_cache_limit_bytes": 97925254348,
+      "clear_after_evaluation_row": true,
+      "clear_after_training_microbatch": true,
+      "clear_after_optimizer_update": true,
+      "max_observed_active_memory_bytes": 2136104880,
+      "max_observed_cache_memory_bytes": 616759308,
+      "peak_memory_bytes": 4077965350,
+      "peak_scope": "since_worker_observer_start",
+      "progress_file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-128step-v1/worker-progress.jsonl"
+    },
+    "reload_max_probability_delta": 0,
+    "model_path": "/Users/bsonntag/code/simple-jev-ts/.build/hf-session-1_s2hbhu/home/hub/models--google--gemma-3-1b-it/snapshots/dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+    "completed_at": "2026-09-22T14:10:26.953Z",
+    "fusion": {
+      "ok": true,
+      "fused": true,
+      "fusion_dtype": "float32",
+      "output_dir": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-128step-v1/fused",
+      "format": "safetensors",
+      "gguf_exported": false,
+      "provenance": {
+        "base_model": "google/gemma-3-1b-it",
+        "base_revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+        "lineage": "Google Gemma 3",
+        "dependencies": {
+          "python": "3.13.11",
+          "mlx": "0.32.2",
+          "mlx-lm": "0.32.0",
+          "transformers": "5.11.0",
+          "huggingface-hub": "1.32.0",
+          "mlx_lm_revision": "9d1e356e7cc6549e7d1697adabe2ea01ff8e062c"
+        }
+      },
+      "template_version": "v2",
+      "adapter_sha256": "c7d9b310a20c27b335f7d2550cc17bfe91ee42724cc059c97b244b40ed5d9aab",
+      "tokenizer_projection": {
+        "derivation": "original tokenizer with only the untrained out-of-range image placeholder removed",
+        "model_vocab_size": 262144,
+        "source_model_config_sha256": "19cb5d28c97778271ba2b3c3df47bf76bdd6706724777a2318b3522230afe91e",
+        "model_vocab_sha256": "2871235118cc9e518d6be2576f97b1503c2166564ef6a37552e471e00100a3a5",
+        "removed_special_tokens": [
+          {
+            "id": 262144,
+            "content": "<image_soft_token>",
+            "occurrences": [
+              {
+                "file": "tokenizer.json",
+                "location": "added_tokens/6414"
+              },
+              {
+                "file": "tokenizer_config.json",
+                "location": "added_tokens_decoder/262144"
+              },
+              {
+                "file": "added_tokens.json",
+                "location": "<image_soft_token>"
+              },
+              {
+                "file": "tokenizer_config.json",
+                "location": "extra_special_tokens/image_token"
+              },
+              {
+                "file": "tokenizer_config.json",
+                "location": "image_token"
+              },
+              {
+                "file": "special_tokens_map.json",
+                "location": "image_token"
+              }
+            ]
+          }
+        ],
+        "source_files": {
+          "tokenizer.json": "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795",
+          "tokenizer_config.json": "bfe25c2735e395407beb78456ea9a6984a1f00d8c16fa04a8b75f2a614cf53e1",
+          "added_tokens.json": "50b2f405ba56a26d4913fd772089992252d7f942123cc0a034d96424221ba946",
+          "special_tokens_map.json": "2f7b0adf4fb469770bb1490e3e35df87b1dc578246c5e7e6fc76ecf33213a397",
+          "tokenizer.model": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c"
+        },
+        "export_files": {
+          "tokenizer.json": "3bfbe764854336a243cf84e872c5aff1186d843259021ad44225eb78dd43548b",
+          "tokenizer_config.json": "0f070f93ac7f82b53e6d6454007e916fb39683e73043ea6fb42b771e7d4d972d",
+          "added_tokens.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "special_tokens_map.json": "ecf9cd6dc78db029b13247e09bc8e71d8da9fa7263a2039c4a488c14fc7a69a5",
+          "tokenizer.model": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c"
+        },
+        "prompt_parity": {
+          "source": {
+            "rows_checked": 175,
+            "labels_checked": 350,
+            "rendered_prompt_tokens": true,
+            "answer_label_boundaries": true,
+            "add_special_tokens": false,
+            "template_version": "v2"
+          },
+          "export": {
+            "rows_checked": 175,
+            "labels_checked": 350,
+            "rendered_prompt_tokens": true,
+            "answer_label_boundaries": true,
+            "add_special_tokens": false,
+            "template_version": "v2"
+          },
+          "training_data_file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-128step-v1/train.jsonl",
+          "training_data_sha256": "2f58205e90d8d225f6e46d67b1f3a7c5a93e91eaada6dc05b1e8b2f130c522be"
+        }
+      },
+      "files": {
+        "README.md": "748c964f9b7e5f2c3770ce013bbc0153be7c54311d9692c343b6188eefe77ac6",
+        "added_tokens.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "config.json": "539dd177917a0420d6f87cb38f5df55fa279d198c3f99131b316ccf4039ec8c2",
+        "generation_config.json": "fd9324becc53c4be610db39e13a613006f09fd6ef71a95fb6320dc33157490a3",
+        "model.safetensors": "3bfeccfcab266c20c4ce1b200f279c23e4daa3f5056c722a76c1a07413507f51",
+        "model.safetensors.index.json": "aacc7ce8ce3deede0c488397d550790fccf1b1df31b58f9972b2d0f5b6886aa6",
+        "special_tokens_map.json": "ecf9cd6dc78db029b13247e09bc8e71d8da9fa7263a2039c4a488c14fc7a69a5",
+        "tokenizer.json": "3bfbe764854336a243cf84e872c5aff1186d843259021ad44225eb78dd43548b",
+        "tokenizer.model": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c",
+        "tokenizer_config.json": "0f070f93ac7f82b53e6d6454007e916fb39683e73043ea6fb42b771e7d4d972d"
+      },
+      "memory": {
+        "free_cache_limit_bytes": 268435456,
+        "previous_free_cache_limit_bytes": 97925254348,
+        "clear_after_evaluation_row": true,
+        "clear_after_training_microbatch": true,
+        "clear_after_optimizer_update": true,
+        "max_observed_active_memory_bytes": 3999543816,
+        "max_observed_cache_memory_bytes": 270410028,
+        "peak_memory_bytes": 4679372892,
+        "peak_scope": "since_worker_observer_start",
+        "progress_file": null
+      }
+    }
+  },
+  "exports": {
+    "id": "jev/gemma-3-1b-guardrail-c6-128-v1",
+    "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-128step-v1/gemma-3-1b-rfdt-f16.gguf",
+    "sha256": "c62a8abde4a0fbc27565a39d5ee3bd9cc7090442a6aa63cc19093c1dfa0523a7",
+    "size": 2006573408,
+    "converter_revision": "f072b103714dfa1eee531f80b24512faf38e3dd2",
+    "converter_sha256": "e9a1da876330bbce9687541ab31736542a01b4ac43c6686126514a50f122fb7f"
+  }
+}

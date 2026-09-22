@@ -6,6 +6,29 @@ grants and audit records. Exact policy constraints remain in code. The extension
 uses no Jev implementation imports: it discovers one versioned provider through
 `sf-guardrail:risk-providers`.
 
+## Candidate 6 scored host
+
+The [Candidate 6 baseline-bound patch](./candidate6-sf-pi-from-4f901db9.patch)
+reproduces the sf-pi source used for both real local-model VALID replays:
+
+| Artifact              | Pinned identity                                                    |
+| --------------------- | ------------------------------------------------------------------ |
+| SF Pi baseline commit | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                         |
+| Scored host commit    | `dd97a1a9165a89cdb7ff5b2d0c84d2bbf3843277`                         |
+| Scored host tree      | `2151c6cdda44494ab337046db4a1346381c52a57`                         |
+| Risk runtime SHA-256  | `7d8c068bf02725b1f5ad7d77349a4144390ab0f1a6e531bc28f89af8270154c4` |
+| Patch SHA-256         | `e80bc982bb45b70d3a746482a74121e1c1b7da36c73ea6e5bbbfd77b92b1efbc` |
+| Patch size            | 369,551 bytes                                                      |
+
+The patch was generated from those exact commits with `git diff --binary
+--full-index`. `git apply --cached --check` passed against a disposable index
+loaded from the baseline; applying the patch to that index produced the scored
+host tree above. The sf-pi checkout's working files and index were not changed
+by this replay. Candidate 6 was rejected on VALID; this patch is source
+provenance, not a qualified model or approval to enable `enforce`. See the
+[complete Candidate 6 report](../../reports/guardrail-risk-2026-09-21/candidate-6-final.md)
+and tracked per-case receipts.
+
 ## Candidate 5 integration
 
 | Artifact                 | Revision                                                                       |
@@ -52,15 +75,16 @@ and all other qualification gates are unresolved.
 
 ## Current local use
 
-Use a fresh SF Pi worktree at the pinned baseline, then apply the current patch:
+Use a fresh SF Pi worktree at the pinned baseline, then apply the Candidate 6
+scored-host patch:
 
 ```sh
 git -C /path/to/sf-pi worktree add --detach /tmp/sf-pi-jev-risk 4f901db9c3f5076ea0305dea33ad6e8856e467da
-git -C /tmp/sf-pi-jev-risk apply --index /path/to/simple-jev-ts/integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch
+git -C /tmp/sf-pi-jev-risk apply --index /path/to/simple-jev-ts/integrations/sf-pi-guardrail/candidate6-sf-pi-from-4f901db9.patch
 git -C /tmp/sf-pi-jev-risk write-tree
 ```
 
-The final command should print `027e573cb5b31352a41a1003a6d9798289fe34b6`.
+The final command should print `2151c6cdda44494ab337046db4a1346381c52a57`.
 Install that local SF Pi package and the separately built Jev extension in an
 isolated Pi environment when exercising it. See [GUARDRAIL.md](../../GUARDRAIL.md)
 for candidate selection, training, and the reproducible bridge evaluation.

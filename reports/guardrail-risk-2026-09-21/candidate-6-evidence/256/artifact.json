@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "id": "jev/gemma-3-1b-guardrail-c6-256-v1",
+  "file": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-256step-v1/gemma-3-1b-rfdt-f16.gguf",
+  "base_model": "google/gemma-3-1b-it",
+  "base_revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+  "template_version": "v2",
+  "training_run": "rfdt-20260922141558-b3fc966c",
+  "sha256": "79b835439624e1d11f4eb97637490a6d43d2dfb354dc245f1fae7fe6c606a56f",
+  "size": 2006573408,
+  "run_manifest": "/private/tmp/simple-jev-ts-guardrail-candidate5-20260922/.build/guardrail/candidate-6-rfdt-256step-v1/manifest.json"
+}

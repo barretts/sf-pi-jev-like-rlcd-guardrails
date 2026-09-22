@@ -2,6 +2,13 @@
 
 ## Candidate 6 prospective VALID outcome, 2026-09-22
 
+The [Candidate 6 delivery report](./candidate-6-final.md) brings both scored
+models, raw VALID receipts, TRAIN provenance, artifact retention, and the
+baseline-bound sf-pi integration patch into one committed checkpoint. The
+[SHA-256 inventory](./candidate-6-SHA256SUMS) verifies the tracked evidence.
+The large model weights remain local and are pinned by hash rather than stored
+in Git.
+
 Candidate 5 remains rejected. Candidate 6 trained a separate 128-update model
 from the original Google Gemma 3 1B checkpoint on **175 admitted TRAIN rows**.
 Its RFDT preparation included zero internal validation and zero TEST rows. The
