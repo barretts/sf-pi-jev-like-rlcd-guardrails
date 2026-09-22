@@ -1,0 +1,17 @@
+{
+  "purpose": "diagnostic_hash_rejection_checks",
+  "records": [
+    {
+      "flag": "--fit-sha256",
+      "exit": 1,
+      "expected": "Pinned FIT bytes changed",
+      "ok": true
+    },
+    {
+      "flag": "--reference-sha256",
+      "exit": 1,
+      "expected": "Reference bytes changed",
+      "ok": true
+    }
+  ]
+}
