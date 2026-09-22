@@ -119,6 +119,26 @@ test("C9 scorer emits the exact selector case and record contract for every admi
     "modelCalls",
   ]);
   assert.equal(Object.hasOwn(report, "failures"), false);
+  assert.deepEqual(Object.keys(report).sort(), [
+    "admissionSha256",
+    "arm",
+    "baselineSha256",
+    "calibrationCorpusSha256",
+    "cases",
+    "familyManifestSha256",
+    "fitGroups",
+    "fitSha256",
+    "hostCommit",
+    "modelSha256",
+    "nativeBinarySha256",
+    "objectivePlanSha256",
+    "pairManifestSha256",
+    "policySha256",
+    "promptProtocolSha256",
+    "purpose",
+    "records",
+    "version",
+  ]);
 });
 
 test("C9 scorer preserves failed and malformed calls and keeps scoring the inventory", async () => {
