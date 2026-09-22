@@ -42,7 +42,7 @@ const runtimeDirectory = resolve(root, "dist");
 const sealed = Object.freeze({
   reportHelper:
     "42652879516d86049dbf2b721eee087d3503e108a4581d869e2c5546dd86efdb",
-  manifest: "8123f126238ed9c090d8f2dfc51a865bf5118f81c88444f676d70509bb2a0834",
+  manifest: "868dac2146b72e732b07017c451f88f1066c2faea3c46300f5fba75545e76200",
   scorer: "451e617f598d2b2e6bb5a708b3725f6b0cf3bde129cfc2a7ef7d1915618c34e2",
   runtimeModules: Object.freeze({
     "backend.js":
@@ -497,7 +497,8 @@ function installBrowser(row, sessionId, browser) {
     sessionId,
     row.operation.input.ref,
   );
-  if (lookup.status !== ref.status)
+  const observedStatus = ref.status === "missing" ? "missing-ref" : ref.status;
+  if (lookup.status !== observedStatus)
     throw new Error(`Host browser observation differs from fixture: ${row.id}`);
   if (ref.status !== "fresh") return null;
   const refLine = `- ${ref.role} "${ref.label}" [ref=${row.operation.input.ref}]`;
@@ -1646,7 +1647,7 @@ async function main() {
         "Org and browser facts are authored fixtures replayed into an isolated host store, not live independently verified state.",
         "Browser snapshots establish observed request context, not the live click's eventual effect.",
         "Cold provider initialization is reported separately from warm risk checks.",
-        "TRAIN was projected on the earlier host; all 52 new TRAIN model requests were checked byte-for-byte against the evaluation host before scoring.",
+        "All 52 new C7 TRAIN model requests were reprojected byte-for-byte on the evaluation host. The 175 inherited C6 TRAIN requests were not reprojected; they contain no preview-send request, and the host risk bridge source was unchanged across this host fix.",
         "Passing VALID is candidate selection evidence only; qualification requires a frozen candidate and untouched TEST.",
       ],
     };
