@@ -167,6 +167,46 @@ replace the browser-family corpus, full split screening, final-host baseline,
 ready admission receipt, or candidate-5 qualification path above. The generic
 RFDT trainer does not enforce those guardrail-specific gates.
 
+## Sealed v3 TRAIN and validation research export
+
+`scripts/guardrail-v3-research-export.mjs` is a separate diagnostic replay of
+the sealed 693-case v3 corpus. It selects only its 312 TRAIN and 192 validation
+rows, checks their group split, and obtains current risk inputs from the SF Pi
+host with local mocked org detection. Authored rubric labels remain the gold;
+Safety Kernel decisions are recorded separately where evaluated. The script
+never emits a TEST record, request, or label. It performs no model call or
+authored tool operation.
+
+The research bundle retains all 504 selected row identities and marks browser
+clicks and presses as model-ineligible rules fallback. It also records exact
+policy floors, incomplete facts, and inputs rejected by the current Jev v2
+scorer. The companion RFDT JSONL contains only eligible TRAIN and validation
+rows with explicit split and group IDs. Both outputs are deliberately
+non-qualifying: the bundle has `diagnosticOnly: true`, `trainingReady: false`,
+and `qualification: false`; the strict exporter and admission path above are
+unchanged. This export can compare non-browser behavior on the reviewed splits
+but cannot establish full-family coverage or candidate-5 approval.
+
+From the candidate-5 Jev checkout, choose fresh paths for every replay:
+
+```sh
+RESEARCH=.build/guardrail/candidate-5-v3-research-NEW-RUN
+node scripts/guardrail-v3-research-export.mjs \
+  --corpus .build/guardrail/candidate-5-diagnostic/sealed-v3-corpus.json \
+  --sf-pi /private/tmp/sf-pi-guardrail-candidate5-20260922 \
+  --sf-deps /Users/bsonntag/code/simple-jev-ts/node_modules \
+  --bundle "$RESEARCH/bundle.json" \
+  --rfdt "$RESEARCH/train-validation.jsonl" \
+  --receipt "$RESEARCH/receipt.json"
+```
+
+The receipt binds the physical corpus checksum, SF commit and runtime-source
+hash, scorer protocol, and research code. It reports eligibility by split and
+family, browser fallback counts, and the hashes of both private outputs. A
+request-free aggregate from the 2026-09-22 replay is committed at
+`reports/guardrail-risk-2026-09-21/candidate-5-v3-research-export-summary.json`.
+The separate 40-row TRAIN supplement is not included in this export.
+
 The eight-update local smoke completed on 2026-09-22 using dataset SHA-256
 `a3f19d40ae1caf6312d39ee0cbdd8451b4c1b893ac469cf57a015056b25344cf`.
 Its prepared branches were 40 TRAIN / zero validation / zero TEST. The original
