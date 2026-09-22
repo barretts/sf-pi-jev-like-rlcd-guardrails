@@ -81,5 +81,73 @@ class LaunchTests(unittest.TestCase):
                 launch.verify_code(code, hashes)
 
 
+    def snapshot_fixture(self, root):
+        checkpoint = root / 'run/checkpoints/step-128'
+        checkpoint.mkdir(parents=True)
+        receipt = {'checkpoint_step': 128, 'source': {'source_sha256': 'a' * 64}}
+        (checkpoint / 'receipt.json').write_text(json.dumps(receipt))
+        (checkpoint / 'exit.json').write_text(json.dumps({'ok': True, 'steps_completed': 128, 'completed_time_unix': 15}))
+        launch_record = {'launcher_sha256': launch.digest(Path(launch.__file__)),
+                         'watchdog_sha256': launch.digest(Path(launch.monitor.__file__)),
+                         'monitor_sha256': launch.digest(Path(launch.monitor.__file__)),
+                         'worker_pid': 123, 'worker_sha256': 'a' * 64,
+                         'baseline_dedicated_bytes': 7_000_000_000, 'baseline_shared_bytes': 30,
+                         'hard_budget_bytes': 8_000_000_000, 'stop_dedicated_delta_bytes': 7_500_000_000,
+                         'shared_growth_limit_bytes': 128_000_000, 'stop_total_dedicated_bytes': 16_000_000_000}
+        (root / 'launch.json').write_text(json.dumps(launch_record))
+        rows = [{'time_unix': t, 'elapsed_seconds': t - 5, 'dedicated_bytes': 9_000_000_000,
+                 'shared_bytes': 40, 'dedicated_delta_bytes': 2_000_000_000, 'shared_delta_bytes': 10}
+                for t in [10, 20]]
+        prefix = ''.join(json.dumps(row) + '\n' for row in rows).encode()
+        (root / 'memory.jsonl').write_bytes(prefix + b'{"partial":')
+        return checkpoint, rows, prefix
+
+    def test_snapshot_copies_complete_immutable_prefix_and_binds_producer(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            checkpoint, rows, prefix = self.snapshot_fixture(root)
+            snapshot = launch.snapshot_checkpoint_memory(root, 128)
+            output = root / 'checkpoint-snapshots/step-128'
+            self.assertEqual((output / 'memory.jsonl').read_bytes(), prefix)
+            summary = json.loads((output / 'memory.summary.json').read_text())
+            self.assertEqual(summary['reason'], 'checkpoint_snapshot')
+            self.assertEqual(summary['peak_total_dedicated_bytes'], 9_000_000_000)
+            self.assertEqual(summary['peak_dedicated_delta_bytes'], 2_000_000_000)
+            self.assertEqual(summary['samples'], 2)
+            self.assertEqual(snapshot['producer_sha256'], launch.digest(Path(launch.__file__)))
+            self.assertEqual(snapshot['checkpoint_receipt_sha256'], launch.digest(checkpoint / 'receipt.json'))
+            (root / 'memory.jsonl').write_text('changed source')
+            self.assertEqual((output / 'memory.jsonl').read_bytes(), prefix)
+            with self.assertRaisesRegex(ValueError, 'already exists'):
+                launch.snapshot_checkpoint_memory(root, 128)
+
+    def test_snapshot_rejects_unfinished_stale_overbudget_or_tampered_source(self):
+        for defect in ['unfinished', 'stale', 'budget', 'deltas', 'producer', 'monitor', 'worker', 'ordering', 'error']:
+            with self.subTest(defect=defect), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                checkpoint, rows, _ = self.snapshot_fixture(root)
+                if defect in ['unfinished', 'stale']:
+                    (checkpoint / 'exit.json').write_text(json.dumps({'ok': defect != 'unfinished', 'steps_completed': 128,
+                                                                     'completed_time_unix': 25}))
+                elif defect in ['budget', 'deltas', 'ordering', 'error']:
+                    if defect == 'budget':
+                        rows[-1]['dedicated_bytes'] = 16_000_000_000
+                        rows[-1]['dedicated_delta_bytes'] = 9_000_000_000
+                    elif defect == 'deltas':
+                        rows[-1]['dedicated_delta_bytes'] = 0
+                    elif defect == 'ordering':
+                        rows[-1]['time_unix'] = rows[0]['time_unix']
+                    else:
+                        rows[-1] = {'monitor_error': 'counter missing'}
+                    (root / 'memory.jsonl').write_text(''.join(json.dumps(row) + '\n' for row in rows))
+                else:
+                    data = json.loads((root / 'launch.json').read_text())
+                    data[{'producer': 'launcher_sha256', 'monitor': 'monitor_sha256', 'worker': 'worker_sha256'}[defect]] = 'b' * 64
+                    (root / 'launch.json').write_text(json.dumps(data))
+                with self.assertRaises(ValueError):
+                    launch.snapshot_checkpoint_memory(root, 128)
+                self.assertFalse((root / 'checkpoint-snapshots/step-128').exists())
+
+
 if __name__ == '__main__':
     unittest.main()

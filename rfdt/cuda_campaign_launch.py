@@ -7,9 +7,11 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 from pathlib import Path
 import subprocess
 import sys
+import time
 
 import cuda_memory_monitor as monitor
 import cuda_worker
@@ -139,10 +141,12 @@ def run(args: argparse.Namespace) -> dict:
         "prepared_fit_sha256": cuda_worker.TRAIN_SHA256,
         "plan_sha256": cuda_worker.PLAN_SHA256,
         "campaign_sha256": cuda_campaign.CAMPAIGN_SHA256,
+        "launcher_sha256": digest(Path(__file__)),
         "worker_sha256": digest(worker),
         "objective_worker_sha256": digest(code / "cuda_worker.py"),
         "code_sha256": code_hashes,
         "watchdog_sha256": digest(watchdog),
+        "monitor_sha256": digest(watchdog),
         "rfdt_contract_sha256": digest(code / "worker.py"),
         "baseline_dedicated_bytes": baseline_dedicated,
         "baseline_shared_bytes": baseline_shared,
@@ -159,6 +163,103 @@ def run(args: argparse.Namespace) -> dict:
     return receipt
 
 
+
+def snapshot_checkpoint_memory(run_root: Path, checkpoint: Path | int, output: Path | None = None) -> dict:
+    """Copy a complete immutable journal prefix after a finished checkpoint.
+
+    This does not stop or sample a GPU process. Retry after the next existing
+    watchdog sample if its latest complete row predates checkpoint completion.
+    The output is fresh, and never substitutes for the final worker-exit record.
+    """
+    run_root = Path(run_root).resolve()
+    if type(checkpoint) is int:
+        checkpoint = run_root / "run" / "checkpoints" / f"step-{checkpoint}"
+    checkpoint = Path(checkpoint).resolve()
+    if output is None:
+        output = run_root / "checkpoint-snapshots" / checkpoint.name
+    output = Path(output).resolve()
+    if output.exists():
+        raise ValueError("Checkpoint memory snapshot output already exists")
+    launch = json.loads((run_root / "launch.json").read_text())
+    producer_sha = digest(Path(__file__))
+    if producer_sha != launch.get("launcher_sha256"):
+        raise ValueError("Snapshot producer differs from pinned launcher")
+    monitor_sha = launch.get("monitor_sha256")
+    if monitor_sha != launch.get("watchdog_sha256") or digest(Path(monitor.__file__)) != monitor_sha:
+        raise ValueError("Snapshot monitor differs from pinned launch monitor")
+    receipt_path = checkpoint / "receipt.json"
+    receipt_bytes = receipt_path.read_bytes()
+    receipt = json.loads(receipt_bytes)
+    exit_record = json.loads((checkpoint / "exit.json").read_text())
+    step = receipt.get("checkpoint_step")
+    if (type(step) is not int or step not in (1, 128, 256, 512, 1024)
+            or checkpoint != run_root / "run" / "checkpoints" / f"step-{step}"
+            or exit_record.get("ok") is not True or exit_record.get("steps_completed") != step):
+        raise ValueError("Checkpoint is not complete for this run")
+    source = receipt.get("source", {})
+    if source.get("source_sha256") != launch.get("worker_sha256"):
+        raise ValueError("Checkpoint worker differs from launch worker")
+    completion = exit_record.get("completed_time_unix")
+    if type(completion) not in (int, float) or not math.isfinite(completion):
+        raise ValueError("Checkpoint completion timestamp is unavailable")
+    raw = (run_root / "memory.jsonl").read_bytes()
+    end = raw.rfind(b"\n") + 1
+    prefix = raw[:end]
+    rows = [json.loads(line) for line in prefix.splitlines()]
+    if len(rows) < 2:
+        raise ValueError("Checkpoint snapshot requires at least two memory samples")
+    for row in rows:
+        for key in ("time_unix", "elapsed_seconds", "dedicated_bytes", "shared_bytes", "dedicated_delta_bytes", "shared_delta_bytes"):
+            value = row.get(key)
+            if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
+                raise ValueError("Checkpoint journal includes invalid or error samples")
+        if (row["dedicated_delta_bytes"] != max(0, row["dedicated_bytes"] - launch["baseline_dedicated_bytes"])
+                or row["shared_delta_bytes"] != max(0, row["shared_bytes"] - launch["baseline_shared_bytes"])):
+            raise ValueError("Checkpoint journal deltas differ from launch baseline")
+        if (row["dedicated_delta_bytes"] >= launch["stop_dedicated_delta_bytes"]
+                or row["shared_delta_bytes"] >= launch["shared_growth_limit_bytes"]
+                or row["dedicated_bytes"] >= launch["stop_total_dedicated_bytes"]):
+            raise ValueError("Checkpoint journal reaches memory stop limit")
+    if any(left["time_unix"] >= right["time_unix"] for left, right in zip(rows, rows[1:])):
+        raise ValueError("Checkpoint journal timestamps are not ordered")
+    if not rows[0]["time_unix"] <= completion <= rows[-1]["time_unix"]:
+        raise ValueError("Wait for watchdog sample after checkpoint completion")
+    now = time.time()
+    if now < rows[-1]["time_unix"]:
+        raise ValueError("Checkpoint journal has a future sample")
+    summary = {
+        "worker_pid": launch["worker_pid"], "reason": "checkpoint_snapshot",
+        "samples": len(rows), "sampling_interval_seconds": 2.0,
+        "peak_dedicated_delta_bytes": max(row["dedicated_delta_bytes"] for row in rows),
+        "peak_shared_delta_bytes": max(row["shared_delta_bytes"] for row in rows),
+        "peak_total_dedicated_bytes": max(row["dedicated_bytes"] for row in rows),
+        "hard_budget_bytes": launch["hard_budget_bytes"],
+        "stop_dedicated_delta_bytes": launch["stop_dedicated_delta_bytes"],
+        "shared_growth_limit_bytes": launch["shared_growth_limit_bytes"],
+        "stop_total_dedicated_bytes": launch["stop_total_dedicated_bytes"],
+    }
+    snapshot = {
+        "checkpoint_receipt_sha256": hashlib.sha256(receipt_bytes).hexdigest(),
+        "checkpoint_step": step, "worker_pid": launch["worker_pid"],
+        "worker_sha256": launch["worker_sha256"], "monitor_sha256": monitor_sha,
+        "journal_sha256": hashlib.sha256(prefix).hexdigest(), "snapshot_time_unix": now,
+        "producer_sha256": producer_sha,
+    }
+    output.mkdir(parents=True)
+    (output / "memory.jsonl").write_bytes(prefix)
+    (output / "memory.summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    (output / "memory.snapshot.json").write_text(json.dumps(snapshot, indent=2) + "\n")
+    return snapshot
+
+
+def snapshot_parser() -> argparse.ArgumentParser:
+    command = argparse.ArgumentParser(description="Snapshot pinned checkpoint memory; no GPU operations")
+    command.add_argument("--run-root", type=Path, required=True)
+    command.add_argument("--checkpoint", type=Path, required=True)
+    command.add_argument("--output", type=Path, required=True)
+    return command
+
+
 def parser() -> argparse.ArgumentParser:
     command = argparse.ArgumentParser(description=__doc__)
     command.add_argument("--inputs", required=True)
@@ -171,5 +272,9 @@ def parser() -> argparse.ArgumentParser:
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "snapshot":
+        arguments = snapshot_parser().parse_args(sys.argv[2:])
+        print(json.dumps(snapshot_checkpoint_memory(arguments.run_root, arguments.checkpoint, arguments.output)))
+        sys.exit(0)
     receipt = run(parser().parse_args())
     print(json.dumps({"mode": receipt["mode"], "worker_pid": receipt["worker_pid"], "watchdog_pid": receipt["watchdog_pid"], "run_root": receipt["run_root"]}))
