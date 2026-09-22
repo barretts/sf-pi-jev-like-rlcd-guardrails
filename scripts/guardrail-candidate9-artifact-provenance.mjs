@@ -14,9 +14,9 @@ const BASE_GGUF_SHA256 =
 const QUANTIZER_REVISION = "f072b103714dfa1eee531f80b24512faf38e3dd2";
 const QUANTIZER_BINARY_SHA256 =
   "e2c48c541efe39436f0edbbbfe0e65c9185e1bb1d6295fcfb28ebc38c1e77985";
-// Frozen before CAL scoring in evaluator commit f5067cc400dfa4c4f686ce21dbe46ca8d927541b.
+// Evaluator source is frozen before CAL; core changes once on final admission pin.
 const CAL_SCORER_CLI_SHA256 =
-  "22fdf95b916bbd72a2e4c99b62368b1fbc5c7c6475dc8b9fcfb45f86395f9fa1";
+  "76ff31614af2d9647d8ea2c09d45174dbad7f454d79bb43323a2ea40e4f371cb";
 const CAL_SCORER_CORE_SHA256 =
   "f85aa0ac9b411b08a844c2bcd9efa8ee47fb61e29f567dd006353005a822d4f0";
 const MAX_JSON_BYTES = 16 * 1_048_576;
