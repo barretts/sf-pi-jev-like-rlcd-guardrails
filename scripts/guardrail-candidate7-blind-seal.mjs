@@ -86,10 +86,17 @@ export async function verifyCandidate7BlindMetadata({
       test.group_count > 0 &&
       isHash(test.group_ids_sha256) &&
       isHash(test.template_ids_sha256) &&
-      !Object.hasOwn(test, "group_ids") &&
-      !Object.hasOwn(test, "template_ids") &&
-      !Object.hasOwn(test, "cases") &&
-      !Object.hasOwn(test, "labels"),
+      JSON.stringify(Object.keys(test).sort()) ===
+        JSON.stringify(
+          [
+            "path",
+            "sha256",
+            "case_count",
+            "group_count",
+            "group_ids_sha256",
+            "template_ids_sha256",
+          ].sort(),
+        ),
     "manifest split or opaque TEST metadata is incomplete",
   );
   const [schemaBytes, validBytes] = await Promise.all([
