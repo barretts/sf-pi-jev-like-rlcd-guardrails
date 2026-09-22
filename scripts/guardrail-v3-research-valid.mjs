@@ -18,7 +18,8 @@ import {
   guardrailConfig,
   registerGuardrailProvider,
 } from "../dist/guardrail-extension.js";
-import { hashArtifact } from "../dist/models.js";
+import { hashArtifact, verifyArtifact } from "../dist/models.js";
+import { RFDT_BASE_MODEL, RFDT_BASE_REVISION } from "../dist/rfdt.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const officialRun = resolve(root, ".build/guardrail/candidate-5");
@@ -36,6 +37,68 @@ const inside = (file, directory) => {
     (rel !== ".." && !rel.startsWith(`..${sep}`) && !isAbsolute(rel))
   );
 };
+
+/** Require the selected research artifact to match its explicit local registry. */
+export async function verifyResearchModelIdentity(
+  modelFile,
+  modelId,
+  registryFile,
+) {
+  if (
+    typeof modelId !== "string" ||
+    !/^jev\/[a-zA-Z0-9._-]+$/.test(modelId) ||
+    typeof modelFile !== "string" ||
+    !modelFile ||
+    typeof registryFile !== "string" ||
+    !registryFile
+  )
+    throw new Error(
+      "Research model evaluation requires --model GGUF --model-id jev/ID --registry JSON",
+    );
+  const file = resolve(modelFile);
+  const registry = resolve(registryFile);
+  const registryBytes = await readFile(registry);
+  const parsed = JSON.parse(registryBytes);
+  if (parsed?.version !== 1 || !Array.isArray(parsed.artifacts))
+    throw new Error("Invalid explicit research artifact registry");
+  const entries = parsed.artifacts.filter((item) => item?.id === modelId);
+  if (entries.length !== 1)
+    throw new Error(
+      "Selected research model ID is missing or duplicated in the explicit registry",
+    );
+  const entry = entries[0];
+  if (
+    entry.base_model !== RFDT_BASE_MODEL ||
+    entry.revision !== RFDT_BASE_REVISION ||
+    entry.template_version !== "v2" ||
+    entry.roles?.length !== 1 ||
+    entry.roles[0] !== "classifier" ||
+    typeof entry.file !== "string" ||
+    resolve(entry.file) !== file
+  )
+    throw new Error(
+      "Selected research model registry identity or Google Gemma base changed",
+    );
+  const verified = await verifyArtifact(file, "classifier", modelId, {
+    registryPath: registry,
+  });
+  if (
+    verified.id !== modelId ||
+    verified.sha256 !== entry.sha256 ||
+    verified.size !== entry.size ||
+    verified.base_model !== RFDT_BASE_MODEL ||
+    verified.revision !== RFDT_BASE_REVISION ||
+    verified.template_version !== "v2"
+  )
+    throw new Error(
+      "Research model artifact differs from explicit registry identity",
+    );
+  return {
+    modelId,
+    modelSha256: verified.sha256,
+    registrySha256: sha(registryBytes),
+  };
+}
 
 /** Admit the whole TRAIN/VALID export by receipt, then return only VALID rows. */
 export function selectValidationRows(bundle, receipt, bundleBytes) {
@@ -275,6 +338,7 @@ async function main() {
       "sf-pi": { type: "string" },
       "sf-deps": { type: "string" },
       model: { type: "string" },
+      "model-id": { type: "string" },
       registry: { type: "string" },
       output: { type: "string" },
       preflight: { type: "boolean" },
@@ -284,10 +348,11 @@ async function main() {
     ["bundle", "receipt", "sf-pi", "sf-deps", "output"].some(
       (key) => !values[key],
     ) ||
-    (!values.preflight && !values.model)
+    (!values.preflight &&
+      (!values.model || !values["model-id"] || !values.registry))
   )
     throw new Error(
-      "Required: --bundle JSON --receipt JSON --sf-pi DIR --sf-deps NODE_MODULES --output NEW_JSON [--model GGUF --registry JSON | --preflight]",
+      "Required: --bundle JSON --receipt JSON --sf-pi DIR --sf-deps NODE_MODULES --output NEW_JSON [--model GGUF --model-id jev/ID --registry JSON | --preflight]",
     );
   const output = resolve(values.output);
   if (inside(output, officialRun))
@@ -352,29 +417,39 @@ async function main() {
   const results = [];
   let coldInitializationMs = null;
   let modelSha256 = null;
+  let artifactRegistrySha256 = null;
   try {
     const pi = recorder();
     if (!values.preflight) {
+      const selected = await verifyResearchModelIdentity(
+        values.model,
+        values["model-id"],
+        values.registry,
+      );
+      modelSha256 = selected.modelSha256;
+      artifactRegistrySha256 = selected.registrySha256;
       const env = {
         ...process.env,
         JEV_DEVICE: "metal",
-        JEV_GUARDRAIL_MODEL_ID: "google/gemma-3-1b-it",
+        JEV_GUARDRAIL_MODEL_ID: selected.modelId,
         JEV_GUARDRAIL_MODEL_FILE: resolve(values.model),
-        ...(values.registry
-          ? { JEV_GUARDRAIL_ARTIFACT_REGISTRY: resolve(values.registry) }
-          : {}),
+        JEV_GUARDRAIL_ARTIFACT_REGISTRY: resolve(values.registry),
       };
       delete env.JEV_GUARDRAIL_QUALIFICATION;
       runtime = registerGuardrailProvider(pi, { env });
       const cold = performance.now();
       await runtime.warmup();
       coldInitializationMs = performance.now() - cold;
-      modelSha256 = runtime.status().modelSha256;
-      if (!pin(modelSha256) || runtime.status().qualified !== false)
-        throw new Error("Research provider must be warm and unqualified");
+      if (
+        !pin(modelSha256) ||
+        runtime.status().modelSha256 !== modelSha256 ||
+        runtime.status().model !== selected.modelId ||
+        runtime.status().qualified !== false
+      )
+        throw new Error("Research provider model identity changed at warmup");
       const config = guardrailConfig(env);
-      if (config.modelId !== "google/gemma-3-1b-it")
-        throw new Error("Research model lineage changed");
+      if (config.modelId !== selected.modelId)
+        throw new Error("Research provider selected a different model ID");
     }
     const cwd = "/example/project";
     for (const row of validation.filter((item) => item.modelEligible)) {
@@ -482,7 +557,9 @@ async function main() {
       sha(await readFile(resolve(values.receipt))) !== sha(receiptBytes) ||
       (!values.preflight &&
         (runtime.status().modelSha256 !== modelSha256 ||
-          (await hashArtifact(resolve(values.model))).sha256 !== modelSha256))
+          (await hashArtifact(resolve(values.model))).sha256 !== modelSha256 ||
+          sha(await readFile(resolve(values.registry))) !==
+            artifactRegistrySha256))
     )
       throw new Error("Research source or model changed during VALID replay");
     const analysis = values.preflight ? null : summarizeValidation(results);
@@ -502,7 +579,9 @@ async function main() {
         sfPiCommit: sfCommit,
         sfPiRuntimeSha256: bundle.source.sfPiRuntimeSha256,
         scorerProtocolSha256: GUARDRAIL_PROTOCOL_SHA256,
+        modelId: values.preflight ? null : values["model-id"],
         modelSha256,
+        artifactRegistrySha256,
       },
       coverage: {
         validationRows: validation.length,

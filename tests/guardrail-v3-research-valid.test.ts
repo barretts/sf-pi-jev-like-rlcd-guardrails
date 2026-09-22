@@ -1,12 +1,16 @@
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   selectValidationRows,
   summarizeValidation,
+  verifyResearchModelIdentity,
 } from "../scripts/guardrail-v3-research-valid.mjs";
+import { RFDT_BASE_REVISION } from "../dist/rfdt.js";
 
 const h = (bytes: Buffer | string) =>
   createHash("sha256").update(bytes).digest("hex");
@@ -236,5 +240,100 @@ describe("nonqualifying VALID-only bridge replay", () => {
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain("outside official candidate-5 run");
     expect(existsSync(output)).toBe(false);
+  });
+
+  it("requires the explicit model ID to match a pinned private Gemma registry artifact", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "c5-valid-model-"));
+    const model = join(directory, "candidate.gguf");
+    const registry = join(directory, "registry.json");
+    const bytes = Buffer.from("synthetic identity fixture, not a model");
+    const modelId = "jev/gemma-3-1b-guardrail-c5-research-256";
+    const artifact = {
+      id: modelId,
+      base_model: "google/gemma-3-1b-it",
+      revision: RFDT_BASE_REVISION,
+      roles: ["classifier"],
+      template_version: "v2",
+      training_run: "guardrail-c5-research-256",
+      file: model,
+      sha256: h(bytes),
+      size: bytes.length,
+      license: "gemma",
+    };
+    try {
+      await writeFile(model, bytes);
+      await writeFile(
+        registry,
+        JSON.stringify({ version: 1, artifacts: [artifact] }),
+      );
+      await expect(
+        verifyResearchModelIdentity(model, modelId, registry),
+      ).resolves.toMatchObject({ modelId, modelSha256: h(bytes) });
+      await expect(
+        verifyResearchModelIdentity(model, "jev/other", registry),
+      ).rejects.toThrow("missing or duplicated");
+      await writeFile(
+        registry,
+        JSON.stringify({
+          version: 1,
+          artifacts: [{ ...artifact, base_model: "unknown/base" }],
+        }),
+      );
+      await expect(
+        verifyResearchModelIdentity(model, modelId, registry),
+      ).rejects.toThrow("Google Gemma base changed");
+      await writeFile(
+        registry,
+        JSON.stringify({
+          version: 1,
+          artifacts: [{ ...artifact, sha256: pin }],
+        }),
+      );
+      await expect(
+        verifyResearchModelIdentity(model, modelId, registry),
+      ).rejects.toThrow("Unapproved model artifact");
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it("requires --model-id for model evaluation while preflight may omit it", () => {
+    const command = resolve("scripts/guardrail-v3-research-valid.mjs");
+    const common = [
+      "--bundle",
+      "missing.json",
+      "--receipt",
+      "missing-receipt.json",
+      "--sf-pi",
+      process.cwd(),
+      "--sf-deps",
+      process.cwd(),
+      "--output",
+      resolve(".build/guardrail/valid-model-id-smoke.json"),
+    ];
+    const missing = spawnSync(
+      process.execPath,
+      [
+        command,
+        ...common,
+        "--model",
+        "candidate.gguf",
+        "--registry",
+        "registry.json",
+      ],
+      { encoding: "utf8" },
+    );
+    expect(missing.status).not.toBe(0);
+    expect(missing.stderr).toContain("--model-id jev/ID");
+    const preflight = spawnSync(
+      process.execPath,
+      [command, ...common, "--preflight"],
+      {
+        encoding: "utf8",
+      },
+    );
+    expect(preflight.status).not.toBe(0);
+    expect(preflight.stderr).toContain("ENOENT");
+    expect(preflight.stderr).not.toContain("--model-id jev/ID");
   });
 });
