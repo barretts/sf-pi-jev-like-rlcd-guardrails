@@ -183,6 +183,12 @@ async function capture(manifest) {
     if (current !== pin) fail(`changed scorer runtime ${name}`);
     identities[name] = current;
   }
+  const run = await json(manifest.files.runManifest);
+  if (!isAbsolute(run.prepared?.files?.train ?? ""))
+    fail("prepared TRAIN file path missing");
+  const trainDigest = await digest(run.prepared.files.train);
+  verifyC10PreparedInputs(run, trainDigest);
+  identities.preparedTrain = trainDigest;
   const quantization = await json(manifest.files.quantizationManifest);
   const runtime = await verifyQuantizerRuntime(
     manifest.files.quantizerBinary.path,
@@ -210,6 +216,18 @@ async function capture(manifest) {
   )
     fail("host baseline changed");
   return identities;
+}
+/** RFDT dataset_sha256 identifies source examples; compiled TRAIN has its own identity. */
+export function verifyC10PreparedInputs(run, trainDigest) {
+  if (
+    run.source?.sha256 !== fitSha ||
+    run.prepared?.dataset_sha256 !== fitSha ||
+    run.prepared?.branches?.train !== 327 ||
+    run.prepared?.branches?.validation !== 0 ||
+    run.prepared?.branches?.test !== 0 ||
+    trainDigest !== preparedSha
+  )
+    fail("admitted FIT source or independently hashed prepared TRAIN changed");
 }
 export function verifyC10Precision(report, modelSha256, nativeSha256) {
   if (
@@ -499,7 +517,7 @@ export async function evaluateC10(manifest, outputDir) {
       run.status !== "exported" ||
       run.training?.training_backend !== "torch_cuda" ||
       run.source?.sha256 !== fitSha ||
-      run.prepared?.dataset_sha256 !== preparedSha ||
+      run.prepared?.dataset_sha256 !== fitSha ||
       run.prepared?.branches?.train !== 327 ||
       run.prepared?.branches?.validation !== 0 ||
       run.prepared?.branches?.test !== 0 ||

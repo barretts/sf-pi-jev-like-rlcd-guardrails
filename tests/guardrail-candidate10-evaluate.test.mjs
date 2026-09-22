@@ -11,6 +11,7 @@ import {
   assertC10ArtifactPaths,
   C10_HOST,
   verifyCandidate10ValidPopulation,
+  verifyC10PreparedInputs,
   verifyC10LocalArchitecture,
 } from "../scripts/guardrail-candidate10-evaluate.mjs";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
@@ -421,5 +422,45 @@ test("C10 prospective baseline population admits new host and rejects old host",
         host_commit: C9_CAL_SOURCE_PINS.hostCommit,
       }),
     /identity changed/,
+  );
+});
+
+test("real prepareRfdt manifest separates dataset source identity from compiled TRAIN bytes", () => {
+  // Relevant fields captured from the actual prepareRfdt 327-row C10 smoke run.
+  const apiManifest = {
+    source: {
+      sha256:
+        "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+      examples: 327,
+    },
+    prepared: {
+      sha256:
+        "f419fca304b97790bbd1824f5e43a172134233bf68d11a4136b58b08c8b66dce",
+      dataset_sha256:
+        "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+      branches: { train: 327, validation: 0, test: 0 },
+    },
+  };
+  const compiledTrainSha =
+    "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3";
+  verifyC10PreparedInputs(apiManifest, compiledTrainSha);
+  assert.throws(
+    () =>
+      verifyC10PreparedInputs(apiManifest, apiManifest.prepared.dataset_sha256),
+    /independently hashed/,
+  );
+  assert.throws(
+    () =>
+      verifyC10PreparedInputs(
+        {
+          ...apiManifest,
+          prepared: {
+            ...apiManifest.prepared,
+            dataset_sha256: compiledTrainSha,
+          },
+        },
+        compiledTrainSha,
+      ),
+    /FIT source/,
   );
 });
