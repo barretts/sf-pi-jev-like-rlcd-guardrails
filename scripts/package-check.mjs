@@ -13,6 +13,7 @@ const paths = pack.files.map((file) => file.path);
 const cudaRuntimeFiles = [
   "rfdt/cuda_worker.py",
   "rfdt/cuda_import.py",
+  "rfdt/gemma3_fp32.py",
   "rfdt/cuda_campaign.py",
   "rfdt/cuda_campaign_launch.py",
   "rfdt/cuda_memory_monitor.py",
