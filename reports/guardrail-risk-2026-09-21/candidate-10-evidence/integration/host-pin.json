@@ -1,0 +1,15 @@
+{
+  "purpose": "candidate10_prospective_sf_pi_host",
+  "qualified": false,
+  "base_commit": "4f901db9",
+  "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a",
+  "host_runtime_sha256": "0a23e057fb433fc4ee2ecd42465b377c660db5e024b6a406f6994497eba693b2",
+  "policy_sha256": "e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347",
+  "patch_sha256": "73a30f72dbb2f1b0e32149745e831978c2da150d4d040068706b842516e92208",
+  "checks": {
+    "guardrail_passed": 447,
+    "guardrail_skipped": 2,
+    "runtime_surface_passed": 31
+  },
+  "enforcement_configuration_changed": false
+}
