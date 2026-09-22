@@ -166,7 +166,8 @@ function baselineActions(
       actions.has(item.id) ||
       record.inputSha256 !== item.inputSha256 ||
       record.gate !== "model_prepared" ||
-      !(action(record.action) || record.action === "unknown")
+      !(action(record.action) || record.action === "unknown") ||
+      record.action === "block"
     )
       fail(
         "C9 separate baseline replay has a missing or changed CAL operation",

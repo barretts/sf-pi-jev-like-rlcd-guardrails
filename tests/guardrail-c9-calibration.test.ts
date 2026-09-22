@@ -226,6 +226,13 @@ describe("C9 TRAIN-CAL hard veto", () => {
     expect(() => selectC9Calibration(otherOperation)).toThrow(
       /changed CAL operation/,
     );
+    const impossiblePreparedBlock = input();
+    rebindBaseline(impossiblePreparedBlock, (receipt) => {
+      receipt.records[0].action = "block";
+    });
+    expect(() => selectC9Calibration(impossiblePreparedBlock)).toThrow(
+      /changed CAL operation/,
+    );
     const leaked = input();
     leaked.fitGroups.push(leaked.cases[0].groupId);
     expect(() => selectC9Calibration(leaked)).toThrow(/overlaps FIT/);
