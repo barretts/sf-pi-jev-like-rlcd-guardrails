@@ -39,8 +39,9 @@ uncovered baseline limits. The candidate-5 v3 strict diagnostic passed seven
 checks and failed the six browser safe/risk eligibility checks across TRAIN,
 validation and TEST. It produced no admissible baseline. SF's runtime source
 SHA-256 was `b1dd0309a789b30c98a7d14a01d843fc3ab199d1542d023ce97c10cbcd2a9e7d`.
-The final integration commit `8c6b9f7` refreshed the generated catalog index
-without changing that runtime hash. On this source, 395 Guardrail tests passed
+SF Pi `8c6b9f7` refreshed the generated catalog index without changing that
+runtime hash. The later documentation-only commit `e456e1c9` clarified the
+latency and browser-effect limits and left the runtime hash unchanged. On this source, 395 Guardrail tests passed
 with two skipped; TypeScript, 31 runtime-surface checks, formatting and the
 catalog check passed. A full SF suite using borrowed dependencies encountered
 failures in unrelated extensions and was stopped, so a full-suite pass on this
@@ -103,10 +104,10 @@ source check and lint passed. Jev commit `68bcb8c` retained the
 [integration patch](../../integrations/sf-pi-guardrail/candidate5-sf-pi-from-4f901db9.patch)
 at that checkpoint. Jev `6f279ab` refreshed it after the direct browser CLI
 floor, and `25bccf8` refreshed it after passive pre-click evidence. The current
-patch is 345,037 bytes, SHA-256
-`4b1d4cb864b310b274604665ddbb12679efa65746816de54c112be57b9d3679e`.
-Fresh application from SF base `4f901db9` reproduced `8c6b9f7` and tree
-`5fcb84bd011209fb8a1c60cb3fa570d0a5faf2b7` exactly. This is
+patch is 345,752 bytes, SHA-256
+`0dd98422c107e7fc27ad0e93fed615406b2c02c471f5d84ba0462976b82c81cd`.
+Fresh application from SF base `4f901db9` reproduced `e456e1c9` and tree
+`027e573cb5b31352a41a1003a6d9798289fe34b6` exactly. This is
 source-delivery proof; it does not show installation or model effectiveness.
 
 The first sandboxed Pi SDK run did **not** complete its

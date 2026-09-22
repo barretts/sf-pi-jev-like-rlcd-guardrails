@@ -12,11 +12,11 @@ uses no Jev implementation imports: it discovers one versioned provider through
 | ------------------------ | ------------------------------------------------------------------------------ |
 | SF Pi baseline commit    | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                                     |
 | Baseline tree            | `4e08ddb00626e8d47852f604564b10f135082f1a`                                     |
-| Local integration commit | `8c6b9f7364fcec0ff1343e25d23138e6f7f2d716`                                     |
-| Integration tree         | `5fcb84bd011209fb8a1c60cb3fa570d0a5faf2b7`                                     |
+| Local integration commit | `e456e1c9c7c0c9b97ccb08f4084558e5cbcd7a8c`                                     |
+| Integration tree         | `027e573cb5b31352a41a1003a6d9798289fe34b6`                                     |
 | Patch                    | [candidate5-sf-pi-from-4f901db9.patch](./candidate5-sf-pi-from-4f901db9.patch) |
-| Patch SHA-256            | `4b1d4cb864b310b274604665ddbb12679efa65746816de54c112be57b9d3679e`             |
-| Patch size               | 345,037 bytes                                                                  |
+| Patch SHA-256            | `0dd98422c107e7fc27ad0e93fed615406b2c02c471f5d84ba0462976b82c81cd`             |
+| Patch size               | 345,752 bytes                                                                  |
 
 This binary Git diff captures the version-2 Jev risk input, the optional SF Pi
 bridge, policy floors, fallback, corpus exporter, and related hook and workflow
@@ -35,6 +35,8 @@ imports inside supported command wrappers; bounded reads and verified sandbox
 writes retain their existing path. Known shell forms that execute Salesforce
 text hidden from the org parser also require confirmation, and the Jev policy
 floor cannot turn that confirmation into an automatic allow.
+The final SF Pi commit clarifies the documented latency and browser-effect
+limits without changing the Guardrail runtime source.
 
 The patch was generated from the two pinned commits with `git diff --binary
 --full-index`. It passed `git diff --check` and `git apply --index --check`.
@@ -43,7 +45,7 @@ integration tree above exactly. The verification checkout was removed afterward;
 the active SF Pi branch and index were not changed. The patch has not been
 pushed or installed in the user's active Pi environment.
 
-No candidate 5 model has completed training or qualification. This patch is
+No candidate 5 model has qualified for enforcement. This patch is
 integration source, not evidence of model effectiveness or permission to enable
 `enforce`. The existing risk engine remains active while the browser coverage
 and all other qualification gates are unresolved.
@@ -58,7 +60,7 @@ git -C /tmp/sf-pi-jev-risk apply --index /path/to/simple-jev-ts/integrations/sf-
 git -C /tmp/sf-pi-jev-risk write-tree
 ```
 
-The final command should print `5fcb84bd011209fb8a1c60cb3fa570d0a5faf2b7`.
+The final command should print `027e573cb5b31352a41a1003a6d9798289fe34b6`.
 Install that local SF Pi package and the separately built Jev extension in an
 isolated Pi environment when exercising it. See [GUARDRAIL.md](../../GUARDRAIL.md)
 for candidate selection, training, and the reproducible bridge evaluation.
@@ -125,7 +127,7 @@ the slash commands use a UI notification surface with no headless output.
 ## Verification scope
 
 The candidate 5 patch reproduces the exact integration tree
-`5fcb84bd011209fb8a1c60cb3fa570d0a5faf2b7` from the pinned baseline. The
+`027e573cb5b31352a41a1003a6d9798289fe34b6` from the pinned baseline. The
 historical candidate 4 patch was replayed with `git am` and reproduced tree
 `368241cef98569779904763bc20f0688a9773ca9`. Its qualification baseline was
 exported twice with byte-identical output; the SHA-256 is in the historical
