@@ -38,7 +38,7 @@
     "fixtures",
     "integrations/sf-pi-manager",
     "integrations/sf-pi-guardrail/README.md",
-    "integrations/sf-pi-guardrail/candidate9-sf-pi-from-4f901db9.patch",
+    "integrations/sf-pi-guardrail/candidate10-sf-pi-from-4f901db9.patch",
     "scripts",
     "README.md",
     "GUARDRAIL.md",

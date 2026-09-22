@@ -10,6 +10,8 @@ const [pack] = JSON.parse(
 );
 const paths = pack.files.map((file) => file.path);
 // The installed CUDA importer resolves these relative to its own package root.
+const currentGuardrailPatch =
+  "integrations/sf-pi-guardrail/candidate10-sf-pi-from-4f901db9.patch";
 const cudaRuntimeFiles = [
   "rfdt/cuda_worker.py",
   "rfdt/cuda_import.py",
@@ -87,14 +89,12 @@ assert.ok(
   "Package missing the SF Guardrail integration patch",
 );
 assert.ok(
-  paths.includes(
-    "integrations/sf-pi-guardrail/candidate9-sf-pi-from-4f901db9.patch",
-  ),
+  paths.includes(currentGuardrailPatch),
   "Package missing the current baseline-bound SF Guardrail integration patch",
 );
 assert.ok(
   !paths.some((path) =>
-    /^integrations\/sf-pi-guardrail\/candidate[5-8]-.*\.patch$/.test(path),
+    /^integrations\/sf-pi-guardrail\/candidate[5-9]-.*\.patch$/.test(path),
   ),
   "Package contains superseded candidate integration patches",
 );
@@ -161,11 +161,11 @@ if (process.argv.includes("--install")) {
     encoding: "utf8",
     maxBuffer: 16 * 1024 * 1024,
   });
-  for (const file of cudaRuntimeFiles) {
+  for (const file of [...cudaRuntimeFiles, currentGuardrailPatch]) {
     assert.deepEqual(
       readFileSync(join(directory, "node_modules", manifest.name, file)),
       readFileSync(file),
-      `Installed CUDA runtime file differs from source: ${file}`,
+      `Installed runtime or integration file differs from source: ${file}`,
     );
   }
   const environment = Object.fromEntries(
@@ -252,6 +252,7 @@ void [backend, classifier, preparePrompt];
     types_consumer: true,
     cuda_runtime_files: cudaRuntimeFiles.length,
     cuda_campaign_and_objective: "installed byte identity verified",
+    guardrail_integration_patch: currentGuardrailPatch,
     cli_help: true,
     server_help: true,
     absent_model_doctor: "actionable error, exit 1",
