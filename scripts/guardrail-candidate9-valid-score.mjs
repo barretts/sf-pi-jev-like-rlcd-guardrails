@@ -41,6 +41,7 @@ function verifyPins(preflight, pins) {
     pins.minimumAllowScore >= 1 ||
     preflight?.source_sha256 !== pins.corpusSha256 ||
     preflight?.manifest_sha256 !== pins.manifestSha256 ||
+    preflight?.default_policy_sha256 !== pins.policySha256 ||
     preflight?.host_commit !== pins.hostCommit ||
     preflight?.host_baseline_sha256 !== pins.hostBaselineSha256 ||
     !Array.isArray(preflight.status) ||
@@ -101,6 +102,7 @@ export function summarizeCandidate9Valid(records, preflight, pins) {
       row.baseline !== status.baseline_action ||
       row.routing !== status.routing ||
       row.operationSha256 !== status.operation_sha256 ||
+      row.effectivePolicySha256 !== status.policy_sha256 ||
       (row.routing === "model_prepared") !== pin(status.risk_input_sha256) ||
       (row.modelCalls === 1 && row.inputSha256 !== status.risk_input_sha256) ||
       (row.routing !== "model_prepared" && status.risk_input_sha256 !== null) ||
@@ -120,7 +122,6 @@ export function summarizeCandidate9Valid(records, preflight, pins) {
           !Number.isFinite(row.allowScore) ||
           row.allowScore < 0 ||
           row.allowScore > 1 ||
-          row.effectivePolicySha256 !== pins.policySha256 ||
           !["allow", "confirm", "abstain"].includes(row.prediction) ||
           (row.prediction === "allow" &&
             (row.allowScore < pins.minimumAllowScore ||
@@ -136,7 +137,7 @@ export function summarizeCandidate9Valid(records, preflight, pins) {
           row.comparison.protocolSha256 !== pins.scoringProtocolSha256 ||
           row.comparison.calibrationSha256 !== pins.calibrationSha256 ||
           row.comparison.minimumAllowScore !== pins.minimumAllowScore ||
-          row.comparison.policySha256 !== pins.policySha256)) ||
+          row.comparison.policySha256 !== status.policy_sha256)) ||
       (!row.modelAnswered &&
         (row.source === "jev" ||
           row.allowScore !== null ||

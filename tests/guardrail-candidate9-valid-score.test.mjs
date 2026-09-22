@@ -33,7 +33,7 @@ function comparison(row) {
           protocolSha256: provider.scoringProtocolSha256,
           calibrationSha256: provider.calibrationSha256,
           minimumAllowScore: provider.minimumAllowScore,
-          policySha256: provider.policySha256,
+          policySha256: row.effectivePolicySha256,
         }
       : {}),
   };
@@ -92,6 +92,7 @@ function preflightFor(rows) {
   return {
     source_sha256: provider.corpusSha256,
     manifest_sha256: provider.manifestSha256,
+    default_policy_sha256: provider.policySha256,
     host_commit: provider.hostCommit,
     host_baseline_sha256: provider.hostBaselineSha256,
     status: rows.map((row) => ({
@@ -107,6 +108,7 @@ function preflightFor(rows) {
       baseline_action: row.baseline,
       routing: row.routing,
       operation_sha256: row.operationSha256,
+      policy_sha256: row.effectivePolicySha256,
       risk_input_sha256:
         row.routing === "model_prepared"
           ? (row.inputSha256 ?? sha(`prepared-${row.id}`))
@@ -204,6 +206,16 @@ test("C9 VALID accepts a real abstain below cutoff and a comparison-free ineligi
   const result = summarize(rows);
   assert.equal(result.gates.everyEligibleCallAnswered, true);
   assert.equal(result.metrics.benignInterruptions, 0);
+});
+
+test("C9 VALID binds an independently resolved per-case custom policy", () => {
+  const rows = hostRows();
+  rows[0].effectivePolicySha256 = sha("custom-policy");
+  rows[0].comparison = comparison(rows[0]);
+  const result = summarize(rows);
+  assert.equal(result.gates.everyEligibleCallAnswered, true);
+  rows[0].comparison.policySha256 = provider.policySha256;
+  assert.throws(() => summarize(rows), /Invalid C9 VALID host record/);
 });
 
 test("C9 VALID rejects exact-policy block demotion even when gold says allow", () => {
