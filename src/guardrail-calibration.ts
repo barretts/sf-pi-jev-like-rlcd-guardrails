@@ -144,7 +144,7 @@ function validate(input: C8CalibrationInput): void {
       !item.id ||
       typeof item.groupId !== "string" ||
       !item.groupId ||
-      !action(item.expected) ||
+      !["allow", "confirm"].includes(item.expected) ||
       cases.has(item.id) ||
       fit.has(item.groupId)
     )
@@ -159,62 +159,43 @@ function validate(input: C8CalibrationInput): void {
     if (
       !record ||
       typeof record !== "object" ||
-      !sameKeys(
-        record,
-        record.gate === "prepared"
-          ? [
-              "id",
-              "groupId",
-              "expected",
-              "baseline",
-              "gate",
-              "modelAnswered",
-              "allowScore",
-              "inputSha256",
-              "elapsedMs",
-            ]
-          : ["id", "groupId", "expected", "baseline", "gate", "modelAnswered"],
-      ) ||
+      !sameKeys(record, [
+        "id",
+        "groupId",
+        "expected",
+        "baseline",
+        "gate",
+        "modelAnswered",
+        "allowScore",
+        "inputSha256",
+        "elapsedMs",
+      ]) ||
       !item ||
       seen.has(record.id) ||
       record.groupId !== item.groupId ||
       record.expected !== item.expected ||
       !(action(record.baseline) || record.baseline === "unknown") ||
-      !["prepared", "policy_floor", "ineligible"].includes(record.gate) ||
+      record.gate !== "prepared" ||
       typeof record.modelAnswered !== "boolean"
     )
       fail("Invalid or incomplete C8 calibration score record");
     seen.add(record.id);
-    if (record.gate === "prepared") {
-      if (
-        record.expected === "block" ||
-        !record.modelAnswered ||
-        !pin(record.inputSha256) ||
-        typeof record.elapsedMs !== "number" ||
-        !Number.isFinite(record.elapsedMs) ||
-        record.elapsedMs < 0 ||
-        typeof record.allowScore !== "number" ||
-        !Number.isFinite(record.allowScore) ||
-        record.allowScore < 0 ||
-        record.allowScore > 1
-      )
-        fail(
-          "Every prepared C8 TRAIN calibration call must have one finite model score",
-        );
-      if (record.expected === "allow") safePrepared++;
-      else riskyPrepared++;
-    } else if (
-      record.modelAnswered ||
-      (record.baseline !== "unknown" &&
-        record.expected === "block" &&
-        record.baseline !== "block") ||
-      (record.baseline !== "unknown" &&
-        record.expected === "confirm" &&
-        record.baseline === "allow")
+    if (
+      !record.modelAnswered ||
+      !pin(record.inputSha256) ||
+      typeof record.elapsedMs !== "number" ||
+      !Number.isFinite(record.elapsedMs) ||
+      record.elapsedMs < 0 ||
+      typeof record.allowScore !== "number" ||
+      !Number.isFinite(record.allowScore) ||
+      record.allowScore < 0 ||
+      record.allowScore > 1
     )
       fail(
-        "Unprepared C8 calibration case cannot rely on model fallback for safety",
+        "Every prepared C8 TRAIN calibration call must have one finite model score",
       );
+    if (record.expected === "allow") safePrepared++;
+    else riskyPrepared++;
   }
   if (seen.size !== cases.size || safePrepared === 0 || riskyPrepared === 0)
     fail(

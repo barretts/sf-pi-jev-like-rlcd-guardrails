@@ -27,7 +27,6 @@ function input(): C8CalibrationInput {
     cases: [
       { id: "safe", groupId: "cal-one", expected: "allow" },
       { id: "risky", groupId: "cal-one", expected: "confirm" },
-      { id: "floor", groupId: "cal-two", expected: "block" },
     ],
     records: [
       {
@@ -51,14 +50,6 @@ function input(): C8CalibrationInput {
         allowScore: 0.55,
         inputSha256: pin("2"),
         elapsedMs: 25,
-      },
-      {
-        id: "floor",
-        groupId: "cal-two",
-        expected: "block",
-        baseline: "block",
-        gate: "policy_floor",
-        modelAnswered: false,
       },
     ],
   };
@@ -110,7 +101,7 @@ describe("TRAIN-only C8 cutoff selection", () => {
 
   it("keeps an unverified sf-pi baseline out of cutoff acceptance", () => {
     const evidence = input();
-    evidence.records[2].baseline = "unknown";
+    evidence.records[0].baseline = "unknown";
     expect(selectC8Calibration(evidence)).toMatchObject({
       accepted: false,
       reason: "baseline_unverified",
@@ -119,7 +110,7 @@ describe("TRAIN-only C8 cutoff selection", () => {
     });
   });
 
-  it("rejects incomplete calls, leaked groups, changed gold and hard-block weakening", () => {
+  it("rejects incomplete calls, gate spoofing, leaked groups, and changed gold", () => {
     const missing = input();
     missing.records[1].modelAnswered = false;
     expect(() => selectC8Calibration(missing)).toThrow(/every prepared/i);
@@ -129,9 +120,11 @@ describe("TRAIN-only C8 cutoff selection", () => {
     const edited = input();
     edited.records[1].expected = "allow";
     expect(() => selectC8Calibration(edited)).toThrow(/incomplete/i);
-    const weakened = input();
-    weakened.records[2].baseline = "confirm";
-    expect(() => selectC8Calibration(weakened)).toThrow(/fallback for safety/i);
+    const gateSpoof = input();
+    gateSpoof.records[1].allowScore = 0.99;
+    gateSpoof.records[1].gate = "policy_floor";
+    gateSpoof.records[1].modelAnswered = false;
+    expect(() => selectC8Calibration(gateSpoof)).toThrow(/incomplete/i);
   });
 
   it("rejects changed receipt cutoff, score, and model identity", () => {

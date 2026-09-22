@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -21,7 +21,31 @@ test("joins independently pinned TRAIN-CAL baseline and freezes threshold", asyn
     const admissionPath = join(directory, "admission.json");
     const scoresPath = join(directory, "scores.json");
     const baselinePath = join(directory, "baseline.json");
+    const sfPiPath = join(directory, "sf-pi");
+    const baselineScriptPath = join(directory, "replay.mjs");
     const outputPath = join(directory, "cutoff.json");
+    await mkdir(sfPiPath);
+    execFileSync("git", ["init", "-q", sfPiPath]);
+    execFileSync("git", ["-C", sfPiPath, "config", "user.name", "C8 Test"]);
+    execFileSync("git", [
+      "-C",
+      sfPiPath,
+      "config",
+      "user.email",
+      "c8@example.invalid",
+    ]);
+    await writeFile(join(sfPiPath, "tracked.txt"), "host fixture\n");
+    execFileSync("git", ["-C", sfPiPath, "add", "tracked.txt"]);
+    execFileSync("git", ["-C", sfPiPath, "commit", "-qm", "fixture"]);
+    const hostCommit = execFileSync(
+      "git",
+      ["-C", sfPiPath, "rev-parse", "HEAD"],
+      { encoding: "utf8" },
+    ).trim();
+    const replayScript = Buffer.from(
+      "// independent sf-pi baseline replay fixture\n",
+    );
+    await writeFile(baselineScriptPath, replayScript);
     const row = (id, group, split, answer) => ({
       id,
       group_id: group,
@@ -75,6 +99,7 @@ test("joins independently pinned TRAIN-CAL baseline and freezes threshold", asyn
       baselineSha256: pin("a"),
       policySha256: pin("b"),
       calibrationCorpusSha256: sha(calBytes),
+      source: { hostCommit, scriptSha256: sha(replayScript) },
       records: [
         { id: "safe", action: "allow", inputSha256: inputSha("safe") },
         { id: "risky", action: "allow", inputSha256: inputSha("risky") },
@@ -128,6 +153,8 @@ test("joins independently pinned TRAIN-CAL baseline and freezes threshold", asyn
       scoresPath,
       baselinePath,
       baselineReceiptSha256: sha(baselineBytes),
+      sfPiPath,
+      baselineScriptPath,
       outputPath,
       modelSha256: pin("c"),
       nativeBinarySha256: pin("d"),
@@ -157,6 +184,10 @@ test("joins independently pinned TRAIN-CAL baseline and freezes threshold", asyn
         baselinePath,
         "--baseline-receipt-sha256",
         sha(baselineBytes),
+        "--sf-pi",
+        sfPiPath,
+        "--baseline-script",
+        baselineScriptPath,
         "--output",
         cliOutputPath,
         "--model-sha256",
@@ -193,6 +224,19 @@ test("joins independently pinned TRAIN-CAL baseline and freezes threshold", asyn
         baselineReceiptSha256: sha(changedBaselineBytes),
       }),
       /baseline replay input SHA differs/,
+    );
+    await writeFile(baselinePath, baselineBytes);
+    const wrongHost = structuredClone(baseline);
+    wrongHost.source.hostCommit = pin("0");
+    const wrongHostBytes = Buffer.from(JSON.stringify(wrongHost));
+    await writeFile(baselinePath, wrongHostBytes);
+    await assert.rejects(
+      selectFromAdmission({
+        ...args,
+        outputPath: join(directory, "wrong-host.json"),
+        baselineReceiptSha256: sha(wrongHostBytes),
+      }),
+      /baseline replay identity or inventory/,
     );
     await writeFile(baselinePath, baselineBytes);
     scores.records[0].inputSha256 = pin("0");

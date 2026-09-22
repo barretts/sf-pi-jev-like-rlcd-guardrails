@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Freeze a C8 cutoff from complete TRAIN calibration scores and admitted sources only. */
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { lstat, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,6 +11,8 @@ import { selectC8Calibration } from "../dist/guardrail-calibration.js";
 
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const pin = (value) => /^[a-f0-9]{64}$/.test(value ?? "");
+const commitPin = (value) =>
+  /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(value ?? "");
 const fail = (message) => {
   throw new Error(message);
 };
@@ -74,6 +77,8 @@ export async function selectFromAdmission({
   scoresPath,
   baselinePath,
   baselineReceiptSha256,
+  sfPiPath,
+  baselineScriptPath,
   outputPath,
   modelSha256,
   nativeBinarySha256,
@@ -154,11 +159,27 @@ export async function selectFromAdmission({
   if (sha(baselineBytes) !== baselineReceiptSha256)
     fail("C8 sf-pi baseline replay differs from the operator pin");
   const baseline = JSON.parse(baselineBytes.toString("utf8"));
+  const host = resolve(sfPiPath);
+  const hostCommit = execFileSync("git", ["-C", host, "rev-parse", "HEAD"], {
+    encoding: "utf8",
+    timeout: 10_000,
+  }).trim();
+  try {
+    execFileSync("git", ["-C", host, "diff", "--quiet", "HEAD"], {
+      timeout: 10_000,
+    });
+  } catch {
+    fail("C8 sf-pi host has uncommitted tracked changes");
+  }
+  const baselineScriptSha256 = sha(await regularBytes(baselineScriptPath));
   if (
     baseline.version !== 1 ||
     baseline.purpose !== "candidate8_train_cal_baseline_replay" ||
     baseline.baselineSha256 !== baselineSha256 ||
     baseline.policySha256 !== policySha256 ||
+    !commitPin(hostCommit) ||
+    baseline.source?.hostCommit !== hostCommit ||
+    baseline.source?.scriptSha256 !== baselineScriptSha256 ||
     baseline.calibrationCorpusSha256 !== admission.calibration.sha256 ||
     !Array.isArray(baseline.records) ||
     baseline.records.length !== cases.length
@@ -230,6 +251,8 @@ if (
           "scores",
           "baseline",
           "baseline-receipt-sha256",
+          "sf-pi",
+          "baseline-script",
           "output",
           "model-sha256",
           "native-binary-sha256",
@@ -239,7 +262,7 @@ if (
       ),
     });
     if (
-      Object.values(values).length !== 10 ||
+      Object.values(values).length !== 12 ||
       Object.values(values).some((value) => !value)
     )
       fail("All C8 TRAIN calibration paths and SHA-256 pins are required");
@@ -251,6 +274,8 @@ if (
           scoresPath: values.scores,
           baselinePath: values.baseline,
           baselineReceiptSha256: values["baseline-receipt-sha256"],
+          sfPiPath: values["sf-pi"],
+          baselineScriptPath: values["baseline-script"],
           outputPath: values.output,
           modelSha256: values["model-sha256"],
           nativeBinarySha256: values["native-binary-sha256"],
