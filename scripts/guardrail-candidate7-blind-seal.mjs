@@ -2,7 +2,7 @@
 /** Verify a committed C7 blind split without opening held-out TEST data. */
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { lstat, readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -31,7 +31,13 @@ function git(repoRoot, args) {
 }
 
 async function committedBytes(repoRoot, relativePath) {
-  const current = await readFile(resolve(repoRoot, relativePath));
+  const path = resolve(repoRoot, relativePath);
+  const entry = await lstat(path);
+  requireThat(
+    entry.isFile() && !entry.isSymbolicLink(),
+    `${relativePath} is not a regular file`,
+  );
+  const current = await readFile(path);
   const committed = git(repoRoot, ["show", `HEAD:${relativePath}`]);
   requireThat(
     current.equals(committed),

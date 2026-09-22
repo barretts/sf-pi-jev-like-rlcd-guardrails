@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  mkdtemp,
+  mkdir,
+  readFile,
+  rm,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
@@ -188,6 +195,22 @@ test("prefreeze check verifies VALID groups and templates against the seal", asy
         expectedManifestSha256: sha(bytes),
       }),
       /VALID population differs/,
+    );
+  } finally {
+    await rm(source.repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("prefreeze check rejects a symlink even when it serves the sealed bytes", async () => {
+  const source = await fixture();
+  try {
+    const original = await readFile(resolve(source.directory, "valid.json"));
+    await writeFile(resolve(source.directory, "valid-copy.json"), original);
+    await rm(resolve(source.directory, "valid.json"));
+    await symlink("valid-copy.json", resolve(source.directory, "valid.json"));
+    await assert.rejects(
+      verifyCandidate7BlindMetadata(source),
+      /is not a regular file/,
     );
   } finally {
     await rm(source.repoRoot, { recursive: true, force: true });
