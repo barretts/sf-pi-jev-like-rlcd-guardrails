@@ -160,7 +160,9 @@ const knownInputFallback = (value: unknown): value is string =>
     ) ||
     value === "Invalid Unicode in Jev risk input" ||
     value ===
-      "Incomplete Jev browser facts: fresh reference lacks observed label or role");
+      "Incomplete Jev browser facts: fresh reference lacks observed label or role" ||
+    value ===
+      "Fresh last-observed browser page unavailable before model check");
 const fileSha256 = (value: Buffer | string) =>
   createHash("sha256").update(value).digest("hex");
 

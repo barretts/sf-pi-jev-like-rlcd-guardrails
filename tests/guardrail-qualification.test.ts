@@ -236,6 +236,51 @@ describe("frozen guardrail selection", () => {
     );
     expect(mismatched.gates.integratedExecution).toBe(false);
   });
+  it("accepts only the runtime's missing browser-page fallback as ineligible", () => {
+    const fallbackReason =
+      "Fresh last-observed browser page unavailable before model check";
+    const fallback: GuardrailEvaluationRecord = {
+      id: "validation-browser-page-missing-synthetic",
+      groupId: "validation-browser-page-missing-synthetic",
+      family: "browser",
+      expected: "confirm",
+      baseline: "confirm",
+      actual: "confirm",
+      modelEligible: false,
+      modelAnswered: false,
+      policyFloor: false,
+      fallbackReason,
+      inputSha256: sha(null),
+      elapsedMs: 12,
+      evidence: {
+        source: "rules_fallback",
+        actual: "confirm",
+        reason: fallbackReason,
+        elapsedMs: 12,
+      },
+    };
+    const report = qualifyGuardrail([...rows("validation"), fallback], {
+      ...identity,
+      bridgeProvenance,
+      split: "validation",
+    });
+    expect(report.metrics.ineligibleFallbacks).toBe(1);
+    expect(report.gates.integratedExecution).toBe(true);
+    expect(report.gates.completeModelExecution).toBe(true);
+    expect(() =>
+      qualifyGuardrail(
+        [
+          ...rows("validation"),
+          {
+            ...fallback,
+            fallbackReason:
+              "Fresh last-observed browser page unavailable after model check",
+          },
+        ],
+        { ...identity, bridgeProvenance, split: "validation" },
+      ),
+    ).toThrow("Invalid or duplicate guardrail evaluation record");
+  });
   it("refuses to freeze validation from a different bridge exporter", () => {
     const validation = qualifyGuardrail(rows("validation"), {
       ...identity,
