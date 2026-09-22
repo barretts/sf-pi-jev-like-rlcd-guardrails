@@ -17,15 +17,19 @@ general classifier remains unchanged. The separate guardrail candidate uses
 RFDT pipeline. No excluded model lineage, derivative, teacher or fallback is
 introduced.
 
-The SF integration has a local source checkpoint
-`beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2`; it has not been pushed. Its tree is
-`85351e72e8a5d8cecfd64914eb9a6ea46edd405b`. The
+The SF integration's final local source checkpoint is
+`24546444452df3be40b7ebd86ed669c28fc81c15`; it has not been pushed. Its tree is
+`7961bc85a87a10bab176acec877688940780c135`. The
 [baseline-bound integration patch](../../integrations/sf-pi-guardrail/0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch)
-has SHA-256 `db3d9350616b3e9709b442fc7a0d4678c17704a06bc82da121ccd86f36e95b7d`
-and 133,579 bytes. Applying it to baseline
-`4f901db9c3f5076ea0305dea33ad6e8856e467da` in a temporary index reproduced the
-committed tree. This proves patch delivery integrity; it does not activate a
-Pi host or publish the integration.
+retains its filename and contains two email patches: initial integration commit
+`beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2` and the workflow checkpoint above.
+Its SHA-256 is `4e89d0aae25e03a26498e1ab1c3659ba32f9069d8c09a061a139e2bfc63497c8`,
+with 158,871 bytes. Splitting and sequentially applying both to baseline
+`4f901db9c3f5076ea0305dea33ad6e8856e467da` in a separate temporary index
+reproduced the final tree. The real checkout/index remained unchanged. Runtime
+baseline SHA-256 stays `0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45`.
+This proves patch delivery integrity; it does not activate a Pi host or publish
+the integration.
 
 The [operation-policy rubric](../../fixtures/guardrail/RUBRIC.md) supplies gold
 independently of the current engine. Labels are machine authored from inspected
@@ -93,11 +97,38 @@ Its final runtime baseline SHA-256 is
 The rejection receipt remains under the candidate's ignored run directory.
 No candidate freeze was created and no held-out model inference occurred.
 
-An 18-case TRAIN-only overfit diagnosis is running to investigate
-learning and scoring behavior before another candidate. Its 256 updates are
-fixed in advance and it receives no validation/test targets. No diagnostic
-result is recorded at this checkpoint; neither the rubric nor qualification
-gates are changed using the rejected validation outcome.
+The separate 18-case TRAIN-only overfit diagnosis completed 256 updates fixed
+in advance, with zero validation/test branches. It classified all 18 cases
+correctly by argmax, automatically allowed all nine safe cases at the unchanged
+0.99 cutoff, and automatically allowed none of the nine risky cases. All 18
+correct-class margins exceeded ln(99). Mean cross-entropy decreased from
+4.04255549 to 0.0000245306. The minimum safe allow-minus-confirm margin was
+8.8125; the maximum risky margin was -9.9375. Adapter reload probability delta
+was zero and the original base remained unchanged.
+
+The [complete TRAIN diagnostic receipt](./train-overfit-diagnostic.json)
+contains all 18 generic authored cases. Its source report SHA-256 is
+`f3a804333d4fbf3638da590e16cc92a9866eb90be60014235d0452421935b711`, bound to
+prospective plan SHA-256
+`c2328cc3aac616865903db854edb9729f4c8c6c3d961744b1d66757e520fd71a`.
+The ledger separately records the compact tracked copy's hash. Root
+independently recomputed the probability flags and checked those identities.
+The result establishes memorization and behavior of the unchanged learning
+pipeline on those TRAIN cases only. No validation/test evaluation, export,
+promotion or workflow effectiveness is inferred. The rubric and qualification
+gates remain unchanged; candidate 2's rejection is preserved.
+
+Candidate 3's preparation completed at 00:08:08.433 UTC on 2026-09-22 and
+verified 252 TRAIN / 144 validation / zero test branches. Its original-base
+training started at 00:08:08.435 UTC, after disposal of the native preparation
+worker. It retains the same inputs and profile, changing fixed updates from
+256 to 1,536. The prospective training plan at
+`.build/guardrail/candidate-3/prospective-plan.json` has SHA-256
+`60c50c1c21930ad233f489fce5d7deb98e8caaff2e2302d046c6651c72f736dc`.
+The owner journal and worker progress confirm training is in progress.
+Completion and full TRAIN per-case post-fit evaluation are pending before any
+export. Training, validation, held-out and matched workflow results remain
+unset; selection and qualification still require the unchanged gates.
 
 Candidate 2's preparation binds the original bundle SHA-256
 `6381f6dc8c94de22105a417d95265a90ec798a3c36d18784f61a1c04c06dbc83` and its then-current
@@ -132,13 +163,14 @@ a forced isolated directory. Fixtures bind HOME/agent-directory state;
 `NO_COLOR`, blocked global SF log writes and localhost `EPERM` also affected
 those attempts. Partition results are not summed into a unique grand total.
 
-The package dry run passed with 171 files, 6,158,422 unpacked bytes and 1,270,707
-tarball bytes at that checkpoint. Required guardrail sources, corpus, scripts
-and patch were included; weights were excluded. These measurements precede
-the final documentation update and do not identify a sealed final archive.
+The repeated package dry run passed with 171 files, 6,194,598 unpacked bytes and
+1,280,112 tarball bytes after the workflow patch and setup guide update. It used
+a worktree-local npm cache. Required guardrail sources, corpus, scripts and patch
+were included; weights were excluded. These measurements precede recording the
+observed sizes and do not identify a sealed final archive.
 Source, package and patch checks do not qualify the local model.
 
-The actual SDK workflow exercises `AgentSession.prompt` and `ExtensionRunner`
+The earlier two-operation SDK workflow exercises `AgentSession.prompt` and `ExtensionRunner`
 with scripted inference and counter-only custom tools:
 
 | Mode   | Accepted requests | Confirmations | Session grants | Retries | Errors | SDK setup ms | Workflow ms | Total ms |
@@ -151,6 +183,30 @@ workflow accepted all three operations with two confirmations and zero retries
 in each of `off`, `shadow` and `enforce`; its observed elapsed times were 1.152,
 5.250 and 3.267 ms. Those timings describe mocks and cannot establish model
 latency or workflow improvement. No dangerous external operation was executed.
+
+The later [representative scripted SDK receipt](./sdk-representative-scripted.json)
+uses the actual SDK with counter-only tools for ten operations across five
+workflows: harmless reads/quoted commands, repeated shell risk, repeated Apex
+risk, Data 360 rehearsal/live intent, and an exact protected-path block. Its
+workflow definition SHA-256 is
+`0039df8fc5568b3be141f4f28f253b7f32e429019e3b4e288cb42029f56e7fc4`.
+
+| Mode    | Executed operations | Confirmations | Session grants | Exact blocks | Unsafe automatic allows | Fallbacks / retries | SDK setup ms | Workflow ms | Total ms |
+| ------- | ------------------: | ------------: | -------------: | -----------: | ----------------------: | ------------------- | -----------: | ----------: | -------: |
+| Off     |                   9 |             3 |              3 |            1 |                       0 | 0 / 0               |        3.372 |       4.613 |    7.986 |
+| Shadow  |                   9 |             3 |              3 |            1 |                       0 | 0 / 0               |        2.845 |       9.469 |   12.315 |
+| Enforce |                   9 |             4 |              2 |            1 |                       0 | 0 / 0               |        2.946 |      11.115 |   14.062 |
+
+No unexpected tool errors occurred. The extra enforce confirmation occurred
+on the identical repeated shell operation; the baseline/shadow session grant
+reused approval while the conservative model-confirmation setting asked twice.
+This establishes the scripted fixture's approval limitation, not real-model
+workflow effectiveness. Source checks passed seven tests with one native test
+skipped; an independent CPU review reproduced seven passes/one skip, and
+TypeScript/file-level ESLint passed. The earlier 315-test SF checkpoint preceded
+this addition and is not increased into a new global total. The native SDK
+workflow arm has not executed while candidate 3 trains; real-model workflow
+results remain unset. All timings above describe scripted inference.
 
 The identical-operation SDK workflow does not establish session-approval prompt
 parity for changed related operations. Current model-derived grants bind to an

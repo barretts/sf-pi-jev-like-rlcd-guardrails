@@ -50,14 +50,15 @@ The real SF bridge measures host preparation and baseline resolution inside
 that deadline; cold model initialization is reported separately. Fallbacks are
 execution failures for qualification and cannot make a candidate pass.
 
-| Guardrail round                      | Observed status                                                                                                                                                       | Decision                                                                                     |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Corpus and actual-engine baseline    | 612 authored cases / 204 groups; static family, group, duplicate-state and exact-policy checks pass                                                                   | Preserve supplied gold and measure disagreements independently.                              |
-| Candidate 1                          | Stopped at optimizer update 42/256 after source review found two incomplete Data 360 rehearsal parameter sets; no held-out model calls                                | Retain abandonment evidence and use a fresh official-base trial after correction.            |
-| Candidate 2                          | All 256 fixed optimizer updates and checkpoint checks completed; loss 4.70919 → 0.62621; adapter changed; reload probability delta zero; separate F16 export recorded | Learning/checkpoint integrity does not establish native risk effectiveness or qualification. |
-| Interface and integration proof      | Focused provider, qualification, real-hook and actual Pi SDK tests exercise controlled failures and stub execution                                                    | Keep contract/SDK proof separate from candidate and production claims.                       |
-| Candidate 2 native bridge validation | Completed 165 cases / 55 groups; all 144 eligible calls answered; zero errors/unsafe allows; warm p95 208.353 ms; 75 safe-case interruptions versus baseline 3        | Rejected by the usability gate; no freeze or held-out model calls.                           |
-| TRAIN-only pipeline diagnosis        | A separate 18-case TRAIN-only overfit diagnosis is running with 256 fixed updates, zero validation/test branches, and no completed result yet                         | Diagnose input-dependent learning on TRAIN only while preserving the held-out test.          |
+| Guardrail round                      | Observed status                                                                                                                                                       | Decision                                                                                          |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Corpus and actual-engine baseline    | 612 authored cases / 204 groups; static family, group, duplicate-state and exact-policy checks pass                                                                   | Preserve supplied gold and measure disagreements independently.                                   |
+| Candidate 1                          | Stopped at optimizer update 42/256 after source review found two incomplete Data 360 rehearsal parameter sets; no held-out model calls                                | Retain abandonment evidence and use a fresh official-base trial after correction.                 |
+| Candidate 2                          | All 256 fixed optimizer updates and checkpoint checks completed; loss 4.70919 → 0.62621; adapter changed; reload probability delta zero; separate F16 export recorded | Learning/checkpoint integrity does not establish native risk effectiveness or qualification.      |
+| Interface and integration proof      | Focused provider, qualification, real-hook and actual Pi SDK tests exercise controlled failures and stub execution                                                    | Keep contract/SDK proof separate from candidate and production claims.                            |
+| Candidate 2 native bridge validation | Completed 165 cases / 55 groups; all 144 eligible calls answered; zero errors/unsafe allows; warm p95 208.353 ms; 75 safe-case interruptions versus baseline 3        | Rejected by the usability gate; no freeze or held-out model calls.                                |
+| TRAIN-only pipeline diagnosis        | Completed 256 fixed updates on 18 TRAIN cases: 18/18 correct argmax, all nine safe cases meet the 0.99 allow cutoff, and zero of nine risky cases automatically allow | Memorization and pipeline proof on those TRAIN cases only; no export, promotion or qualification. |
+| Candidate 3 training                 | Preparation verified 252 TRAIN / 144 validation / zero test branches; original-base training started with the same inputs and profile and 1,536 fixed updates         | Full TRAIN per-case post-fit evaluation is pending before export; no effectiveness result yet.    |
 
 Candidate 2's native validation found zero unsafe allows versus 14 for the
 baseline and preserved exact blocks, but its 75 unnecessary interruptions
@@ -66,12 +67,40 @@ goal and remains unqualified. Cold initialization was 2,548.651 ms, separate
 from the warm check distribution. The complete local native bridge receipt is
 [preserved with the evidence report](./reports/guardrail-risk-2026-09-21/sf-bridge-validation.json).
 
+The separate TRAIN diagnostic reduced mean cross-entropy from 4.04255549 to
+0.0000245306. All 18 target-class margins exceeded ln(99); the minimum safe
+allow-minus-confirm margin was 8.8125 and the maximum risky margin was -9.9375.
+Adapter reload probability delta was zero and the original base remained
+unchanged. The [complete diagnostic receipt](./reports/guardrail-risk-2026-09-21/train-overfit-diagnostic.json)
+records those 18 authored training cases only. This establishes that the
+unchanged pipeline can memorize that subset; no validation, held-out test,
+export, promotion or matched workflow evaluation was performed. Candidate 2's
+failed validation remains the current effectiveness result.
+
+Candidate 3's training began at 00:08:08 UTC on 2026-09-22 under prospective
+training plan SHA-256
+`60c50c1c21930ad233f489fce5d7deb98e8caaff2e2302d046c6651c72f736dc`.
+Only optimizer updates change from candidate 2's profile. The completed
+preparation worker was disposed before MLX training. Training completion and
+full TRAIN post-fit results remain pending; no export, native validation,
+held-out qualification or matched workflow result is recorded for candidate 3.
+
 Session-approval behavior remains a proof boundary: the current integration
 binds model-derived grants to an exact operation, active policy, model and
 protocol. Broader operation-family reuse can reduce repeated prompts in the
 baseline; equivalence of prompt counts across changed operations has not been
 established by the identical-operation SDK mock. Complete real-model matched
 workflows must measure that difference before claiming usability parity.
+
+A later actual SDK fixture covers ten operations across five workflows using
+scripted predictions and counter-only tools. Off and shadow each required
+three confirmations and created three session grants; enforce required four
+confirmations and created two grants. All modes executed nine operations and
+preserved one explicit protected-path block, with no unsafe automatic allows,
+fallbacks or retries. The extra enforce prompt occurred when repeating the
+same shell operation. This is observed integration-level approval behavior,
+not local-model effectiveness. The native workflow arm has not executed while
+candidate 3 trains.
 
 Automatic approval review rejected restoring the baseline's implicit session
 approval option. The conservative current model-confirmation session setting
@@ -84,8 +113,13 @@ files, and formatting. SF guardrail/runtime checks passed 315 tests; its full
 test-file coverage used appropriate isolated partitions and an unrelated
 timeout replay, so a uniform `npm test` or `validate:ci` success is not claimed.
 The package dry run included the guardrail sources, corpus and integration
-patch without weights. The baseline-bound SF patch reproduced the committed
-tree in a temporary index. These establish source and delivery integrity,
+patch without weights. The baseline-bound two-email SF patch series reproduced
+final tree `7961bc85a87a10bab176acec877688940780c135` in a separate temporary
+index; final local SF commit is `24546444452df3be40b7ebd86ed669c28fc81c15`.
+The new SDK workflow test file separately passed seven tests with one native
+test skipped, plus TypeScript and file-level lint checks. The recorded
+315-test SF checkpoint preceded this addition; counts are not combined into
+a new global total. These establish source and delivery integrity,
 separately from the rejected candidate's effectiveness.
 
 The current summary and remaining proof boundaries are maintained in

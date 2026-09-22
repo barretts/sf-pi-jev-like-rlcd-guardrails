@@ -47,9 +47,31 @@ the usability gate**. It is neither qualified nor established as equally
 effective. No prospective freeze or held-out model calls were made. The full
 [native validation receipt](./reports/guardrail-risk-2026-09-21/sf-bridge-validation.json)
 is retained with its measurement, model, protocol, corpus, runtime and native
-binary identities. A separate 18-case TRAIN-only overfit diagnosis is running
-with 256 fixed updates and zero validation/test branches; no completed diagnostic
-result is recorded.
+binary identities.
+
+The separate 18-case TRAIN-only diagnosis completed its prospectively fixed
+256 updates with zero validation/test branches. Argmax classification was
+18/18; all nine safe cases passed the 0.99 automatic-allow cutoff and none of
+the nine risky cases automatically allowed. All 18 correct-class margins
+exceeded ln(99). Mean cross-entropy decreased from 4.04255549 to 0.0000245306;
+the minimum safe allow-minus-confirm margin was 8.8125 and the maximum risky
+margin was -9.9375. Adapter reload probability delta was zero and the original
+base remained unchanged. The [complete TRAIN diagnostic receipt](./reports/guardrail-risk-2026-09-21/train-overfit-diagnostic.json)
+is bound to frozen plan SHA-256
+`c2328cc3aac616865903db854edb9729f4c8c6c3d961744b1d66757e520fd71a`.
+The source report SHA-256 is
+`f3a804333d4fbf3638da590e16cc92a9866eb90be60014235d0452421935b711`;
+the evidence ledger separately records the compact tracked copy's hash.
+This proves memorization and pipeline behavior on those training cases only.
+No validation/test evaluation, export, promotion or workflow claim follows.
+Candidate 3's preparation verified 252 TRAIN / 144 validation / zero test
+branches. Its original-base training started at 00:08:08 UTC on 2026-09-22,
+with unchanged inputs and profile and 1,536 fixed updates. The prospective
+training plan SHA-256 is
+`60c50c1c21930ad233f489fce5d7deb98e8caaff2e2302d046c6651c72f736dc`.
+The preparation worker was disposed before MLX training. Full TRAIN per-case
+post-fit evaluation is pending before any export. Training, validation,
+held-out and workflow results remain unset; training start is not qualification.
 
 The initial interface draft passed 24 focused Jev tests and 46 focused sf-pi
 tests. Final Jev source checks passed 1,011 tests across 46 files in 10.44 seconds,
@@ -69,15 +91,19 @@ partition coverage is not a claim of that uniform command's success.
 Exact run counts and scope are retained in
 [the guardrail evidence report](./reports/guardrail-risk-2026-09-21/README.md).
 
-The package dry run passed with 171 files, 6,158,422 unpacked bytes and 1,270,707
-tarball bytes at that checkpoint, including required guardrail sources, corpus,
-scripts and patch, with no weights. These size observations precede the final
-documentation update and are not a sealed final archive identity. The SF patch
-has SHA-256 `db3d9350616b3e9709b442fc7a0d4678c17704a06bc82da121ccd86f36e95b7d`;
-applying it against the pinned `4f901db9` baseline in a temporary index reproduced
-tree `85351e72e8a5d8cecfd64914eb9a6ea46edd405b`, the tree of local SF commit
-`beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2`. No push or active Pi host change is
-part of that proof.
+The repeated package dry run passed with 171 files, 6,194,598 unpacked bytes and
+1,280,112 tarball bytes after the workflow patch and setup guide update, including
+required guardrail sources, corpus, scripts and patch, with no weights. It used
+a worktree-local npm cache. These size observations precede recording the sizes
+and are not a sealed final archive identity. The SF patch
+contains two email patches: initial integration commit `beaa11c0` followed by
+workflow commit `24546444452df3be40b7ebd86ed669c28fc81c15`. Its SHA-256 is
+`4e89d0aae25e03a26498e1ab1c3659ba32f9069d8c09a061a139e2bfc63497c8`,
+with 158,871 bytes. Splitting and applying the two patches sequentially against
+the pinned `4f901db9` baseline in a separate index reproduced final tree
+`7961bc85a87a10bab176acec877688940780c135`. The real checkout/index remained
+unchanged; no push or active Pi host change is part of that proof. Runtime
+baseline identity remains `0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45`.
 
 The actual Pi SDK matched workflow uses scripted inference and counter-only
 tools. Both `off` and `shadow` accepted two requests with one confirmation, one
@@ -87,6 +113,22 @@ accepted outcomes and confirmations for `off`, `shadow` and `enforce`. These
 prove controlled execution/approval behavior; they do not measure local Jev
 candidate accuracy, model cold initialization, warm model latency, complete
 developer-task benefit or dangerous external execution.
+
+A later [representative scripted SDK receipt](./reports/guardrail-risk-2026-09-21/sdk-representative-scripted.json)
+covers ten operations in five frozen workflows. Off and shadow each executed
+nine operations with three confirmations and three session grants; enforce
+executed nine with four confirmations and two grants. Every mode preserved
+one explicit protected-path block and recorded zero unsafe automatic allows,
+fallbacks, retries and unexpected tool errors. The extra enforce prompt was a
+repeat of the identical shell operation, exposing the conservative session
+setting's approval limitation. Scripted timings and predictions remain mock
+evidence; the native workflow arm has not executed while candidate 3 trains.
+The workflow definition SHA-256 is
+`0039df8fc5568b3be141f4f28f253b7f32e429019e3b4e288cb42029f56e7fc4`.
+The new SDK test file passed seven tests with one native test skipped; an
+independent CPU review reproduced that result, and TypeScript/file-level lint
+passed. The earlier 315-test SF checkpoint predates this test file; no new
+global pass count or uniform-suite success is inferred.
 
 The SDK workflow repeats an identical operation. It does not establish prompt
 parity when related operation payloads change: current model-derived session

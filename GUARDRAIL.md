@@ -41,13 +41,15 @@ From Jev, prepare a new run with a unique path:
 npm run build
 npm run train:guardrail -- prepare --bundle /absolute/path/baseline.json \
   --checkpoint /absolute/path/models--google--gemma-3-1b-it/snapshots/dcc83ea841ab6100d6b47a070329e1ba4cf78752 \
-  --run .build/guardrail/candidate-N --steps 256
+  --run .build/guardrail/candidate-N --steps 1536
 npm run train:guardrail -- train --run .build/guardrail/candidate-N
 npm run train:guardrail -- export --run .build/guardrail/candidate-N \
   --id jev/gemma-3-1b-guardrail-candidate-N
 ```
 
 Preparation passes only TRAIN and validation to RFDT. The plan freezes the number of updates before training and verifies the original base weight checksum. Export verifies changed adapter weights, loss decrease, checkpoint reload, fusion and the resulting GGUF. The candidate registry is local to the run and does not promote the default classifier.
+
+The current candidate 3 uses 1,536 fixed updates with the original RFDT settings. This increases training exposure after an 18-case TRAIN-only diagnosis demonstrated that the unchanged pipeline can fit the requested decisions. Candidate 2's 256-update run failed validation usability. More updates are an experiment, and still require every validation and held-out gate to pass; the training diagnostic does not qualify a model.
 
 `eval:guardrail` can produce direct-classifier diagnostics. These cannot qualify enforcement: real SF bridge validation must include preparation and queueing, and all eligible model calls must finish. Run bridge validation from the SF checkout, with `JEV_GUARDRAIL_MODEL_FILE` set to the exported artifact path printed by the previous command:
 
@@ -77,6 +79,31 @@ The freeze binds model weights, prompt/scoring protocol, 0.99 cutoff, 500 ms bud
 Group identities are disjoint across all splits. Identical model-eligible inputs cannot cross splits. Exact policy-only requests can repeat the same file input under different explicit policy constraints: those requests are never supplied for model training or inference. The corpus and gold labels are machine-authored from the documented operation-policy rubric; independent human review is pending.
 
 Qualification files are operator-owned local evidence. Their hashes detect accidental changes and bind the recorded run to its frozen inputs and implementations. They are not signatures from an independent authority; an operator who can replace files and recompute hashes remains within the trusted configuration boundary.
+
+## Reproduce matched Pi workflows
+
+The SF integration's SDK test has an optional real-model workflow arm. It uses `AgentSession.prompt`, the existing guardrail hook, and registered counter-only tools. The assistant requests and user choices are scripted; org facts are mocked. The frozen workflows cover safe reads and harmless quoted commands, identical shell and Apex requests, a Data 360 rehearsal/live pair, and an explicit protected-path block. They are authored independently of held-out test results.
+
+Run this from the SF integration checkout after the candidate has finished training and export. Avoid concurrent model or training work when measuring latency. Supply a new report path:
+
+```sh
+PI_CODING_AGENT_DIR="$PWD/.build/sdk-proof-agent" \
+SF_DISABLE_LOG_FILE=true \
+JEV_DEVICE=metal \
+GUARDRAIL_SDK_LOCAL_MODEL=1 \
+GUARDRAIL_SDK_LOCAL_JEV_MODULE="$JEV_REPO/dist/guardrail-extension.js" \
+GUARDRAIL_SDK_LOCAL_MODEL_ID=jev/gemma-3-1b-guardrail-candidate-N \
+GUARDRAIL_SDK_LOCAL_MODEL_FILE=/absolute/path/to/exported-candidate.gguf \
+GUARDRAIL_SDK_LOCAL_ARTIFACT_REGISTRY="$JEV_REPO/.build/guardrail/candidate-N/candidate-registry.json" \
+GUARDRAIL_SDK_LOCAL_QUALIFICATION="$JEV_REPO/.build/guardrail/candidate-N/bridge-test.json" \
+GUARDRAIL_SDK_LOCAL_OUTPUT="$JEV_REPO/.build/guardrail/candidate-N/sdk-workflows.json" \
+npm test -- --run extensions/sf-guardrail/tests/jev-risk-sdk.test.ts \
+  -t 'compares frozen representative SDK workflows with the actual local Jev model provider'
+```
+
+Omit `GUARDRAIL_SDK_LOCAL_QUALIFICATION` for an unqualified candidate: the arm runs only `off` and `shadow` and records that enforcement was omitted. A supplied receipt must pass the real provider's verification and match the current SF runtime before `enforce` runs. The explicit model flag makes missing artifacts fail preflight; ordinary source tests skip this arm without loading a model.
+
+The report records accepted operation outcomes, confirmation choices and counts, session grants, retries, errors, comparisons, fallback reasons, and complete per-call audit entries. Baseline `off` stays lazy and has no model startup. Shadow and enforcement warm their owned worker explicitly before workflow timing; cold model initialization, SDK setup, warm workflow time and total elapsed time remain separate. Scripted approval selection adds no human deliberation time. Shadow must preserve the baseline's outcomes and approvals. Current conservative model session handling may add a confirmation for repeated shell requests; the collector exposes this limitation rather than asserting prompt parity.
 
 ## Qualification and proof boundaries
 

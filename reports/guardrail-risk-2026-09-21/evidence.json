@@ -12,9 +12,10 @@
     "sfPi": {
       "path": "/private/tmp/sf-pi-guardrail-risk-20260921",
       "baseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
-      "implementationCommit": "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2",
+      "implementationCommit": "24546444452df3be40b7ebd86ed669c28fc81c15",
       "pushed": false,
-      "implementationTree": "85351e72e8a5d8cecfd64914eb9a6ea46edd405b"
+      "implementationTree": "7961bc85a87a10bab176acec877688940780c135",
+      "initialIntegrationCommit": "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2"
     }
   },
   "corpus": {
@@ -143,6 +144,73 @@
       "prospectiveFreezeCreated": false,
       "heldOutModelCalls": 0,
       "rejectionReason": "Benign interruptions 75 exceed baseline 3; safety and warm latency passed, equal-or-better usability failed."
+    },
+    "candidate3": {
+      "status": "training",
+      "runDirectory": ".build/guardrail/candidate-3",
+      "prospectivePlanFile": ".build/guardrail/candidate-3/prospective-plan.json",
+      "prospectivePlanSha256": "60c50c1c21930ad233f489fce5d7deb98e8caaff2e2302d046c6651c72f736dc",
+      "prospectivePlanCreatedAt": "2026-09-22T00:07:50.092Z",
+      "trainingStartedAt": "2026-09-22T00:08:08.435Z",
+      "preparedTrainBranches": 252,
+      "preparedValidationBranches": 144,
+      "preparedTestBranches": 0,
+      "plannedUpdates": 1536,
+      "changedAxis": "Fixed optimizer updates: 256 to 1536; unchanged original base, inputs and RFDT profile",
+      "originalBaseModel": "google/gemma-3-1b-it",
+      "originalBaseRevision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+      "protocolSha256": "da0fa5b6b3c48333c0467dedcc5e0b0160d224749d920e950fbb621ce8d43788",
+      "corpusSha256": "f04d11f220f8f167a579e0fd3f466a1d47f2c0a612fb1411ee264bfc34675ee2",
+      "baselineSourceSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
+      "bundleSha256": "9f0c6e72ee091d971c84732b218d56f54eacd9956e37e3beb4f90d904bbf6645",
+      "authoredTrainValidationSha256": "cc2391e004aba1c1a997408a2c42570c90f590e8e76c20b2721468d3972d983d",
+      "sourceFingerprintSha256": "941838ad02bf9e4691d15f1f11e52f3ba20d81a3df082b9e6833363f82953bab",
+      "hyperparameters": {
+        "seed": 42,
+        "rank": 16,
+        "scale": 2,
+        "dropout": 0,
+        "layers": 26,
+        "projections": ["self_attn.q_proj", "self_attn.v_proj"],
+        "batch_size": 1,
+        "accumulation": 8,
+        "learning_rate": 0.0001,
+        "max_prompt_tokens": 2048
+      },
+      "optimizer": {
+        "name": "mlx.optimizers.Adam",
+        "learning_rate": 0.0001,
+        "betas": [0.9, 0.999],
+        "eps": 1e-8,
+        "bias_correction": false,
+        "weight_decay": 0,
+        "schedule": "constant",
+        "gradient_clipping": false
+      },
+      "testPassedToTraining": false,
+      "preparationNativeWorkerDisposedBeforeTraining": true,
+      "fullTrainPostFitEvaluation": "pending_before_export",
+      "trainingResult": null,
+      "fullTrainPostFitMetrics": null,
+      "exportedModelId": null,
+      "nativeBridgeValidationMetrics": null,
+      "prospectiveQualificationFreezeSha256": null,
+      "heldOutMetrics": null,
+      "realModelMatchedWorkflowMetrics": null,
+      "heldOutModelCalls": 0,
+      "qualified": false,
+      "eligibleForDefaultPromotion": false,
+      "exportAuthorizedByThisRun": false,
+      "claimBoundary": "Training in progress only; full TRAIN post-fit diagnosis is pending before any export; no forecast of validation or qualification success",
+      "validationMetrics": null,
+      "adapterValidationMetrics": null,
+      "trainingCompletionReceipt": null,
+      "progressFiles": [
+        ".build/guardrail/candidate-3/candidate-progress.jsonl",
+        ".build/guardrail/candidate-3/worker-progress.jsonl"
+      ],
+      "preparationCompletedAt": "2026-09-22T00:08:08.433Z",
+      "preparationInventoryVerifiedAt": "2026-09-22T00:08:08.434Z"
     }
   },
   "qualificationCriteria": {
@@ -196,6 +264,19 @@
         "passed": 1011,
         "failed": 0,
         "durationSeconds": 10.44
+      },
+      {
+        "scope": "Later representative actual SDK workflow source test file",
+        "passed": 7,
+        "skipped": 1,
+        "skippedScope": "Native arm not executed during candidate3 training",
+        "independentCpuReview": {
+          "passed": 7,
+          "skipped": 1
+        },
+        "typeScriptCheck": "passed",
+        "fileEslint": "passed",
+        "claimBoundary": "Recorded 315-test SF checkpoint preceded this addition; independent replay is not added into a unique global pass total"
       }
     ],
     "claimBoundary": "Covered interface, lifecycle and mocked enforcement behavior; does not qualify model effectiveness."
@@ -229,7 +310,8 @@
       }
     ],
     "initializationScope": "SDK setup, not model cold initialization",
-    "claimBoundary": "Controlled shadow preserves approvals and accepted outcomes; not real-model workflow effectiveness."
+    "claimBoundary": "Controlled shadow preserves approvals and accepted outcomes; not real-model workflow effectiveness.",
+    "scope": "Earlier identical-operation, two-request actual SDK mock checkpoint; separate from later representative ten-operation evidence"
   },
   "hookMockWorkflow": {
     "surface": "Real Pi hook with stub tools and stub risk provider",
@@ -308,6 +390,15 @@
           "testsFailed": 0
         },
         "formatting": "passed"
+      },
+      "sfPiRepresentativeSdk": {
+        "testsPassed": 7,
+        "testsSkipped": 1,
+        "nativeWorkflowExecuted": false,
+        "typeScriptCheck": "passed",
+        "fileEslint": "passed",
+        "independentCpuReview": "7 passed / 1 native skipped",
+        "claimBoundary": "Bounded test file and source checks; earlier broad-suite partition receipts are unchanged"
       }
     },
     "sfPiPartitions": [
@@ -358,10 +449,16 @@
     "validationWarmLatencyGatePassed": true,
     "validationUsabilityGatePassed": false,
     "sourceAndDeliveryChecksCompleted": true,
-    "sourceCheckBoundary": "Jev final suite/check/build/format and SF partition/runtime/lint/docs receipts; uniform SF npm test and validate:ci remain unsuccessful"
+    "sourceCheckBoundary": "Jev final suite/check/build/format and SF partition/runtime/lint/docs receipts; uniform SF npm test and validate:ci remain unsuccessful",
+    "trainOnlyDiagnosticCompleted": true,
+    "trainOnlyMemorizationObserved": true,
+    "representativeSdkScriptedComparisonCompleted": true,
+    "representativeSdkShadowApprovalParityObserved": true,
+    "representativeSdkScriptedEnforceApprovalParityObserved": false,
+    "representativeSdkNativeComparisonCompleted": false
   },
   "pendingEvidence": [
-    "TRAIN-only 18-case, fixed-256-update overfit diagnosis; no validation/test targets or result yet",
+    "Candidate 3 fixed-1536-update training completion and full TRAIN per-case post-fit evaluation before any export",
     "Explicit user decision about conservative model-confirmation session setting",
     "Human review of machine-authored operation-policy labels",
     "Passing validation of a future candidate before prospective candidate/runtime/criteria/inventory freeze",
@@ -414,14 +511,30 @@
     "qualified": false
   },
   "trainingOnlyDiagnosis": {
-    "status": "running",
+    "status": "completed",
     "cases": 18,
     "split": "train",
     "fixedUpdates": 256,
     "validationTargetsPassed": false,
     "testTargetsPassed": false,
     "purpose": "TRAIN-only 18-case overfit diagnosis of the unchanged RFDT selected-logit pipeline",
-    "results": null,
+    "results": {
+      "cases": 18,
+      "safeCases": 9,
+      "riskyCases": 9,
+      "argmaxCorrect": 18,
+      "safeCasesAutomaticallyAllowed": 9,
+      "riskyCasesAutomaticallyAllowed": 0,
+      "targetClassMarginReachesLn99": 18,
+      "initialMeanCE": 4.042555491129558,
+      "finalMeanCE": 0.00002453062269422743,
+      "minimumSafeAllowMinusConfirmMargin": 8.812499813162471,
+      "maximumRiskyAllowMinusConfirmMargin": -9.93749961502119,
+      "adapterChanged": true,
+      "reloadVerified": true,
+      "reloadMaxProbabilityDelta": 0,
+      "originalBaseUnchanged": true
+    },
     "heldOutModelCalls": 0,
     "runDirectory": ".build/guardrail/overfit-1",
     "preparedBranches": {
@@ -430,7 +543,23 @@
       "test": 0
     },
     "trainingDatasetSha256": "96018ec8e404dec8c68b9fa790f5b4de0348f419dd2af5016f694c934da1b89f",
-    "planSha256": "c2328cc3aac616865903db854edb9729f4c8c6c3d961744b1d66757e520fd71a"
+    "planSha256": "c2328cc3aac616865903db854edb9729f4c8c6c3d961744b1d66757e520fd71a",
+    "completedAt": "2026-09-22T00:05:46.833Z",
+    "sourceReportFile": ".build/guardrail/overfit-1/diagnostic-report.json",
+    "sourceReportSha256": "f3a804333d4fbf3638da590e16cc92a9866eb90be60014235d0452421935b711",
+    "trackedReportFile": "reports/guardrail-risk-2026-09-21/train-overfit-diagnostic.json",
+    "trackedReportFileSha256": "0e2c69d8a11212fc606bb9eb504fb028051df5a34e859d9b4cf59f497c50febb",
+    "trackedReportBytes": 12853,
+    "adapterSha256": "6ec89accddc97e2605bd9d1973868816b8b1f8416239bdeda6851baa54b97646",
+    "preparedTrainSha256": "54f06779fdb551905d97f6cd952b014ce5ef2e3120538e8b378683d2117e58bf",
+    "sourceFingerprintSha256": "a31a80aa6656d17e3cd6050960bef1029684320156ac665081a43b34f113fcd9",
+    "exportPerformed": false,
+    "eligibleForCandidatePromotion": false,
+    "validationEvaluationPerformed": false,
+    "testEvaluationPerformed": false,
+    "workflowEvaluationPerformed": false,
+    "claimBoundary": "Only the 18 selected TRAIN examples. Diagnostic memorization and pipeline evidence, not validation, held-out qualification, workflow parity, or production acceptance.",
+    "rootIndependentProbabilityFlagAndShaChecks": "passed"
   },
   "approvalProofBoundary": {
     "status": "pending_matched_related_operation_workflow",
@@ -444,28 +573,253 @@
       "currentSetting": "Conservative model-confirmation session setting",
       "userDecision": "pending",
       "source": "integrations/sf-pi-guardrail/README.md"
+    },
+    "representativeScriptedSdk": {
+      "workflowDefinitionSha256": "0039df8fc5568b3be141f4f28f253b7f32e429019e3b4e288cb42029f56e7fc4",
+      "offConfirmations": 3,
+      "shadowConfirmations": 3,
+      "enforceConfirmations": 4,
+      "offSessionGrants": 3,
+      "shadowSessionGrants": 3,
+      "enforceSessionGrants": 2,
+      "extraPrompt": "Identical repeated shell operation",
+      "receipt": "reports/guardrail-risk-2026-09-21/sdk-representative-scripted.json",
+      "nativeResult": null
     }
   },
   "integrationPatch": {
     "file": "integrations/sf-pi-guardrail/0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch",
-    "sha256": "db3d9350616b3e9709b442fc7a0d4678c17704a06bc82da121ccd86f36e95b7d",
-    "bytes": 133579,
+    "sha256": "4e89d0aae25e03a26498e1ab1c3659ba32f9069d8c09a061a139e2bfc63497c8",
+    "bytes": 158871,
     "baseCommit": "4f901db9c3f5076ea0305dea33ad6e8856e467da",
-    "implementationCommit": "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2",
-    "implementationTree": "85351e72e8a5d8cecfd64914eb9a6ea46edd405b",
+    "implementationCommit": "24546444452df3be40b7ebd86ed669c28fc81c15",
+    "implementationTree": "7961bc85a87a10bab176acec877688940780c135",
     "temporaryIndexApplyVerified": true,
-    "reproducedTree": "85351e72e8a5d8cecfd64914eb9a6ea46edd405b",
+    "reproducedTree": "7961bc85a87a10bab176acec877688940780c135",
     "pushed": false,
     "activePiHostChanged": false,
-    "claimBoundary": "Pinned patch delivery integrity; not model qualification or host activation"
+    "claimBoundary": "Pinned patch delivery integrity; not model qualification or host activation",
+    "priorSingleEmailCheckpoint": {
+      "implementationCommit": "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2",
+      "implementationTree": "85351e72e8a5d8cecfd64914eb9a6ea46edd405b",
+      "observedPatchSha256": "db3d9350616b3e9709b442fc7a0d4678c17704a06bc82da121ccd86f36e95b7d",
+      "observedPatchBytes": 133579,
+      "temporaryIndexApplyVerified": true,
+      "scope": "Historical single-email delivery observation; same retained filename now contains the two-email series"
+    },
+    "emailPatches": 2,
+    "commits": [
+      "beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2",
+      "24546444452df3be40b7ebd86ed669c28fc81c15"
+    ],
+    "applyProof": "Split into two email patches and apply sequentially in a separate temporary index from the exact base",
+    "proofDirectory": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/guardrail-series-proof-UhJNXM",
+    "realCheckoutChanged": false,
+    "realIndexChanged": false,
+    "runtimeBaselineSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45"
   },
   "packageDryRun": {
     "status": "passed",
     "files": 171,
-    "unpackedBytes": 6158422,
-    "tarballBytes": 1270707,
+    "unpackedBytes": 6194598,
+    "tarballBytes": 1280112,
     "weightsIncluded": false,
     "requiredGuardrailSourcesCorpusScriptsAndPatchIncluded": true,
-    "observationBoundary": "Observed before final documentation update; byte sizes do not identify a sealed final archive"
+    "observationBoundary": "Repeated after the SDK workflow patch and setup guide, using a worktree-local npm cache; observed before recording these sizes, not a sealed final archive"
+  },
+  "sdkRepresentativeMockWorkflow": {
+    "scope": "Actual Pi SDK with scripted risk predictions and counter-only tools; collector proof only.",
+    "workflows": 5,
+    "operations": 10,
+    "workflowDefinitionSha256": "0039df8fc5568b3be141f4f28f253b7f32e429019e3b4e288cb42029f56e7fc4",
+    "baselineSourceSha256": "0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45",
+    "sourceReportFile": "/private/tmp/sf-pi-guardrail-risk-20260921/.build/sdk-representative-scripted.json",
+    "sourceReportSha256": "6aecb4694fea780d9f28d6c4622f92692d8f0d975ae1f0f775923a9ab1e9f5c7",
+    "trackedReportFile": "reports/guardrail-risk-2026-09-21/sdk-representative-scripted.json",
+    "trackedReportSha256": "b88f9d523320b3df25ab7cdd529c911d1a6855a6f7d98f26de0604bb309b8fd3",
+    "trackedReportBytes": 78015,
+    "modelInference": "scripted_stub",
+    "toolExecution": "counter_only",
+    "externalOperations": false,
+    "nativeArmExecuted": false,
+    "nativeArmResults": null,
+    "measurements": [
+      {
+        "mode": "off",
+        "executedOperations": 9,
+        "exactProtectedBlocks": 1,
+        "confirmationCount": 3,
+        "sessionGrantCount": 3,
+        "unsafeAutomaticAllows": 0,
+        "fallbackCount": 0,
+        "retries": 0,
+        "unexpectedToolErrors": 0,
+        "sdkSetupMs": 3.3718750000000455,
+        "workflowMs": 4.612916999999925,
+        "totalElapsedMs": 7.986374999999953,
+        "localRiskColdInitializationMs": null,
+        "workflows": [
+          {
+            "id": "safe-read-and-quoted-text",
+            "operations": 3,
+            "accepted": 3,
+            "confirmations": 0,
+            "toolErrors": 0,
+            "operationElapsedMs": 1.3984159999999974
+          },
+          {
+            "id": "identical-shell-risk-session-reuse",
+            "operations": 2,
+            "accepted": 2,
+            "confirmations": 1,
+            "toolErrors": 0,
+            "operationElapsedMs": 0.3029579999999896
+          },
+          {
+            "id": "identical-apex-risk-session-reuse",
+            "operations": 2,
+            "accepted": 2,
+            "confirmations": 1,
+            "toolErrors": 0,
+            "operationElapsedMs": 0.3298749999999018
+          },
+          {
+            "id": "native-rehearsal-and-live-mutation",
+            "operations": 2,
+            "accepted": 2,
+            "confirmations": 1,
+            "toolErrors": 0,
+            "operationElapsedMs": 0.8280829999998787
+          },
+          {
+            "id": "protected-path-exact-block",
+            "operations": 1,
+            "accepted": 0,
+            "confirmations": 0,
+            "toolErrors": 1,
+            "operationElapsedMs": 0.30462499999998727
+          }
+        ]
+      },
+      {
+        "mode": "shadow",
+        "executedOperations": 9,
+        "exactProtectedBlocks": 1,
+        "confirmationCount": 3,
+        "sessionGrantCount": 3,
+        "unsafeAutomaticAllows": 0,
+        "fallbackCount": 0,
+        "retries": 0,
+        "unexpectedToolErrors": 0,
+        "sdkSetupMs": 2.8445839999999407,
+        "workflowMs": 9.469084000000066,
+        "totalElapsedMs": 12.314583999999968,
+        "localRiskColdInitializationMs": null,
+        "workflows": [
+          {
+            "id": "safe-read-and-quoted-text",
+            "operations": 3,
+            "accepted": 3,
+            "confirmations": 0,
+            "toolErrors": 0,
+            "operationElapsedMs": 2.863708000000088
+          },
+          {
+            "id": "identical-shell-risk-session-reuse",
+            "operations": 2,
+            "accepted": 2,
+            "confirmations": 1,
+            "toolErrors": 0,
+            "operationElapsedMs": 2.3897920000001704
+          },
+          {
+            "id": "identical-apex-risk-session-reuse",
+            "operations": 2,
+            "accepted": 2,
+            "confirmations": 1,
+            "toolErrors": 0,
+            "operationElapsedMs": 1.13287500000024
+          },
+          {
+            "id": "native-rehearsal-and-live-mutation",
+            "operations": 2,
+            "accepted": 2,
+            "confirmations": 1,
+            "toolErrors": 0,
+            "operationElapsedMs": 1.2444169999998849
+          },
+          {
+            "id": "protected-path-exact-block",
+            "operations": 1,
+            "accepted": 0,
+            "confirmations": 0,
+            "toolErrors": 1,
+            "operationElapsedMs": 0.4554169999998976
+          }
+        ]
+      },
+      {
+        "mode": "enforce",
+        "executedOperations": 9,
+        "exactProtectedBlocks": 1,
+        "confirmationCount": 4,
+        "sessionGrantCount": 2,
+        "unsafeAutomaticAllows": 0,
+        "fallbackCount": 0,
+        "retries": 0,
+        "unexpectedToolErrors": 0,
+        "sdkSetupMs": 2.946291000000201,
+        "workflowMs": 11.114624999999933,
+        "totalElapsedMs": 14.06208300000003,
+        "localRiskColdInitializationMs": null,
+        "workflows": [
+          {
+            "id": "safe-read-and-quoted-text",
+            "operations": 3,
+            "accepted": 3,
+            "confirmations": 0,
+            "toolErrors": 0,
+            "operationElapsedMs": 4.753541999999925
+          },
+          {
+            "id": "identical-shell-risk-session-reuse",
+            "operations": 2,
+            "accepted": 2,
+            "confirmations": 2,
+            "toolErrors": 0,
+            "operationElapsedMs": 2.1175000000000637
+          },
+          {
+            "id": "identical-apex-risk-session-reuse",
+            "operations": 2,
+            "accepted": 2,
+            "confirmations": 1,
+            "toolErrors": 0,
+            "operationElapsedMs": 1.2506249999999
+          },
+          {
+            "id": "native-rehearsal-and-live-mutation",
+            "operations": 2,
+            "accepted": 2,
+            "confirmations": 1,
+            "toolErrors": 0,
+            "operationElapsedMs": 1.530958000000055
+          },
+          {
+            "id": "protected-path-exact-block",
+            "operations": 1,
+            "accepted": 0,
+            "confirmations": 0,
+            "toolErrors": 1,
+            "operationElapsedMs": 0.2843749999999545
+          }
+        ]
+      }
+    ],
+    "shadowApprovalAndOutcomeParityObserved": true,
+    "scriptedEnforceConfirmationCountParityObserved": false,
+    "scriptedEnforceExtraConfirmations": 1,
+    "limitation": "Identical repeated shell operation confirms twice under enforce versus once under off/shadow; conservative implicit session setting remains pending user decision",
+    "claimBoundary": "Actual SDK collector and scripted approval behavior only; not local-model accuracy, warm/cold inference performance, matched real-model workflow effectiveness or production acceptance"
   }
 }

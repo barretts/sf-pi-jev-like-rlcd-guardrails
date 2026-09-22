@@ -9,14 +9,17 @@ uses no Jev implementation imports: it discovers one versioned provider through
 | Artifact                               | Revision                                                                                                                             |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | SF Pi baseline                         | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                                                                                           |
-| Local integration commit               | `beaa11c057c84e96b4d53b57ac1fdfe9c7a2a2d2`                                                                                           |
-| Integration tree                       | `85351e72e8a5d8cecfd64914eb9a6ea46edd405b`                                                                                           |
+| Local integration commit               | `24546444452df3be40b7ebd86ed669c28fc81c15`                                                                                           |
+| Integration tree                       | `7961bc85a87a10bab176acec877688940780c135`                                                                                           |
 | Runtime qualification baseline SHA-256 | `0f31a95043fc761347a9ccc51dc673b6aaea77d9ca61bd129f789eaa51fa1f45`                                                                   |
 | Patch                                  | [0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch](./0001-feat-guardrail-support-an-optional-local-Jev-risk-pr.patch) |
 
-The patch includes a base-commit trailer. Applying it to the exact baseline in a
-separate temporary Git index reproduced the integration tree above. It has not
-been pushed or installed in the user's active Pi environment.
+The patch contains two email commits: the provider integration and the optional
+real-model Pi workflow harness. It includes a base-commit trailer and has SHA-256
+`4e89d0aae25e03a26498e1ab1c3659ba32f9069d8c09a061a139e2bfc63497c8`, with 158,871
+bytes. Applying both commits sequentially to the exact baseline in a separate
+temporary Git index reproduced the integration tree above. It has not been
+pushed or installed in the user's active Pi environment.
 
 ## Local use
 
@@ -40,6 +43,13 @@ validation stages preceding the complete test suite also passed. The focused
 guardrail and runtime-surface run passed 315 tests; the export-only corpus test
 passed separately. The actual SDK tests use `createAgentSession` and stub tools
 to prove blocking, approval, audit, fallback and shadow invariance.
+
+The SDK workflow harness adds a source check with ten frozen representative
+operations: seven CPU/scripted SDK tests passed and the optional native arm
+was skipped. TypeScript, file ESLint and an independent replay passed. The
+real-model arm uses the genuine Jev provider and requires a matching held-out
+qualification for enforcement. Its future invocation is documented in
+[GUARDRAIL.md](../../GUARDRAIL.md); it has not run while candidate 3 is training.
 
 The complete SF suite required environment-specific partitions: the broad run
 passed 4,214 tests with one unrelated AgentScript import timeout, which passed
