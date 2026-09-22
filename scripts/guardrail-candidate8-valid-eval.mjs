@@ -70,6 +70,16 @@ export const C8_VALID_SEAL = Object.freeze({
     "dd649ad57e7711c820f7d67dc25f0ce217bb9d02b317a78dc2b0b156a94b47ff",
   runtimeCalibrationSha256:
     "559a0a696955d5cc58c0143c7b2a33a84ba7ce4cf92c6cfda1b79123de58247f",
+  runtimeBackendSha256:
+    "fd18233f879bb4ce3b9b281221ec1303149a36e29d958964da91bc39effee60f",
+  runtimeExtensionSha256:
+    "4c56233b4d9054037924733123fc01b2220878c83589d2d6a7774023d3716740",
+  runtimeEvaluationSha256:
+    "b4b45a629f79f6c50e135e883228304485d6906c9bd2b2be28e59c2b6c0f31f1",
+  runtimeModelsSha256:
+    "d4ec59932608caf84eff0f263b0ef98dccc7ba6f7944caa8204c0bee81858e35",
+  runtimeRfdtSha256:
+    "86181e412d41a49d9274df967deb48c490623a215f0f53d7feee368c48fc8ae5",
   cases: 96,
   groups: 48,
   modelPrepared: 59,
@@ -273,6 +283,7 @@ export function summarizeCandidate8Valid(records, providerKind) {
     expectedActionsMatched: count((row) => row.actual === row.expected),
     baselineActionsMatched: count((row) => row.baseline === row.expected),
     preparedModelCalls: prepared.length,
+    actualProviderCalls: records.reduce((sum, row) => sum + row.modelCalls, 0),
     modelAnswered: count((row) => row.modelAnswered),
     attemptedModelFallbacks: count(
       (row) => row.routing === "model_prepared" && !row.modelAnswered,
@@ -372,6 +383,7 @@ export function candidate8QualificationEvidence(reportBytes, preflightBytes) {
     split: "validation",
     corpusSha256: C8_VALID_SEAL.sourceSha256,
     hostReportSha256: sha(reportBytes),
+    hostReportJson: reportBytes.toString("utf8"),
     preflightJson,
     preflightSha256: C8_VALID_SEAL.preflightSha256,
     elapsedBasis: "host_total_including_preparation_queue",
@@ -632,7 +644,14 @@ async function main() {
     runtimeIdentity["core.js"] !== C8_VALID_SEAL.runtimeCoreSha256 ||
     runtimeIdentity["guardrail.js"] !== C8_VALID_SEAL.runtimeGuardrailSha256 ||
     runtimeIdentity["guardrail-calibration.js"] !==
-      C8_VALID_SEAL.runtimeCalibrationSha256
+      C8_VALID_SEAL.runtimeCalibrationSha256 ||
+    runtimeIdentity["backend.js"] !== C8_VALID_SEAL.runtimeBackendSha256 ||
+    runtimeIdentity["guardrail-extension.js"] !==
+      C8_VALID_SEAL.runtimeExtensionSha256 ||
+    runtimeIdentity["guardrail-evaluation.js"] !==
+      C8_VALID_SEAL.runtimeEvaluationSha256 ||
+    runtimeIdentity["models.js"] !== C8_VALID_SEAL.runtimeModelsSha256 ||
+    runtimeIdentity["rfdt.js"] !== C8_VALID_SEAL.runtimeRfdtSha256
   )
     throw new Error("C8 Jev v2 compiled runtime differs from VALID preflight");
   const [
@@ -732,8 +751,11 @@ async function main() {
             return runtime;
           },
     });
-    if (result.providerCalls !== C8_VALID_SEAL.modelPrepared)
-      throw new Error("C8 attempted-model call count differs from the seal");
+    if (
+      result.providerCalls !==
+      result.records.reduce((sum, row) => sum + row.modelCalls, 0)
+    )
+      throw new Error("C8 provider call accounting changed during replay");
     const afterSources = await readCandidate8SealedSources();
     const afterRuntimeIdentity = await readRuntimeIdentity();
     if (

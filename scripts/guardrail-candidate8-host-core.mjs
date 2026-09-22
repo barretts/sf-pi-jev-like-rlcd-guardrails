@@ -427,14 +427,17 @@ export async function runCandidate8HostRows({
       if (newCalls.length > 1 || ((!eligible || floor) && newCalls.length))
         throw new Error(`Unexpected provider call count: ${row.id}`);
       const comparison = evaluated.comparison;
-      const routing = newCalls.length
-        ? "model_prepared"
-        : preflight.routing === "pre_model_fallback"
-          ? "pre_model_fallback"
-          : "rules_fallback";
-      if (routing !== preflight.routing)
+      const routing = preflight.routing;
+      // Preserve an eligible row even when preparation fails before calling
+      // the provider. The missing call is an explicit failing observation, not
+      // a pre-model exemption or a reason to discard the remaining rows.
+      if (routing === "model_prepared" && (!eligible || floor))
+        throw new Error(
+          `C8 model eligibility changed since preflight: ${row.id}`,
+        );
+      if (newCalls.length && routing !== "model_prepared")
         throw new Error(`C8 model routing changed since preflight: ${row.id}`);
-      if (routing === "model_prepared")
+      if (routing === "model_prepared" && newCalls.length)
         assertCandidate8PreparedCall(row, newCalls[0], preflight);
       if (
         routing === "model_prepared" &&
@@ -442,7 +445,7 @@ export async function runCandidate8HostRows({
         policySha256 !== expectedPolicySha256
       )
         throw new Error(`C8 effective policy differs from freeze: ${row.id}`);
-      if (routing === "model_prepared")
+      if (routing === "model_prepared" && newCalls.length)
         await onPreparedCall?.({
           id: row.id,
           input: newCalls[0].input,
@@ -512,8 +515,7 @@ export async function runCandidate8HostRows({
       });
     }
     if (
-      calls.length !==
-        records.filter((row) => row.routing === "model_prepared").length ||
+      calls.length !== records.reduce((sum, row) => sum + row.modelCalls, 0) ||
       calculateJevRiskBaselineIdentity().sha256 !== hostRuntimeSha256 ||
       execFileSync("git", ["rev-parse", "HEAD"], {
         cwd: sfPi,

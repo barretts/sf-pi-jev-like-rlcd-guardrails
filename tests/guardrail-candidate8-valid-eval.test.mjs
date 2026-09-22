@@ -146,11 +146,16 @@ test("VALID summary rejects incomplete replay and counts attempted fallback", ()
     actual: "allow",
     routing:
       index < C8_VALID_SEAL.modelPrepared ? "model_prepared" : "rules_fallback",
+    modelCalls: index > 0 && index < C8_VALID_SEAL.modelPrepared ? 1 : 0,
     modelAnswered: index !== 0,
     elapsedMs: 1,
     ...(index === 0 ? { error: "provider failed" } : {}),
   }));
   const result = summarizeCandidate8Valid(rows, "fake");
+  assert.equal(
+    result.metrics.actualProviderCalls,
+    C8_VALID_SEAL.modelPrepared - 1,
+  );
   assert.equal(result.metrics.attemptedModelFallbacks, 1);
   assert.equal(result.gates.allPreparedModelCallsAnswered, false);
   assert.equal(result.gates.humanLabelReviewComplete, false);
@@ -353,6 +358,36 @@ test("qualification evidence cannot be exported from a fake replay", async () =>
     () => candidate8QualificationEvidence(fakeReport, preflight),
     /source-pinned real VALID host report/,
   );
+});
+
+test("VALID evidence binds exact host report bytes for verifier row joins", async () => {
+  const preflight = await readFile(
+    resolve(root, "blind-c8-20260922/valid-host-preflight.json"),
+  );
+  const report = {
+    providerKind: "real",
+    executionSurface: "sf_guardrail_bridge_shadow",
+    source: {
+      valid: C8_VALID_SEAL.sourceSha256,
+      preflight: C8_VALID_SEAL.preflightSha256,
+      sfPiCommit: C8_VALID_SEAL.sfPiCommit,
+      model: { modelSha256: C8_VALID_SEAL.selectedModelSha256 },
+    },
+    elapsedBasis: "host_total_including_preparation_queue",
+    records: Array.from({ length: C8_VALID_SEAL.cases }, (_, index) => ({
+      id: `test-${index}`,
+      source: "rules_fallback",
+      modelCalls: 0,
+    })),
+  };
+  const raw = Buffer.from(`${JSON.stringify(report)}\n`);
+  const evidence = candidate8QualificationEvidence(raw, preflight);
+  assert.equal(evidence.hostReportJson, raw.toString("utf8"));
+  assert.equal(
+    createHash("sha256").update(evidence.hostReportJson).digest("hex"),
+    evidence.hostReportSha256,
+  );
+  assert.equal(evidence.records.length, C8_VALID_SEAL.cases);
 });
 
 test("real VALID CLI rejects unpinned candidates before corpus or model scoring", () => {
