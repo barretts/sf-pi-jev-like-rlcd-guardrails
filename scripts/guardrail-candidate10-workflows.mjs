@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 /** SHA-bound actual Pi SDK shadow workflows. No production qualification or activation. */
 import { createHash } from "node:crypto";
-import { readFile, lstat, mkdir, writeFile, symlink } from "node:fs/promises";
+import {
+  readFile,
+  lstat,
+  mkdir,
+  writeFile,
+  symlink,
+  unlink,
+} from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import { execFileSync, spawn } from "node:child_process";
 import { resolve, dirname, isAbsolute } from "node:path";
@@ -167,6 +174,34 @@ export async function runWorkflows(manifest, output) {
   if (git("rev-parse", "HEAD") !== manifest.hostCommit)
     fail("host commit changed");
   git("diff", "--quiet", "HEAD");
+  const lock = await pinned(manifest.dependencyLock, true);
+  if (
+    sha(
+      execFileSync("git", [
+        "-C",
+        manifest.sfPi,
+        "show",
+        `${manifest.hostCommit}:package-lock.json`,
+      ]),
+    ) !== manifest.dependencyLock.sha256
+  )
+    fail("dependency lock differs from pinned host");
+  await pinned({
+    path: resolve(manifest.sfDeps, "package-lock.json"),
+    sha256: manifest.dependencyLock.sha256,
+  });
+  const sdkPackages = {};
+  for (const name of [
+    "@earendil-works/pi-coding-agent",
+    "@earendil-works/pi-ai",
+  ]) {
+    const path = resolve(manifest.sfDeps, "node_modules", name, "package.json");
+    const raw = await readFile(path),
+      installed = JSON.parse(raw);
+    if (installed.version !== lock.packages?.[`node_modules/${name}`]?.version)
+      fail(`installed ${name} differs from host lock`);
+    sdkPackages[name] = { path, sha256: sha(raw), version: installed.version };
+  }
   await mkdir(output, { recursive: false });
   const fixture = resolve(output, "sf-pi-fixture");
   await mkdir(fixture);
@@ -220,6 +255,7 @@ export async function runWorkflows(manifest, output) {
     child.once("error", reject);
     child.once("exit", (code, signal) => done({ code, signal }));
   });
+  await unlink(resolve(fixture, "node_modules"));
   for (const name of [
     "model",
     "registry",
@@ -234,8 +270,10 @@ export async function runWorkflows(manifest, output) {
     "importReport",
     "localPrecision",
     "selectedPrecision",
+    "dependencyLock",
   ])
     await pinned(manifest[name]);
+  for (const pin of Object.values(sdkPackages)) await pinned(pin);
   let observed = null;
   try {
     observed = JSON.parse(
@@ -262,6 +300,7 @@ export async function runWorkflows(manifest, output) {
     exit,
     fixtureSourceSha256: sha(source),
     actualNativeMeasured: Boolean(checks),
+    sdkPackages,
     projectedModelConfirmations,
     confirmationCountsAreProjected: true,
     warmP95Ms,

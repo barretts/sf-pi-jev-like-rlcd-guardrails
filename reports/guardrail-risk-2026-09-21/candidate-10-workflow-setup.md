@@ -23,6 +23,7 @@ The input is a version 1 JSON object with `purpose:"candidate10_actual_sdk_workf
 - `backend`, `guardrail`: built Jev `dist/backend.js` and `dist/guardrail.js`.
 - `adapter`: this repository's `scripts/guardrail-candidate10-workflow-adapter.mjs`.
 - `sdkTest`: pinned host `extensions/sf-guardrail/tests/jev-risk-sdk.test.ts`.
+- `dependencyLock`: pinned host `package-lock.json`. Its bytes must match the installed `sfDeps` workspace lock, and the installed Pi SDK and pi-ai package versions must match their locked versions. Package metadata hashes are retained and rechecked after dispatch.
 
 The immutable representative SDK workflow specifies a protected-file block override. The adapter records that isolated fixture policy fingerprint separately from the corpus policy and uses the frozen candidate cutoff, model, and scoring protocol. It deliberately declares `qualified:false`. Its worker warms during awaited SDK session startup and is disposed between modes and on shutdown. Native model or worker generation changes reject a prediction.
 
