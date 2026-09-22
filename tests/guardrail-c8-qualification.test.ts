@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
+import { canonical } from "../src/core.js";
 import { GUARDRAIL_PROTOCOL_SHA256 } from "../src/guardrail.js";
 import {
   C8_BASE_PROTOCOL_SHA256,
@@ -10,6 +11,8 @@ import {
   C8_QUALIFICATION_CRITERIA_SHA256,
   freezeC8Selection,
   qualifyC8Heldout,
+  serializeC8ProvisionalStubReceipt,
+  stageC8ProvisionalStubReceipt,
   verifyC8HeldoutQualification,
   type C8AgentAuditEvidence,
   type C8EnforcementEvidence,
@@ -97,7 +100,13 @@ function split(
         modelCalls: modelEligible ? 1 : 0,
         policyFloor: !modelEligible,
         inputSha256: modelEligible ? sha("prepared-" + id) : null,
-        operationSha256: sha("operation-" + id),
+        operationSha256: sha(
+          canonical({
+            toolName: "bash",
+            input: { command: `echo ${id}` },
+            cwd: `/workspace/${name}`,
+          }),
+        ),
         elapsedMs: modelEligible ? 100 : 1,
         source: modelEligible ? "jev" : "exact_policy",
         ...(modelEligible
@@ -114,7 +123,29 @@ function split(
       };
     },
   );
-  const corpusSha256 = name === "test" ? pin("7") : pin("8");
+  const testCorpusJson =
+    name === "test"
+      ? JSON.stringify({
+          schema_version: "c8.2",
+          split: "test",
+          cases: rows.map((row) => ({
+            id: row.id,
+            family: row.family,
+            group_id: row.groupId,
+            fixture: { cwd: `/workspace/${name}` },
+            operation: { tool: "bash", input: { command: `echo ${row.id}` } },
+            expected: {
+              decision:
+                row.expected === "confirm"
+                  ? "require_approval"
+                  : row.expected === "block"
+                    ? "hard_block"
+                    : "allow",
+            },
+          })),
+        })
+      : undefined;
+  const corpusSha256 = testCorpusJson ? sha(testCorpusJson) : pin("8");
   const preflight = {
     source_sha256: corpusSha256,
     host_baseline_sha256: pin("d"),
@@ -136,16 +167,44 @@ function split(
     })),
   };
   const preflightJson = JSON.stringify(preflight);
+  const preflightSha256 = sha(preflightJson);
+  const hostReportJson = JSON.stringify({
+    providerKind: "real",
+    elapsedBasis: "host_total_including_preparation_queue",
+    source: {
+      [name === "validation" ? "valid" : "test"]: corpusSha256,
+      preflight: preflightSha256,
+    },
+    records: rows.map((row) => ({
+      ...row,
+      ...(row.source === "jev"
+        ? {
+            effectivePolicySha256: row.policySha256,
+            comparison: {
+              modelSha256: row.modelSha256,
+              protocolSha256: row.protocolSha256,
+              calibrationSha256: row.calibrationSha256,
+              minimumAllowScore: row.minimumAllowScore,
+            },
+          }
+        : {}),
+    })),
+  });
   return {
     split: name,
     corpusSha256,
-    hostReportSha256: name === "test" ? pin("9") : pin("0"),
+    ...(testCorpusJson ? { testCorpusJson } : {}),
+    hostReportSha256: sha(hostReportJson),
+    hostReportJson,
     preflightJson,
-    preflightSha256: sha(preflightJson),
+    preflightSha256,
     elapsedBasis: "host_total_including_preparation_queue",
     records: rows,
   };
 }
+
+const testSeal = (selected: C8CalibrationReceipt) =>
+  split("test", selected).corpusSha256;
 
 function audits(
   selected: C8CalibrationReceipt,
@@ -232,12 +291,13 @@ function enforcement(
   freeze: ReturnType<typeof freezeC8Selection>,
   test: C8SplitEvidence,
 ): C8EnforcementEvidence {
-  return {
+  const provisional = stageC8ProvisionalStubReceipt(freeze, test);
+  const report = {
     version: 1,
-    purpose: "candidate8_real_model_stubbed_enforce_workflow",
-    mode: "enforce",
+    purpose: "candidate8_real_model_stubbed_enforce_workflow" as const,
+    mode: "enforce" as const,
     elapsedBasis:
-      "host_risk_check_including_preparation_queue_and_receipt_verification",
+      "host_risk_check_including_preparation_queue_and_receipt_verification" as const,
     hostBaselineSha256: freeze.identity.hostBaselineSha256,
     hostCommit: "bdbf6292f383a8b2e12cd236aafb2be9c335f463",
     policySha256: freeze.identity.policySha256,
@@ -247,7 +307,13 @@ function enforcement(
     freezeSha256: freeze.sha256,
     testCorpusSha256: test.corpusSha256,
     runnerSha256: pin("6"),
-    externalToolExecutions: 0,
+    provisionalReceiptSha256: sha(
+      serializeC8ProvisionalStubReceipt(provisional),
+    ),
+    nativeBinarySha256: freeze.identity.nativeBinarySha256,
+    providerKind: "real_jev_native_delegate" as const,
+    delegatedModelCalls: test.records.filter((row) => row.modelEligible).length,
+    externalToolExecutions: 0 as const,
     records: test.records.map((row) => ({
       id: row.id,
       operationSha256: row.operationSha256,
@@ -256,15 +322,24 @@ function enforcement(
       modelEligible: row.modelEligible,
       modelAnswered: row.modelAnswered,
       modelCalls: row.modelCalls,
+      modelDelegated: row.modelEligible,
       source: row.source,
       warmRiskCheckMs: row.modelEligible ? 110 : 1,
       stubOnly: true,
     })),
   };
+  const hostReportJson = JSON.stringify(report) + "\n";
+  return { ...report, hostReportJson, hostReportSha256: sha(hostReportJson) };
+}
+
+function rebindEnforcementReport(value: C8EnforcementEvidence) {
+  const { hostReportJson: _raw, hostReportSha256: _sha, ...report } = value;
+  value.hostReportJson = JSON.stringify(report) + "\n";
+  value.hostReportSha256 = sha(value.hostReportJson);
 }
 
 describe("C8 pre-TEST freeze and held-out verifier", () => {
-  it("recomputes passing VALID and TEST gates and binds the TRAIN cutoff", () => {
+  it("recomputes split gates but never qualifies rejected C8 without an independent TEST baseline seal", () => {
     const selected = calibration();
     const valid = split("validation", selected);
     const freeze = freezeC8Selection(
@@ -272,7 +347,7 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
       calReceiptSha,
       valid,
       audits(selected, valid),
-      pin("7"),
+      testSeal(selected),
     );
     expect(freeze.testOpened).toBe(false);
     expect(freeze.identity.criteriaSha256).toBe(
@@ -280,8 +355,10 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
     );
     const test = split("test", selected);
     const qualified = qualifyC8Heldout(freeze, test, enforcement(freeze, test));
-    expect(qualified.qualified).toBe(true);
-    expect(
+    expect(qualified.testGates.unsafeAllows).toBe(true);
+    expect(qualified.enforcementGates.independentBaseline).toBe(false);
+    expect(qualified.qualified).toBe(false);
+    expect(() =>
       verifyC8HeldoutQualification(
         qualified,
         freeze,
@@ -290,7 +367,7 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
         model,
         binary,
       ),
-    ).toEqual(qualified);
+    ).toThrow(/qualification changed|failed/);
   });
 
   it("rejects unresolved agent-label disputes without treating agent review as human signoff", () => {
@@ -303,7 +380,13 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
     evidence.validationJson = JSON.stringify(changed);
     evidence.validationSha256 = sha(evidence.validationJson);
     expect(() =>
-      freezeC8Selection(selected, calReceiptSha, valid, evidence, pin("7")),
+      freezeC8Selection(
+        selected,
+        calReceiptSha,
+        valid,
+        evidence,
+        testSeal(selected),
+      ),
     ).toThrow(/audit/);
   });
 
@@ -320,7 +403,7 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
         calReceiptSha,
         valid,
         audits(selected, valid),
-        pin("7"),
+        testSeal(selected),
       ),
     ).toThrow(/preflight/);
   });
@@ -335,7 +418,7 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
         calReceiptSha,
         valid,
         audits(selected, valid),
-        pin("7"),
+        testSeal(selected),
       ),
     ).toThrow(/model-eligible/);
     const partial = split("validation", selected);
@@ -346,7 +429,7 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
         calReceiptSha,
         partial,
         audits(selected, partial),
-        pin("7"),
+        testSeal(selected),
       ),
     ).toThrow(/host split evidence/);
   });
@@ -359,7 +442,7 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
       calReceiptSha,
       valid,
       audits(selected, valid),
-      pin("7"),
+      testSeal(selected),
     );
     const test = split("test", selected);
     expect(() => qualifyC8Heldout(freeze, test, undefined as never)).toThrow(
@@ -367,6 +450,7 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
     );
     const late = enforcement(freeze, test);
     late.records[0].warmRiskCheckMs = 751;
+    rebindEnforcementReport(late);
     const rejected = qualifyC8Heldout(freeze, test, late);
     expect(rejected.qualified).toBe(false);
     expect(rejected.enforcementGates.latency).toBe(false);
@@ -390,7 +474,7 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
       calReceiptSha,
       valid,
       audits(selected, valid),
-      pin("7"),
+      testSeal(selected),
     );
     const test = split("test", selected);
     const qualified = qualifyC8Heldout(freeze, test, enforcement(freeze, test));
@@ -442,5 +526,155 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
     expect(() =>
       qualifyC8Heldout(freeze, overlap, enforcement(freeze, overlap)),
     ).toThrow(/overlaps/);
+  });
+
+  it("binds TEST gold and original operations to the exact sealed corpus bytes", () => {
+    const selected = calibration();
+    const valid = split("validation", selected);
+    const freeze = freezeC8Selection(
+      selected,
+      calReceiptSha,
+      valid,
+      audits(selected, valid),
+      testSeal(selected),
+    );
+    const test = split("test", selected);
+    const risky = test.records[1];
+    expect(risky.expected).toBe("confirm");
+    risky.expected = "allow";
+    risky.baseline = "allow";
+    risky.actual = "allow";
+    risky.prediction = "allow";
+    risky.allowScore = 0.99;
+    const preflight = JSON.parse(test.preflightJson);
+    preflight.status[1].expected = "allow";
+    preflight.status[1].baseline_action = "allow";
+    test.preflightJson = JSON.stringify(preflight);
+    test.preflightSha256 = sha(test.preflightJson);
+    const report = JSON.parse(test.hostReportJson);
+    report.source.preflight = test.preflightSha256;
+    Object.assign(report.records[1], risky);
+    test.hostReportJson = JSON.stringify(report);
+    test.hostReportSha256 = sha(test.hostReportJson);
+    expect(() => stageC8ProvisionalStubReceipt(freeze, test)).toThrow(
+      /sealed gold/,
+    );
+  });
+
+  it("binds scored outcomes, score and timing to exact host report bytes", () => {
+    const selected = calibration();
+    const valid = split("validation", selected);
+    const freeze = freezeC8Selection(
+      selected,
+      calReceiptSha,
+      valid,
+      audits(selected, valid),
+      testSeal(selected),
+    );
+    const test = split("test", selected);
+    test.records[1].actual = "allow";
+    test.records[1].prediction = "allow";
+    test.records[1].allowScore = 0.99;
+    expect(() => stageC8ProvisionalStubReceipt(freeze, test)).toThrow(
+      /raw host report/,
+    );
+    const unchanged = split("test", selected);
+    unchanged.records[0].elapsedMs = 10;
+    expect(() => stageC8ProvisionalStubReceipt(freeze, unchanged)).toThrow(
+      /raw host report/,
+    );
+  });
+
+  it("does not accept a self-consistent relabel of the TEST baseline", () => {
+    const selected = calibration();
+    const valid = split("validation", selected);
+    const freeze = freezeC8Selection(
+      selected,
+      calReceiptSha,
+      valid,
+      audits(selected, valid),
+      testSeal(selected),
+    );
+    const test = split("test", selected);
+    const safe = test.records[0];
+    expect(safe.expected).toBe("allow");
+    safe.actual = "confirm";
+    safe.prediction = "confirm";
+    safe.allowScore = 0.1;
+    let report = JSON.parse(test.hostReportJson);
+    Object.assign(report.records[0], safe);
+    test.hostReportJson = JSON.stringify(report);
+    test.hostReportSha256 = sha(test.hostReportJson);
+    expect(() => stageC8ProvisionalStubReceipt(freeze, test)).toThrow(
+      /shadow gates failed/,
+    );
+
+    safe.baseline = "confirm";
+    const preflight = JSON.parse(test.preflightJson);
+    preflight.status[0].baseline_action = "confirm";
+    test.preflightJson = JSON.stringify(preflight);
+    test.preflightSha256 = sha(test.preflightJson);
+    report = JSON.parse(test.hostReportJson);
+    report.source.preflight = test.preflightSha256;
+    report.records[0].baseline = "confirm";
+    test.hostReportJson = JSON.stringify(report);
+    test.hostReportSha256 = sha(test.hostReportJson);
+    const measured = qualifyC8Heldout(freeze, test, enforcement(freeze, test));
+    expect(measured.testGates.benign).toBe(true);
+    expect(measured.enforcementGates.independentBaseline).toBe(false);
+    expect(measured.qualified).toBe(false);
+    expect(() =>
+      verifyC8HeldoutQualification(
+        measured,
+        freeze,
+        selected,
+        calReceiptSha,
+        model,
+        binary,
+      ),
+    ).toThrow(/qualification changed|failed/);
+  });
+
+  it("requires actual delegated native calls and keeps a provisional receipt non-qualifying", () => {
+    const selected = calibration();
+    const valid = split("validation", selected);
+    const freeze = freezeC8Selection(
+      selected,
+      calReceiptSha,
+      valid,
+      audits(selected, valid),
+      testSeal(selected),
+    );
+    const test = split("test", selected);
+    const provisional = stageC8ProvisionalStubReceipt(freeze, test);
+    expect(provisional.provisionalStubOnly).toBe(true);
+    expect(() =>
+      verifyC8HeldoutQualification(
+        provisional,
+        freeze,
+        selected,
+        calReceiptSha,
+        model,
+        binary,
+      ),
+    ).toThrow(/enforce workflow/);
+    const missing = enforcement(freeze, test);
+    missing.delegatedModelCalls = 0;
+    rebindEnforcementReport(missing);
+    expect(() => qualifyC8Heldout(freeze, test, missing)).toThrow(
+      /enforce workflow/,
+    );
+    const forged = enforcement(freeze, test);
+    forged.records[0].modelDelegated = false;
+    rebindEnforcementReport(forged);
+    const rejected = qualifyC8Heldout(freeze, test, forged);
+    expect(rejected.qualified).toBe(false);
+    expect(rejected.enforcementGates.complete).toBe(false);
+    const wrongReceipt = enforcement(freeze, test);
+    wrongReceipt.provisionalReceiptSha256 = pin("f");
+    rebindEnforcementReport(wrongReceipt);
+    expect(() => qualifyC8Heldout(freeze, test, wrongReceipt)).toThrow(
+      /enforce workflow/,
+    );
   });
 });

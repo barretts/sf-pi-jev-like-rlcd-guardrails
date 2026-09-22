@@ -50,6 +50,9 @@ export const C8_QUALIFICATION_CRITERIA = Object.freeze({
   testGroups: 48,
   testIdInventorySha256:
     "f2445ba39046ed85b1c4b7f542351ac5f120236882d3c8b36f419dcc1ec14a63",
+  // C8 failed VALID before TEST was opened. No independent pre-model TEST
+  // baseline seal exists, so this candidate must never become qualified.
+  independentTestBaselineSealSha256: null,
   sfPiHostCommit: "bdbf6292f383a8b2e12cd236aafb2be9c335f463",
   benignInterruptions: "at_or_below_same_split_baseline",
   execution: "all_model_eligible_host_calls_answered_without_fallback",
@@ -95,7 +98,10 @@ export interface C8QualificationRow {
 export interface C8SplitEvidence {
   split: "validation" | "test";
   corpusSha256: string;
+  /** Exact sealed TEST JSON bytes, required only after the pre-TEST freeze. */
+  testCorpusJson?: string;
   hostReportSha256: string;
+  hostReportJson: string;
   preflightJson: string;
   preflightSha256: string;
   elapsedBasis: "host_total_including_preparation_queue";
@@ -169,7 +175,12 @@ export interface C8HeldoutQualification {
     deadlineMisses: number;
     matchedCases: number;
   };
-  enforcementGates: { complete: boolean; latency: boolean; stubOnly: boolean };
+  enforcementGates: {
+    complete: boolean;
+    latency: boolean;
+    stubOnly: boolean;
+    independentBaseline: boolean;
+  };
   qualified: boolean;
   sha256: string;
 }
@@ -187,6 +198,12 @@ export interface C8EnforcementEvidence {
   freezeSha256: string;
   testCorpusSha256: string;
   runnerSha256: string;
+  hostReportSha256: string;
+  hostReportJson: string;
+  provisionalReceiptSha256: string;
+  nativeBinarySha256: string;
+  providerKind: "real_jev_native_delegate";
+  delegatedModelCalls: number;
   externalToolExecutions: 0;
   records: Array<{
     id: string;
@@ -196,10 +213,23 @@ export interface C8EnforcementEvidence {
     modelEligible: boolean;
     modelAnswered: boolean;
     modelCalls: number;
+    modelDelegated: boolean;
     source: "jev" | "exact_policy" | "rules_fallback";
     warmRiskCheckMs: number;
     stubOnly: boolean;
   }>;
+}
+export interface C8ProvisionalStubReceipt {
+  version: 1;
+  purpose: "candidate8_heldout_qualification";
+  freezeSha256: string;
+  test: C8SplitEvidence;
+  testMetrics: C8QualificationMetrics;
+  testGates: C8QualificationGates;
+  qualified: true;
+  provisionalStubOnly: true;
+  enforcementEvidenceMissing: true;
+  sha256: string;
 }
 
 function identityFromCalibration(
@@ -437,6 +467,120 @@ function verifyPreflight(
   }
 }
 
+function verifyHostReport(evidence: C8SplitEvidence): void {
+  const report = parsePinnedJson(
+    evidence.hostReportJson,
+    evidence.hostReportSha256,
+    `${evidence.split} host report`,
+  );
+  const source = report.source as Record<string, unknown> | undefined;
+  const rawRecords = report.records as unknown[];
+  if (
+    report.providerKind !== "real" ||
+    report.elapsedBasis !== C8_QUALIFICATION_CRITERIA.elapsedBasis ||
+    source?.[evidence.split === "validation" ? "valid" : "test"] !==
+      evidence.corpusSha256 ||
+    source?.preflight !== evidence.preflightSha256 ||
+    !Array.isArray(rawRecords) ||
+    rawRecords.length !== evidence.records.length
+  )
+    fail(`C8 ${evidence.split} host report is incomplete`);
+  const scored = new Map(evidence.records.map((row) => [row.id, row]));
+  const ids = new Set<string>();
+  for (const value of rawRecords) {
+    const row = value as Record<string, unknown>;
+    const match = scored.get(String(row?.id));
+    const comparison = row?.comparison as Record<string, unknown> | undefined;
+    const fallbackReason =
+      row?.fallbackReason ?? row?.error ?? comparison?.reason;
+    if (
+      !match ||
+      ids.has(match.id) ||
+      row.groupId !== match.groupId ||
+      row.family !== match.family ||
+      row.expected !== match.expected ||
+      row.baseline !== match.baseline ||
+      row.actual !== match.actual ||
+      row.modelEligible !== match.modelEligible ||
+      row.modelAnswered !== match.modelAnswered ||
+      row.modelCalls !== match.modelCalls ||
+      row.policyFloor !== match.policyFloor ||
+      row.inputSha256 !== match.inputSha256 ||
+      row.operationSha256 !== match.operationSha256 ||
+      row.elapsedMs !== match.elapsedMs ||
+      row.source !== match.source ||
+      (match.source === "jev" &&
+        (row.prediction !== match.prediction ||
+          row.allowScore !== match.allowScore ||
+          comparison?.modelSha256 !== match.modelSha256 ||
+          comparison?.protocolSha256 !== match.protocolSha256 ||
+          comparison?.calibrationSha256 !== match.calibrationSha256 ||
+          comparison?.minimumAllowScore !== match.minimumAllowScore ||
+          row.effectivePolicySha256 !== match.policySha256)) ||
+      (match.source === "rules_fallback" &&
+        fallbackReason !== match.fallbackReason)
+    )
+      fail(`C8 ${evidence.split} scored row differs from raw host report`);
+    ids.add(match!.id);
+  }
+}
+
+function verifySealedTestCorpus(test: C8SplitEvidence): void {
+  const corpus = parsePinnedJson(
+    test.testCorpusJson ?? "",
+    test.corpusSha256,
+    "sealed TEST corpus",
+  );
+  const cases = corpus.cases as unknown[];
+  if (
+    corpus.schema_version !== "c8.2" ||
+    corpus.split !== "test" ||
+    !Array.isArray(cases) ||
+    cases.length !== C8_QUALIFICATION_CRITERIA.testCases
+  )
+    fail("C8 sealed TEST corpus schema or population changed");
+  const scored = new Map(test.records.map((row) => [row.id, row]));
+  const ids = new Set<string>();
+  const groups = new Set<string>();
+  for (const value of cases) {
+    const row = value as Record<string, unknown>;
+    const matched = scored.get(String(row?.id));
+    const operation = row?.operation as Record<string, unknown> | undefined;
+    const fixture = row?.fixture as Record<string, unknown> | undefined;
+    const expected = row?.expected as Record<string, unknown> | undefined;
+    const expectedAction =
+      expected?.decision === "allow"
+        ? "allow"
+        : expected?.decision === "require_approval"
+          ? "confirm"
+          : expected?.decision === "hard_block"
+            ? "block"
+            : null;
+    if (
+      !matched ||
+      ids.has(matched.id) ||
+      !expectedAction ||
+      typeof operation?.tool !== "string" ||
+      !operation.input ||
+      typeof operation.input !== "object" ||
+      typeof fixture?.cwd !== "string" ||
+      row.group_id !== matched.groupId ||
+      row.family !== matched.family ||
+      expectedAction !== matched.expected ||
+      hash({
+        toolName: operation.tool,
+        input: operation.input,
+        cwd: fixture.cwd,
+      }) !== matched.operationSha256
+    )
+      fail("C8 TEST scored row differs from sealed gold or original operation");
+    ids.add(matched!.id);
+    groups.add(matched!.groupId);
+  }
+  if (groups.size !== C8_QUALIFICATION_CRITERIA.testGroups)
+    fail("C8 TEST sealed group inventory changed");
+}
+
 export function measureC8Split(
   evidence: C8SplitEvidence,
   identity: C8FreezeIdentity,
@@ -589,11 +733,63 @@ export function measureC8Split(
           C8_QUALIFICATION_CRITERIA.validationEligibleCalls),
   };
   verifyPreflight(evidence, identity);
+  verifyHostReport(evidence);
+  if (evidence.split === "test") verifySealedTestCorpus(evidence);
   return { metrics, gates };
 }
 
 function allGates(gates: C8QualificationGates) {
   return Object.values(gates).every((passed) => passed === true);
+}
+
+function measureSealedC8Test(
+  freeze: C8SelectionFreeze,
+  test: C8SplitEvidence,
+): { metrics: C8QualificationMetrics; gates: C8QualificationGates } {
+  if (
+    !freeze ||
+    freeze.version !== 1 ||
+    freeze.purpose !== "candidate8_pretest_selection_freeze" ||
+    freeze.testOpened !== false ||
+    freeze.identity?.criteriaSha256 !== C8_QUALIFICATION_CRITERIA_SHA256 ||
+    !allGates(freeze.validationGates) ||
+    !pin(freeze.sha256) ||
+    hash(
+      Object.fromEntries(
+        Object.entries(freeze).filter(([key]) => key !== "sha256"),
+      ),
+    ) !== freeze.sha256
+  )
+    fail("C8 pre-TEST freeze is incomplete or changed");
+  if (
+    test.split !== "test" ||
+    test.corpusSha256 !== freeze.testCorpusSealSha256
+  )
+    fail("C8 held-out TEST differs from the pre-TEST seal");
+  const validationIds = new Set(freeze.validation.records.map((row) => row.id));
+  const validationGroups = new Set(
+    freeze.validation.records.map((row) => row.groupId),
+  );
+  const validationInputs = new Set(
+    freeze.validation.records.map((row) => row.inputSha256),
+  );
+  if (
+    test.records.some(
+      (row) =>
+        validationIds.has(row.id) ||
+        validationGroups.has(row.groupId) ||
+        freeze.trainingGroups.includes(row.groupId) ||
+        (row.modelEligible && validationInputs.has(row.inputSha256)),
+    )
+  )
+    fail("C8 TEST overlaps the pre-TEST VALID inventory");
+  if (
+    hashBytes(
+      JSON.stringify(test.records.map((row) => row.id).sort()) + "\n",
+    ) !== C8_QUALIFICATION_CRITERIA.testIdInventorySha256
+  )
+    fail("C8 TEST case IDs differ from the pre-TEST sealed inventory");
+  return measureC8Split(test, freeze.identity);
 }
 
 export function freezeC8Selection(
@@ -641,40 +837,45 @@ export function freezeC8Selection(
   return { ...body, sha256: hash(body) };
 }
 
+/** A one-run, stub-only host measurement scaffold; never a production qualification. */
+export function stageC8ProvisionalStubReceipt(
+  freeze: C8SelectionFreeze,
+  test: C8SplitEvidence,
+): C8ProvisionalStubReceipt {
+  const { metrics, gates } = measureSealedC8Test(freeze, test);
+  if (!allGates(gates))
+    fail("C8 held-out shadow gates failed; no provisional stub workflow");
+  const body = {
+    version: 1 as const,
+    purpose: "candidate8_heldout_qualification" as const,
+    freezeSha256: freeze.sha256,
+    test,
+    testMetrics: metrics,
+    testGates: gates,
+    qualified: true as const,
+    provisionalStubOnly: true as const,
+    enforcementEvidenceMissing: true as const,
+  };
+  return { ...body, sha256: hash(body) };
+}
+
+/** Exact file bytes that the operator must pin for the isolated stub run. */
+export function serializeC8ProvisionalStubReceipt(
+  receipt: C8ProvisionalStubReceipt,
+): string {
+  return JSON.stringify(receipt) + "\n";
+}
+
 export function qualifyC8Heldout(
   freeze: C8SelectionFreeze,
   test: C8SplitEvidence,
   enforcement: C8EnforcementEvidence,
 ): C8HeldoutQualification {
-  if (
-    test.split !== "test" ||
-    test.corpusSha256 !== freeze.testCorpusSealSha256
-  )
-    fail("C8 held-out TEST differs from the pre-TEST seal");
-  const validationIds = new Set(freeze.validation.records.map((row) => row.id));
-  const validationGroups = new Set(
-    freeze.validation.records.map((row) => row.groupId),
+  const { metrics, gates } = measureSealedC8Test(freeze, test);
+  const provisional = stageC8ProvisionalStubReceipt(freeze, test);
+  const provisionalReceiptSha256 = hashBytes(
+    serializeC8ProvisionalStubReceipt(provisional),
   );
-  const validationInputs = new Set(
-    freeze.validation.records.map((row) => row.inputSha256),
-  );
-  if (
-    test.records.some(
-      (row) =>
-        validationIds.has(row.id) ||
-        validationGroups.has(row.groupId) ||
-        freeze.trainingGroups.includes(row.groupId) ||
-        (row.modelEligible && validationInputs.has(row.inputSha256)),
-    )
-  )
-    fail("C8 TEST overlaps the pre-TEST VALID inventory");
-  if (
-    hashBytes(
-      JSON.stringify(test.records.map((row) => row.id).sort()) + "\n",
-    ) !== C8_QUALIFICATION_CRITERIA.testIdInventorySha256
-  )
-    fail("C8 TEST case IDs differ from the pre-TEST sealed inventory");
-  const { metrics, gates } = measureC8Split(test, freeze.identity);
   if (
     !enforcement ||
     enforcement.version !== 1 ||
@@ -693,12 +894,29 @@ export function qualifyC8Heldout(
     enforcement.freezeSha256 !== freeze.sha256 ||
     enforcement.testCorpusSha256 !== test.corpusSha256 ||
     !pin(enforcement.runnerSha256) ||
+    enforcement.provisionalReceiptSha256 !== provisionalReceiptSha256 ||
+    enforcement.nativeBinarySha256 !== freeze.identity.nativeBinarySha256 ||
+    enforcement.providerKind !== "real_jev_native_delegate" ||
+    enforcement.delegatedModelCalls !== metrics.eligible ||
+    !pin(enforcement.hostReportSha256) ||
     !Array.isArray(enforcement.records) ||
     enforcement.records.length !== test.records.length
   )
     fail(
       "C8 real-model enforce workflow is absent or bound to different artifacts",
     );
+  const rawEnforcement = parsePinnedJson(
+    enforcement.hostReportJson,
+    enforcement.hostReportSha256,
+    "real-model stubbed enforce host report",
+  );
+  const {
+    hostReportJson: _raw,
+    hostReportSha256: _sha,
+    ...reported
+  } = enforcement;
+  if (canonical(rawEnforcement) !== canonical(reported))
+    fail("C8 enforce workflow differs from its exact runner report bytes");
   const testRows = new Map(test.records.map((row) => [row.id, row]));
   const enforcementIds = new Set<string>();
   const warmTimes: number[] = [];
@@ -724,6 +942,7 @@ export function qualifyC8Heldout(
       row.modelEligible === expected.modelEligible &&
       row.modelAnswered === expected.modelAnswered &&
       row.modelCalls === expected.modelCalls &&
+      row.modelDelegated === expected.modelEligible &&
       row.source === expected.source
     )
       matched++;
@@ -747,6 +966,9 @@ export function qualifyC8Heldout(
     stubOnly:
       enforcement.externalToolExecutions === 0 &&
       enforcement.records.every((row) => row.stubOnly === true),
+    independentBaseline: pin(
+      C8_QUALIFICATION_CRITERIA.independentTestBaselineSealSha256,
+    ),
   };
   const body = {
     version: 1 as const,
