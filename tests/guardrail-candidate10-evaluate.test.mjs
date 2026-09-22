@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { strict as assert } from "node:assert";
 import test from "node:test";
 import { C9_CAL_SOURCE_PINS } from "../scripts/guardrail-candidate9-cal-score.mjs";
@@ -7,8 +8,9 @@ import {
   validateC10Manifest,
   evaluateC10,
   assertC10ArtifactPaths,
+  verifyC10LocalArchitecture,
 } from "../scripts/guardrail-candidate10-evaluate.mjs";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 const records = () =>
@@ -188,6 +190,9 @@ function frozenManifest() {
   files.cal.sha256 =
     "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd";
   const runtimeNames = [
+    "rfdt/worker.py",
+    "rfdt/cuda_import.py",
+    "rfdt/gemma3_fp32.py",
     "dist/backend.js",
     "dist/core.js",
     "dist/guardrail.js",
@@ -299,4 +304,60 @@ test("artifact cannot reference an alternative same-ID manifest or unpinned expo
       ),
     /unpinned/,
   );
+});
+
+test("frozen manifest requires all three FP32 math implementation pins", () => {
+  for (const name of [
+    "rfdt/worker.py",
+    "rfdt/cuda_import.py",
+    "rfdt/gemma3_fp32.py",
+  ]) {
+    const manifest = frozenManifest();
+    delete manifest.runtime[name];
+    assert.throws(() => validateC10Manifest(manifest), /pins/);
+  }
+});
+test("missing or mismatched FP32 architecture cannot reach classification", async () => {
+  const runtime = { "rfdt/gemma3_fp32.py": "a".repeat(64) };
+  await assert.rejects(verifyC10LocalArchitecture({}, runtime), /descriptor/);
+  const descriptor = {
+    kind: "hf_fp32_embedding_scale",
+    embedding_scale_policy: "sqrt_hidden_size_in_fp32",
+    helper_sha256: "b".repeat(64),
+  };
+  await assert.rejects(
+    verifyC10LocalArchitecture({ local_architecture: descriptor }, runtime),
+    /descriptor/,
+  );
+});
+test("actual math helper edits are rejected against the frozen runtime identity", async () => {
+  const temp = await mkdtemp(resolve(tmpdir(), "c10-math-"));
+  try {
+    await mkdir(resolve(temp, "rfdt"));
+    const bytes = "reviewed helper bytes";
+    const hash = createHash("sha256").update(bytes).digest("hex");
+    await writeFile(resolve(temp, "rfdt/gemma3_fp32.py"), bytes);
+    const runtime = { "rfdt/gemma3_fp32.py": hash };
+    const imported = {
+      local_architecture: {
+        kind: "hf_fp32_embedding_scale",
+        embedding_scale_policy: "sqrt_hidden_size_in_fp32",
+        helper_sha256: hash,
+      },
+    };
+    assert.deepEqual(
+      await verifyC10LocalArchitecture(imported, runtime, temp),
+      imported.local_architecture,
+    );
+    await writeFile(
+      resolve(temp, "rfdt/gemma3_fp32.py"),
+      "changed helper bytes",
+    );
+    await assert.rejects(
+      verifyC10LocalArchitecture(imported, runtime, temp),
+      /implementation changed/,
+    );
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
 });

@@ -4,6 +4,8 @@
  * Manifest v1: {purpose:'candidate10_native_evaluation',checkpoint,format,modelId,
  * sfPi,sfDeps,files:{NAME:{path:absolute,sha256}},runtime:{relativePath:sha256},
  * valid:{source:{path,sha256},manifest:{path,sha256},preflight:{path,sha256}}}.
+ * Runtime pins must include rfdt/worker.py, cuda_import.py and gemma3_fp32.py.
+ * The importer local_architecture must bind the FP32 embedding-scale helper.
  * Required files: campaign,admission,fit,cal,baseline,runManifest,importReport,
  * localPrecision,precisionF16,precisionQ8,modelF16,modelQ8,quantizationManifest,quantizerBinary,
  * model,registry,artifact,nativeBinary,localFitMargins,sourceFitMargins,sourceReceipt,adapter.
@@ -79,6 +81,9 @@ const requiredFiles = [
   "adapter",
 ];
 const requiredRuntime = [
+  "rfdt/worker.py",
+  "rfdt/cuda_import.py",
+  "rfdt/gemma3_fp32.py",
   "dist/backend.js",
   "dist/core.js",
   "dist/guardrail.js",
@@ -331,6 +336,27 @@ export function assertC10ArtifactPaths(descriptor, files) {
   )
     fail("artifact references unpinned run or F16 model");
 }
+/** Verify the implemented FP32 math profile before classification opens CAL or VALID. */
+export async function verifyC10LocalArchitecture(
+  imported,
+  runtime,
+  projectRoot = root,
+) {
+  const architecture = imported?.local_architecture;
+  const expected = runtime?.["rfdt/gemma3_fp32.py"];
+  if (
+    architecture?.kind !== "hf_fp32_embedding_scale" ||
+    architecture.embedding_scale_policy !== "sqrt_hidden_size_in_fp32" ||
+    !hex(architecture.helper_sha256) ||
+    architecture.helper_sha256 !== expected ||
+    canonical(Object.keys(architecture).sort()) !==
+      canonical(["embedding_scale_policy", "helper_sha256", "kind"])
+  )
+    fail("FP32 math helper descriptor missing or changed");
+  if ((await digest(resolve(projectRoot, "rfdt/gemma3_fp32.py"))) !== expected)
+    fail("FP32 math helper implementation changed");
+  return architecture;
+}
 export async function evaluateC10(manifest, outputDir) {
   validateC10Manifest(manifest);
   await mkdir(outputDir, { recursive: false });
@@ -350,6 +376,10 @@ export async function evaluateC10(manifest, outputDir) {
     const campaign = await json(manifest.files.campaign);
     const run = await json(manifest.files.runManifest);
     const imported = await json(manifest.files.importReport);
+    report.localArchitecture = await verifyC10LocalArchitecture(
+      imported,
+      manifest.runtime,
+    );
     const local = await json(manifest.files.localPrecision);
     const sourceReceipt = await json(manifest.files.sourceReceipt);
     if (
