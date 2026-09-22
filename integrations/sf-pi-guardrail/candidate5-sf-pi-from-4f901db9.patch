@@ -11,7 +11,7 @@ index 898b0e862ed664d247d4883d6c8270f538b78f7f..51b7da79285a5e2b976fed810a81e9d1
  
  # Security scan reports
 diff --git a/catalog/index.json b/catalog/index.json
-index fe4232ae85bd69ab6675e8f8819360560845605e..aa61d565ae230d5266174f2df093c1d0149fc412 100644
+index fe4232ae85bd69ab6675e8f8819360560845605e..ee895b10e8b1039628965947bc0335cca258d232 100644
 --- a/catalog/index.json
 +++ b/catalog/index.json
 @@ -226,7 +226,7 @@
@@ -60,7 +60,7 @@ index fe4232ae85bd69ab6675e8f8819360560845605e..aa61d565ae230d5266174f2df093c1d0
      "hasReadme": true,
      "hasTests": true,
 -    "srcLoc": 5673
-+    "srcLoc": 7042
++    "srcLoc": 7047
    },
    {
      "id": "sf-herdr",
@@ -110,10 +110,10 @@ index 3b2dd397220b3f627db3bb9ccb5c3ff2e0702fb4..299d186676f25481ac44f22265df9333
  The complete disable path is the SF Pi package lifecycle control: disable the `sf-guardrail` extension from the Manager Surface or with `/sf-pi disable sf-guardrail`. This avoids the ambiguous state where the extension is loaded but a hidden internal switch makes it inert.
 diff --git a/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md b/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..401143b108c0a526788566108b52db8447dc2b48
+index 0000000000000000000000000000000000000000..332c376969fe507334124b42ad6bb5cae3ab58c7
 --- /dev/null
 +++ b/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md
-@@ -0,0 +1,128 @@
+@@ -0,0 +1,129 @@
 +---
 +id: "0118"
 +status: accepted
@@ -156,7 +156,7 @@ index 0000000000000000000000000000000000000000..401143b108c0a526788566108b52db84
 +qualification keeps the existing engine active.
 +
 +For an eligible request, the model receives the complete original request and
-+independently resolved org and browser observations. The host excludes the
++independently resolved org observations. The host excludes the
 +current engine's classifications, reasons, and risk labels. The model scores
 +safe-without-approval versus approval-required using selected next-token logits.
 +Scores are uncalibrated.
@@ -181,10 +181,11 @@ index 0000000000000000000000000000000000000000..401143b108c0a526788566108b52db84
 +current engine's decision and record the fallback. Changed or unavailable
 +browser reference evidence can instead require a fresh, exact confirmation;
 +it cannot silently become an allow. This is an operational fallback, not a
-+safe model answer. Browser key presses use a session-bound last-snapshot page
-+fact with URL origin and path and a snapshot digest, never an inferred current
-+focus. Missing or stale page evidence uses the current engine; changed page
-+evidence after scoring requires exact confirmation. The warm risk-check budget is 500 ms, including preparation
++safe model answer. Browser clicks and key presses remain on the current engine
++in both shadow and enforce modes because a cached snapshot cannot prove the
++current page, reference, or focus when the browser action executes. They require
++live facts and revalidation immediately before execution before model scoring
++can be eligible. The warm risk-check budget is 500 ms, including preparation
 +and queueing. Cold initialization is measured separately. Module
 +load and factory registration start no model worker; Jev owns and disposes its
 +dedicated worker on shutdown and disable. Existing commands expose mode,
@@ -840,7 +841,7 @@ index db37337bd533af1a56260e6719ba48ed11520f1b..44faa75f9c128ad5d940342829a907f8
    are global Pi settings under `sfPi.guardrail`; project-local weakening is
    deferred with project-local rule overrides. Adding either means plumbing
 diff --git a/extensions/sf-guardrail/README.md b/extensions/sf-guardrail/README.md
-index 27bba377eedf0bd686f33323566213932a58de01..878b84c2cee31117d1bfa845201074ec17bd6bf8 100644
+index 27bba377eedf0bd686f33323566213932a58de01..420b35e039dcdad91aa84dbccc3911523380d108 100644
 --- a/extensions/sf-guardrail/README.md
 +++ b/extensions/sf-guardrail/README.md
 @@ -20,11 +20,20 @@ fail-closed behavior, session approval memory, and audit path:
@@ -928,20 +929,20 @@ index 27bba377eedf0bd686f33323566213932a58de01..878b84c2cee31117d1bfa845201074ec
 +enforcement. Effective policy changes also invalidate model-derived approvals.
 +
 +For eligible requests, the provider sees the complete original tool request and
-+independently resolved org and browser observations. It does not receive the
++independently resolved org observations. It does not receive the
 +current engine's rule classifications, reasons, or risk labels. It scores
 +safe-without-approval versus approval-required using selected next-token
 +logits; these scores are
 +uncalibrated. A valid uncertain judgment requires confirmation. Invalid or
 +incomplete inputs and predictions, unavailable or duplicate providers, changed
 +provider identity, cancellation, and timeouts use the existing engine with an
-+audited fallback. In enforce mode, a browser reference that disappears or
-+changes during the check requires a fresh exact confirmation instead of an
-+automatic allow. A browser key press reaches the model only when the same
-+session has a fresh, uninvalidated last snapshot. Its page fact contains the
-+observed URL origin and path and a snapshot digest; it does not claim current
-+focus or a live page read. Missing or stale page evidence uses the existing
-+engine, and page evidence changing during scoring requires exact confirmation.
++audited fallback. Browser clicks and key presses remain on the existing rules
++in both shadow and enforce modes. Cached snapshots cannot prove the live page,
++reference, or focus when a browser action executes, and browser evidence can
++change after this hook runs. Model scoring for these actions requires a future
++live-fact contract with revalidation before execution. If a click reference
++becomes unavailable between the existing engine's check and this hook, enforce
++mode still requires a fresh exact confirmation.
 +The warm risk-check budget is 500 ms, including request
 +preparation and queueing; cold initialization is reported separately.
 +
@@ -1209,10 +1210,10 @@ index d96bfc0df37d67fd989d461c8b66457d8d945e72..28b1863395965385cafaa980fbb4f727
      }
 diff --git a/extensions/sf-guardrail/lib/jev-risk.ts b/extensions/sf-guardrail/lib/jev-risk.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..5a75919f9e32329b7ec6b0ebff2f750c1fa19551
+index 0000000000000000000000000000000000000000..3f4e593a52e562ce3ad0fc618896b0831d4022fc
 --- /dev/null
 +++ b/extensions/sf-guardrail/lib/jev-risk.ts
-@@ -0,0 +1,1074 @@
+@@ -0,0 +1,1079 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +/** Optional local risk classification; the existing tool_call owns enforcement. */
 +import { createHash } from "node:crypto";
@@ -1245,6 +1246,8 @@ index 0000000000000000000000000000000000000000..5a75919f9e32329b7ec6b0ebff2f750c
 +export const JEV_RISK_DEADLINE_MS = 500;
 +export const JEV_BROWSER_PRESS_FALLBACK_REASON =
 +  "Jev browser press lacks live page and focus evidence; using Safety Kernel fallback";
++export const JEV_BROWSER_CLICK_FALLBACK_REASON =
++  "Jev browser click lacks live reference and page evidence; using Safety Kernel fallback";
 +export const JEV_RISK_INPUT_LIMITS = { bytes: 32_768, depth: 32, nodes: 4_096 } as const;
 +export type JevRiskMode = "off" | "shadow" | "enforce";
 +type Action = "allow" | "confirm" | "block";
@@ -1901,6 +1904,10 @@ index 0000000000000000000000000000000000000000..5a75919f9e32329b7ec6b0ebff2f750c
 +  input: SafetyKernelInput,
 +  baseline?: ClassifiedDecision,
 +): Promise<JevRiskInput> {
++  if (input.toolName === "sf_browser_click") {
++    completeToolInput(input);
++    throw new Error(JEV_BROWSER_CLICK_FALLBACK_REASON);
++  }
 +  if (input.toolName === "sf_browser_press") throw new Error(JEV_BROWSER_PRESS_FALLBACK_REASON);
 +  const { riskInput, resolvedOrgs } = await buildJevRiskInputWithLookup(input);
 +  // Baseline identity is checked for consistency, never copied into model facts.
@@ -2116,14 +2123,19 @@ index 0000000000000000000000000000000000000000..5a75919f9e32329b7ec6b0ebff2f750c
 +  let evaluation: Promise<Prediction> | undefined;
 +  let signal: AbortSignal | undefined;
 +  let aborted: (() => void) | undefined;
-+  const browserFallback = (
-+    reason: string,
++  const browserClickFallback = (
 +    facts: JevRiskInput["facts"]["browserRef"],
 +  ): { decision?: ClassifiedDecision; comparison: JevRiskComparison } => {
-+    const decision = changedBrowserEvidenceDecision(input, facts);
-+    comparison.reason = reason;
-+    comparison.actual = mode === "shadow" ? comparison.baseline : "confirm";
-+    return { decision: mode === "shadow" ? baseline : decision, comparison };
++    if (baseline === undefined && facts?.status !== "fresh") {
++      comparison.reason = "Browser reference evidence unavailable before model check";
++      comparison.actual = mode === "shadow" ? comparison.baseline : "confirm";
++      return {
++        decision: mode === "shadow" ? baseline : changedBrowserEvidenceDecision(input, facts),
++        comparison,
++      };
++    }
++    comparison.reason = JEV_BROWSER_CLICK_FALLBACK_REASON;
++    return { decision: baseline, comparison };
 +  };
 +  try {
 +    mode = options.mode ?? jevRiskMode();
@@ -2131,19 +2143,26 @@ index 0000000000000000000000000000000000000000..5a75919f9e32329b7ec6b0ebff2f750c
 +    if (mode === "off") return { decision: baseline };
 +    input = { ...input, input: copyInput(input.input) };
 +    if (!jevRiskEligible(input) && !FILE_TOOLS.has(input.toolName)) return { decision: baseline };
-+    completeToolInput(input);
-+    if (input.toolName === "sf_browser_click" && baseline === undefined) {
-+      const facts = browserRefFacts(input);
-+      if (facts.status !== "fresh")
-+        return browserFallback("Browser reference evidence unavailable before model check", facts);
-+    }
-+    if (jevRiskPolicyFloor(input, baseline)) {
++    if (input.toolName === "sf_browser_click" && jevRiskPolicyFloor(input, baseline)) {
++      if (baseline === undefined) {
++        const facts = browserRefFacts(input);
++        if (facts.status !== "fresh") return browserClickFallback(facts);
++      }
 +      comparison.source = "exact_policy";
 +      comparison.reason = "exact_policy_constraint";
 +      return { decision: baseline, comparison };
 +    }
-+    // A cached page snapshot cannot establish live focus, and pre-execution
-+    // Browser Evidence can change the page after this hook has scored it.
++    completeToolInput(input);
++    if (input.toolName !== "sf_browser_click" && jevRiskPolicyFloor(input, baseline)) {
++      comparison.source = "exact_policy";
++      comparison.reason = "exact_policy_constraint";
++      return { decision: baseline, comparison };
++    }
++    // Cached browser evidence cannot establish the live page, reference, or
++    // focus when the tool eventually executes.
++    if (input.toolName === "sf_browser_click") {
++      return browserClickFallback(baseline === undefined ? browserRefFacts(input) : undefined);
++    }
 +    if (input.toolName === "sf_browser_press") {
 +      comparison.reason = JEV_BROWSER_PRESS_FALLBACK_REASON;
 +      return { decision: baseline, comparison };
@@ -2179,25 +2198,12 @@ index 0000000000000000000000000000000000000000..5a75919f9e32329b7ec6b0ebff2f750c
 +    });
 +    const riskInput = await Promise.race([prepareJevRiskInput(input, baseline), abortPromise]);
 +    signal.throwIfAborted();
-+    if (input.toolName === "sf_browser_click" && riskInput.facts.browserRef?.status !== "fresh")
-+      return browserFallback(
-+        "Browser reference evidence unavailable before scoring",
-+        riskInput.facts.browserRef,
-+      );
 +    const inputSha256 = digest(riskInput);
 +    if (performance.now() - start > JEV_RISK_DEADLINE_MS)
 +      throw new Error("Jev risk preparation exceeded deadline");
 +    evaluation = Promise.resolve(provider.evaluate(riskInput, signal));
 +    const prediction = await Promise.race([evaluation, abortPromise]);
 +    signal.throwIfAborted();
-+    if (
-+      input.toolName === "sf_browser_click" &&
-+      canonical(browserRefFacts(input)) !== canonical(riskInput.facts.browserRef)
-+    )
-+      return browserFallback(
-+        "Browser reference evidence changed during scoring",
-+        browserRefFacts(input),
-+      );
 +    if (performance.now() - start > JEV_RISK_DEADLINE_MS)
 +      throw new Error("Jev risk evaluation exceeded deadline");
 +    if (
@@ -2787,10 +2793,10 @@ index d4d595dc9bf441dbaba79c985539bb3a203cd64a..f81c1e359eefa701ff2d91863d5a2a73
        "base64-decode-to-shell",
 diff --git a/extensions/sf-guardrail/tests/guardrail-corpus.test.ts b/extensions/sf-guardrail/tests/guardrail-corpus.test.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..9063febd9e9be25e8c09436e6cf3a656ddd57278
+index 0000000000000000000000000000000000000000..4a570b68079117c2be922c2494f7373c657765ea
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/guardrail-corpus.test.ts
-@@ -0,0 +1,782 @@
+@@ -0,0 +1,872 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +/** Export actual old-engine outcomes with independently authored mock host facts. */
 +import { createHash } from "node:crypto";
@@ -2833,6 +2839,7 @@ index 0000000000000000000000000000000000000000..9063febd9e9be25e8c09436e6cf3a656
 +import {
 +  buildJevRiskInput,
 +  evaluateJevRisk,
++  JEV_BROWSER_CLICK_FALLBACK_REASON,
 +  JEV_BROWSER_PRESS_FALLBACK_REASON,
 +  JEV_RISK_PROVIDER_EVENT,
 +  jevRiskEligible,
@@ -2988,6 +2995,19 @@ index 0000000000000000000000000000000000000000..9063febd9e9be25e8c09436e6cf3a656
 +  modelEligible: boolean;
 +  fallbackReason?: string;
 +}> {
++  if (input.toolName === "sf_browser_click")
++    return {
++      riskInput: null,
++      modelEligible: false,
++      ...(policyFloor
++        ? {}
++        : {
++            fallbackReason:
++              typeof input.input.ref === "string" && input.input.ref.trim()
++                ? JEV_BROWSER_CLICK_FALLBACK_REASON
++                : "Incomplete Jev risk input: missing ref",
++          }),
++    };
 +  if (input.toolName === "sf_browser_press")
 +    return {
 +      riskInput: null,
@@ -3106,6 +3126,82 @@ index 0000000000000000000000000000000000000000..9063febd9e9be25e8c09436e6cf3a656
 +      expect(exact).toEqual({ riskInput: null, modelEligible: false });
 +    }
 +    mockedPage = { status: "missing-session" };
++  });
++
++  it("exports browser clicks as rules fallback while retaining exact commit floors", async () => {
++    const input = {
++      toolName: "sf_browser_click",
++      input: { ref: "e1" },
++      cwd: "/example/project",
++      sessionId: "synthetic-browser-ref",
++      config: readBundledConfig(),
++    };
++    const viewRef = {
++      ref: "e1",
++      role: "button",
++      label: "View details",
++      line: '- button "View details" [ref=e1]',
++    };
++    mockedBrowser = {
++      status: "fresh",
++      ref: viewRef,
++      session: {
++        sessionId: input.sessionId,
++        capturedAt: "2026-09-22T00:00:00.000Z",
++        refs: [viewRef],
++      },
++    };
++    const baseline = await evaluateSafety(input);
++    expect(baseline).toBeUndefined();
++    const prepared = await prepareAuthoredRiskInput(input, baseline, false);
++    expect(prepared).toEqual({
++      riskInput: null,
++      modelEligible: false,
++      fallbackReason: JEV_BROWSER_CLICK_FALLBACK_REASON,
++    });
++    const provider: JevRiskProvider = {
++      version: 1,
++      id: "jev",
++      protocolSha256: "a".repeat(64),
++      modelSha256: "b".repeat(64),
++      qualified: true,
++      evaluate: vi.fn(async () => {
++        throw new Error("Browser click must not reach the model");
++      }),
++    };
++    const recorder = createRuntimeRecorder();
++    recorder.pi.events.on(JEV_RISK_PROVIDER_EVENT, (request: { providers: JevRiskProvider[] }) =>
++      request.providers.push(provider),
++    );
++    const runtime = await evaluateJevRisk(recorder.pi, input, baseline, { mode: "enforce" });
++    expect(runtime.decision).toBe(baseline);
++    expect(runtime.comparison).toMatchObject({
++      source: "rules_fallback",
++      reason: prepared.fallbackReason,
++    });
++    expect(provider.evaluate).not.toHaveBeenCalled();
++
++    const saveRef = { ...viewRef, label: "Save", line: '- button "Save" [ref=e1]' };
++    mockedBrowser = {
++      status: "fresh",
++      ref: saveRef,
++      session: {
++        sessionId: input.sessionId,
++        capturedAt: "2026-09-22T00:00:00.000Z",
++        refs: [saveRef],
++      },
++    };
++    const exactBaseline = await evaluateSafety(input);
++    expect(exactBaseline?.action).toBe("confirm");
++    const exact = await prepareAuthoredRiskInput(input, exactBaseline, true);
++    expect(exact).toEqual({ riskInput: null, modelEligible: false });
++    const exactRuntime = await evaluateJevRisk(recorder.pi, input, exactBaseline, {
++      mode: "enforce",
++    });
++    expect(exactRuntime.decision).toBe(exactBaseline);
++    expect(exactRuntime.comparison?.source).toBe("exact_policy");
++    expect(provider.evaluate).not.toHaveBeenCalled();
++    mockedBrowser = { status: "missing-session" };
 +  });
 +
 +  it("records a synthetic TRAIN request missing native fields as a rules fallback", async () => {
@@ -3575,10 +3671,10 @@ index 0000000000000000000000000000000000000000..9063febd9e9be25e8c09436e6cf3a656
 +}
 diff --git a/extensions/sf-guardrail/tests/jev-risk-hook.test.ts b/extensions/sf-guardrail/tests/jev-risk-hook.test.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..48f4f790e99afaf9e144c9426c153869c0386374
+index 0000000000000000000000000000000000000000..d40eaded84643b3029e6084e8e555617b61c6423
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/jev-risk-hook.test.ts
-@@ -0,0 +1,708 @@
+@@ -0,0 +1,702 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +/** Exercise the real Pi hook. Execution is always a local counter, never a tool. */
 +import { createHash } from "node:crypto";
@@ -3594,7 +3690,11 @@ index 0000000000000000000000000000000000000000..48f4f790e99afaf9e144c9426c153869
 +import type { GuardrailConfig } from "../lib/types.ts";
 +import { ALLOW_ENTRY_TYPE, DECISION_ENTRY_TYPE } from "../lib/types.ts";
 +import type { JevRiskInput, JevRiskProvider, JevRiskComparison } from "../lib/jev-risk.ts";
-+import { JEV_RISK_COMPARISON_ENTRY, JEV_RISK_PROVIDER_EVENT } from "../lib/jev-risk.ts";
++import {
++  JEV_BROWSER_CLICK_FALLBACK_REASON,
++  JEV_RISK_COMPARISON_ENTRY,
++  JEV_RISK_PROVIDER_EVENT,
++} from "../lib/jev-risk.ts";
 +
 +const state = vi.hoisted(() => ({
 +  config: undefined as GuardrailConfig | undefined,
@@ -3990,10 +4090,15 @@ index 0000000000000000000000000000000000000000..48f4f790e99afaf9e144c9426c153869
 +    expect(trial.picks).toHaveLength(4);
 +    state.browser = browserRef("View details", "fresh");
 +    expect((await trial.call(click)).accepted).toBe(true);
-+    expect(provider.evaluate).toHaveBeenCalledTimes(1);
-+    expect(trial.comparisons().at(-1)?.source).toBe("jev");
++    expect(provider.evaluate).not.toHaveBeenCalled();
++    expect(trial.comparisons().at(-1)).toMatchObject({
++      source: "rules_fallback",
++      baseline: "allow",
++      actual: "allow",
++      reason: JEV_BROWSER_CLICK_FALLBACK_REASON,
++    });
 +  });
-+  it("records a rules fallback for incomplete requests before considering exact-policy floors", async () => {
++  it("keeps incomplete and exact-policy requests on the existing engine", async () => {
 +    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
 +    const provider = model("allow");
 +    const trial = await harness([provider], { pick: "Block" });
@@ -4007,7 +4112,7 @@ index 0000000000000000000000000000000000000000..48f4f790e99afaf9e144c9426c153869
 +    expect(trial.picks).toHaveLength(1);
 +    expect(trial.comparisons()).toMatchObject([
 +      { source: "rules_fallback", reason: "Incomplete Jev risk input: missing action" },
-+      { source: "rules_fallback", reason: "Incomplete Jev risk input: missing ref" },
++      { source: "exact_policy", reason: "exact_policy_constraint" },
 +    ]);
 +  });
 +  it("keeps user-declared production aliases authoritative over model allows", async () => {
@@ -4040,41 +4145,26 @@ index 0000000000000000000000000000000000000000..48f4f790e99afaf9e144c9426c153869
 +    expect(provider.evaluate).not.toHaveBeenCalled();
 +    expect(trial.comparisons()[1]).toMatchObject({ source: "exact_policy", actual: "allow" });
 +  });
-+  it("requires confirmation if browser evidence becomes stale before or during scoring", async () => {
++  it("requires confirmation if browser evidence becomes stale after the rules check", async () => {
 +    vi.stubEnv("SF_GUARDRAIL_JEV_MODE", "enforce");
 +    const click: Operation = { toolName: "sf_browser_click", input: { ref: "e1" } };
 +    const provider = model("allow");
 +    const trial = await harness([provider], { pick: "Block" });
-+    state.browserSequence = [browserRef("Cancel", "fresh"), browserRef("Cancel", "stale")];
++    state.browserSequence = [
++      browserRef("Cancel", "fresh"),
++      browserRef("Cancel", "fresh"),
++      browserRef("Cancel", "stale"),
++    ];
++    state.browser = browserRef("Cancel", "stale");
 +    expect((await trial.call(click)).accepted).toBe(false);
 +    expect(provider.evaluate).not.toHaveBeenCalled();
 +    expect(trial.comparisons().at(-1)).toMatchObject({
 +      source: "rules_fallback",
 +      baseline: "allow",
 +      actual: "confirm",
++      reason: "Browser reference evidence unavailable before model check",
 +    });
-+
-+    state.browser = browserRef("View details", "fresh");
-+    const evaluate = provider.evaluate;
-+    provider.evaluate = vi.fn(async (input, signal) => {
-+      const prediction = await evaluate(input, signal);
-+      state.browser = browserRef("View details", "stale");
-+      return prediction;
-+    });
-+    const scoredClick = await trial.call(click);
-+    expect(trial.comparisons().at(-1)).toMatchObject({
-+      source: "rules_fallback",
-+      baseline: "allow",
-+      actual: "confirm",
-+    });
-+    expect(scoredClick.accepted).toBe(false);
-+    expect(provider.evaluate).toHaveBeenCalledOnce();
-+    expect(trial.picks).toHaveLength(2);
-+    expect(trial.comparisons().at(-1)).toMatchObject({
-+      source: "rules_fallback",
-+      baseline: "allow",
-+      actual: "confirm",
-+    });
++    expect(trial.picks).toHaveLength(1);
 +  });
 +  it.each(["shadow", "enforce"] as const)(
 +    "keeps browser press on the old approval path through the real hook in %s",
@@ -6105,10 +6195,10 @@ index 0000000000000000000000000000000000000000..172974cb68c751a4b1768ba666335255
 +});
 diff --git a/extensions/sf-guardrail/tests/jev-risk.test.ts b/extensions/sf-guardrail/tests/jev-risk.test.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..e798e1b2902172ca066db9cde53c53cb33e7023c
+index 0000000000000000000000000000000000000000..d6c684ee9a6863159dda1acdd0985ef5391e490d
 --- /dev/null
 +++ b/extensions/sf-guardrail/tests/jev-risk.test.ts
-@@ -0,0 +1,635 @@
+@@ -0,0 +1,664 @@
 +/* SPDX-License-Identifier: Apache-2.0 */
 +import { createHash } from "node:crypto";
 +import { afterEach, describe, it, expect, vi } from "vitest";
@@ -6132,6 +6222,7 @@ index 0000000000000000000000000000000000000000..e798e1b2902172ca066db9cde53c53cb
 +import {
 +  evaluateJevRisk,
 +  buildJevRiskInput,
++  JEV_BROWSER_CLICK_FALLBACK_REASON,
 +  jevRiskPolicyFloor,
 +  prepareJevRiskInput,
 +  type JevRiskProvider,
@@ -6293,6 +6384,34 @@ index 0000000000000000000000000000000000000000..e798e1b2902172ca066db9cde53c53cb
 +    expect(canonical(value)).not.toContain("#draft");
 +    expect(canonical(value)).not.toContain("focus");
 +  });
++  it.each(["shadow", "enforce"] as const)(
++    "keeps browser clicks on rules fallback in %s while retaining exact floors",
++    async (mode) => {
++      const model = provider("allow");
++      const request = {
++        ...input(),
++        toolName: "sf_browser_click",
++        input: { ref: "e1" },
++      };
++      const result = await evaluateJevRisk(pi(model), request, undefined, { mode });
++      expect(result.decision).toBeUndefined();
++      expect(result.comparison).toMatchObject({
++        source: "rules_fallback",
++        baseline: "allow",
++        actual: "allow",
++        reason: JEV_BROWSER_CLICK_FALLBACK_REASON,
++      });
++      await expect(prepareJevRiskInput(request)).rejects.toThrow(JEV_BROWSER_CLICK_FALLBACK_REASON);
++      const exact = await evaluateJevRisk(
++        pi(model),
++        request,
++        { ...baseline, ruleId: "native-sf-browser-commit", feature: "nativeToolGate" },
++        { mode },
++      );
++      expect(exact.comparison?.source).toBe("exact_policy");
++      expect(model.evaluate).not.toHaveBeenCalled();
++    },
++  );
 +  it("keeps every browser press on rules fallback after preserving exact press floors", async () => {
 +    const model = provider("allow");
 +    const request = {
