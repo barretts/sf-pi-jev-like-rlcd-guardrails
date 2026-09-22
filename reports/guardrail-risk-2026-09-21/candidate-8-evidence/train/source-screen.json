@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "purpose": "candidate8_train_source_screen",
+  "qualification": false,
+  "trainingReady": false,
+  "humanLabelReviewed": false,
+  "modelCalls": 0,
+  "externalOperationsExecuted": 0,
+  "heldOutTestBodyRead": false,
+  "provenanceLimit": "C7 VALID outcomes informed C8 TRAIN error families. A few legacy v2 TEST syntax lines were incidentally returned by an rg during development; those strings/templates were excluded. The sealed C7 TEST body was never read. Exact overlap checks cannot establish semantic independence or compare unseen TEST operations.",
+  "source": {
+    "file": "/private/tmp/simple-jev-ts-guardrail-c8-train-20260922/fixtures/guardrail/candidate8/train-recovery.json",
+    "sha256": "b2c72317259633c3362f13553a7ec39dffe144199b9641426e8e3a06af892141",
+    "builderSha256": "d548ed0a8523d9f993007f2daf6a71949ab23a74f75324d0e49e208cd6ce834b",
+    "pairsSha256": "5d966c78f0b2ea2193a99a8f007cbd84327594c66d4e9bb62f42f8440a233b04",
+    "splitPlanSha256": "050a5bc0901905ca02e38246bea2f1cf8cfa3aae91bd9efc305e97f5851eaec6",
+    "rubricSha256": "cad1720e8ee31c153985ee98af010671d323917c0ef30c7ebd61c3832b318ae6",
+    "screenScriptSha256": "5f493578c46fdfb0799b96e085f4613e83f21d2085fc67ba56a1e0ede2045492"
+  },
+  "counts": {
+    "rows": 48,
+    "groups": 18,
+    "fitPairs": 31,
+    "newFitPairs": 18,
+    "inheritedFitPairs": 13,
+    "allow": 24,
+    "confirm": 24,
+    "byFamily": {
+      "agentscript": 2,
+      "apex": 2,
+      "browser": 4,
+      "credential_disclosure": 4,
+      "data360": 4,
+      "salesforce_org": 6,
+      "shell": 12,
+      "shell_indirect": 4,
+      "shell_privilege": 4,
+      "slack_canvas": 2,
+      "soql": 4
+    }
+  },
+  "partition": {
+    "fit": {
+      "inheritedRows": 190,
+      "newRows": 36,
+      "totalRows": 226,
+      "inheritedGroups": 64,
+      "newGroups": 13,
+      "newIdsSha256": "dd9e2bdead2148c400f6688f9de0984e1d46c976cf8df78b5b69ffa965765fc0",
+      "inheritedIdsSha256": "f8ee202cb87e6789f3a8eafe73e5311ccc342190564bf105ec6356d7ce018a39"
+    },
+    "calibration": {
+      "inheritedRows": 37,
+      "newRows": 10,
+      "totalRows": 47,
+      "inheritedGroups": 13,
+      "newGroups": 4,
+      "newIdsSha256": "824b1463f036e2abdf798ff8abe18fedc5c52399832fe93f2f869d478a22f860",
+      "inheritedIdsSha256": "f3178f45c89e73adf5806fadb8390b0b2d5bef29bc39296a479f4da10f2091b8"
+    },
+    "excludedHostFallback": {
+      "rows": 2,
+      "groups": 1,
+      "newIdsSha256": "ebfd4d80754119a88c6f8b9d21b749806875a799cd0b9260c3748a44c4147a66",
+      "reason": "Unverified org identity triggers code-owned fallback"
+    }
+  },
+  "priorTrain": {
+    "sha256": "745004e919d7c8cd6d3a1bb0078f741a9fa6134443ea195b618cf6a39aed53e7",
+    "rows": 227,
+    "groups": 77,
+    "exactOperationOverlap": 0
+  },
+  "diagnosticValid": {
+    "sha256": "5c34cdd17d8741d5dd819756ff150371fcebb6dfdc5bdbe4476e57a906cc4a0f",
+    "rows": 65,
+    "exactOperationOverlap": 0,
+    "exactCommandOverlap": 0,
+    "selectionEvidence": false
+  },
+  "opaquePriorTest": {
+    "manifestSha256": "868dac2146b72e732b07017c451f88f1066c2faea3c46300f5fba75545e76200",
+    "contentSha256": "e25c6bdd919748261f62cadec452acced18e8b069532265f21a5b585635efb3f",
+    "cases": 65,
+    "groups": 22,
+    "groupIdsSha256": "9bc0699f8c4877127b18823cb7ad245f9bcc40803c972afd38aa48ca8d10cf3f",
+    "templateIdsSha256": "f835bebd14d37767682c4ea24f488c88bfad61566d6f855b2e1e2d2648e776cc",
+    "bodyRead": false,
+    "operationOverlapKnown": false
+  }
+}

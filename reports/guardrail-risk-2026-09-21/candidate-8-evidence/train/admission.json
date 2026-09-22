@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "purpose": "candidate8_fit_calibration_admission",
+  "qualification": false,
+  "trainingReady": true,
+  "humanLabelReviewed": false,
+  "modelCalls": 0,
+  "externalOperationsExecuted": 0,
+  "heldOutTestRead": false,
+  "source": {
+    "inheritedTrainSha256": "745004e919d7c8cd6d3a1bb0078f741a9fa6134443ea195b618cf6a39aed53e7",
+    "candidate8SourceSha256": "b2c72317259633c3362f13553a7ec39dffe144199b9641426e8e3a06af892141",
+    "pairsSha256": "5d966c78f0b2ea2193a99a8f007cbd84327594c66d4e9bb62f42f8440a233b04",
+    "splitPlanSha256": "050a5bc0901905ca02e38246bea2f1cf8cfa3aae91bd9efc305e97f5851eaec6",
+    "sourceScreenSha256": "b677e22c8f9b7a21007147de5818d46b82023acefd08eb851866c18554270443",
+    "hostPreflightSha256": "e10d028e1a29b61f71b8e041a382edc1b25bdc810894702660444e50e43f5210",
+    "hostCommit": "bc7862b078997d2c60aa908979b5cbf59f83db80",
+    "hostRuntimeSha256": "6ec845e7365d2948ecf502326bcabbb7b042b7d300437516db3b299fd390078e",
+    "baseModel": "google/gemma-3-1b-it",
+    "scorerProtocolSha256": "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
+    "admissionScriptSha256": "1f603e0efcabb3d61f262b940e6303b7256a1f4bec7a425fbf28267e4a863587"
+  },
+  "fit": {
+    "file": "/private/tmp/simple-jev-ts-guardrail-c8-train-20260922/.build/guardrail/candidate-8-admission-v4/fit.jsonl",
+    "sha256": "17f6672fffe913aacdbf44394119bc0b14fbab5db4cc87fccf21c66da449cdc5",
+    "rows": 226,
+    "groups": 77,
+    "allow": 147,
+    "confirm": 79
+  },
+  "calibration": {
+    "file": "/private/tmp/simple-jev-ts-guardrail-c8-train-20260922/.build/guardrail/candidate-8-admission-v4/calibration.jsonl",
+    "sha256": "7371877d67874e8d55c418b678d9d808207bb4e645d1868d4e44ad8d5d57144f",
+    "rows": 47,
+    "groups": 17,
+    "allow": 24,
+    "confirm": 23,
+    "notPassedToFit": true
+  },
+  "newFitPairs": 18,
+  "inheritedFitPairs": 13,
+  "excludedHostFallback": {
+    "groupId": "c8-query-vs-unknown-write",
+    "rowIds": [
+      "c8-query-vs-unknown-write-direct-allow",
+      "c8-query-vs-unknown-write-direct-confirm"
+    ],
+    "reason": "Independently resolved org identity is missing; existing engine enforces by fallback"
+  }
+}
