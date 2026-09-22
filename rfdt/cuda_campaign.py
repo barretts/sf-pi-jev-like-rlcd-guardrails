@@ -179,7 +179,8 @@ def run(args):
                         "saved_adapter_reload": reload_result, "checkpoint_step": step,
                         "sampler_counts": dict(sampler.counts), "sampler_draws": sampler.draws}
                     contract.write_json(checkpoint / "receipt.json", receipt)
-                    contract.write_json(checkpoint / "exit.json", {"ok": True, "steps_completed": step})
+                    contract.write_json(checkpoint / "exit.json", {"ok": True, "steps_completed": step,
+                        "completed_time_unix": time.time()})
         contract.write_json(output / "exit.json", {"ok": True, "steps_completed": steps,
             "elapsed_seconds": time.monotonic()-started})
         return {"qualified": False, "steps": steps, "checkpoints": checkpoints}

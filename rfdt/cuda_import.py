@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import hashlib
 from pathlib import Path
 import shutil
 
@@ -28,7 +29,9 @@ def document(path: Path) -> dict:
     return json.loads(path.read_text())
 
 
-def validate_receipts(plan: dict, receipt: dict, exit_receipt: dict, memory: dict, launch: dict) -> None:
+def validate_receipts(plan: dict, receipt: dict, exit_receipt: dict, memory: dict, launch: dict,
+                      snapshot: dict | None = None, journal: bytes | None = None,
+                      receipt_sha256: str | None = None) -> None:
     c10 = plan.get("experiment") == "candidate10"
     steps = plan.get("steps")
     if c10:
@@ -55,11 +58,15 @@ def validate_receipts(plan: dict, receipt: dict, exit_receipt: dict, memory: dic
             or launch.get("rfdt_contract_sha256") != plan.get("contract_sha256")
             or plan.get("objective", {}).get("arm") != "B"):
         raise ValueError("CUDA source, lineage, FIT, or objective identity changed")
+    snapshot_ok = False
+    if c10 and memory.get("reason") == "checkpoint_snapshot":
+        validate_checkpoint_snapshot(plan, receipt, exit_receipt, memory, launch, snapshot, journal, receipt_sha256)
+        snapshot_ok = True
     before, after = receipt.get("pre_step_placement", {}), receipt.get("post_step_placement", {})
     if (before != {"parameters": 444, "buffers": 5, "gradients": 104}
             or after != {"parameters": 444, "buffers": 5, "gradients": 0, "optimizer_tensors": 208}):
         raise ValueError("Missing real CUDA gradient/optimizer placement proof")
-    if (memory.get("reason") != "worker_exit" or memory.get("samples", 0) < 2
+    if ((memory.get("reason") != "worker_exit" and not snapshot_ok) or memory.get("samples", 0) < 2
             or memory.get("hard_budget_bytes") != 8_000_000_000
             or memory.get("shared_growth_limit_bytes") != 128_000_000
             or launch.get("hard_budget_bytes") != 8_000_000_000
@@ -73,6 +80,65 @@ def validate_receipts(plan: dict, receipt: dict, exit_receipt: dict, memory: dic
     peak = receipt.get("memory", {}).get("peak_reserved_bytes")
     if type(peak) is not int or not 0 < peak <= plan.get("allocator_cap_bytes", 0) <= 6_500_000_000:
         raise ValueError("CUDA allocator peak/cap does not satisfy the 8 GB contract")
+
+
+def validate_checkpoint_snapshot(plan, receipt, exit_receipt, memory, launch, snapshot, journal, receipt_sha256):
+    if not isinstance(snapshot, dict) or not isinstance(journal, bytes) or not receipt_sha256:
+        raise ValueError("Checkpoint snapshot requires the complete bound memory journal")
+    monitor_sha = worker.sha256(Path(__file__).with_name("cuda_memory_monitor.py"))
+    producer_sha = worker.sha256(Path(__file__).with_name("cuda_campaign_launch.py"))
+    if (snapshot.get("producer_sha256") != producer_sha
+            or launch.get("launcher_sha256") != producer_sha
+            or snapshot.get("checkpoint_receipt_sha256") != receipt_sha256
+            or snapshot.get("checkpoint_step") != plan["steps"]
+            or receipt.get("checkpoint_step") != plan["steps"]
+            or snapshot.get("worker_pid") != launch.get("worker_pid")
+            or memory.get("worker_pid") != launch.get("worker_pid")
+            or type(launch.get("worker_pid")) is not int or launch["worker_pid"] <= 0
+            or snapshot.get("worker_sha256") != plan["source_sha256"]
+            or snapshot.get("monitor_sha256") != monitor_sha
+            or launch.get("monitor_sha256") != monitor_sha
+            or launch.get("watchdog_sha256") != monitor_sha
+            or snapshot.get("journal_sha256") != hashlib.sha256(journal).hexdigest()):
+        raise ValueError("Checkpoint memory snapshot identity or journal checksum changed")
+    if not journal.endswith(b"\n"):
+        raise ValueError("Checkpoint memory snapshot contains an incomplete journal record")
+    rows = [json.loads(line) for line in journal.splitlines()]
+    if len(rows) < 2 or memory.get("samples") != len(rows):
+        raise ValueError("Checkpoint memory snapshot sample inventory differs")
+    baseline_dedicated, baseline_shared = launch.get("baseline_dedicated_bytes"), launch.get("baseline_shared_bytes")
+    if any(type(value) is not int or value < 0 for value in (baseline_dedicated, baseline_shared)):
+        raise ValueError("Missing pinned checkpoint memory baselines")
+    times, elapsed_times, peaks = [], [], {"peak_total_dedicated_bytes": 0, "peak_dedicated_delta_bytes": 0, "peak_shared_delta_bytes": 0}
+    for row in rows:
+        timestamp = row.get("time_unix")
+        elapsed = row.get("elapsed_seconds")
+        if ("monitor_error" in row or type(timestamp) not in (int, float) or not math.isfinite(timestamp)
+                or type(elapsed) not in (int, float) or not math.isfinite(elapsed) or elapsed < 0):
+            raise ValueError("Checkpoint memory journal contains an invalid sample")
+        for key in ("dedicated_bytes", "shared_bytes", "dedicated_delta_bytes", "shared_delta_bytes"):
+            if type(row.get(key)) is not int or row[key] < 0:
+                raise ValueError("Invalid checkpoint memory counter")
+        if (row["dedicated_delta_bytes"] != max(0, row["dedicated_bytes"] - baseline_dedicated)
+                or row["shared_delta_bytes"] != max(0, row["shared_bytes"] - baseline_shared)):
+            raise ValueError("Checkpoint memory delta differs from pinned baseline")
+        times.append(timestamp)
+        elapsed_times.append(elapsed)
+        for key, value in (("peak_total_dedicated_bytes", row["dedicated_bytes"]),
+                           ("peak_dedicated_delta_bytes", row["dedicated_delta_bytes"]),
+                           ("peak_shared_delta_bytes", row["shared_delta_bytes"])):
+            peaks[key] = max(peaks[key], value)
+    completed, captured = exit_receipt.get("completed_time_unix"), snapshot.get("snapshot_time_unix")
+    if (any(type(value) not in (int, float) or not math.isfinite(value) for value in (completed, captured))
+            or any(a >= b for a, b in zip(times, times[1:]))
+            or any(a >= b for a, b in zip(elapsed_times, elapsed_times[1:]))
+            or not times[0] <= completed < times[-1] <= captured):
+        raise ValueError("Checkpoint completion is not bracketed by the memory journal")
+    if any(memory.get(key) != value for key, value in peaks.items()):
+        raise ValueError("Checkpoint memory summary differs from complete journal statistics")
+    if (memory.get("stop_dedicated_delta_bytes") != 7_500_000_000
+            or launch.get("stop_dedicated_delta_bytes") != 7_500_000_000):
+        raise ValueError("Checkpoint dedicated stop threshold changed")
 
 
 def validate_c10_checkpoint(plan: dict, receipt: dict, launch: dict) -> None:
@@ -129,8 +195,16 @@ def run(args: argparse.Namespace) -> dict:
     if worker.sha256(receipt_path) != args.receipt_sha256:
         raise ValueError("CUDA receipt differs from its explicit pre-import pin")
     plan, receipt = document(source / "run/plan.json"), document(receipt_path)
-    validate_receipts(plan, receipt, document(source / "run/exit.json"),
-                      document(source / "memory.summary.json"), document(source / "launch.json"))
+    memory = document(source / "memory.summary.json")
+    snapshot, journal = None, None
+    if memory.get("reason") == "checkpoint_snapshot":
+        snapshot = document(source / "memory.snapshot.json")
+        journal_path = source / "memory.jsonl"
+        if not journal_path.is_file() or journal_path.is_symlink():
+            raise ValueError("Checkpoint memory journal must be a regular file")
+        journal = journal_path.read_bytes()
+    validate_receipts(plan, receipt, document(source / "run/exit.json"), memory,
+                      document(source / "launch.json"), snapshot, journal, args.receipt_sha256)
     worker.verify_local_base(base)
     if worker.sha256(data) != cuda_worker.TRAIN_SHA256:
         raise ValueError("Local prepared FIT prompts differ from CUDA training")

@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 import tempfile
 import types
+import hashlib
 
 import cuda_import as bridge
 import cuda_worker
@@ -55,6 +56,28 @@ def c10_receipts(step=128):
         "objective_worker_sha256": plan["objective_worker_sha256"],
         "campaign_sha256": bridge.C10_CAMPAIGN_SHA256})
     return args
+
+
+def snapshot_receipts():
+    args = c10_receipts()
+    plan, receipt, exit_receipt, memory, launch = args
+    monitor_sha = bridge.worker.sha256(Path(bridge.__file__).with_name("cuda_memory_monitor.py"))
+    producer_sha = bridge.worker.sha256(Path(bridge.__file__).with_name("cuda_campaign_launch.py"))
+    launch.update({"launcher_sha256": producer_sha, "worker_pid": 1234, "monitor_sha256": monitor_sha, "watchdog_sha256": monitor_sha,
+        "baseline_dedicated_bytes": 500, "baseline_shared_bytes": 100, "stop_dedicated_delta_bytes": 7_500_000_000})
+    receipt["checkpoint_step"] = plan["steps"]
+    exit_receipt["completed_time_unix"] = 12.0
+    rows = [{"time_unix": timestamp, "elapsed_seconds": timestamp-10,
+        "dedicated_bytes": 1000, "shared_bytes": 200,
+        "dedicated_delta_bytes": 500, "shared_delta_bytes": 100} for timestamp in (11.0, 13.0)]
+    journal = b"".join(json.dumps(row).encode()+b"\n" for row in rows)
+    snapshot = {"producer_sha256": producer_sha, "checkpoint_receipt_sha256": "f" * 64, "checkpoint_step": plan["steps"],
+        "worker_pid": 1234, "worker_sha256": plan["source_sha256"], "monitor_sha256": monitor_sha,
+        "journal_sha256": hashlib.sha256(journal).hexdigest(), "snapshot_time_unix": 14.0}
+    memory.update({"reason": "checkpoint_snapshot", "worker_pid": 1234, "samples": 2,
+        "peak_total_dedicated_bytes": 1000, "peak_dedicated_delta_bytes": 500,
+        "peak_shared_delta_bytes": 100, "stop_dedicated_delta_bytes": 7_500_000_000})
+    return args+[snapshot, journal, "f" * 64]
 
 
 class CudaImportTests(unittest.TestCase):
@@ -117,6 +140,31 @@ class CudaImportTests(unittest.TestCase):
                            ("reason", "checkpoint_snapshot")):
             args = c10_receipts(); args[3][key] = value
             with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+
+    def test_accepts_bound_checkpoint_memory_snapshot(self):
+        bridge.validate_receipts(*snapshot_receipts())
+
+    def test_rejects_snapshot_summary_identity_time_or_pin_tampering(self):
+        for index, key, value in ((3, "peak_total_dedicated_bytes", 999), (3, "samples", 3),
+                (3, "worker_pid", 999), (4, "launcher_sha256", "a"*64), (4, "monitor_sha256", "a"*64),
+                (5, "checkpoint_step", 256), (5, "checkpoint_receipt_sha256", "a"*64),
+                (5, "producer_sha256", "a"*64), (5, "worker_sha256", "a"*64), (5, "worker_pid", 999),
+                (5, "journal_sha256", "a"*64), (5, "snapshot_time_unix", 12.0),
+                (2, "completed_time_unix", 13.0), (2, "completed_time_unix", 14.0), (2, "completed_time_unix", float("nan"))):
+            args = snapshot_receipts(); args[index][key] = value
+            with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+
+    def test_rejects_rehashed_invalid_snapshot_journal(self):
+        for key, value in (("dedicated_delta_bytes", 1), ("dedicated_bytes", 16_000_000_000),
+                ("monitor_error", "counter_error"), ("time_unix", 11.0), ("elapsed_seconds", float("nan"))):
+            args = snapshot_receipts(); rows = [json.loads(line) for line in args[6].splitlines()]
+            rows[1][key] = value
+            args[6] = b"".join(json.dumps(row).encode()+b"\n" for row in rows)
+            args[5]["journal_sha256"] = hashlib.sha256(args[6]).hexdigest()
+            with self.assertRaises(ValueError): bridge.validate_receipts(*args)
+        args = snapshot_receipts(); args[6] = args[6].rstrip(b"\n")
+        args[5]["journal_sha256"] = hashlib.sha256(args[6]).hexdigest()
+        with self.assertRaises(ValueError): bridge.validate_receipts(*args)
 
     def test_fp32_base_is_loaded_before_adapter(self):
         events = []
