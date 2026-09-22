@@ -648,6 +648,8 @@ describe("C8 pre-TEST freeze and held-out verifier", () => {
     const test = split("test", selected);
     const provisional = stageC8ProvisionalStubReceipt(freeze, test);
     expect(provisional.provisionalStubOnly).toBe(true);
+    expect(provisional.purpose).toBe("candidate8_stub_measurement_only");
+    expect(provisional.qualified).toBe(false);
     expect(() =>
       verifyC8HeldoutQualification(
         provisional,

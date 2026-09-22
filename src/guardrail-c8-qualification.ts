@@ -221,12 +221,12 @@ export interface C8EnforcementEvidence {
 }
 export interface C8ProvisionalStubReceipt {
   version: 1;
-  purpose: "candidate8_heldout_qualification";
+  purpose: "candidate8_stub_measurement_only";
   freezeSha256: string;
   test: C8SplitEvidence;
   testMetrics: C8QualificationMetrics;
   testGates: C8QualificationGates;
-  qualified: true;
+  qualified: false;
   provisionalStubOnly: true;
   enforcementEvidenceMissing: true;
   sha256: string;
@@ -837,7 +837,7 @@ export function freezeC8Selection(
   return { ...body, sha256: hash(body) };
 }
 
-/** A one-run, stub-only host measurement scaffold; never a production qualification. */
+/** Inert measurement sketch. The C8 host rejects its purpose and qualified flag. */
 export function stageC8ProvisionalStubReceipt(
   freeze: C8SelectionFreeze,
   test: C8SplitEvidence,
@@ -847,12 +847,12 @@ export function stageC8ProvisionalStubReceipt(
     fail("C8 held-out shadow gates failed; no provisional stub workflow");
   const body = {
     version: 1 as const,
-    purpose: "candidate8_heldout_qualification" as const,
+    purpose: "candidate8_stub_measurement_only" as const,
     freezeSha256: freeze.sha256,
     test,
     testMetrics: metrics,
     testGates: gates,
-    qualified: true as const,
+    qualified: false as const,
     provisionalStubOnly: true as const,
     enforcementEvidenceMissing: true as const,
   };
