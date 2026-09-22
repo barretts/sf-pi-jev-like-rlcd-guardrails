@@ -1,0 +1,682 @@
+{
+  "version": 1,
+  "purpose": "candidate7_train_host_preflight",
+  "qualification": false,
+  "trainingReady": false,
+  "hostIdentityPinned": true,
+  "modelCalls": 0,
+  "externalOperationsExecuted": 0,
+  "heldOutTestRead": false,
+  "source": {
+    "file": "/private/tmp/simple-jev-ts-guardrail-c7-unified-20260922/fixtures/guardrail/candidate7/train-contrasts.json",
+    "sha256": "fed3f030e58c24105007149d3b5395746c31520203daccbfc65801cb67cbf374",
+    "preflightScriptSha256": "da8bac3727654f41c5ea6e11b235650fd32fd8c867832bc2d8ed1410ab9733c4",
+    "mockDiscoveryStubSha256": "6f2de20efc26434e87510be0e9e7dd40e035a0ae449a43ce12c1d17acab68dce",
+    "scorerDistributionSha256": "451e617f598d2b2e6bb5a708b3725f6b0cf3bde129cfc2a7ef7d1915618c34e2",
+    "scorerProtocolSha256": "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
+    "sfPiCommit": "a12f1de85c1919fa2ff94bf9315c522b0ad382da",
+    "sfPiRuntimeSha256": "b31d600d262be46bb68fc5de6cd581265dad2f29d5ed03b0f1c6920c6e78afba"
+  },
+  "counts": {
+    "rows": 52,
+    "groups": 18,
+    "preparedRows": 52,
+    "readyGroups": 18
+  },
+  "groups": [
+    {
+      "groupId": "c7-stash-list-vs-drop",
+      "ready": true
+    },
+    {
+      "groupId": "c7-git-diff-vs-restore",
+      "ready": true
+    },
+    {
+      "groupId": "c7-rsync-dry-run-vs-prune",
+      "ready": true
+    },
+    {
+      "groupId": "c7-branch-list-vs-force-delete",
+      "ready": true
+    },
+    {
+      "groupId": "c7-literal-installer-vs-eval",
+      "ready": true
+    },
+    {
+      "groupId": "c7-permission-inspect-vs-grant",
+      "ready": true
+    },
+    {
+      "groupId": "c7-ledger-read-vs-truncate",
+      "ready": true
+    },
+    {
+      "groupId": "c7-archive-list-vs-overwrite",
+      "ready": true
+    },
+    {
+      "groupId": "c7-package-list-vs-install",
+      "ready": true
+    },
+    {
+      "groupId": "c7-package-install-sandbox-vs-production",
+      "ready": true
+    },
+    {
+      "groupId": "c7-org-list-vs-permission-grant",
+      "ready": true
+    },
+    {
+      "groupId": "c7-apex-test-status-vs-anonymous",
+      "ready": true
+    },
+    {
+      "groupId": "c7-data360-dlo-list-vs-delete",
+      "ready": true
+    },
+    {
+      "groupId": "c7-user-query-bounded-vs-broad",
+      "ready": true
+    },
+    {
+      "groupId": "c7-task-query-vs-bulk-export",
+      "ready": true
+    },
+    {
+      "groupId": "c7-canvas-metadata-vs-edit",
+      "ready": true
+    },
+    {
+      "groupId": "c7-routing-link-inspect-vs-commit",
+      "ready": true
+    },
+    {
+      "groupId": "c7-access-link-inspect-vs-revoke",
+      "ready": true
+    }
+  ],
+  "status": [
+    {
+      "id": "c7-stash-list-vs-drop-bash-allow",
+      "groupId": "c7-stash-list-vs-drop",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-stash-list-vs-drop-pane-allow",
+      "groupId": "c7-stash-list-vs-drop",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-stash-list-vs-drop-bash-confirm",
+      "groupId": "c7-stash-list-vs-drop",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-stash-list-vs-drop-pane-confirm",
+      "groupId": "c7-stash-list-vs-drop",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-git-diff-vs-restore-bash-allow",
+      "groupId": "c7-git-diff-vs-restore",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-git-diff-vs-restore-pane-allow",
+      "groupId": "c7-git-diff-vs-restore",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-git-diff-vs-restore-bash-confirm",
+      "groupId": "c7-git-diff-vs-restore",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-git-diff-vs-restore-pane-confirm",
+      "groupId": "c7-git-diff-vs-restore",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-rsync-dry-run-vs-prune-bash-allow",
+      "groupId": "c7-rsync-dry-run-vs-prune",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-rsync-dry-run-vs-prune-pane-allow",
+      "groupId": "c7-rsync-dry-run-vs-prune",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-rsync-dry-run-vs-prune-bash-confirm",
+      "groupId": "c7-rsync-dry-run-vs-prune",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-rsync-dry-run-vs-prune-pane-confirm",
+      "groupId": "c7-rsync-dry-run-vs-prune",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-branch-list-vs-force-delete-bash-allow",
+      "groupId": "c7-branch-list-vs-force-delete",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-branch-list-vs-force-delete-pane-allow",
+      "groupId": "c7-branch-list-vs-force-delete",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-branch-list-vs-force-delete-bash-confirm",
+      "groupId": "c7-branch-list-vs-force-delete",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-branch-list-vs-force-delete-pane-confirm",
+      "groupId": "c7-branch-list-vs-force-delete",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-literal-installer-vs-eval-bash-allow",
+      "groupId": "c7-literal-installer-vs-eval",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-literal-installer-vs-eval-pane-allow",
+      "groupId": "c7-literal-installer-vs-eval",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-literal-installer-vs-eval-bash-confirm",
+      "groupId": "c7-literal-installer-vs-eval",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-literal-installer-vs-eval-pane-confirm",
+      "groupId": "c7-literal-installer-vs-eval",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-permission-inspect-vs-grant-bash-allow",
+      "groupId": "c7-permission-inspect-vs-grant",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-permission-inspect-vs-grant-pane-allow",
+      "groupId": "c7-permission-inspect-vs-grant",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-permission-inspect-vs-grant-bash-confirm",
+      "groupId": "c7-permission-inspect-vs-grant",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-permission-inspect-vs-grant-pane-confirm",
+      "groupId": "c7-permission-inspect-vs-grant",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-ledger-read-vs-truncate-bash-allow",
+      "groupId": "c7-ledger-read-vs-truncate",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-ledger-read-vs-truncate-pane-allow",
+      "groupId": "c7-ledger-read-vs-truncate",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-ledger-read-vs-truncate-bash-confirm",
+      "groupId": "c7-ledger-read-vs-truncate",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-ledger-read-vs-truncate-pane-confirm",
+      "groupId": "c7-ledger-read-vs-truncate",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-archive-list-vs-overwrite-bash-allow",
+      "groupId": "c7-archive-list-vs-overwrite",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-archive-list-vs-overwrite-pane-allow",
+      "groupId": "c7-archive-list-vs-overwrite",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-archive-list-vs-overwrite-bash-confirm",
+      "groupId": "c7-archive-list-vs-overwrite",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-archive-list-vs-overwrite-pane-confirm",
+      "groupId": "c7-archive-list-vs-overwrite",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-package-list-vs-install-direct-allow",
+      "groupId": "c7-package-list-vs-install",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-package-list-vs-install-direct-confirm",
+      "groupId": "c7-package-list-vs-install",
+      "expected": "confirm",
+      "baseline": "confirm",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-package-install-sandbox-vs-production-direct-allow",
+      "groupId": "c7-package-install-sandbox-vs-production",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-package-install-sandbox-vs-production-direct-confirm",
+      "groupId": "c7-package-install-sandbox-vs-production",
+      "expected": "confirm",
+      "baseline": "confirm",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-org-list-vs-permission-grant-direct-allow",
+      "groupId": "c7-org-list-vs-permission-grant",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-org-list-vs-permission-grant-direct-confirm",
+      "groupId": "c7-org-list-vs-permission-grant",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-apex-test-status-vs-anonymous-direct-allow",
+      "groupId": "c7-apex-test-status-vs-anonymous",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-apex-test-status-vs-anonymous-direct-confirm",
+      "groupId": "c7-apex-test-status-vs-anonymous",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-data360-dlo-list-vs-delete-direct-allow",
+      "groupId": "c7-data360-dlo-list-vs-delete",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-data360-dlo-list-vs-delete-direct-confirm",
+      "groupId": "c7-data360-dlo-list-vs-delete",
+      "expected": "confirm",
+      "baseline": "confirm",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-user-query-bounded-vs-broad-direct-allow",
+      "groupId": "c7-user-query-bounded-vs-broad",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-user-query-bounded-vs-broad-direct-confirm",
+      "groupId": "c7-user-query-bounded-vs-broad",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-task-query-vs-bulk-export-direct-allow",
+      "groupId": "c7-task-query-vs-bulk-export",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-task-query-vs-bulk-export-direct-confirm",
+      "groupId": "c7-task-query-vs-bulk-export",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-canvas-metadata-vs-edit-direct-allow",
+      "groupId": "c7-canvas-metadata-vs-edit",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-canvas-metadata-vs-edit-direct-confirm",
+      "groupId": "c7-canvas-metadata-vs-edit",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-routing-link-inspect-vs-commit-direct-allow",
+      "groupId": "c7-routing-link-inspect-vs-commit",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-routing-link-inspect-vs-commit-direct-confirm",
+      "groupId": "c7-routing-link-inspect-vs-commit",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-access-link-inspect-vs-revoke-direct-allow",
+      "groupId": "c7-access-link-inspect-vs-revoke",
+      "expected": "allow",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    },
+    {
+      "id": "c7-access-link-inspect-vs-revoke-direct-confirm",
+      "groupId": "c7-access-link-inspect-vs-revoke",
+      "expected": "confirm",
+      "baseline": "allow",
+      "eligible": true,
+      "floor": false,
+      "prepared": true,
+      "factMatched": true,
+      "reason": null
+    }
+  ],
+  "projectedTrain": {
+    "file": "/private/tmp/simple-jev-ts-guardrail-c7-unified-20260922/.build/guardrail/candidate-7-host-preflight-final-v1/projected-train.jsonl",
+    "sha256": "9cb3793e417bc149fc58bed2ce4129d668b4c240a19c8fa64c78fe6513617755",
+    "rows": 52,
+    "groups": 18,
+    "baseModel": "google/gemma-3-1b-it",
+    "scorerProtocolSha256": "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530"
+  }
+}

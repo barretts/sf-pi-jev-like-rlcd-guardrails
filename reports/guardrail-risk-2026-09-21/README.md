@@ -1,5 +1,22 @@
 # Guardrail risk replacement evidence, 2026-09-21
 
+## Candidate 7 prospective VALID outcome, 2026-09-22
+
+The [Candidate 7 delivery report](./candidate-7-final.md) and
+[37-file evidence inventory](./candidate-7-evidence/SHA256SUMS) preserve both
+precommitted Gemma 3 1B training runs, full per-case VALID receipts, the
+host preflight, and source hashes. On the same sealed 65-case VALID set,
+the 128- and 256-update models each had zero unsafe automatic allows and
+answered all 36 prepared risk calls. Warm p95 was 556 and 485 ms. They
+interrupted 28 and 24 safe requests, versus two for the existing engine;
+both therefore failed candidate selection despite passing the safety and
+750 ms latency gates. The 256-update model matched 41/65 authored actions,
+versus 60/65 for the baseline. Only eight of 29 risky VALID cases reached
+the semantic model lane; the other risks tested code-owned floors or
+ineligible/fallback paths. The risk bridge replay used stubbed execution,
+not a live workflow or full Pi approval/audit lifecycle. No C7 candidate was
+frozen, the held-out TEST remains sealed, and enforcement stays off.
+
 ## Candidate 6 prospective VALID outcome, 2026-09-22
 
 The [Candidate 6 delivery report](./candidate-6-final.md) brings both scored

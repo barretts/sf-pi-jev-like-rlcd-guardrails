@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "purpose": "candidate7_train_only_rfdt_attempt",
+  "phase": "train",
+  "status": "failed",
+  "startedAt": "2026-09-22T15:45:01.170Z",
+  "sourcePins": {
+    "admissionSha256": "c2b28715646020ceb60193469d5fbb9fe34acce309e528b81c05b6537e5330de",
+    "admittedDatasetFile": "/private/tmp/simple-jev-ts-guardrail-c7-unified-20260922/.build/guardrail/candidate-7-train-admission-final-v1/train.jsonl",
+    "admittedDatasetSha256": "745004e919d7c8cd6d3a1bb0078f741a9fa6134443ea195b618cf6a39aed53e7",
+    "trainRows": 227,
+    "trainGroups": 77,
+    "sfPiCommit": "a12f1de85c1919fa2ff94bf9315c522b0ad382da",
+    "sfPiRuntimeSha256": "b31d600d262be46bb68fc5de6cd581265dad2f29d5ed03b0f1c6920c6e78afba",
+    "scorerProtocolSha256": "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
+    "codeIdentity": {
+      "gitHead": "845b67913f099897241b88451bf463d1d98c6312",
+      "files": {
+        "scripts/guardrail-candidate7-train.mjs": "96babbf74e494fd8dbf50195bee1f8f2a9950f1944d022fa202172f91b0d05dd",
+        "scripts/guardrail-candidate7-train-admission.mjs": "4d334bb52e59aae6fc6b4cf11595b4ef16e30d376ae2c85b9c8997fc4c8e296f",
+        "src/rfdt.ts": "2070cf624e51e2d3044e820dd2ae1594715245b16b7dd52956af20dc66c97865",
+        "rfdt/worker.py": "97cd8dad47eaae3408a8481d3ade12455091323a5373859a193e95a41a234ef5",
+        "rfdt/requirements.lock": "f4e75524af3726407b6158decbc4c535ad955dbc04c4f09d1d903b87738a0a77",
+        "scripts/build-rfdt.sh": "a8aca7c8e026ddcddc9f84b14417768da9af7751d5ff40d9d0026a34d4b2d085",
+        "package-lock.json": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f",
+        "dist/backend.js": "fd18233f879bb4ce3b9b281221ec1303149a36e29d958964da91bc39effee60f",
+        "dist/core.js": "2ee6c409a12b6a4f7b7a7d63c37d84923740e46f8732f625a65d0f39ef04bdf6",
+        "dist/guardrail-evaluation.js": "b4b45a629f79f6c50e135e883228304485d6906c9bd2b2be28e59c2b6c0f31f1",
+        "dist/guardrail-extension.js": "d0714f21e68da0c267b0396f1a8a3c371f67de40c986734317252b1ec42aa7df",
+        "dist/guardrail.js": "451e617f598d2b2e6bb5a708b3725f6b0cf3bde129cfc2a7ef7d1915618c34e2",
+        "dist/models.js": "d4ec59932608caf84eff0f263b0ef98dccc7ba6f7944caa8204c0bee81858e35",
+        "dist/rfdt.js": "22043a9e556481d818334854bb057a2368607bb1b0035fc4435abf098c3942f0"
+      },
+      "nativeBinary": "/private/tmp/simple-jev-ts-guardrail-c7-unified-20260922/.build/jev-native",
+      "nativeBinarySha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96"
+    }
+  },
+  "qualification": false,
+  "heldOutTestRead": false,
+  "completedAt": "2026-09-22T15:45:01.207Z",
+  "error": {
+    "name": "Error",
+    "message": "spawn /private/tmp/simple-jev-ts-guardrail-c7-unified-20260922/.build/rfdt-venv/bin/python ENOENT"
+  }
+}
