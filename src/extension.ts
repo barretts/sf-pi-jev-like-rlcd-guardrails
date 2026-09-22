@@ -218,6 +218,21 @@ export function registerExtension(
     ...options.guardrailRisk,
     enabled: () => !stopped && resolved.values.enabled,
   });
+  const warmConfiguredGuardrailRisk = async () => {
+    const mode = (options.guardrailRisk?.env ?? process.env)
+      .SF_GUARDRAIL_JEV_MODE;
+    if (
+      stopped ||
+      !resolved.values.enabled ||
+      (mode !== "shadow" && mode !== "enforce")
+    )
+      return;
+    try {
+      await guardrailRisk.warmup();
+    } catch {
+      // The provider retains initialization failures; SF Guardrail keeps its fallback.
+    }
+  };
   const getClassifier = () => {
     if (stopped) throw new Error("Jev extension is shut down");
     if (!resolved.values.enabled)
@@ -264,6 +279,12 @@ export function registerExtension(
       clearLoadedRequests();
       await disposeCurrent();
     }
+    if (
+      resolved.values.enabled &&
+      (!previous.enabled ||
+        previous.templateVersion !== resolved.values.templateVersion)
+    )
+      await warmConfiguredGuardrailRisk();
   };
   // This handler is first so shutdown remains available even on minimal hosts.
   pi.on("session_shutdown", async () => {
@@ -281,6 +302,7 @@ export function registerExtension(
       previous.templateVersion !== resolved.values.templateVersion
     )
       await disposeCurrent();
+    await warmConfiguredGuardrailRisk();
   });
   const classify = async (input: unknown, signal?: AbortSignal) => {
     const request =

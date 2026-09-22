@@ -13,6 +13,18 @@ improvement, held-out qualification or production acceptance claim is made.
 Candidate 4 has now passed genuine preparation and started its prospectively
 bound 1,536-update training run; its outcomes remain pending.
 
+The general Jev driver now awaits risk-worker initialization at enabled,
+operator-opted-in `shadow`/`enforce` startup, re-enable and template replacement.
+This closes the cold enforce path that otherwise rejected an uninitialized
+provider before it could warm. The actual worktree passed 46 focused tests,
+including 18 new adapter-stub lifecycle cases, strict source/new-test type
+checks, build and formatting. Default off remains lazy; failures retain status
+and rule fallback, and shutdown cancels owned initialization. All 21 candidate
+4 source pins and the compiled qualification criteria remained unchanged after
+the rebuild. These checks do not establish native driver startup timing,
+qualified enforcement or model effectiveness. API embeddings must await Pi's
+extension binding before executing tools.
+
 The isolated worktrees use `barretts/jev-guardrail-risk`: Jev at
 `/private/tmp/simple-jev-ts-guardrail-risk-20260921`, based on `95c0b50`, and sf-pi
 at `/private/tmp/sf-pi-guardrail-risk-20260921`, based on `4f901db9`. The default

@@ -6,7 +6,7 @@ The risk classifier uses complete original tool input and independently resolved
 
 ## Local configuration
 
-Build Jev and the local SF integration separately. The baseline-bound integration patch is retained under `integrations/sf-pi-guardrail/`. Loading the extension or checking status does not load a model or fetch weights. The dedicated risk worker has a separate queue from the general classifier.
+Build Jev and the local SF integration separately. The baseline-bound integration patch is retained under `integrations/sf-pi-guardrail/`. Registration and cached status checks do not load a model or fetch weights. With the default `off` mode, session startup also stays lazy. The dedicated risk worker has a separate queue from the general classifier.
 
 Operator configuration controls the SF hook:
 
@@ -17,6 +17,10 @@ Operator configuration controls the SF hook:
 | `SF_GUARDRAIL_JEV_MODE=enforce` | Qualified model supplies semantic judgments; exact policy and operational fallback remain |
 
 Set a separate candidate through `JEV_GUARDRAIL_MODEL_ID`, `JEV_GUARDRAIL_MODEL_FILE`, and `JEV_GUARDRAIL_ARTIFACT_REGISTRY`. `JEV_GUARDRAIL_QUALIFICATION` points to its verified real-bridge held-out report. The general classifier's model and artifact registry are unchanged. An unqualified model can be tested in shadow mode; enforcement falls back to rules.
+
+When Jev is enabled and the operator mode is exactly `shadow` or `enforce`, the general Jev extension awaits risk-worker warmup during `session_start`, before tool requests begin. Enabling Jev or changing its prompt template also awaits retirement and warmup. Cold initialization is separate from the 500 ms warm risk-check budget. Startup failures remain visible in provider status and leave SF's rule fallback available. Opt-in startup does not initialize the general classifier, score a tool request or grant approval.
+
+Pi print and RPC modes await extension binding. API embeddings must also call and await `AgentSession.bindExtensions`; creating a session alone does not run `session_start`. In a headless embedding, inspect the returned Jev runtime's `guardrailRisk.status()` after binding for readiness and initialization failures. The slash commands use Pi's UI notification surface, which provides no visible output in headless mode.
 
 `/jev-risk status` displays cached provider readiness and qualification. `/jev-risk warmup` explicitly verifies and loads the candidate. `/sf-guardrail risk` displays session comparisons and operational fallback reasons. Failed requests, missing facts, unavailable models, invalid responses and timeouts retain the existing engine's decision. A valid uncertain judgment requires approval. Model-derived approvals bind the complete operation, active policy, model and scoring protocol. Disable and shutdown dispose owned workers.
 
@@ -49,7 +53,7 @@ npm run train:guardrail -- export --run .build/guardrail/candidate-N \
 
 Preparation passes only TRAIN and validation to RFDT. The plan freezes the number of updates before training and verifies the original base weight checksum. Export verifies changed adapter weights, loss decrease, checkpoint reload, fusion and the resulting GGUF. The candidate registry is local to the run and does not promote the default classifier.
 
-The current candidate 3 uses 1,536 fixed updates with the original RFDT settings. This increases training exposure after an 18-case TRAIN-only diagnosis demonstrated that the unchanged pipeline can fit the requested decisions. Candidate 2's 256-update run failed validation usability. More updates are an experiment, and still require every validation and held-out gate to pass; the training diagnostic does not qualify a model.
+Candidate 2's 256-update run failed validation usability. Candidate 3 completed 1,536 fixed updates and fit all 252 TRAIN decisions, but failed native bridge validation on unsafe allows, safety regressions and unnecessary interruptions. Candidate 4 is running the same fixed 1,536-update profile with 48 additional TRAIN counterfactuals; validation is unchanged and RFDT preparation contains no TEST rows. Its outcomes remain pending. Training fit does not qualify a model; every validation and held-out gate must still pass.
 
 `eval:guardrail` can produce direct-classifier diagnostics. These cannot qualify enforcement: real SF bridge validation must include preparation and queueing, and all eligible model calls must finish. Run bridge validation from the SF checkout, with `JEV_GUARDRAIL_MODEL_FILE` set to the exported artifact path printed by the previous command:
 

@@ -3,6 +3,25 @@
   "date": "2026-09-21",
   "purpose": "Separate local guardrail semantic-risk candidate; preserve exact policy and existing Pi approval/audit enforcement.",
   "checkpointStatus": "candidate_4_training_candidate_3_rejected_native_validation",
+  "optInStartupLifecycle": {
+    "scope": "Actual Jev worktree, adapter-stub lifecycle tests; no model or native calls",
+    "warmup": "Enabled general driver awaits owned risk worker at exact shadow/enforce session_start, re-enable and template replacement",
+    "focusedTestsPassed": 46,
+    "focusedTestsFailed": 0,
+    "newStartupCases": 18,
+    "sourceTypeCheck": "passed",
+    "startupTestStrictTypeCheck": "passed",
+    "build": "passed",
+    "format": "passed",
+    "candidate4SourcePinsUnchanged": 21,
+    "criteriaSha256": "b7147735bc3c2c2dc5fd00b61d1abfc1c3a66888213d5f37dc1c790ba791c8b7",
+    "driverSourceSha256": "ca5389ff369d062980e1b9343766a41388f89afbb87e9138ae61767d63487cb7",
+    "driverDistributionSha256": "57b5f63d7790908e4bf9c34b40de4bdad8c79ca0b0bccd0a5994d8e288167f1c",
+    "nativeDriverStartupProved": false,
+    "modelQualified": false,
+    "apiEmbeddingRequirement": "Await AgentSession.bindExtensions; createAgentSession alone does not run session_start",
+    "headlessStatus": "Read the returned runtime guardrailRisk.status() after binding; slash-command UI notifications have no headless output"
+  },
   "workspaces": {
     "branch": "barretts/jev-guardrail-risk",
     "jev": {

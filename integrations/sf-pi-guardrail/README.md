@@ -36,6 +36,15 @@ native binary. Unqualified candidates and operational failures retain the rule
 decision. Runtime changes require fresh qualification; do not reuse an old
 receipt after changing this patch.
 
+With Jev enabled, the general Jev extension awaits risk-worker warmup during
+session startup for exact `shadow` and `enforce` opt-in modes. Default `off`
+stays lazy. Startup failures remain recorded in provider status and retain the
+existing SF fallback. API embeddings must await `AgentSession.bindExtensions`
+before tool execution; creating a session alone does not start extensions.
+Cold startup is separate from the 500 ms warm check budget. Headless embeddings
+can inspect the returned Jev runtime's `guardrailRisk.status()` after binding;
+the slash commands use a UI notification surface with no headless output.
+
 ## Verification scope
 
 TypeScript and full lint passed, including generated catalog/documentation,
@@ -50,8 +59,21 @@ operations: seven CPU/scripted SDK tests passed and the optional native arm
 was skipped. Shadow/enforcement source tests now require eight matching semantic
 judgments and two exact-policy comparisons, with one comparison per SDK call. TypeScript, file ESLint and an independent replay passed. The
 real-model arm uses the genuine Jev provider and requires a matching held-out
-qualification for enforcement. Its future invocation is documented in
-[GUARDRAIL.md](../../GUARDRAIL.md); it has not run while candidate 3 is training.
+qualification for enforcement. Candidate 3 completed the actual native
+off/shadow arm after training: both modes executed nine operations, preserved
+one exact block, and used three confirmations and three grants. Shadow answered
+all eight semantic requests and recorded two exact-policy comparisons. The
+existing engine enforced throughout; this proves the mocked SDK workflow's
+shadow isolation, not model effectiveness or qualified enforcement.
+
+Candidate 3 was rejected by separate native bridge validation: six unsafe
+automatic allows, five safety regressions, and 19 unnecessary interruptions
+versus baseline three. Its warm p95 was 213.736 ms, and all 144 eligible calls
+answered. No held-out test or qualified enforce arm ran. Candidate 4 is training
+with the same fixed settings and 48 additional TRAIN cases; its results remain
+pending. Current receipts and proof boundaries are in the
+[evidence report](../../reports/guardrail-risk-2026-09-21/README.md). The genuine
+qualified-arm invocation is documented in [GUARDRAIL.md](../../GUARDRAIL.md).
 
 The complete SF suite required environment-specific partitions: the broad run
 passed 4,214 tests with one unrelated AgentScript import timeout, which passed

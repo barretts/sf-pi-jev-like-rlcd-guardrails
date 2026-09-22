@@ -230,6 +230,20 @@ numeric usability rejection and no-freeze/no-held-out status are unchanged.
 Candidate 3's fresh validation receipt uses the current seal and was
 independently verified; its failed gates prohibit freezing and held-out testing.
 
+The opt-in startup fix passed 46 focused tests in the actual Jev worktree,
+including 18 new lifecycle cases. The general driver now awaits its owned risk
+worker on `session_start`, re-enable and template replacement when enabled and
+the operator mode is exactly `shadow` or `enforce`. Off, absent, malformed and
+disabled configurations stay lazy. Adapter-stub cases verify initialization
+failure recording, shutdown cancellation, late completion and replacement;
+startup does not score requests, initialize the general classifier or grant
+approvals. Source and new-test strict type checks, build and file formatting
+passed. After rebuilding, all 21 candidate 4 frozen source pins and compiled
+criteria `b7147735…` were unchanged. This establishes lifecycle behavior with
+stub adapters; actual native driver startup and its end-to-end fallback remain
+separate checks. The installed Pi SDK's binding awaits startup, including print
+and RPC modes; API embeddings must also await binding.
+
 The SDK workflow repeats an identical operation. It does not establish prompt
 parity when related operation payloads change: current model-derived session
 grants are exact and bound to operation/policy/model/protocol, while baseline
