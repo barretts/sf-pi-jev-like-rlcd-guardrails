@@ -64,6 +64,23 @@ async function fileSha(path) {
   for await (const chunk of createReadStream(path)) digest.update(chunk);
   return digest.digest("hex");
 }
+export async function capturePinnedFileIdentities(paths) {
+  const entries = await Promise.all(
+    Object.entries(paths).map(async ([name, path]) => [
+      name,
+      await fileSha(path),
+    ]),
+  );
+  return Object.fromEntries(entries);
+}
+export function assertSameScoringIdentity(before, after) {
+  const names = Object.keys(before).sort(order);
+  if (
+    names.length !== Object.keys(after).length ||
+    names.some((name) => before[name] !== after[name])
+  )
+    fail("source, model, native scorer, or host changed during CAL scoring");
+}
 function jsonl(bytes, split) {
   const text = bytes.toString("utf8");
   if (!text.endsWith("\n") || text.includes("\r") || text.includes("\n\n"))
@@ -136,8 +153,8 @@ export async function loadCandidate9Calibration(values) {
     pinnedBytes(values.cal, admission.calibration.sha256),
     pinnedBytes(values.pairs, admission.source.pairsSha256),
     pinnedBytes(values.families, admission.source.familiesSha256),
-    regularBytes(values.objectivePlan),
-    regularBytes(values.fitPlan),
+    pinnedBytes(values.objectivePlan, values.objectivePlanSha256),
+    pinnedBytes(values.fitPlan, values.fitPlanSha256),
   ]);
   const fit = jsonl(fitBytes, "train");
   const cal = jsonl(calBytes, "calibration");
@@ -260,6 +277,45 @@ export async function loadCandidate9Calibration(values) {
   };
 }
 
+async function captureScoringIdentity(values) {
+  const paths = {
+    admission: values.admission,
+    fit: values.fit,
+    cal: values.cal,
+    pairs: values.pairs,
+    families: values.families,
+    objectivePlan: values.objectivePlan,
+    fitPlan: values.fitPlan,
+    runManifest: resolve(values.run, "manifest.json"),
+    artifactManifest: values.artifactManifest,
+    registry: values.registry,
+    modelFile: values.modelFile,
+    nativeBinary: values.nativeBinary,
+    scorerCli: fileURLToPath(import.meta.url),
+    scorerCore: resolve(root, "scripts/guardrail-candidate9-cal-score.mjs"),
+    backend: resolve(root, "dist/backend.js"),
+    core: resolve(root, "dist/core.js"),
+    guardrail: resolve(root, "dist/guardrail.js"),
+    models: resolve(root, "dist/models.js"),
+    hostBaselineSource: resolve(
+      values.sfPi,
+      "extensions/sf-guardrail/lib/risk-baseline-identity.ts",
+    ),
+  };
+  if (values.artifactFormat === "q8_0") {
+    paths.quantizationManifest = values.quantizationManifest;
+    paths.quantizerBinary = values.quantizerBinary;
+  }
+  if (git(values.sfPi, "rev-parse", "HEAD") !== C9_CAL_SOURCE_PINS.hostCommit)
+    fail("sf-pi host changed during CAL scoring");
+  try {
+    git(values.sfPi, "diff", "--quiet", "HEAD");
+  } catch {
+    fail("sf-pi host changed during CAL scoring");
+  }
+  return capturePinnedFileIdentities(paths);
+}
+
 function warmupAttempt(source, modelSha256, nativeBinarySha256, reason) {
   const prepared = prepareCandidate9CalibrationRows(
     source.rows,
@@ -376,6 +432,7 @@ export async function verifyInferenceFormat(values, artifact, exported) {
 }
 
 async function nativeScorer(values) {
+  const invocationStarted = performance.now();
   const required = [
     "admission",
     "admissionSha256",
@@ -384,14 +441,18 @@ async function nativeScorer(values) {
     "pairs",
     "families",
     "objectivePlan",
+    "objectivePlanSha256",
     "fitPlan",
+    "fitPlanSha256",
     "run",
+    "runManifestSha256",
     "sfPi",
     "arm",
     "modelFile",
     "modelId",
     "modelSha256",
     "registry",
+    "registrySha256",
     "artifactManifest",
     "artifactManifestSha256",
     "artifactFormat",
@@ -415,6 +476,11 @@ async function nativeScorer(values) {
   )
     fail("model and output paths must be absolute C9 local artifacts");
   const source = await loadCandidate9Calibration(values);
+  await pinnedBytes(
+    resolve(values.run, "manifest.json"),
+    values.runManifestSha256,
+  );
+  await pinnedBytes(values.registry, values.registrySha256);
   const artifact = await verifyArtifact(
     values.modelFile,
     "classifier",
@@ -452,6 +518,8 @@ async function nativeScorer(values) {
     nativeBinarySha256 !== source.plan.source.code?.files?.[".build/jev-native"]
   )
     fail("native scorer differs from C9 FIT compiler");
+  const preScoreIdentity = await captureScoringIdentity(values);
+  const preScoreVerificationMs = performance.now() - invocationStarted;
   const config = configFromEnv({
     JEV_DEVICE: "metal",
     JEV_MODEL_ID: artifact.id,
@@ -501,6 +569,41 @@ async function nativeScorer(values) {
         { phase: "dispose", reason: disposeError },
       ],
     };
+  try {
+    assertSameScoringIdentity(
+      preScoreIdentity,
+      await captureScoringIdentity(values),
+    );
+  } catch (error) {
+    report = {
+      ...report,
+      purpose: "candidate9_train_calibration_attempt",
+      failures: [
+        ...(report.failures ?? []),
+        {
+          phase: "post_run_identity",
+          reason: error instanceof Error ? error.message : String(error),
+        },
+      ],
+    };
+  }
+  report = {
+    ...report,
+    artifactFormat: format.format,
+    artifactManifestSha256: values.artifactManifestSha256,
+    registrySha256: values.registrySha256,
+    runManifestSha256: values.runManifestSha256,
+    fitPlanSha256: values.fitPlanSha256,
+    quantizationManifestSha256: format.manifestSha256 ?? null,
+    calScorerCliSha256: preScoreIdentity.scorerCli,
+    calScorerCoreSha256: preScoreIdentity.scorerCore,
+    coldInitializationMs,
+    coldInitializationBasis:
+      "backend_warmup_after_source_and_artifact_verification",
+    preScoreVerificationMs,
+    elapsedBasis:
+      "direct_jev_risk_check_including_prompt_preparation_and_queue",
+  };
   await writeFile(values.output, `${JSON.stringify(report, null, 2)}\n`, {
     flag: "wx",
     mode: 0o600,
@@ -537,14 +640,18 @@ if (
     "pairs",
     "families",
     "objective-plan",
+    "objective-plan-sha256",
     "fit-plan",
+    "fit-plan-sha256",
     "run",
+    "run-manifest-sha256",
     "sf-pi",
     "arm",
     "model-file",
     "model-id",
     "model-sha256",
     "registry",
+    "registry-sha256",
     "artifact-manifest",
     "artifact-manifest-sha256",
     "artifact-format",
@@ -567,14 +674,18 @@ if (
     pairs: flags.pairs,
     families: flags.families,
     objectivePlan: flags["objective-plan"],
+    objectivePlanSha256: flags["objective-plan-sha256"],
     fitPlan: flags["fit-plan"],
+    fitPlanSha256: flags["fit-plan-sha256"],
     run: flags.run,
+    runManifestSha256: flags["run-manifest-sha256"],
     sfPi: flags["sf-pi"],
     arm: flags.arm,
     modelFile: flags["model-file"],
     modelId: flags["model-id"],
     modelSha256: flags["model-sha256"],
     registry: flags.registry,
+    registrySha256: flags["registry-sha256"],
     artifactManifest: flags["artifact-manifest"],
     artifactManifestSha256: flags["artifact-manifest-sha256"],
     artifactFormat: flags["artifact-format"],

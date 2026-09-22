@@ -1,9 +1,35 @@
 import { strict as assert } from "node:assert";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 import {
+  assertSameScoringIdentity,
+  capturePinnedFileIdentities,
   loadCandidate9Calibration,
   verifyInferenceFormat,
 } from "../scripts/guardrail-candidate9-cal-cli.mjs";
+
+test("C9 scorer rejects source or artifact replacement during a long scoring run", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "c9-cal-identity-"));
+  try {
+    const source = join(dir, "source.json");
+    const model = join(dir, "model.gguf");
+    await writeFile(source, "frozen source");
+    await writeFile(model, "frozen model");
+    const paths = { source, model };
+    const before = await capturePinnedFileIdentities(paths);
+    assert.doesNotThrow(() => assertSameScoringIdentity(before, before));
+    await writeFile(model, "replacement model");
+    const after = await capturePinnedFileIdentities(paths);
+    assert.throws(
+      () => assertSameScoringIdentity(before, after),
+      /source, model, native scorer, or host changed during CAL scoring/,
+    );
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
 
 test("C9 native scorer cannot load TRAIN-CAL before the exact admission pin is committed", async () => {
   await assert.rejects(
