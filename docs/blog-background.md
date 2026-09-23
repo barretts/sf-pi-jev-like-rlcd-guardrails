@@ -1,4 +1,8 @@
-# Blog background: from Simple Jev to a local guardrail model
+# sf-pi-jev-guardrails blog background
+
+The project is now named **sf-pi-jev-guardrails**, formerly `simple-jev-ts`.
+Its earlier name described the TypeScript rewrite of Simple Jev; the current
+name reflects its focused role as an SF Pi guardrail risk provider.
 
 Historical snapshot: September 23, 2026. This document preserves the project’s
 development story while the active repository is reduced to its SF Guardrail
@@ -283,14 +287,14 @@ The following immutable links point to historical files at source snapshot
 the current tree. This repository was private at that snapshot; the links
 require repository access.
 
-- [Original package scope and provenance](https://github.com/barretts/simple-jev-ts/blob/85b12f998141081ebd9199982541a7a50520724f/README.md).
-- [Developer comparisons and experiment ledger](https://github.com/barretts/simple-jev-ts/blob/85b12f998141081ebd9199982541a7a50520724f/EXPERIMENTS.md).
-- [Implementation, runtime, Pi, and training evidence](https://github.com/barretts/simple-jev-ts/blob/85b12f998141081ebd9199982541a7a50520724f/VERIFICATION.md).
-- [Bounded excerpt answer-effectiveness results](https://github.com/barretts/simple-jev-ts/blob/85b12f998141081ebd9199982541a7a50520724f/research/context-effectiveness-root-1/RESULTS.md).
-- [Captioned real Pi context demo](https://github.com/barretts/simple-jev-ts/blob/85b12f998141081ebd9199982541a7a50520724f/reports/pi-context-demo-2026-09-20/README.md).
-- [Presentation’s searchable history and caveats](https://github.com/barretts/simple-jev-ts/blob/85b12f998141081ebd9199982541a7a50520724f/reports/simple-jev-2026-09-20/slide-notes.md).
-- [C11 accuracy procedure and checkpoint table](https://github.com/barretts/simple-jev-ts/blob/85b12f998141081ebd9199982541a7a50520724f/reports/guardrail-risk-2026-09-21/candidate-11-accuracy-milestone.md).
-- [Complete C11 stop report and proof limits](https://github.com/barretts/simple-jev-ts/blob/85b12f998141081ebd9199982541a7a50520724f/reports/guardrail-risk-2026-09-21/candidate-11-stop-report-2026-09-23.md).
+- [Original package scope and provenance](https://github.com/barretts/sf-pi-jev-guardrails/blob/85b12f998141081ebd9199982541a7a50520724f/README.md).
+- [Developer comparisons and experiment ledger](https://github.com/barretts/sf-pi-jev-guardrails/blob/85b12f998141081ebd9199982541a7a50520724f/EXPERIMENTS.md).
+- [Implementation, runtime, Pi, and training evidence](https://github.com/barretts/sf-pi-jev-guardrails/blob/85b12f998141081ebd9199982541a7a50520724f/VERIFICATION.md).
+- [Bounded excerpt answer-effectiveness results](https://github.com/barretts/sf-pi-jev-guardrails/blob/85b12f998141081ebd9199982541a7a50520724f/research/context-effectiveness-root-1/RESULTS.md).
+- [Captioned real Pi context demo](https://github.com/barretts/sf-pi-jev-guardrails/blob/85b12f998141081ebd9199982541a7a50520724f/reports/pi-context-demo-2026-09-20/README.md).
+- [Presentation’s searchable history and caveats](https://github.com/barretts/sf-pi-jev-guardrails/blob/85b12f998141081ebd9199982541a7a50520724f/reports/simple-jev-2026-09-20/slide-notes.md).
+- [C11 accuracy procedure and checkpoint table](https://github.com/barretts/sf-pi-jev-guardrails/blob/85b12f998141081ebd9199982541a7a50520724f/reports/guardrail-risk-2026-09-21/candidate-11-accuracy-milestone.md).
+- [Complete C11 stop report and proof limits](https://github.com/barretts/sf-pi-jev-guardrails/blob/85b12f998141081ebd9199982541a7a50520724f/reports/guardrail-risk-2026-09-21/candidate-11-stop-report-2026-09-23.md).
 
 For offline access from a checkout containing that history:
 

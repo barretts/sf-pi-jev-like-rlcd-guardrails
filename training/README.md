@@ -1,4 +1,4 @@
-# Current C11 training and F16 export
+# sf-pi-jev-guardrails training and F16 export
 
 Run the relative `training/` and `scripts/` commands below from the repository root on the appropriate machine; the CUDA host needs this extracted repository or equivalent verified staged code.
 

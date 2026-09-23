@@ -1,4 +1,4 @@
-# SF Guardrail integration
+# sf-pi-jev-guardrails integration with SF Pi
 
 [current-sf-pi.patch](./current-sf-pi.patch) preserves the SF Pi host used by the
 C11 experiment. It adds versioned local risk-provider discovery, comparison
@@ -8,7 +8,7 @@ and audit.
 
 C11 remains **unqualified**. Leave `SF_GUARDRAIL_JEV_MODE` unset or `off` for the
 existing Guardrail behavior. `shadow` records local-model judgments alongside
-those outcomes. The retained Jev provider never advertises qualification, so
+those outcomes. The retained `sf-pi-jev-guardrails` provider never advertises qualification, so
 it cannot be admitted for enforcement.
 
 ## Pinned host source
@@ -16,43 +16,43 @@ it cannot be admitted for enforcement.
 | Field                   | Identity                                                           |
 | ----------------------- | ------------------------------------------------------------------ |
 | SF Pi baseline          | `4f901db9c3f5076ea0305dea33ad6e8856e467da`                         |
-| Recorded host commit    | `a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a`                         |
-| Reconstructed host tree | `2a4ba2e4dfe3ec93e0fef43ed39ae8f87190faff`                         |
-| Patch SHA-256           | `73a30f72dbb2f1b0e32149745e831978c2da150d4d040068706b842516e92208` |
-| Patch size              | 486,815 bytes                                                      |
+| Original host commit    | `a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a`                         |
+| Reconstructed host tree | `bf363cb549c69f8566be79243b57118de933228a`                         |
+| Patch SHA-256           | `3d156d653566f10335f269aa1e9381e75e633516b69365a10bb97043bb6e9c0d` |
+| Patch size              | 486,849 bytes                                                      |
 
-The current patch is the byte-identical former C10 baseline patch, renamed to
-an enduring entry point. Applying it to the exact baseline in a disposable Git
-index reproduces the tree above. This records source identity and integration;
+The current patch derives from the recorded C10 host with the project branding
+updated in its documentation. Applying it to the exact baseline in a disposable
+Git index reproduces the tree above. This records source identity and integration;
 it does not install the host, qualify the model or establish live acceptance.
 
 ## Prepare a separate host
 
-Start in the Jev repository. Substitute real, unused local paths for the
+Start in the `sf-pi-jev-guardrails` repository. Substitute real, unused local paths for the
 placeholders below. Use a fresh SF Pi worktree so the existing checkout keeps
 its current state.
 
 ```sh
-jev_root="$PWD"
-git -C /path/to/sf-pi worktree add --detach /path/to/fresh-sf-pi-jev \
+guardrails_root="$PWD"
+git -C /path/to/sf-pi worktree add --detach /path/to/fresh-sf-pi-guardrails-host \
   4f901db9c3f5076ea0305dea33ad6e8856e467da
-git -C /path/to/fresh-sf-pi-jev apply --check \
-  "$jev_root/integrations/sf-pi-guardrail/current-sf-pi.patch"
-git -C /path/to/fresh-sf-pi-jev apply --index \
-  "$jev_root/integrations/sf-pi-guardrail/current-sf-pi.patch"
-git -C /path/to/fresh-sf-pi-jev write-tree
+git -C /path/to/fresh-sf-pi-guardrails-host apply --check \
+  "$guardrails_root/integrations/sf-pi-guardrail/current-sf-pi.patch"
+git -C /path/to/fresh-sf-pi-guardrails-host apply --index \
+  "$guardrails_root/integrations/sf-pi-guardrail/current-sf-pi.patch"
+git -C /path/to/fresh-sf-pi-guardrails-host write-tree
 ```
 
-The last command must print `2a4ba2e4dfe3ec93e0fef43ed39ae8f87190faff`.
+The last command must print `bf363cb549c69f8566be79243b57118de933228a`.
 An arbitrary newer SF Pi checkout may have different source and patch context;
 the recorded reconstruction uses the exact baseline.
 
-Build Jev with `npm ci` and `npm run build`, then install the prepared SF Pi
-host and the Jev package in the intended Pi profile:
+Build `sf-pi-jev-guardrails` with `npm ci` and `npm run build`, then install the
+prepared SF Pi host and the package in the intended Pi profile:
 
 ```sh
-pi install /path/to/fresh-sf-pi-jev
-pi install "$jev_root"
+pi install /path/to/fresh-sf-pi-guardrails-host
+pi install "$guardrails_root"
 SF_GUARDRAIL_JEV_MODE=shadow pi
 ```
 

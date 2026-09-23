@@ -150,7 +150,7 @@ index 3b2dd397..299d1866 100644
  The complete disable path is the SF Pi package lifecycle control: disable the `sf-guardrail` extension from the Manager Surface or with `/sf-pi disable sf-guardrail`. This avoids the ambiguous state where the extension is loaded but a hidden internal switch makes it inert.
 diff --git a/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md b/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md
 new file mode 100644
-index 00000000..1781e188
+index 00000000..539b50e3
 --- /dev/null
 +++ b/docs/adr/0118-sf-guardrail-supports-an-optional-local-jev-risk-provider.md
 @@ -0,0 +1,152 @@
@@ -166,7 +166,7 @@ index 00000000..1781e188
 +
 +SF Guardrail's structural and native-tool rules establish a useful baseline, but
 +semantic risk can appear through unfamiliar syntax, indirect mutation, missing
-+org or browser facts, and misleading claims of prior approval. Simple Jev can
++org or browser facts, and misleading claims of prior approval. sf-pi-jev-guardrails can
 +score two choices with a local model using selected next-token logits. Replacing
 +semantic detection requires evidence of equal or better safety and usability;
 +it must preserve the user's exact policy and SF Pi's approval authority.
@@ -1807,7 +1807,7 @@ index db37337b..44faa75f 100644
    are global Pi settings under `sfPi.guardrail`; project-local weakening is
    deferred with project-local rule overrides. Adding either means plumbing
 diff --git a/extensions/sf-guardrail/README.md b/extensions/sf-guardrail/README.md
-index 27bba377..1404a147 100644
+index 27bba377..77278f45 100644
 --- a/extensions/sf-guardrail/README.md
 +++ b/extensions/sf-guardrail/README.md
 @@ -11,20 +11,52 @@ fail-closed behavior, session approval memory, and audit path:
@@ -1831,7 +1831,7 @@ index 27bba377..1404a147 100644
  Intent flags such as `allow_mutation`, `allow_confirmed`, or `mutation=true` aid
  classification but never become approval.
  
-+An optional local Simple Jev provider can supply semantic risk judgments for
++An optional local sf-pi-jev-guardrails provider can supply semantic risk judgments for
 +known shell and native-tool requests. It is off by default. Exact file
 +protections, hard blocks, explicit command-policy overrides, validated temporary
 +cleanup exceptions, and execution-intent checks remain in code. SF Guardrail's
@@ -1879,7 +1879,7 @@ index 27bba377..1404a147 100644
 +| `shadow`  | Record Jev's judgment for eligible requests beside the current engine's decision. The current engine still determines prompts, approvals, and execution. |
 +| `enforce` | A warmed model with a passing qualification receipt supplies semantic judgments. Exact policy constraints and the existing approval flow still apply.    |
 +
-+Load Simple Jev and SF Pi in the same Pi session after completing Simple Jev's
++Load sf-pi-jev-guardrails and SF Pi in the same Pi session after completing its
 +native-runtime and reviewed-model setup. Loading the extensions registers the
 +provider interface without loading weights or starting a model worker. Use
 +`/jev-risk status` to inspect cached provider state and `/jev-risk warmup` to
@@ -1900,12 +1900,12 @@ index 27bba377..1404a147 100644
 +classification. To change modes, set the environment variable before a new
 +Pi process starts.
 +
-+Simple Jev's provider accepts dedicated artifact settings:
++The sf-pi-jev-guardrails provider accepts dedicated artifact settings:
 +
 +| Variable                          | Purpose                                                                                                                                                                |
 +| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 +| `JEV_GUARDRAIL_MODEL_ID`          | Guardrail candidate identity. The default is the reviewed `google/gemma-3-1b-it` base.                                                                                 |
-+| `JEV_GUARDRAIL_MODEL_FILE`        | Local GGUF path; the default is Simple Jev's reviewed Gemma 3 1B file.                                                                                                 |
++| `JEV_GUARDRAIL_MODEL_FILE`        | Local GGUF path; the default is the reviewed Gemma 3 1B file.                                                                                                 |
 +| `JEV_GUARDRAIL_ARTIFACT_REGISTRY` | Separate reviewed artifact registry for a trained guardrail candidate.                                                                                                 |
 +| `JEV_GUARDRAIL_QUALIFICATION`     | Frozen held-out qualification report matching the physical model, native scorer, scoring protocol, and installed SF risk engine. Required for enforcement eligibility. |
 +
@@ -1983,7 +1983,7 @@ index 27bba377..1404a147 100644
 +  existing bounded non-production approval scope can retain session reuse.
 +- Risk comparisons are session-local entries; the actual enforcement decision
 +  appears in `/sf-guardrail audit`. The model runs locally; this integration
-+  does not add a remote inference or telemetry dependency. Simple Jev owns and
++  does not add a remote inference or telemetry dependency. sf-pi-jev-guardrails owns and
 +  disposes its dedicated worker on shutdown and disable.
  - Disabling the extension removes this mediation layer; the Manager calls that
    out before changing package state.

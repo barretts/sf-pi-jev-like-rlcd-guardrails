@@ -1,4 +1,4 @@
-# Third-party software and model notices
+# sf-pi-jev-guardrails third-party notices
 
 [LICENSE](./LICENSE) covers this project's first-party code under Apache 2.0.
 Installed dependencies, native-runtime components and model weights keep their

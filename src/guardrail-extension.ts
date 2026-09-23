@@ -325,7 +325,10 @@ export function registerGuardrailProvider(
         const currentStatus = status();
         ctx.ui.notify(
           [
-            "Jev C11: " + currentStatus.state + "; " + currentStatus.model,
+            "sf-pi-jev-guardrails C11: " +
+              currentStatus.state +
+              "; " +
+              currentStatus.model,
             "Advisory shadow scoring; not qualified for enforcement.",
             "Model weights: " + (currentStatus.modelSha256 ?? "not loaded"),
             "Scoring protocol: " + currentStatus.protocolSha256,

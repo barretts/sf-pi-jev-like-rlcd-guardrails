@@ -37,7 +37,7 @@ const {
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const HOST_BASELINE = "4f901db9c3f5076ea0305dea33ad6e8856e467da";
 const HOST_PATCH_SHA256 =
-  "73a30f72dbb2f1b0e32149745e831978c2da150d4d040068706b842516e92208";
+  "3d156d653566f10335f269aa1e9381e75e633516b69365a10bb97043bb6e9c0d";
 const PROVIDERS = "sf-guardrail:risk-providers";
 const COMPARISONS = "sf-guardrail-risk-comparison";
 const canonical = (value) =>
@@ -257,7 +257,9 @@ async function trial({
         session.extensionRunner.createCommandContext(),
       );
       assert.ok(
-        notifications.some(({ message }) => message.includes("Jev C11:")),
+        notifications.some(({ message }) =>
+          message.includes("sf-pi-jev-guardrails C11:"),
+        ),
       );
       if (mode === "off") assert.equal(provider.modelSha256, null);
       else assert.equal(typeof provider.modelSha256, "string");

@@ -69,7 +69,9 @@ assert.ok(pack.unpackedSize < 6 * 1024 * 1024, "Source package exceeds 6 MiB");
 
 let installed = false;
 if (process.argv.includes("--install")) {
-  const directory = await mkdtemp(join(tmpdir(), "jev-guardrail-consumer-"));
+  const directory = await mkdtemp(
+    join(tmpdir(), "sf-pi-jev-guardrails-consumer-"),
+  );
   try {
     const [archive] = JSON.parse(
       execFileSync(

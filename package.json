@@ -1,11 +1,11 @@
 {
-  "name": "simple-jev-ts",
+  "name": "sf-pi-jev-guardrails",
   "version": "0.3.0",
   "description": "Local C11 semantic risk provider and training tools for SF Guardrail",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/barretts/simple-jev-ts.git"
+    "url": "git+https://github.com/barretts/sf-pi-jev-guardrails.git"
   },
   "private": true,
   "type": "module",

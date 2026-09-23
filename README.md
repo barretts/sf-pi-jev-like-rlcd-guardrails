@@ -1,4 +1,4 @@
-# Simple Jev C11 for SF Guardrail
+# sf-pi-jev-guardrails
 
 A local TypeScript risk provider and the current C11 training/export tools for
 SF Guardrail. The provider scores proposed tool operations with the saved
@@ -45,7 +45,7 @@ verification; the saved provider pins the supplied executable's identity.
 
 ## Pi and SF Pi
 
-Install the built Jev package in Pi:
+Install the built `sf-pi-jev-guardrails` package in Pi:
 
 ```sh
 pi install "$PWD"
