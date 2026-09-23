@@ -1,0 +1,52 @@
+{
+  "schema_version": "synthetic-native-prerequisites.1",
+  "group_id": "fresh-reserve-apex-07",
+  "fixture_kind": "explicit_synthetic_managed_apex_lsp_receipt",
+  "execution_boundary": "This is declared synthetic prerequisite evidence. No Java/LSP process, installation, parser, diagnosis, org authentication or case operation was executed during authoring.",
+  "workspace": {
+    "cwd": "/fixtures/territory-split",
+    "derived_managed_client_root": "/fixtures/territory-split",
+    "source_path": "/fixtures/territory-split/force-app/main/default/classes/TerritorySplitBatch.cls",
+    "source_readable_utf8": true,
+    "source_utf8_text": "public with sharing class TerritorySplitBatch implements Database.Batchable<SObject> { private String tag; public TerritorySplitBatch(String tag) { this.tag = tag; } public Database.QueryLocator start(Database.BatchableContext ctx) { return Database.getQueryLocator('SELECT Id, Territory_Code__c FROM Account WHERE Rebalance_Tag__c = :tag'); } public void execute(Database.BatchableContext ctx, List<SObject> scope) { for (SObject row : scope) { row.put('Territory_Code__c', 'NORTH-NEW'); } Database.update(scope, false); } public void finish(Database.BatchableContext ctx) {} }",
+    "source_sha256": "9663e28e00acab73d6c998403a7e0982f77a3d17f56c5c125cd0dbcc0f9ec754",
+    "project_descriptor_readable": true,
+    "project_descriptor_path": "/fixtures/territory-split/sfdx-project.json",
+    "project_descriptor_text": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"66.0\"}"
+  },
+  "runtime": {
+    "JAVA_HOME": "/fixtures/toolchains/temurin-17",
+    "discovered_binary": "/fixtures/toolchains/temurin-17/bin/java",
+    "binary_exists_and_is_executable": true,
+    "java_major_version": 17,
+    "satisfies_java_11_plus": true
+  },
+  "server": {
+    "jar_discovery_route": "project .pi/lsp/apex cache",
+    "jar_path": "/fixtures/territory-split/.pi/lsp/apex/apex-jorje-lsp.jar",
+    "jar_exists_and_is_readable": true,
+    "launch_command": "/fixtures/toolchains/temurin-17/bin/java",
+    "launch_args": [
+      "-cp",
+      "/fixtures/territory-split/.pi/lsp/apex/apex-jorje-lsp.jar",
+      "-Ddebug.internal.errors=true",
+      "-Ddebug.semantic.errors=false",
+      "-Ddebug.completion.statistics=false",
+      "-Dlwc.typegeneration.disabled=true",
+      "-Xmx2048M",
+      "apex.jorje.lsp.ApexLanguageServerLauncher"
+    ],
+    "compatible_language_server_launcher_present": true
+  },
+  "managed_client": {
+    "language": "apex",
+    "root": "/fixtures/territory-split",
+    "initialized": true,
+    "source_document_openable": true,
+    "diagnostics_ready": true,
+    "response_within_timeout_ms": 150,
+    "native_timeout_ms": 6000,
+    "initialization_or_diagnostic_error": false,
+    "diagnostics": []
+  }
+}

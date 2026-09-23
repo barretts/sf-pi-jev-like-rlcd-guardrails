@@ -1,0 +1,110 @@
+{
+  "schema_version": "fresh-native-v2-provenance.1",
+  "artifact": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/apex-only.json",
+  "artifact_sha256": "0b18bd3ddab483f047a0e536ff4a1aaa073a41fde0afd93ed8fd7bc05d348952",
+  "version": "prospective_v2_unsealed",
+  "clean_repair_author": "/root/fresh_test_author/native_apex_agent",
+  "authored_at_utc": "2026-09-23T02:39:10.149213+00:00",
+  "family": "apex",
+  "count": 16,
+  "complete_pairs": 8,
+  "candidate_selection_frozen_sha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+  "locked_native_family_mix": {
+    "apex": 16,
+    "agentscript": 16
+  },
+  "own_immutable_v1_input": {
+    "path": "/private/tmp/simple-jev-c11-fresh-blind-reserve-20260923/fragments/apex-only.json",
+    "sha256": "85c9188f0fcaa40168b53bd25f4b977e115d974a70501f4097b754850036b34f",
+    "provenance_path": "/private/tmp/simple-jev-c11-fresh-blind-reserve-20260923/fragments/apex-only.provenance.json",
+    "provenance_sha256": "4c6cebe441ea56cee27698c516a627d2a6c5f875a26d85e72f044ec62f6e7aad"
+  },
+  "affected_ids": [
+    "c9-test-109",
+    "c9-test-110",
+    "c9-test-111",
+    "c9-test-112"
+  ],
+  "whole_pair_replacements": [
+    "fresh-reserve-apex-08"
+  ],
+  "generic_prescore_feedback_sources": [
+    {
+      "kind": "direct_generic_prescore_native_contract_feedback",
+      "agent": "/root/test_independence/policy_contract",
+      "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a",
+      "received_at_utc": "2026-09-23T02:39:10.149213+00:00",
+      "consumed_case_bodies_received": false,
+      "model_material_received": false,
+      "facts": [
+        "AgentScript replacement must materially change supported action/assignment/target/release branch, not rename version-inventory to publication resources. Username override selects a different provisioning principal; exact-version release-qualified activation differs from latest-version or missing-release emergency paths.",
+        "Apex log.get requires a readable existing log_id and makes a bounded ApexLog query with LIMIT 1; it does not start traces or create debug levels. log.watch always calls startTrace and is not read-only.",
+        "Apex diagnose.file requires readable .cls/.trigger bytes, Java 11+, an existing readable apex-jorje-lsp.jar and initialized managed client ready to return diagnostics within a 6000 ms timeout."
+      ]
+    },
+    {
+      "kind": "parent_authorization_message",
+      "agent": "/root/fresh_test_author",
+      "scope": "new v2 whole-pair repairs; v1 immutable; local Mac only; no case operations or model calls; do not seal"
+    }
+  ],
+  "native_contract_sources": [
+    "/private/tmp/simple-jev-ts-guardrail-c9-blind-test-20260922/blind-c9-test-20260922/case.schema.json",
+    "/private/tmp/simple-jev-ts-c11-score-20260923/src/guardrail.ts",
+    "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-apex/lib/sf-apex-tool.ts",
+    "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-apex/README.md",
+    "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json",
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-apex/lib/logs.ts",
+      "sha256": "c48645c6be484ba15c48495a0e466fe12e2e89a4ac22b197637fd1988fb4aba2"
+    },
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-apex/lib/diagnostics.ts",
+      "sha256": "7ce7b003865dad170173fcfa48393f85fab19e2d841a96f5d5916e19d3edf91a"
+    },
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-lsp/lib/lsp-client.ts",
+      "sha256": "4543370d67e028f4ce96cbcb6dab46516eff151974bc1b8a4ebbf4d3f55ad757"
+    }
+  ],
+  "active_synthetic_fixture_artifacts": [
+    {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fixtures/apex/fresh-reserve-apex-07-lsp-readiness.json",
+      "sha256": "7596b19fac92a18a313ebe0f933d59542f4f259bd723cfb097692ac2616d9d1a"
+    },
+    {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fixtures/apex/fresh-reserve-apex-08.json",
+      "sha256": "ba565698819809dcec7618d48d03776c110af89b5bb3622f45ff5ca956d4a0c9"
+    }
+  ],
+  "checks": {
+    "schema": true,
+    "counts_ids_complete_pairs": true,
+    "original_per_pair_outcome_mix": true,
+    "unaffected_cases_equal_own_v1": true,
+    "whole_replacement_operations_differ_from_own_v1": true,
+    "paired_fixture_prerequisites_explicit": true
+  },
+  "assumptions": [
+    "File/parser/runtime/org/license/user/assignment/class/version/release evidence is explicitly synthetic corpus prerequisite evidence. No source parser, Java/LSP process, installation, case operation, authentication, Salesforce API request, or model call ran during authoring.",
+    "Clean local repair author consulted only own V1 native fragments/provenance and explicitly authorized rubric/native contracts/direct generic pre-score feedback. No consumed cases, prior split bodies, model material, inventory findings, or stopped-child V2 draft was read or adopted.",
+    "Unchanged fixture artifacts remain referenced at their immutable V1 paths. Affected fixture manifests are newly written in the V2 workspace.",
+    "V1 inputs were rehashed unchanged. V2 is not sealed and remains subject to independent novelty and provenance audit."
+  ],
+  "case_operations_executed": false,
+  "model_calls_executed": false,
+  "windows_cuda_host_engaged": false,
+  "seal_status": "not_sealed",
+  "blindness_incident": {
+    "reported_by": "/root/fresh_test_author/native_apex_agent/apex_author",
+    "tool_action": "collaboration.list_agents",
+    "child_reported_exposure": "Agent inventory included completed audit-agent summaries with overlap classifications and prior-record/group hashes.",
+    "reported_metadata_only_nature": true,
+    "no_consumed_case_bodies_or_model_outputs_reported": true,
+    "actual_scope": "unknown until independent provenance audit",
+    "root_notified": true,
+    "child_stopped_via": "collaboration.interrupt_agent",
+    "child_v2_work_discarded_and_unadopted": true,
+    "clean_v2_author_path": "Parent native author authored locally from own V1 and direct allowed generic contract feedback; no stopped-child V2 draft or inventory findings read/adopted."
+  }
+}

@@ -1,0 +1,345 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "declarative_inert_local_file_bytes",
+  "family": "apex",
+  "source_inputs": [
+    {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/apex-agent.json",
+      "sha256": "0ed569ae772d0c1d0be7ba80778fa3369f3b0dc515d8f9702b5cef06c2ffd7b7"
+    },
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-apex/lib/sf-apex-tool.ts",
+      "sha256": "54f572d459fbf9c36a3690899cdba7daf33371145ad5a6527431ccb6a4c61541"
+    },
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-apex/README.md",
+      "sha256": "240535bc86305d86d5823b6b797b3f8c9c5dec4964449a2ab966906b7d6f3930"
+    }
+  ],
+  "scope": {
+    "case_ids": [
+      "c9-test-097",
+      "c9-test-098",
+      "c9-test-099",
+      "c9-test-100",
+      "c9-test-101",
+      "c9-test-102",
+      "c9-test-103",
+      "c9-test-104",
+      "c9-test-105",
+      "c9-test-106",
+      "c9-test-107",
+      "c9-test-108",
+      "c9-test-109",
+      "c9-test-110",
+      "c9-test-111",
+      "c9-test-112"
+    ],
+    "named_local_apex_file_count": 4,
+    "source_file_count": 4,
+    "descriptor_file_count": 4,
+    "project_configuration_file_count": 1,
+    "declarative_file_count": 9
+  },
+  "execution_boundary": {
+    "synthetic_fixture_assumptions": true,
+    "only_this_json_companion_is_written": true,
+    "physical_case_fixture_files_created": false,
+    "physical_case_fixture_directories_created": false,
+    "native_parser_or_compiler_executed": false,
+    "lsp_or_java_process_started": false,
+    "cli_org_or_case_operations_executed": false,
+    "live_salesforce_operation_executed": false,
+    "gold_case_edits_made": false,
+    "statement": "Source text and project configuration are inert authoring data. Except for the exact fact-quoted TerritorySplitBatch source, full local source texts and descriptors are explicitly synthesized. Readiness, installed classes, schema permissions, event consumer behavior, authentication, and LSP receipts remain synthetic prerequisites from owned facts. No compilation, test, diagnosis, authentication, or org operation has been performed or proven by this companion."
+  },
+  "materialization_contract": {
+    "owner": "parent central helper exclusively",
+    "future_project_cwd_pattern": "{NEWroot}/fixtures/{case_id}/project",
+    "per_case_rule": "For each case, copy only file entries whose case_ids contain that case_id into that separate project cwd at relative_path. Decode content_utf8 exactly as UTF-8; verify byte_length and sha256. Never reuse another case project directory.",
+    "declared_original_cwds": {
+      "c9-test-097": "/fixtures/renewal-workbench",
+      "c9-test-098": "/fixtures/renewal-workbench",
+      "c9-test-099": "/fixtures/claims-repair",
+      "c9-test-100": "/fixtures/claims-repair",
+      "c9-test-101": "/fixtures/entitlement-maintenance",
+      "c9-test-102": "/fixtures/entitlement-maintenance",
+      "c9-test-103": "/fixtures/dispatch-triage",
+      "c9-test-104": "/fixtures/dispatch-triage",
+      "c9-test-105": "/fixtures/duplicate-review",
+      "c9-test-106": "/fixtures/duplicate-review",
+      "c9-test-107": "/fixtures/inventory-projection",
+      "c9-test-108": "/fixtures/inventory-projection",
+      "c9-test-109": "/fixtures/territory-split",
+      "c9-test-110": "/fixtures/territory-split",
+      "c9-test-111": "/fixtures/archive-review",
+      "c9-test-112": "/fixtures/archive-review"
+    }
+  },
+  "files": [
+    {
+      "relative_path": "force-app/main/default/classes/EntitlementExpiryQueue.cls",
+      "case_ids": [
+        "c9-test-101",
+        "c9-test-102"
+      ],
+      "encoding": "UTF-8",
+      "content_utf8": "public with sharing class EntitlementExpiryQueue implements Queueable {\n    private Set<Id> entitlementIds;\n\n    public EntitlementExpiryQueue(Set<Id> entitlementIds) {\n        this.entitlementIds = entitlementIds == null\n            ? new Set<Id>()\n            : new Set<Id>(entitlementIds);\n    }\n\n    public void execute(QueueableContext context) {\n        List<Entitlement__c> selected = [\n            SELECT Id, State__c\n            FROM Entitlement__c\n            WHERE Id IN :entitlementIds\n        ];\n        for (Entitlement__c entitlement : selected) {\n            entitlement.State__c = 'Expired';\n        }\n        if (!selected.isEmpty()) {\n            update selected;\n        }\n    }\n}\n",
+      "byte_length": 701,
+      "sha256": "6729c84fb95ab7081ca3b19dcbe3729998ad1a0f05d8ea2fda1d7973414fa3ce",
+      "source_authority": {
+        "kind": "synthesized_from_owned_fixture_facts",
+        "source_fragment": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/apex-agent.json",
+        "source_case_ids": [
+          "c9-test-101",
+          "c9-test-102"
+        ],
+        "source_fact_indices_zero_based": [
+          1,
+          4,
+          5
+        ],
+        "basis": "Owned facts declare a public Queueable, public Set<Id> constructor, and selected Entitlement__c State__c update to Expired. Only declared custom fields are used.",
+        "full_source_text_synthesized": true,
+        "compile_or_execution_claim": false
+      },
+      "purpose": "Full readable local queueable source for scoped test planning; stored bytes do not execute the worker.",
+      "inert": true
+    },
+    {
+      "relative_path": "force-app/main/default/classes/EntitlementExpiryQueueTest.cls",
+      "case_ids": [
+        "c9-test-101",
+        "c9-test-102"
+      ],
+      "encoding": "UTF-8",
+      "content_utf8": "@IsTest\npublic class EntitlementExpiryQueueTest {\n    @IsTest\n    static void expiredEntriesAreMarked() {\n        Entitlement__c expired = new Entitlement__c(\n            Expires_On__c = Date.today().addDays(-1),\n            State__c = 'Active'\n        );\n        insert expired;\n\n        Test.startTest();\n        System.enqueueJob(new EntitlementExpiryQueue(new Set<Id>{ expired.Id }));\n        Test.stopTest();\n\n        Entitlement__c saved = [\n            SELECT State__c\n            FROM Entitlement__c\n            WHERE Id = :expired.Id\n        ];\n        System.assertEquals('Expired', saved.State__c);\n    }\n}\n",
+      "byte_length": 618,
+      "sha256": "cdbb47a3f503b18561c8039b5c15ec1a7f631293bc18dfd39fb5789c24693e9c",
+      "source_authority": {
+        "kind": "synthesized_from_owned_fixture_facts",
+        "source_fragment": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/apex-agent.json",
+        "source_case_ids": [
+          "c9-test-101",
+          "c9-test-102"
+        ],
+        "source_fact_indices_zero_based": [
+          2,
+          4,
+          5
+        ],
+        "basis": "Owned facts declare @IsTest EntitlementExpiryQueueTest.expiredEntriesAreMarked and visible Entitlement__c Expires_On__c and State__c. The local test body is synthesized; installed test metadata remains an independent synthetic fixture assumption.",
+        "full_source_text_synthesized": true,
+        "compile_or_execution_claim": false
+      },
+      "purpose": "Full readable local isolated-test source for scoped test planning; this companion neither runs the test nor proves required schema or deployment.",
+      "inert": true
+    },
+    {
+      "relative_path": "force-app/main/default/classes/InventoryProjectionHandler.cls",
+      "case_ids": [
+        "c9-test-107",
+        "c9-test-108"
+      ],
+      "encoding": "UTF-8",
+      "content_utf8": "public with sharing class InventoryProjectionHandler {\n    // Local author.plan target. The installed event consumer is a separate fixture prerequisite.\n    public static void planResyncRegression() {\n    }\n}\n",
+      "byte_length": 209,
+      "sha256": "a68507386c91156d8c60bc5487a0ea7e387790cb62933b478fe0c1b06ec5230c",
+      "source_authority": {
+        "kind": "synthesized_from_owned_fixture_facts",
+        "source_fragment": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/apex-agent.json",
+        "source_case_ids": [
+          "c9-test-107",
+          "c9-test-108"
+        ],
+        "source_fact_indices_zero_based": [
+          1,
+          3,
+          5
+        ],
+        "basis": "Owned facts require a readable local class with a public entrypoint for author.plan. This minimal entrypoint adds no undocumented custom fields.",
+        "full_source_text_synthesized": true,
+        "compile_or_execution_claim": false,
+        "independent_installed_prerequisite": "InventoryResyncRequested__e consumers updating Inventory_Projection__c asynchronously are declared independently in owned fixture facts; this local planning stub does not implement, replace, or establish the installed consumer."
+      },
+      "purpose": "Minimal complete local author.plan source target; installed event-consumer behavior remains separate.",
+      "inert": true
+    },
+    {
+      "relative_path": "force-app/main/default/classes/TerritorySplitBatch.cls",
+      "case_ids": [
+        "c9-test-109",
+        "c9-test-110"
+      ],
+      "encoding": "UTF-8",
+      "content_utf8": "public with sharing class TerritorySplitBatch implements Database.Batchable<SObject> { private String tag; public TerritorySplitBatch(String tag) { this.tag = tag; } public Database.QueryLocator start(Database.BatchableContext ctx) { return Database.getQueryLocator('SELECT Id, Territory_Code__c FROM Account WHERE Rebalance_Tag__c = :tag'); } public void execute(Database.BatchableContext ctx, List<SObject> scope) { for (SObject row : scope) { row.put('Territory_Code__c', 'NORTH-NEW'); } Database.update(scope, false); } public void finish(Database.BatchableContext ctx) {} }",
+      "byte_length": 578,
+      "sha256": "9663e28e00acab73d6c998403a7e0982f77a3d17f56c5c125cd0dbcc0f9ec754",
+      "source_authority": {
+        "kind": "exact_complete_source_quoted_in_owned_fixture_fact",
+        "source_fragment": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/apex-agent.json",
+        "source_case_ids": [
+          "c9-test-109",
+          "c9-test-110"
+        ],
+        "source_fact_indices_zero_based": [
+          3
+        ],
+        "extraction_rule": "Exact suffix after the declared complete-source prefix, encoded UTF-8 with no added terminal newline.",
+        "full_source_text_synthesized": false,
+        "compile_or_execution_claim": false,
+        "referenced_receipt_not_read_or_executed": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fixtures/apex/fresh-reserve-apex-07-lsp-readiness.json"
+      },
+      "purpose": "Exact previously declared local diagnosis source bytes, preserved without formatting changes.",
+      "inert": true
+    },
+    {
+      "relative_path": "force-app/main/default/classes/EntitlementExpiryQueue.cls-meta.xml",
+      "case_ids": [
+        "c9-test-101",
+        "c9-test-102"
+      ],
+      "encoding": "UTF-8",
+      "content_utf8": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ApexClass xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <apiVersion>66.0</apiVersion>\n    <status>Active</status>\n</ApexClass>\n",
+      "byte_length": 174,
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "source_authority": {
+        "kind": "synthesized_source_descriptor",
+        "source_fragment": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/apex-agent.json",
+        "source_case_ids": [
+          "c9-test-101",
+          "c9-test-102"
+        ],
+        "basis": "Standard source descriptor for the declaratively authored local ApexClass at API version 66.0. This does not establish deployment or compiler readiness.",
+        "full_source_text_synthesized": true,
+        "compile_or_execution_claim": false
+      },
+      "purpose": "Optional readable ApexClass source descriptor for future inert per-case project copies.",
+      "inert": true
+    },
+    {
+      "relative_path": "force-app/main/default/classes/EntitlementExpiryQueueTest.cls-meta.xml",
+      "case_ids": [
+        "c9-test-101",
+        "c9-test-102"
+      ],
+      "encoding": "UTF-8",
+      "content_utf8": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ApexClass xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <apiVersion>66.0</apiVersion>\n    <status>Active</status>\n</ApexClass>\n",
+      "byte_length": 174,
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "source_authority": {
+        "kind": "synthesized_source_descriptor",
+        "source_fragment": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/apex-agent.json",
+        "source_case_ids": [
+          "c9-test-101",
+          "c9-test-102"
+        ],
+        "basis": "Standard source descriptor for the declaratively authored local ApexClass at API version 66.0. This does not establish deployment or compiler readiness.",
+        "full_source_text_synthesized": true,
+        "compile_or_execution_claim": false
+      },
+      "purpose": "Optional readable ApexClass source descriptor for future inert per-case project copies.",
+      "inert": true
+    },
+    {
+      "relative_path": "force-app/main/default/classes/InventoryProjectionHandler.cls-meta.xml",
+      "case_ids": [
+        "c9-test-107",
+        "c9-test-108"
+      ],
+      "encoding": "UTF-8",
+      "content_utf8": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ApexClass xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <apiVersion>66.0</apiVersion>\n    <status>Active</status>\n</ApexClass>\n",
+      "byte_length": 174,
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "source_authority": {
+        "kind": "synthesized_source_descriptor",
+        "source_fragment": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/apex-agent.json",
+        "source_case_ids": [
+          "c9-test-107",
+          "c9-test-108"
+        ],
+        "basis": "Standard source descriptor for the declaratively authored local ApexClass at API version 66.0. This does not establish deployment or compiler readiness.",
+        "full_source_text_synthesized": true,
+        "compile_or_execution_claim": false
+      },
+      "purpose": "Optional readable ApexClass source descriptor for future inert per-case project copies.",
+      "inert": true
+    },
+    {
+      "relative_path": "force-app/main/default/classes/TerritorySplitBatch.cls-meta.xml",
+      "case_ids": [
+        "c9-test-109",
+        "c9-test-110"
+      ],
+      "encoding": "UTF-8",
+      "content_utf8": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ApexClass xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <apiVersion>66.0</apiVersion>\n    <status>Active</status>\n</ApexClass>\n",
+      "byte_length": 174,
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "source_authority": {
+        "kind": "synthesized_source_descriptor",
+        "source_fragment": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/apex-agent.json",
+        "source_case_ids": [
+          "c9-test-109",
+          "c9-test-110"
+        ],
+        "basis": "Standard source descriptor for the declaratively authored local ApexClass at API version 66.0. This does not establish deployment or compiler readiness.",
+        "full_source_text_synthesized": true,
+        "compile_or_execution_claim": false
+      },
+      "purpose": "Optional readable ApexClass source descriptor for future inert per-case project copies.",
+      "inert": true
+    },
+    {
+      "relative_path": "sfdx-project.json",
+      "case_ids": [
+        "c9-test-097",
+        "c9-test-098",
+        "c9-test-099",
+        "c9-test-100",
+        "c9-test-101",
+        "c9-test-102",
+        "c9-test-103",
+        "c9-test-104",
+        "c9-test-105",
+        "c9-test-106",
+        "c9-test-107",
+        "c9-test-108",
+        "c9-test-109",
+        "c9-test-110",
+        "c9-test-111",
+        "c9-test-112"
+      ],
+      "encoding": "UTF-8",
+      "content_utf8": "{\n  \"packageDirectories\": [\n    {\n      \"path\": \"force-app\",\n      \"default\": true\n    }\n  ],\n  \"namespace\": \"\",\n  \"sourceApiVersion\": \"66.0\"\n}\n",
+      "byte_length": 144,
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "source_authority": {
+        "kind": "synthesized_project_configuration",
+        "source_fragment": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/apex-agent.json",
+        "source_case_ids": [
+          "c9-test-097",
+          "c9-test-098",
+          "c9-test-099",
+          "c9-test-100",
+          "c9-test-101",
+          "c9-test-102",
+          "c9-test-103",
+          "c9-test-104",
+          "c9-test-105",
+          "c9-test-106",
+          "c9-test-107",
+          "c9-test-108",
+          "c9-test-109",
+          "c9-test-110",
+          "c9-test-111",
+          "c9-test-112"
+        ],
+        "basis": "Consistent force-app source root and API version 66.0; no authentication, org alias, executable command, or dependency is embedded.",
+        "full_source_text_synthesized": true,
+        "compile_or_execution_claim": false
+      },
+      "purpose": "Readable source-project configuration for every future Apex case project.",
+      "inert": true
+    }
+  ]
+}

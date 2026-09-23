@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "archive_kind": "sanitized_historical_assistant_final_excerpts",
+  "source_journal": "/Users/bsonntag/.codex/sessions/2026/09/21/rollout-2026-09-21T17-30-05-01a0c617-37fd-7eb3-831a-6a56c9f42fbd.jsonl",
+  "source_session_id": "01a0c617-37fd-7eb3-831a-6a56c9f42fbd",
+  "extraction_scope": "Specified same-session journal only; streamed assistant final_answer messages matching Gemini, NanoJev, JevHarness, llmgw, and gateway.",
+  "proof_limit": "Recorded historical assistant conclusions; may be stale. No new web research, source verification, model execution, TEST inspection, corpus inspection, training, Windows, SSH, or remote action. Gateway success does not qualify a local candidate.",
+  "hash_method": "SHA-256 of exact UTF-8 source JSONL event bytes with trailing CR/LF removed.",
+  "sanitization": "Selected exact conclusion excerpts only. Omitted shell/code blocks, operational commands, credentials, environment values, keys, remote addresses/hostnames, unrelated output, and stale live-process status. Public documentation/repository names in historical conclusions were retained.",
+  "records": [
+    {
+      "topic": "Gemini guardrail research critique",
+      "timestamp": "2026-09-22T03:35:07.231Z",
+      "source_line": 7052,
+      "source_event_sha256": "086c66e11e04cdbc2aff5581c901c761a0022ed049c048086f4faf0670db0454",
+      "source_event_id": "msg_0a3d9e017adbf68d016ab1f7667c6887d1b79a3d90734a2019",
+      "source_ordinal": 7051,
+      "excerpts": [
+        "Gemini’s strongest input is to use **paired safe and risky requests with similar wording**, then inspect the model’s raw score gaps and compare decisions before and after export to the local runtime. That is useful diagnostic work. Candidate 4 already includes 48 paired training examples, and our candidate 3 comparison found four requests whose decision changed at the 0.99 cutoff between the saved adapter and native runtime. That difference deserves investigation, though it does not explain the six unsafe automatic allows, which appeared in both.",
+        "I would **not adopt the report’s proposed Candidate 5 recipe wholesale**. It presents score saturation as the cause without establishing it, changes several training settings at once, and overstates what temperature scaling can fix. I checked that last point against candidate 3’s saved validation scores: at any positive temperature, at least **9** benign requests would still be interrupted, above the current engine’s **3**. A temperature high enough to remove all six unsafe allows would interrupt at least **69** benign requests. That calculation uses validation scores only; it is not a new model qualification.",
+        "The report also gives Gemma 3 1B a 128K context where [Google specifies 32K](https://ai.google.dev/gemma/docs/core/model_card_3), and its cited support for “all-linear” LoRA superiority is an [unrelated paper](https://arxiv.org/abs/2506.03476). [LoRA+](https://arxiv.org/html/2402.12354v2) is a reasonable experiment, but its paper does not make one learning-rate ratio mandatory for this task."
+      ]
+    },
+    {
+      "topic": "Gemini temperature-scaling diagnostic proof limit",
+      "timestamp": "2026-09-22T03:39:00.640Z",
+      "source_line": 7270,
+      "source_event_sha256": "4510a74cad7b0a90e0cc0853d50111a13e3781cea3d9a578fd114cb0df9e4931",
+      "source_event_id": "msg_0a3d9e017adbf68d016ab1f851c10087d1b5870f4669c3e90d",
+      "source_ordinal": 7269,
+      "excerpts": [
+        "This is a validation-score calculation, not a new inference run or evidence about candidate 4."
+      ]
+    },
+    {
+      "topic": "TianyuCodings/NanoJev review",
+      "timestamp": "2026-09-22T03:53:42.078Z",
+      "source_line": 8116,
+      "source_event_sha256": "12a287302bd505729596190359ea030255240c2063143a66f3c886bbd1c9ed77",
+      "source_event_id": "msg_0a3d9e017adbf68d016ab1fbc2180087d194ebb9a3c47b6081",
+      "source_ordinal": 8115,
+      "excerpts": [
+        "NanoJev has useful ideas for a **future experiment**, but its released model cannot be the guardrail candidate under your stated constraints. Its backbone is **Qwen3-0.6B**, which you excluded, and its published results measure decisions in Maze, Snake, and ViZDoom—not unsafe tool-call approvals, unnecessary confirmations, or our 500 ms risk-check target. Its quick-start path also uses a different Python/CUDA serving stack from the local Gemma and Metal integration we are qualifying.",
+        "The most relevant idea is its **decision head**: it scores supplied choices in one forward pass without generating answer tokens. That could be tested on an allowed Gemma backbone as a separate guardrail experiment. It is not an automatic speed or safety gain over our current selected-logit approach; either version would need to pass the same frozen qualification corpus.",
+        "NanoJev’s matched training variants and validation-before-test workflow are also useful references for designing that experiment. Its own contract review cautions that output probabilities are not thereby calibrated, which matters when deciding whether a tool call may run without approval.",
+        "I would **not import its checkpoint or run its Qwen-based tests**."
+      ]
+    },
+    {
+      "topic": "TianyuCodings/JevHarness review",
+      "timestamp": "2026-09-22T03:55:08.131Z",
+      "source_line": 8309,
+      "source_event_sha256": "1826ea372b5fe410c76bf1ee862801e171bb3df26d9c02cb6a2d941dac1ea655",
+      "source_event_id": "msg_0a3d9e017adbf68d016ab1fc17078887d1b71bf3a168f4f629",
+      "source_ordinal": 8308,
+      "excerpts": [
+        "JevHarness is a better **development-method reference** for this project than NanoJev’s model is. It lets an LLM propose task-specific features, questions, and decision logic, then uses execution traces and a trusted evaluator to compare revisions. Its stated boundary—task adapter owns observations, legal actions, side effects, and scoring—fits our requirement that sf-guardrail retain enforcement and exact policy.",
+        "I would use its approach only **before candidate selection**: study guardrail TRAIN failures, propose a revised input or decision strategy, compare proposals on validation, and freeze the chosen implementation before held-out testing. Letting an evolving harness change questions or criteria after a qualification receipt would invalidate that receipt.",
+        "The repository makes a similar distinction itself: its reported Pokémon improvement, 3/12 to 9/12 wins, is on the **Eval set used for selection**, not an independent unseen-game result.",
+        "It is not a ready replacement for our local risk engine. Its example uses hosted Jev calls, and its reported selected-harness full-decision p95 is **657 ms** in that Pokémon run; neither figure qualifies our local Gemma path or proves the required ≤500 ms guardrail check. Its individual-call p95 is 348 ms, but those are different requests and measurement conditions."
+      ]
+    },
+    {
+      "topic": "llmgw harness evidence boundary",
+      "timestamp": "2026-09-22T04:00:00.594Z",
+      "source_line": 8612,
+      "source_event_sha256": "e63d789cd765b3a3e8a0c73d46c88869a3ae399080cd1ebc2f8a777c466c8b45",
+      "source_event_id": "msg_0a3d9e017adbf68d016ab1fd3d98f487d1a5c9054a466773be",
+      "source_ordinal": 8611,
+      "excerpts": [
+        "I found no completed `llmgw` run in this guardrail project’s evidence. A gateway model could exercise the request fixtures, bridge, and comparison logic, but it would not prove that the **local Gemma model** scores those requests correctly, initializes on Metal, or meets the 500 ms warm latency gate.",
+        "candidate 3 answered **144/144 eligible validation calls** through the real sf-pi bridge with no model-execution errors. That showed the bridge and evaluation harness could run end to end. It also showed the model was **not qualified**: six unsafe allows and 19 unnecessary interruptions. A later normal Pi-startup trial hit a Metal command-queue initialization failure, so that startup path still needs a passing native rerun.",
+        "The earlier gateway result I recalled—over 90% on a shared judgment harness—belongs to the separate **System One** project. It validated that project’s harness, not this guardrail setup or its local model."
+      ]
+    },
+    {
+      "topic": "llmgw adapter inspection result",
+      "timestamp": "2026-09-22T04:00:42.928Z",
+      "source_line": 8672,
+      "source_event_sha256": "9bd117cff8ffaff65adafee31200897fa7546a155c0150a9279e01ba7f4dc9f9",
+      "source_event_id": "msg_0a3d9e017adbf68d016ab1fd69d55487d18a44cc30740b4bfc",
+      "source_ordinal": 8671,
+      "excerpts": [
+        "I checked the installed `codex-llmgw` client. There is **no gateway adapter in the guardrail harness**, so running that client by itself would only prove gateway connectivity and an external model’s answer. It would not add proof of the sf-pi risk bridge, local logits, or Metal runtime."
+      ]
+    },
+    {
+      "topic": "llmgw harness clarification",
+      "timestamp": "2026-09-22T04:02:00.645Z",
+      "source_line": 8727,
+      "source_event_sha256": "19224a9abb71d9195927a93a74a6cbb93b7a4d9a92df550ca7532b1f38f418df",
+      "source_event_id": "msg_0a3d9e017adbf68d016ab1fdb661dc87d1805ac9a517704b90",
+      "source_ordinal": 8726,
+      "excerpts": [
+        "**We can prove important parts of the harness work.** I was too broad when I said `llmgw` could not prove it.",
+        "The strongest proof is the **actual local-model validation run**, which sent all 144 eligible requests through the sf-pi risk bridge and Jev worker, received 144 answers, and produced a comparison report with no model-execution errors. Separate Pi SDK tests exercised the hook with stub tools, including blocking, confirmation, audit, fallback, and shadow mode without executing dangerous operations. Those results show the request and comparison path works; `llmgw` is not needed to establish that.",
+        "What we **cannot claim yet** is that the *entire deployment path* is good: candidate 3 failed the safety and interruption gates, and a later normal-startup native trial failed during Metal initialization."
+      ]
+    }
+  ],
+  "excluded_final_keyword_matches": [
+    {
+      "timestamp": "2026-09-22T03:24:15.865Z",
+      "source_line": 6723,
+      "source_event_sha256": "e282df6ab16de60ecf8afa04ce2769a195b3746ab286027ad118490a8bce758f",
+      "reason": "Research prompt or unrelated later status; not a conclusion about the supplied research or llmgw harness investigation."
+    },
+    {
+      "timestamp": "2026-09-22T12:06:03.061Z",
+      "source_line": 33933,
+      "source_event_sha256": "a14855c039c4e2ba4d2496da7b1ca1c592578e73b9a47112812e9077cea7e182",
+      "reason": "Research prompt or unrelated later status; not a conclusion about the supplied research or llmgw harness investigation."
+    }
+  ],
+  "c11_remote_stop_receipt_search": {
+    "scope": "Only historical function_call_output events in this same journal.",
+    "result": "No matching tool result establishing canceled=true, signal=15, and steps=664 was found. No stop-state claim is made from this archive."
+  }
+}

@@ -1,5 +1,9 @@
 # Guardrail risk replacement evidence, 2026-09-21
 
+**Latest stopping checkpoint, 2026-09-23 UTC:** C11 step256 cleared 90% on diagnostic validation: **105/116 eligible correct (90.52%) and 149/160 overall (93.13%)**, with all 116 eligible model calls answered and no attempted-model fallbacks or replay errors. The result is **not independently vetted**. Five unsafe allows and six unnecessary confirmations prevent guardrail qualification; enforcement remains `off`. The fresh v2 TEST is rejected for seven whole groups and remains unscored. The original objective is paused at the user's request.
+
+Read the [fresh stop report](candidate-11-stop-report-2026-09-23.md), [PDF](candidate-11-stop-report-2026-09-23.pdf), and [detailed root handoff](../../handoff.md). The sections below retain historical checkpoint statements; they do not indicate current training. No Windows CUDA access is permitted until the user clears it.
+
 ## Candidate 9 admitted TRAIN and training in progress, 2026-09-22
 
 The goal remains a local Gemma 3 1B semantic risk provider that matches or

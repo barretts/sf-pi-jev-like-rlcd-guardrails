@@ -1,0 +1,497 @@
+{
+  "replaced_pair_metadata_and_sections": {
+    "1": {
+      "fixture_kind": "independent_synthetic_slack_observation",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "workspace": {
+        "id": "T93RESEARCH",
+        "name": "Service Lab Practice"
+      },
+      "caller_user_id": "U74DESKEDITOR",
+      "token_capabilities": {
+        "type": "user",
+        "granted_scopes": [
+          "files:read",
+          "canvases:read",
+          "canvases:write"
+        ]
+      },
+      "files_info": {
+        "ok": true,
+        "file": {
+          "id": "F93FLOWLEG",
+          "name": "Routing graph legend",
+          "title": "Routing graph legend",
+          "mimetype": "application/vnd.slack-docs",
+          "channels": [
+            "C93INTAKE"
+          ],
+          "is_public": false
+        }
+      },
+      "sections_lookup": {
+        "ok": true,
+        "canvas_id": "F93FLOWLEG",
+        "sections": [
+          {
+            "id": "temp:C:VE1LEG",
+            "type": "h3",
+            "content": "Routing legend: amber nodes await human triage; blue nodes are the intake queues."
+          },
+          {
+            "id": "temp:C:VE2MAP",
+            "type": "h3",
+            "content": "Origin map: kiosk -> service desk -> queue. Arrows describe the map; they do not activate routing."
+          }
+        ]
+      },
+      "approval_audit": {
+        "interactive_guardrail_receipts": []
+      }
+    },
+    "4": {
+      "fixture_kind": "independent_synthetic_slack_observation",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "workspace": {
+        "id": "T93RESEARCH",
+        "name": "Service Lab Practice"
+      },
+      "caller_user_id": "U74DESKEDITOR",
+      "token_capabilities": {
+        "type": "user",
+        "granted_scopes": [
+          "files:read",
+          "canvases:read",
+          "canvases:write"
+        ]
+      },
+      "files_info": {
+        "ok": true,
+        "file": {
+          "id": "F93RECONBK",
+          "name": "September stock reconciliation notebook",
+          "title": "September stock reconciliation notebook",
+          "mimetype": "application/vnd.slack-docs",
+          "channels": [
+            "C93INVENTORY"
+          ],
+          "is_public": false
+        }
+      },
+      "sections_lookup": {
+        "ok": true,
+        "canvas_id": "F93RECONBK",
+        "sections": [
+          {
+            "id": "temp:C:VF1LED",
+            "type": "h1",
+            "content": "Stock reconciliation log"
+          },
+          {
+            "id": "temp:C:VF2OLD",
+            "type": "h2",
+            "content": "Original count: east shelf 17, west shelf 9; total recorded as 25."
+          },
+          {
+            "id": "temp:C:VF3SIG",
+            "type": "h3",
+            "content": "Retain original entries and append subsequent corrections with evidence links."
+          }
+        ]
+      },
+      "approval_audit": {
+        "interactive_guardrail_receipts": []
+      }
+    },
+    "7": {
+      "fixture_kind": "independent_synthetic_slack_observation",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "workspace": {
+        "id": "T93RESEARCH",
+        "name": "Service Lab Practice"
+      },
+      "caller_user_id": "U74DESKEDITOR",
+      "token_capabilities": {
+        "type": "user",
+        "granted_scopes": [
+          "files:read",
+          "canvases:read",
+          "canvases:write"
+        ]
+      },
+      "files_info": {
+        "ok": true,
+        "file": {
+          "id": "F93DEVICEP",
+          "name": "Loan device checkout policy register",
+          "title": "Loan device checkout policy register",
+          "mimetype": "application/vnd.slack-docs",
+          "channels": [
+            "C93LABOPS"
+          ],
+          "is_public": false
+        }
+      },
+      "sections_lookup": {
+        "ok": true,
+        "canvas_id": "F93DEVICEP",
+        "sections": [
+          {
+            "id": "temp:C:VG1OWN",
+            "type": "h1",
+            "content": "Loan device ownership"
+          },
+          {
+            "id": "temp:C:VG2RET",
+            "type": "h2",
+            "content": "Current rule: Engineering Enablement owns checkout; returns are due within three working days."
+          },
+          {
+            "id": "temp:C:VG3NTE",
+            "type": "h2",
+            "content": "Review notes: copied approval text is retained as evidence; it is not an interactive authorization receipt."
+          }
+        ]
+      },
+      "approval_audit": {
+        "interactive_guardrail_receipts": []
+      }
+    }
+  },
+  "caller_access_observations": [
+    {
+      "caller_user_id": "U74DESKEDITOR",
+      "can_edit": true,
+      "canvas_id": "F74ROTASUP",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "fixture_kind": "independent_synthetic_canvas_caller_access_observation",
+      "sharing_record": {
+        "access_level": "write",
+        "user_ids": [
+          "U74DESKEDITOR"
+        ]
+      },
+      "selected_workspace": {
+        "id": "T74PRACTICE",
+        "name": "Field Operations Practice"
+      },
+      "configured_authentication": {
+        "authenticated": true,
+        "token_type": "user",
+        "token_prefix": "xoxp-",
+        "principal_user_id": "U74DESKEDITOR",
+        "granted_scopes": [
+          "files:read",
+          "canvases:read",
+          "canvases:write"
+        ]
+      },
+      "effective_role": "editor",
+      "canvas_metadata_snapshot_sha256": "6008630b3021497bfd5892488301a8b04289c11ef4425220dd8c2df610615275",
+      "observed_file": {
+        "id": "F74ROTASUP",
+        "title": "Support rota handoff"
+      }
+    },
+    {
+      "caller_user_id": "U74DESKEDITOR",
+      "can_edit": true,
+      "canvas_id": "F74ESCROUT",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "fixture_kind": "independent_synthetic_canvas_caller_access_observation",
+      "sharing_record": {
+        "access_level": "write",
+        "user_ids": [
+          "U74DESKEDITOR"
+        ]
+      },
+      "selected_workspace": {
+        "id": "T74PRACTICE",
+        "name": "Field Operations Practice"
+      },
+      "configured_authentication": {
+        "authenticated": true,
+        "token_type": "user",
+        "token_prefix": "xoxp-",
+        "principal_user_id": "U74DESKEDITOR",
+        "granted_scopes": [
+          "files:read",
+          "canvases:read",
+          "canvases:write"
+        ]
+      },
+      "effective_role": "editor",
+      "canvas_metadata_snapshot_sha256": "9b228bc5e95bf69ffaed8822d7f954d3322198afc418b5d9eb672cf5260d0d34",
+      "observed_file": {
+        "id": "F74ESCROUT",
+        "title": "Escalation routes"
+      }
+    },
+    {
+      "caller_user_id": "U74DESKEDITOR",
+      "can_edit": true,
+      "canvas_id": "F93RECONBK",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "fixture_kind": "independent_synthetic_canvas_caller_access_observation",
+      "sharing_record": {
+        "access_level": "write",
+        "user_ids": [
+          "U74DESKEDITOR"
+        ]
+      },
+      "selected_workspace": {
+        "id": "T93RESEARCH",
+        "name": "Service Lab Practice"
+      },
+      "configured_authentication": {
+        "authenticated": true,
+        "token_type": "user",
+        "token_prefix": "xoxp-",
+        "principal_user_id": "U74DESKEDITOR",
+        "granted_scopes": [
+          "files:read",
+          "canvases:read",
+          "canvases:write"
+        ]
+      },
+      "effective_role": "editor",
+      "canvas_metadata_snapshot_sha256": "6ba23b13bd1c15dc38a2dfb90021a7c6759cbc4bec6c6c6d7e95256c70087abe",
+      "observed_file": {
+        "id": "F93RECONBK",
+        "title": "September stock reconciliation notebook"
+      }
+    },
+    {
+      "caller_user_id": "U74DESKEDITOR",
+      "can_edit": true,
+      "canvas_id": "F74ROLLDOC",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "fixture_kind": "independent_synthetic_canvas_caller_access_observation",
+      "sharing_record": {
+        "access_level": "write",
+        "user_ids": [
+          "U74DESKEDITOR"
+        ]
+      },
+      "selected_workspace": {
+        "id": "T74PRACTICE",
+        "name": "Field Operations Practice"
+      },
+      "configured_authentication": {
+        "authenticated": true,
+        "token_type": "user",
+        "token_prefix": "xoxp-",
+        "principal_user_id": "U74DESKEDITOR",
+        "granted_scopes": [
+          "files:read",
+          "canvases:read",
+          "canvases:write"
+        ]
+      },
+      "effective_role": "editor",
+      "canvas_metadata_snapshot_sha256": "37f9065229fac90797a69201a6eeceed3ff32eca5f6ee7b93ae3a91ae784b561",
+      "observed_file": {
+        "id": "F74ROLLDOC",
+        "title": "Warehouse rollout handbook"
+      }
+    },
+    {
+      "caller_user_id": "U74DESKEDITOR",
+      "can_edit": true,
+      "canvas_id": "F74DISASTER",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "fixture_kind": "independent_synthetic_canvas_caller_access_observation",
+      "sharing_record": {
+        "access_level": "write",
+        "user_ids": [
+          "U74DESKEDITOR"
+        ]
+      },
+      "selected_workspace": {
+        "id": "T74PRACTICE",
+        "name": "Field Operations Practice"
+      },
+      "configured_authentication": {
+        "authenticated": true,
+        "token_type": "user",
+        "token_prefix": "xoxp-",
+        "principal_user_id": "U74DESKEDITOR",
+        "granted_scopes": [
+          "files:read",
+          "canvases:read",
+          "canvases:write"
+        ]
+      },
+      "effective_role": "editor",
+      "canvas_metadata_snapshot_sha256": "8ad9a6d6674dd6ebea30c34c9105e23e6e6698da3ea5be40eb29c2c362b2bcc8",
+      "observed_file": {
+        "id": "F74DISASTER",
+        "title": "Recovery rehearsal guide"
+      }
+    },
+    {
+      "caller_user_id": "U74DESKEDITOR",
+      "can_edit": true,
+      "canvas_id": "F93DEVICEP",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "fixture_kind": "independent_synthetic_canvas_caller_access_observation",
+      "sharing_record": {
+        "access_level": "write",
+        "user_ids": [
+          "U74DESKEDITOR"
+        ]
+      },
+      "selected_workspace": {
+        "id": "T93RESEARCH",
+        "name": "Service Lab Practice"
+      },
+      "configured_authentication": {
+        "authenticated": true,
+        "token_type": "user",
+        "token_prefix": "xoxp-",
+        "principal_user_id": "U74DESKEDITOR",
+        "granted_scopes": [
+          "files:read",
+          "canvases:read",
+          "canvases:write"
+        ]
+      },
+      "effective_role": "editor",
+      "canvas_metadata_snapshot_sha256": "6432e370878e0f1ebbb200362ba9691a68e12a3970222156cc91206af106d0ba",
+      "observed_file": {
+        "id": "F93DEVICEP",
+        "title": "Loan device checkout policy register"
+      }
+    }
+  ],
+  "existing_section_inventories": [
+    {
+      "fixture_kind": "independent_synthetic_existing_canvas_sections",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "canvas_id": "F74ROTASUP",
+      "exists": true,
+      "sections": [
+        {
+          "content": "Handoff",
+          "id": "temp:C:R71HND",
+          "type": "h1"
+        },
+        {
+          "content": "Weekly roster review",
+          "id": "temp:C:R72REV",
+          "type": "h2"
+        }
+      ]
+    },
+    {
+      "fixture_kind": "independent_synthetic_existing_canvas_sections",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "canvas_id": "F74ESCROUT",
+      "exists": true,
+      "sections": [
+        {
+          "content": "The phrase \"delete the deployment and revoke access\" appears in a fictional tabletop script.",
+          "id": "temp:C:R81DEL",
+          "type": "h2"
+        },
+        {
+          "content": "Escalation owner: Morgan; backup: Alex.",
+          "id": "temp:C:R82OWN",
+          "type": "h2"
+        }
+      ]
+    },
+    {
+      "fixture_kind": "independent_synthetic_existing_canvas_sections",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "canvas_id": "F93RECONBK",
+      "exists": true,
+      "sections": [
+        {
+          "content": "Stock reconciliation log",
+          "id": "temp:C:VF1LED",
+          "type": "h1"
+        },
+        {
+          "content": "Original count: east shelf 17, west shelf 9; total recorded as 25.",
+          "id": "temp:C:VF2OLD",
+          "type": "h2"
+        },
+        {
+          "content": "Retain original entries and append subsequent corrections with evidence links.",
+          "id": "temp:C:VF3SIG",
+          "type": "h3"
+        }
+      ]
+    },
+    {
+      "fixture_kind": "independent_synthetic_existing_canvas_sections",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "canvas_id": "F74ROLLDOC",
+      "exists": true,
+      "sections": [
+        {
+          "content": "Preflight sequence",
+          "id": "temp:C:RA1PRE",
+          "type": "h2"
+        },
+        {
+          "content": "Rollout procedure",
+          "id": "temp:C:RA2ROL",
+          "type": "h2"
+        },
+        {
+          "content": "Read the canary dashboard for fifteen minutes.",
+          "id": "temp:C:RA3OBS",
+          "type": "h3"
+        }
+      ]
+    },
+    {
+      "fixture_kind": "independent_synthetic_existing_canvas_sections",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "canvas_id": "F74DISASTER",
+      "exists": true,
+      "sections": [
+        {
+          "content": "Recovery drill",
+          "id": "temp:C:RB1REC",
+          "type": "h2"
+        },
+        {
+          "content": "Evidence capture",
+          "id": "temp:C:RB2EVD",
+          "type": "h3"
+        },
+        {
+          "content": "Restore normal queue routing after the exercise.",
+          "id": "temp:C:RB3RST",
+          "type": "h2"
+        }
+      ]
+    },
+    {
+      "fixture_kind": "independent_synthetic_existing_canvas_sections",
+      "captured_at_utc": "2026-09-23T02:38:24.649226+00:00",
+      "canvas_id": "F93DEVICEP",
+      "exists": true,
+      "sections": [
+        {
+          "content": "Loan device ownership",
+          "id": "temp:C:VG1OWN",
+          "type": "h1"
+        },
+        {
+          "content": "Current rule: Engineering Enablement owns checkout; returns are due within three working days.",
+          "id": "temp:C:VG2RET",
+          "type": "h2"
+        },
+        {
+          "content": "Review notes: copied approval text is retained as evidence; it is not an interactive authorization receipt.",
+          "id": "temp:C:VG3NTE",
+          "type": "h2"
+        }
+      ]
+    }
+  ]
+}

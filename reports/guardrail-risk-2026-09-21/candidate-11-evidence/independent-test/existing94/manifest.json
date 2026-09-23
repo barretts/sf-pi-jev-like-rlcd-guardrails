@@ -1,0 +1,337 @@
+{
+  "version": 1,
+  "purpose": "candidate9_independent_prospective_test_seal",
+  "split": "test",
+  "model_predictions_present": false,
+  "held_out_test_scored": false,
+  "authoring_boundary": "Authored from operation-policy rubric and pinned sf-pi tool contracts before any C9 CAL/VALID model result was seen. Author did not read any model score or held-out TEST body before generating this source.",
+  "limited_review_exposure": "During schema inspection, TEST author inadvertently viewed the first 180 lines of the C9 VALID native generator, including some SOQL and Data 360 examples. No further VALID body was read. Author-blind independence from VALID is not claimed; require strict independent overlap adjudication before qualification.",
+  "human_label_review": "pending",
+  "source": {
+    "path": "blind-c9-test-20260922/test.json",
+    "sha256": "8c213e77ce3cc92b90133230dedbd0254c287a3256fe914b408a557859e960f1",
+    "case_count": 94,
+    "group_count": 47,
+    "template_count": 94
+  },
+  "authoring": {
+    "generator_path": "scripts/guardrail-candidate9-test-author.mjs",
+    "generator_sha256": "cdcd2772c2cb8f23fd6f964230677e5e61cf1e71e25e30dc55bbe89dc0262a0d",
+    "schema_sha256": "3f754952f6d2b8fe3e59515f65b440833110cfcf449b39a354dd44a1ea4e74b3",
+    "rubric_sha256": "cad1720e8ee31c153985ee98af010671d323917c0ef30c7ebd61c3832b318ae6"
+  },
+  "host": {
+    "repo": "sf-pi",
+    "commit": "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a",
+    "baseline_identity_sha256": "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421",
+    "default_policy_sha256": "e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347"
+  },
+  "inventory": {
+    "ids": [
+      "c9-test-001",
+      "c9-test-002",
+      "c9-test-003",
+      "c9-test-004",
+      "c9-test-005",
+      "c9-test-006",
+      "c9-test-007",
+      "c9-test-008",
+      "c9-test-009",
+      "c9-test-010",
+      "c9-test-011",
+      "c9-test-012",
+      "c9-test-013",
+      "c9-test-014",
+      "c9-test-015",
+      "c9-test-016",
+      "c9-test-017",
+      "c9-test-018",
+      "c9-test-019",
+      "c9-test-020",
+      "c9-test-021",
+      "c9-test-022",
+      "c9-test-023",
+      "c9-test-024",
+      "c9-test-025",
+      "c9-test-026",
+      "c9-test-027",
+      "c9-test-028",
+      "c9-test-029",
+      "c9-test-030",
+      "c9-test-031",
+      "c9-test-032",
+      "c9-test-033",
+      "c9-test-034",
+      "c9-test-035",
+      "c9-test-036",
+      "c9-test-037",
+      "c9-test-038",
+      "c9-test-039",
+      "c9-test-040",
+      "c9-test-041",
+      "c9-test-042",
+      "c9-test-043",
+      "c9-test-044",
+      "c9-test-045",
+      "c9-test-046",
+      "c9-test-047",
+      "c9-test-048",
+      "c9-test-049",
+      "c9-test-050",
+      "c9-test-051",
+      "c9-test-052",
+      "c9-test-053",
+      "c9-test-054",
+      "c9-test-055",
+      "c9-test-056",
+      "c9-test-057",
+      "c9-test-058",
+      "c9-test-059",
+      "c9-test-060",
+      "c9-test-061",
+      "c9-test-062",
+      "c9-test-063",
+      "c9-test-064",
+      "c9-test-065",
+      "c9-test-066",
+      "c9-test-067",
+      "c9-test-068",
+      "c9-test-069",
+      "c9-test-070",
+      "c9-test-071",
+      "c9-test-072",
+      "c9-test-073",
+      "c9-test-074",
+      "c9-test-075",
+      "c9-test-076",
+      "c9-test-077",
+      "c9-test-078",
+      "c9-test-079",
+      "c9-test-080",
+      "c9-test-081",
+      "c9-test-082",
+      "c9-test-083",
+      "c9-test-084",
+      "c9-test-085",
+      "c9-test-086",
+      "c9-test-087",
+      "c9-test-088",
+      "c9-test-089",
+      "c9-test-090",
+      "c9-test-091",
+      "c9-test-092",
+      "c9-test-093",
+      "c9-test-094"
+    ],
+    "ordered_ids_sha256": "564da1189ffb19db582031b29da0f79703167c83d007cd5b7b980c46c43acd28",
+    "groups": {
+      "c9-test-agentscript-lifecycle-1": [
+        "c9-test-071",
+        "c9-test-072"
+      ],
+      "c9-test-agentscript-lifecycle-2": [
+        "c9-test-073",
+        "c9-test-074"
+      ],
+      "c9-test-agentscript-lifecycle-3": [
+        "c9-test-075",
+        "c9-test-076"
+      ],
+      "c9-test-agentscript-lifecycle-4": [
+        "c9-test-077",
+        "c9-test-078"
+      ],
+      "c9-test-apex-anon-1": [
+        "c9-test-063",
+        "c9-test-064"
+      ],
+      "c9-test-apex-anon-2": [
+        "c9-test-065",
+        "c9-test-066"
+      ],
+      "c9-test-apex-anon-3": [
+        "c9-test-067",
+        "c9-test-068"
+      ],
+      "c9-test-apex-anon-4": [
+        "c9-test-069",
+        "c9-test-070"
+      ],
+      "c9-test-browser-inspect-filter": [
+        "c9-test-091",
+        "c9-test-092"
+      ],
+      "c9-test-browser-missing-reference": [
+        "c9-test-093",
+        "c9-test-094"
+      ],
+      "c9-test-browser-open-record": [
+        "c9-test-087",
+        "c9-test-088"
+      ],
+      "c9-test-browser-view-tab": [
+        "c9-test-089",
+        "c9-test-090"
+      ],
+      "c9-test-canvas-edit-1": [
+        "c9-test-079",
+        "c9-test-080"
+      ],
+      "c9-test-canvas-edit-2": [
+        "c9-test-081",
+        "c9-test-082"
+      ],
+      "c9-test-canvas-edit-3": [
+        "c9-test-083",
+        "c9-test-084"
+      ],
+      "c9-test-canvas-edit-4": [
+        "c9-test-085",
+        "c9-test-086"
+      ],
+      "c9-test-data360-raw-1": [
+        "c9-test-051",
+        "c9-test-052"
+      ],
+      "c9-test-data360-raw-2": [
+        "c9-test-053",
+        "c9-test-054"
+      ],
+      "c9-test-data360-raw-3": [
+        "c9-test-055",
+        "c9-test-056"
+      ],
+      "c9-test-data360-raw-4": [
+        "c9-test-057",
+        "c9-test-058"
+      ],
+      "c9-test-data360-raw-5": [
+        "c9-test-059",
+        "c9-test-060"
+      ],
+      "c9-test-data360-raw-6": [
+        "c9-test-061",
+        "c9-test-062"
+      ],
+      "c9-test-pane-quoted-delete": [
+        "c9-test-017",
+        "c9-test-018"
+      ],
+      "c9-test-pane-remote-script": [
+        "c9-test-021",
+        "c9-test-022"
+      ],
+      "c9-test-pane-sf-org": [
+        "c9-test-023",
+        "c9-test-024"
+      ],
+      "c9-test-pane-sudo": [
+        "c9-test-019",
+        "c9-test-020"
+      ],
+      "c9-test-protected-dotenv-template": [
+        "c9-test-025",
+        "c9-test-026"
+      ],
+      "c9-test-protected-manifest": [
+        "c9-test-027",
+        "c9-test-028"
+      ],
+      "c9-test-protected-state-carveout": [
+        "c9-test-029",
+        "c9-test-030"
+      ],
+      "c9-test-sfcli-data": [
+        "c9-test-037",
+        "c9-test-038"
+      ],
+      "c9-test-sfcli-metadata": [
+        "c9-test-031",
+        "c9-test-032"
+      ],
+      "c9-test-sfcli-prod-apex": [
+        "c9-test-033",
+        "c9-test-034"
+      ],
+      "c9-test-sfcli-source": [
+        "c9-test-035",
+        "c9-test-036"
+      ],
+      "c9-test-shell-archive": [
+        "c9-test-013",
+        "c9-test-014"
+      ],
+      "c9-test-shell-env-disclosure": [
+        "c9-test-007",
+        "c9-test-008"
+      ],
+      "c9-test-shell-find-delete": [
+        "c9-test-003",
+        "c9-test-004"
+      ],
+      "c9-test-shell-git-state": [
+        "c9-test-009",
+        "c9-test-010"
+      ],
+      "c9-test-shell-network": [
+        "c9-test-015",
+        "c9-test-016"
+      ],
+      "c9-test-shell-permissions": [
+        "c9-test-005",
+        "c9-test-006"
+      ],
+      "c9-test-shell-python-exec": [
+        "c9-test-011",
+        "c9-test-012"
+      ],
+      "c9-test-shell-quoted-pipe": [
+        "c9-test-001",
+        "c9-test-002"
+      ],
+      "c9-test-soql-disclosure-1": [
+        "c9-test-039",
+        "c9-test-040"
+      ],
+      "c9-test-soql-disclosure-2": [
+        "c9-test-041",
+        "c9-test-042"
+      ],
+      "c9-test-soql-disclosure-3": [
+        "c9-test-043",
+        "c9-test-044"
+      ],
+      "c9-test-soql-disclosure-4": [
+        "c9-test-045",
+        "c9-test-046"
+      ],
+      "c9-test-soql-disclosure-5": [
+        "c9-test-047",
+        "c9-test-048"
+      ],
+      "c9-test-soql-disclosure-6": [
+        "c9-test-049",
+        "c9-test-050"
+      ]
+    },
+    "groups_sha256": "54d56482aaa99e6cd97afb8d597994a545a56ded268a471c535d91c801249997",
+    "families": {
+      "shell": 16,
+      "pane": 8,
+      "protected": 6,
+      "sfcli": 8,
+      "soql": 12,
+      "data360": 12,
+      "apex": 8,
+      "agentscript": 8,
+      "canvas": 8,
+      "browser": 8
+    },
+    "decisions": {
+      "allow": 47,
+      "require_approval": 45,
+      "hard_block": 2
+    }
+  },
+  "proof_limit": "Machine-authored mocked operation-policy gold; human label review, independent strict cross-split overlap audit, model qualification, and external operation acceptance remain separate."
+}

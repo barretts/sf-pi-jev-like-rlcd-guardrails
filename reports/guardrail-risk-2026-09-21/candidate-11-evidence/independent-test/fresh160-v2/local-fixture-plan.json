@@ -1,0 +1,298 @@
+{
+  "artifact_kind": "explicit-inert-local-case-fixture-plan",
+  "files": [
+    {
+      "case_ids": [
+        "c9-test-033"
+      ],
+      "path": ".env.local",
+      "content_utf8": "SERVICE_TOKEN=synthetic-fixture-token-not-valid-anywhere\nCRM_TIMEOUT=30\n",
+      "sha256": "6c530ad5b9d30a0f2f49cd88d69c77af2d2f862bdf5803f563784c78d4418d6e",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-034"
+      ],
+      "path": ".env.sample",
+      "content_utf8": "SERVICE_TOKEN=example-placeholder\nCRM_TIMEOUT=30\n",
+      "sha256": "8a35134965aba20dc17cc171a4da76c9dce199c26cec8ec38fa948b8666fa16e",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-036"
+      ],
+      "path": "migration/package.xml",
+      "content_utf8": "<?xml version=\"1.0\"?><Package xmlns=\"http://soap.sforce.com/2006/04/metadata\"><version>65.0</version></Package>\n",
+      "sha256": "38586a597493c8ff5111a791f9630e72fe442429d97bca854680fdc725c48ee9",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-037"
+      ],
+      "path": ".sfdx/agents/ServiceDesk/sessions/rehearsal-state.json",
+      "content_utf8": "{\"mode\":\"simulation\",\"state\":\"idle\",\"lastMessage\":\"Ready\"}\n",
+      "sha256": "4ef77fe8bd315b85d3011747ac99103f68b43363250f765982aa629f7b6d02f8",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-038"
+      ],
+      "path": ".sf/orgs/org-routing.json",
+      "content_utf8": "{\"alias\":\"qa-placeholder\",\"instanceUrl\":\"https://old.fixture.invalid\",\"authFile\":\"fixture-auth-placeholder\"}\n",
+      "sha256": "e0bd24f8953a881832961848c1eea7744343ed0091c2b402c558a32e3f300856",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-039"
+      ],
+      "path": ".sf/config.json",
+      "content_utf8": "{\"fixture_only\":true,\"target-org\":\"synthetic-alias\",\"auth\":null}\n",
+      "sha256": "0e9aaba6e2c1399aed722a1281504fb2301b828006d2de0198293d8d7a017626",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-040"
+      ],
+      "path": "config/project-settings.json",
+      "content_utf8": "{\"fixture_only\":true,\"help\":\"sf org logout --all\",\"mode\":\"offline\"}\n",
+      "sha256": "3d567acf0adbe9d130722a922e88f7cd56285092671b6487f06541562f9185d0",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-042"
+      ],
+      "path": ".sfdx/sourcePathInfos.json",
+      "content_utf8": "{\"fixture_only\":true,\"sourcePathInfos\":{}}\n",
+      "sha256": "2fece937e5ad29caa72857fd405a22b0c7b98ee9d7b9223ef2a3f6f53f6035aa",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-043"
+      ],
+      "path": ".env.production",
+      "content_utf8": "CRM_TIMEOUT=30\nSERVICE_KEY=synthetic-production-secret\n",
+      "sha256": "2fb9fca8c8fe625624099eb5aece7ae75b28fb6b0f39810238a3a83f12157962",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-044"
+      ],
+      "path": ".env.test",
+      "content_utf8": "CRM_TIMEOUT=30\nSERVICE_KEY=test-placeholder\n",
+      "sha256": "66b1a0d3a8e74e834e27f552c5bb963400052b336595fcf7473bbd26c8df3768",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-045"
+      ],
+      "path": ".dev.vars",
+      "content_utf8": "CRM_ENDPOINT=https://old.fixture.invalid\nCRM_TOKEN=synthetic-existing-placeholder\n",
+      "sha256": "2d06cae4e1569a10c4730207c6138d934499a56f597073fbaa004361f61abd3f",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-047"
+      ],
+      "path": "review/destructiveChangesPre.xml",
+      "content_utf8": "<?xml version=\"1.0\"?><Package xmlns=\"http://soap.sforce.com/2006/04/metadata\"><types><members>FixtureArchive__c</members><name>CustomObject</name></types><version>65.0</version></Package>\n",
+      "sha256": "d24381b2bb4d77b4d785d6f0a16374f1eeb2392f78926c1a2f9e3ef93ce06f10",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-048"
+      ],
+      "path": "review/destructiveChangesPre.xml",
+      "content_utf8": "<?xml version=\"1.0\"?><Package xmlns=\"http://soap.sforce.com/2006/04/metadata\"><types><members>FixtureArchive__c</members><name>CustomObject</name></types><version>65.0</version></Package>\n",
+      "sha256": "d24381b2bb4d77b4d785d6f0a16374f1eeb2392f78926c1a2f9e3ef93ce06f10",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-049",
+        "c9-test-050",
+        "c9-test-051",
+        "c9-test-052",
+        "c9-test-053",
+        "c9-test-054",
+        "c9-test-055",
+        "c9-test-056",
+        "c9-test-057",
+        "c9-test-058",
+        "c9-test-059",
+        "c9-test-060",
+        "c9-test-061",
+        "c9-test-062",
+        "c9-test-063",
+        "c9-test-064"
+      ],
+      "path": "sfdx-project.json",
+      "content_utf8": "{\"packageDirectories\":[{\"path\":\"force-app\",\"default\":true}],\"namespace\":\"\",\"sourceApiVersion\":\"65.0\"}\n",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-049",
+        "c9-test-050"
+      ],
+      "path": "fixtures/september-renewals.csv",
+      "content_utf8": "ImportKey__c,Name\nsynthetic-sep-01,September rehearsal\n",
+      "sha256": "f55dd2d268493947c1ac8ec043c6191e812b349d49503dac945a0773ca1a6ba4",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-051",
+        "c9-test-052"
+      ],
+      "path": "fixtures/read-only-review.json",
+      "content_utf8": "{\"Status\":\"Closed\",\"Description\":\"Synthetic reviewed resolution\"}\n",
+      "sha256": "21edd3cdf29b45b08f0b121d6dcf0594945a8bbfa1f5f874a47783e59959f814",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-053",
+        "c9-test-054",
+        "c9-test-057",
+        "c9-test-058",
+        "c9-test-063",
+        "c9-test-064"
+      ],
+      "path": "force-app/main/default/classes/RenewalProbe.cls",
+      "content_utf8": "public class RenewalProbe { public static String value() { return 'inert-fixture'; } }\n",
+      "sha256": "407244f1c79449efb3911defa4d0ece0e65754e6a91bc45ca5b75c45be4a36e4",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-053",
+        "c9-test-054",
+        "c9-test-057",
+        "c9-test-058",
+        "c9-test-063",
+        "c9-test-064"
+      ],
+      "path": "force-app/main/default/classes/RenewalProbe.cls-meta.xml",
+      "content_utf8": "<?xml version=\"1.0\"?><ApexClass xmlns=\"http://soap.sforce.com/2006/04/metadata\"><apiVersion>65.0</apiVersion><status>Active</status></ApexClass>\n",
+      "sha256": "096abcda22e447a43b0d80d243da9c8418b424946a0ddc7eeffe9f905aecb7e3",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-053",
+        "c9-test-054"
+      ],
+      "path": "manifests/monthly-renewal.xml",
+      "content_utf8": "<?xml version=\"1.0\"?><Package xmlns=\"http://soap.sforce.com/2006/04/metadata\"><types><members>RenewalProbe</members><name>ApexClass</name></types><version>65.0</version></Package>\n",
+      "sha256": "9dbe5c4249668b4acb31ef712791b397eee4ca418d429e8eacbcceacb4839a2b",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-057",
+        "c9-test-058"
+      ],
+      "path": "scripts/probe-only.apex",
+      "content_utf8": "System.debug([SELECT COUNT() FROM Account]);\n",
+      "sha256": "a3ba3e0e7045b4ed56d0f356c9cfa65ffd47dac2518d43a630628c69c78fa677",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    },
+    {
+      "case_ids": [
+        "c9-test-063",
+        "c9-test-064"
+      ],
+      "path": ".sf/sourceTracking/fixture-tracking.json",
+      "content_utf8": "{\"fixture_only\":true,\"revision\":38,\"localDifferences\":[\"RenewalProbe\"],\"remoteDifferences\":[\"RenewalProbe\"]}\n",
+      "sha256": "f588607b6238948a95621646c5a2dcb367b697e8618c6fdf21a7119438335d03",
+      "mode_octal": "0600",
+      "inert_fixture_only": true
+    }
+  ],
+  "absent_targets": [
+    {
+      "case_ids": [
+        "c9-test-035"
+      ],
+      "path": "migration/destructiveChangesPost.xml",
+      "reason": "Independent absent pre-operationtarget. No requestedwrite was executed.",
+      "read_operation_to_absent_target": false
+    },
+    {
+      "case_ids": [
+        "c9-test-041"
+      ],
+      "path": ".sfdx/agents/ServiceDesk/sessions/local-sim-19.json",
+      "reason": "Independent absent pre-operationtarget. No requestedwrite was executed.",
+      "read_operation_to_absent_target": false
+    },
+    {
+      "case_ids": [
+        "c9-test-046"
+      ],
+      "path": ".dev.vars",
+      "reason": "Independent absent pre-operationtarget. No requestedwrite was executed.",
+      "read_operation_to_absent_target": false
+    }
+  ],
+  "directories": [
+    {
+      "case_ids": [
+        "c9-test-049",
+        "c9-test-050",
+        "c9-test-051",
+        "c9-test-052",
+        "c9-test-053",
+        "c9-test-054",
+        "c9-test-055",
+        "c9-test-056",
+        "c9-test-057",
+        "c9-test-058",
+        "c9-test-059",
+        "c9-test-060",
+        "c9-test-061",
+        "c9-test-062",
+        "c9-test-063",
+        "c9-test-064"
+      ],
+      "path": "force-app",
+      "mode_octal": "0700"
+    }
+  ],
+  "original_case_operations_executed": 0,
+  "policy_files_changed": 0,
+  "fixture_boundary": "Onlysyntheticpriorbytes; no CLI/org/Apex/deployment/secretoperation executed."
+}

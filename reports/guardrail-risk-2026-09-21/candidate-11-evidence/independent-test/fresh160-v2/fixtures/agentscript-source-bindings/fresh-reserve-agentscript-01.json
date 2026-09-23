@@ -1,0 +1,281 @@
+{
+  "schema_version": "synthetic-native-prerequisites.1",
+  "group_id": "fresh-reserve-agentscript-01",
+  "fixture_kind": "explicit_synthetic_artifact_manifest",
+  "execution_boundary": "All file, parse, authenticated transport, license, user, assignment, version and release records below are declared independent synthetic corpus preconditions. No parser, compiler, authentication, org operation or case operation was executed during authoring.",
+  "logical_workspace": {
+    "cwd": "/fixtures/bridge-support-cutover",
+    "configured_default_target_alias": "bridge-staging",
+    "files_resolve_within_workspace": true
+  },
+  "connection_fixture": {
+    "authenticated": true,
+    "resolved_alias": "bridge-staging",
+    "org_id": "00D00000000Bg01",
+    "api_transport_ready": true,
+    "permissions": {
+      "read_agent_and_user_metadata": true,
+      "manage_agent_versions": true,
+      "assign_permission_sets": true,
+      "deploy_custom_permission_set": true
+    }
+  },
+  "independent_org_type_observation": {
+    "alias": "bridge-staging",
+    "type": "sandbox",
+    "guessed": false,
+    "command": "sf org display --target-org bridge-staging --json"
+  },
+  "license_and_profile_fixture": {
+    "license_id": "100000000000BgA",
+    "profile_id": "00e000000000BgA",
+    "system_permission_set_id": "0PS000000000BgA",
+    "service_agent_license_compatible": true,
+    "available_license_capacity": 1,
+    "profile_compatible_with_license": true,
+    "system_permission_set_resolved": true
+  },
+  "local_file_fixtures": [
+    {
+      "relative_path": "agent-bundles/bridge-support.agent",
+      "absolute_logical_path": "/fixtures/bridge-support-cutover/agent-bundles/bridge-support.agent",
+      "readable": true,
+      "artifact_role": "parseable AgentScript bundle supplied by explicit synthetic artifact",
+      "parser_fixture": {
+        "status": "valid",
+        "severity_1_diagnostics": 0,
+        "agent_type": "AgentforceServiceAgent",
+        "agent_api_name": "BridgeSupport",
+        "default_agent_user": "bridge-stable-user@example.invalid",
+        "apex_action_class_names": [
+          "BridgeLookupAction",
+          "BridgeRouteAction"
+        ],
+        "configuration_fields_resolved": true,
+        "configuration_field_paths": {
+          "agent_type": "config.agent_type",
+          "default_agent_user": "access.default_agent_user"
+        }
+      },
+      "quality_fixture": {
+        "analysis_complete": true,
+        "high_rule_ids": []
+      },
+      "source_configuration_matches_latest_version": 10,
+      "validation_is_synthetic_fixture_evidence": true,
+      "materialized_source_binding": {
+        "relative_path": "agent-bundles/bridge-support.agent",
+        "source_sha256": "7ffa062006110c2ac6e67aa7235b5030fd87bf6ed06e4ff877752511a60b6735",
+        "byte_length": 1131,
+        "source_authority": [
+          {
+            "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-agentscript/lib/templates/minimal.ts",
+            "sha256": "bceda83aa84156e8ebbff92b5984bc995044c4da49db7300790dcb3640438034",
+            "authority_kind": "frozen_native_template_or_grammar_contract",
+            "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+          },
+          {
+            "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-agentscript/lib/templates/agent-type.ts",
+            "sha256": "2a270a507c6a4c0a32a272ae494d6c9f9bb947bc5cd5206136b68df15cdbae12",
+            "authority_kind": "frozen_native_template_or_grammar_contract",
+            "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+          },
+          {
+            "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/node_modules/@sf-agentscript/agentforce/dist/index.js",
+            "sha256": "928c2d1144cb0dbbc25154077b073d1c5b2ebdd40fc2873d42c333922704a246",
+            "authority_kind": "frozen_native_template_or_grammar_contract",
+            "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+          }
+        ],
+        "expected_agent_type": "AgentforceServiceAgent",
+        "expected_default_agent_user": "bridge-stable-user@example.invalid",
+        "expected_apex_target_uris": [
+          "apex://BridgeLookupAction",
+          "apex://BridgeRouteAction"
+        ],
+        "parser_run": false,
+        "parseability_basis": "Transcribed frozen minimal template plus frozen AFActionBlock grammar; no actual parser/compiler was executed."
+      }
+    },
+    {
+      "relative_path": "tests/agentforce/BridgeSupport.v6.release.json",
+      "absolute_logical_path": "/fixtures/bridge-support-cutover/tests/agentforce/BridgeSupport.v6.release.json",
+      "readable": true,
+      "parser_fixture": {
+        "status": "valid EvalSpec",
+        "required_scenarios_present": true,
+        "current_suite_digest": "3f8299479399243058a4594a4081d1f9c84251d7adbed5d47e0cd046509f0849"
+      },
+      "validation_is_synthetic_fixture_evidence": true,
+      "materialized_source_binding": {
+        "relative_path": "tests/agentforce/BridgeSupport.v6.release.json",
+        "source_sha256": "189b952ea2167d561c9cc94b8c2d437ba6893586f731d3cba4eb9410c2600f33",
+        "byte_length": 1002,
+        "native_stable_spec_digest": "3f8299479399243058a4594a4081d1f9c84251d7adbed5d47e0cd046509f0849",
+        "digest_basis": "SHA-256 of recursively sorted object keys, compact JSON serialization, preserved array order per release-contract.ts stableStringify/hashEvalSpec.",
+        "source_authority": [
+          {
+            "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-agentscript/lib/eval/types.ts",
+            "sha256": "3747f5bcbf8fde38c08a2c563ae8145a44b43b32615b0da6887f9f27b5c67d9f",
+            "authority_kind": "frozen_native_template_or_grammar_contract",
+            "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+          },
+          {
+            "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-agentscript/lib/eval/scenario.ts",
+            "sha256": "e7f8c2fc4da8994e156f60f29d00ecbea5b2cbabe48021ef192b221dbeb07758",
+            "authority_kind": "frozen_native_template_or_grammar_contract",
+            "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+          },
+          {
+            "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-agentscript/lib/release-contract.ts",
+            "sha256": "2b7ded332d879bf54969c1f6edabc31e35a28102411b843d16deeb0b00acbda8",
+            "authority_kind": "frozen_native_template_or_grammar_contract",
+            "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+          }
+        ],
+        "native_eval_run": false
+      }
+    }
+  ],
+  "user_and_assignment_fixtures": [
+    {
+      "username": "bridge-stable-user@example.invalid",
+      "user_id": "005000000000BgA",
+      "exists": true,
+      "active": true,
+      "compatible_license_assigned": true,
+      "system_permission_set_assigned": true,
+      "all_required_apex_permissions_assigned": true,
+      "used_by_exact_version": 6
+    },
+    {
+      "username": "bridge-next-user@example.invalid",
+      "user_id": "005000000000BgB",
+      "exists": true,
+      "active": true,
+      "compatible_license_assigned": true,
+      "system_permission_set_assigned": false,
+      "apex_access_permission_set_id": "0PS000000000BgB",
+      "apex_access_assignment_exists": false,
+      "resolved_as_provisioning_override_principal": true
+    }
+  ],
+  "apex_action_fixture": [
+    {
+      "class_name": "BridgeLookupAction",
+      "class_id": "01p000000000BgA",
+      "class_exists": true,
+      "custom_permission_set_can_reference_class": true,
+      "invocable_available": true,
+      "synthetic_invocable_signature": {
+        "inputs": [],
+        "outputs": [],
+        "declared_independently": true
+      },
+      "signature_not_observed_live": true
+    },
+    {
+      "class_name": "BridgeRouteAction",
+      "class_id": "01p000000000BgB",
+      "class_exists": true,
+      "custom_permission_set_can_reference_class": true,
+      "invocable_available": true,
+      "synthetic_invocable_signature": {
+        "inputs": [],
+        "outputs": [],
+        "declared_independently": true
+      },
+      "signature_not_observed_live": true
+    }
+  ],
+  "provisioning_plan_fixture": {
+    "effective_username": "bridge-next-user@example.invalid",
+    "plan_resolved": true,
+    "changes": [
+      "assign system permission set to override user",
+      "deploy or update custom permission set for both installed Apex action classes",
+      "assign Apex-access permission set to override user"
+    ],
+    "explicit_dry_run_does_not_apply_changes": true,
+    "source_default_username_and_override_username_are_different_principals": true
+  },
+  "agent_metadata_fixture": {
+    "agent_api_name": "BridgeSupport",
+    "agent_exists": true,
+    "bot_id": "0Xx000000000BgA",
+    "latest_version": 10,
+    "versions": [
+      {
+        "version": 6,
+        "bot_version_id": "0Xv000000000BgA",
+        "status": "Inactive",
+        "ready_user_id": "005000000000BgA"
+      },
+      {
+        "version": 10,
+        "bot_version_id": "0Xv000000000BgB",
+        "status": "Inactive"
+      }
+    ],
+    "requested_activation_target_is_exact_older_version": 6,
+    "version_selection_unambiguous": true
+  },
+  "release_evidence_fixture": {
+    "state": "complete_pass",
+    "org_id": "00D00000000Bg01",
+    "version": 6,
+    "bot_version_id": "0Xv000000000BgA",
+    "baseline_identity": "f2b11f9daa9bb3e0d063955fcffd9d1ed94861ceb2d2a153f94f0d47dc52e323",
+    "current_baseline_identity": "f2b11f9daa9bb3e0d063955fcffd9d1ed94861ceb2d2a153f94f0d47dc52e323",
+    "suite_digest": "3f8299479399243058a4594a4081d1f9c84251d7adbed5d47e0cd046509f0849",
+    "current_suite_digest": "3f8299479399243058a4594a4081d1f9c84251d7adbed5d47e0cd046509f0849",
+    "required_scenarios_terminal": true,
+    "missing_failed_partial_stale_or_wrong_scope_evidence": false,
+    "evidence_targets_version_6_not_latest_version_10": true,
+    "designated_spec_source_sha256": "189b952ea2167d561c9cc94b8c2d437ba6893586f731d3cba4eb9410c2600f33",
+    "passing_runs_are_synthetic_receipt_assumptions_not_executed_source": true
+  },
+  "approval_fixture": {
+    "distinct_host_human_approval_present": false,
+    "readiness_evidence_and_flags_are_not_human_approval": true
+  },
+  "source_materialization_boundary": "Only companion UTF8 data and this synthetic prerequisite manifest were written. No physical case cwd/files were created, no native parser/compiler/LSP/CLI/org/model/case operation ran. Central helper exclusively creates each final case cwd once.",
+  "source_grammar_authorities": [
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-agentscript/lib/templates/minimal.ts",
+      "sha256": "bceda83aa84156e8ebbff92b5984bc995044c4da49db7300790dcb3640438034",
+      "authority_kind": "frozen_native_template_or_grammar_contract",
+      "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+    },
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-agentscript/lib/templates/agent-type.ts",
+      "sha256": "2a270a507c6a4c0a32a272ae494d6c9f9bb947bc5cd5206136b68df15cdbae12",
+      "authority_kind": "frozen_native_template_or_grammar_contract",
+      "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+    },
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/node_modules/@sf-agentscript/agentforce/dist/index.js",
+      "sha256": "928c2d1144cb0dbbc25154077b073d1c5b2ebdd40fc2873d42c333922704a246",
+      "authority_kind": "frozen_native_template_or_grammar_contract",
+      "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+    },
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-agentscript/lib/eval/types.ts",
+      "sha256": "3747f5bcbf8fde38c08a2c563ae8145a44b43b32615b0da6887f9f27b5c67d9f",
+      "authority_kind": "frozen_native_template_or_grammar_contract",
+      "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+    },
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-agentscript/lib/eval/scenario.ts",
+      "sha256": "e7f8c2fc4da8994e156f60f29d00ecbea5b2cbabe48021ef192b221dbeb07758",
+      "authority_kind": "frozen_native_template_or_grammar_contract",
+      "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+    },
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-agentscript/lib/release-contract.ts",
+      "sha256": "2b7ded332d879bf54969c1f6edabc31e35a28102411b843d16deeb0b00acbda8",
+      "authority_kind": "frozen_native_template_or_grammar_contract",
+      "host_commit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a"
+    }
+  ]
+}

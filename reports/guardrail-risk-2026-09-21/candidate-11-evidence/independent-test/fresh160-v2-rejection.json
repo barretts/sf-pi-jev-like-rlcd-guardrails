@@ -1,0 +1,1461 @@
+{
+  "accepted": false,
+  "baselineSealSha256": null,
+  "comparisonSources": {
+    "CAL": {
+      "path": "/private/tmp/simple-jev-ts-guardrail-c9-blind-test-20260922/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/calibration.jsonl",
+      "sha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd"
+    },
+    "FIT": {
+      "path": "/private/tmp/simple-jev-ts-guardrail-c9-blind-test-20260922/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/fit.jsonl",
+      "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25"
+    },
+    "VALID": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/blind-c9-20260922/valid.json",
+      "sha256": "d7d532c2712bf699133971cb82b0b0c5f21cbe5362a5edd07171b532a58f072f"
+    },
+    "old94_unscored": {
+      "path": "/private/tmp/simple-jev-ts-guardrail-c9-blind-test-20260922/blind-c9-test-20260922/test.json",
+      "sha256": "8c213e77ce3cc92b90133230dedbd0254c287a3256fe914b408a557859e960f1"
+    },
+    "v1_unscored": {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-reserve-20260923/test.json",
+      "sha256": "39cda67adb06315b63687dbb355d97b991e3d0a110bc618e92aed275c8dad060"
+    }
+  },
+  "confirmedDefects": {
+    "affectedGroupHashes": [
+      "0b346922760d4c98d6c4e70fdd9011f7565f9bddd479340ba1b19ae81010a78d",
+      "25c0d2bdaa1a07948e7c3d4465fe0224fe810e33fce1d0a7873e70a9aaa5b9fa",
+      "2af0619c62c15b242895c8b23fcb48440219b584304fe25b1981e8cbabc468cf",
+      "300f19f9e91bd72676271e9abfa0e87796113d0969fd340c5368da804c0b8765",
+      "c06a874e64aed9b5316af93bdc88bc946c9b4ee56353cd5085cdccf1f08aa139",
+      "d85ca4af98f13d514cbac7ecd2c689c8b31df7f0d7ffa888bef9bf8217703a85",
+      "dfabb6661be1257561af47ce50fc17b25d691a4ef4eb6416b015f6d46c82ebf0"
+    ],
+    "consumedAffectedCompleteGroupCaseMembers": 6,
+    "consumedAndWithinDefectGroupsDisjoint": true,
+    "consumedGroupHashes": [
+      "25c0d2bdaa1a07948e7c3d4465fe0224fe810e33fce1d0a7873e70a9aaa5b9fa",
+      "c06a874e64aed9b5316af93bdc88bc946c9b4ee56353cd5085cdccf1f08aa139",
+      "dfabb6661be1257561af47ce50fc17b25d691a4ef4eb6416b015f6d46c82ebf0"
+    ],
+    "consumedGroupsBySplit": {
+      "CAL": 0,
+      "FIT": 2,
+      "VALID": 1
+    },
+    "consumedMaterialReplayGroups": 3,
+    "dtoOrOperationContractDefects": 0,
+    "goldContradictions": 0,
+    "residualSubsetAdmittedOrSelected": false,
+    "sourceDeclaredReadinessOrFixturePreconditionDefects": 0,
+    "unionAffectedCompleteGroupCaseMembers": 14,
+    "unionAffectedDistinctGroups": 7,
+    "wholeGroupsMustBeReplacedBeforeSuccessorAdmission": true,
+    "withinTestAffectedCompleteGroupCaseMembers": 8,
+    "withinTestAffectedDistinctGroups": 4,
+    "withinTestConflictGroupHashEdges": [
+      [
+        "d85ca4af98f13d514cbac7ecd2c689c8b31df7f0d7ffa888bef9bf8217703a85",
+        "2af0619c62c15b242895c8b23fcb48440219b584304fe25b1981e8cbabc468cf"
+      ],
+      [
+        "0b346922760d4c98d6c4e70fdd9011f7565f9bddd479340ba1b19ae81010a78d",
+        "300f19f9e91bd72676271e9abfa0e87796113d0969fd340c5368da804c0b8765"
+      ]
+    ],
+    "withinTestMaterialConflictEdges": 2
+  },
+  "consumedInventory": {
+    "CAL": {
+      "groups": 21,
+      "rows": 42
+    },
+    "FIT": {
+      "groups": 133,
+      "rows": 327
+    },
+    "VALID": {
+      "groups": 80,
+      "rows": 160
+    },
+    "groups": 234,
+    "rows": 529
+  },
+  "consumedWitnessesHashOnly": [
+    {
+      "defect": "Materially identical original operation/skeleton/controlled risk change; identifiers and minor parameter changes do not alter the effect.",
+      "fresh_case_sha256": [
+        "350708224b0f6cd2767a6ceff7d84d289267a71d7466cc18aa73cad43686984b",
+        "048e3c64d637e50b7330f0546455ba9ae5784ac13a7668568f12dfd55086a7c4"
+      ],
+      "fresh_group_sha256": "c06a874e64aed9b5316af93bdc88bc946c9b4ee56353cd5085cdccf1f08aa139",
+      "source_group_sha256": "ae1fa73fc555e951d1e5379180e95d878120f99c365828e361e7c4f1f74f3319",
+      "source_record_sha256": [
+        "ee30fc6cf6103d8684669fe23047c1a82dbc69a8139fd84b9be6235245020b15",
+        "e443abb682574cce752f145500faea1a99d3721ff02517eeec7ab9cbbf091dd0"
+      ],
+      "source_split": "FIT"
+    },
+    {
+      "defect": "Materially identical existing-target write subaction and control; resource names and new prose/data formatting do not change selected scope or write effect.",
+      "fresh_case_sha256": [
+        "16e5c61d9f4d06fe25b7d7979db9616d480452de5b74f8d648550eccbc6ea8cf",
+        "8a9faa6a6efe3d79afcd1498d1e621afab4648aad5279b20a2fb853d1e7e349f"
+      ],
+      "fresh_group_sha256": "dfabb6661be1257561af47ce50fc17b25d691a4ef4eb6416b015f6d46c82ebf0",
+      "source_group_sha256": "bf2e503f15bed50111863d0eae2d371667e475faea931444fe15fbda55c999f5",
+      "source_split": "VALID"
+    },
+    {
+      "adjudication": "Independently confirmed by parent reviewer from pinned FIT source and actual required DTO/dispatcher effects; no baseline-as-gold or model output used.",
+      "defect": "Materially identical consumed dangerous member/original operation/skeleton/write effect. A novel safe companion is insufficient under the original member-level criterion.",
+      "duplicated_fresh_member_sha256": "c6dbfe931bda4042105dc0a559e3705bdbe12e8595ae48f49556947a6b66a36b",
+      "fresh_case_sha256": [
+        "2de19f6a31164864071d1fc783fa31de483df8526ee65bda62a6cd9672d70cb2",
+        "c6dbfe931bda4042105dc0a559e3705bdbe12e8595ae48f49556947a6b66a36b"
+      ],
+      "fresh_group_sha256": "25c0d2bdaa1a07948e7c3d4465fe0224fe810e33fce1d0a7873e70a9aaa5b9fa",
+      "source_group_sha256": "5fd7a48828dae150eb71755b9f0f7acf7207c2d088c4e62a14ee75ed268488b9",
+      "source_record_location": {
+        "line_1_based": 263,
+        "path": "/private/tmp/simple-jev-ts-guardrail-c9-blind-test-20260922/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/fit.jsonl"
+      },
+      "source_record_sha256": [
+        "99482c80683c96f0bd4bb968cb84cfcad003ea5c810e5c8605b8d8baebd81ec8"
+      ],
+      "source_split": "FIT"
+    }
+  ],
+  "corePins": {
+    "case.schema.json": {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/case.schema.json",
+      "sha256": "3f754952f6d2b8fe3e59515f65b440833110cfcf449b39a354dd44a1ea4e74b3"
+    },
+    "filesystem-fixture-setup.json": {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/filesystem-fixture-setup.json",
+      "sha256": "414a0c05dc2d410b4eb760d94f99a9f04e1ff66ad0459ce87a1a2e1d60f0aa82"
+    },
+    "manifest.json": {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/manifest.json",
+      "sha256": "de166f4848df8f26ff0cef11673ef42ea128e1c775df7258baaba02114881319"
+    },
+    "materialize-fixtures.py": {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/materialize-fixtures.py",
+      "sha256": "1376ec11f9e8d995c7916f8e02ce1b4ec73793b4c290848284fe0f6380b0f99a"
+    },
+    "operation-policy-rubric.json": {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/operation-policy-rubric.json",
+      "sha256": "d2db3589535dba351cf33f4e6cf0d51429aa92b1826c96456acdfb9e55e6ad58"
+    },
+    "seal.json": {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/seal.json",
+      "sha256": "3b1e04441ab1fae1954fc2f1fa4601bde22a9c1ec9123bf3045444a092f21aa0"
+    },
+    "test.json": {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/test.json",
+      "sha256": "79e041057394b2a0a3bcc5f75334efc01e063efdffce30e40e832371fb9820fc"
+    }
+  },
+  "decision": "reject_sealed_fresh160_v2_whole_population",
+  "executionBoundary": {
+    "comprehensivePrivateAffectedOwnGroupCount": 7,
+    "externalServiceOperations": 0,
+    "modelScoring": 0,
+    "noRepairAuthorityInferredFromReviewerFeedback": true,
+    "originalCaseOperations": 0,
+    "privateAffectedOwnGroupIDsAndGenericRepairBasisSentDirectlyToAuthor": true,
+    "rootCaseBodiesOrPerCaseLabelsDisclosedByThisReceipt": false,
+    "sealedSourceOrGoldEdits": 0,
+    "successorRepairReplayOrNewAgentWorkAuthorizedByThisReceipt": false,
+    "training": 0,
+    "userPausedGoalBeforeFinalReceiptAndOnlyCompletedFindingsSealed": true,
+    "windowsSshRemoteGpuAccess": 0
+  },
+  "exposureProvenance": {
+    "authorApexChildSawAuditStatusSummariesAndOpaqueHashes": {
+      "childDraftDiscardedAndCleanLeadRegenerated": true,
+      "consumedBodiesOrModelOutputsSeen": false
+    },
+    "authorLeadPostSealAggregateDiagnosticExposure": {
+      "authorChangesOrUseFollowingExposure": false,
+      "coreSourceManifestSealPinsUnchanged": true,
+      "metricValuesStoredInSupplement": false,
+      "reportedAfterCoreSeal": true,
+      "supplement": {
+        "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/post-seal-exposure-receipt.json",
+        "sha256": "1bca4eb6917fb8b45cef82eb5239a3bfabc135b7ebd9109f5d16810a09d8421d"
+      },
+      "timingAuthority": "Author/root delivery report consistent with artifact mtimes; transport timing not independently verified."
+    },
+    "globalStatusInventoriesAvoidedForSuccessor": true,
+    "humanReviewOrCompletelyModelBlindProcessClaimed": false,
+    "perfectRootTestLabelBlindnessClaimed": false,
+    "performanceFeedbackOrOutputBasedCorpusTuningOccurred": false,
+    "reviewDecisionUsesCandidatePerformance": false,
+    "reviewerDistinctFromAuthorAndSelector": true,
+    "reviewerPriorOrchestrationStatusExposedDevelopmentAggregates": true,
+    "reviewerSawConsumedDevelopmentExamplesForEffectComparison": true,
+    "rootAuthorSubtreeStatusExposure": {
+      "afterImmutableSelectionFreeze": true,
+      "fullRequestBytesOrTestModelOutputsSeen": false,
+      "proposedShellPaneGroupEffectAndExpectedClassNarratives": 4,
+      "selectorChangesAfterward": false
+    },
+    "selectionModelPromptCutoffCriteriaFrozenBeforeNewAuthoring": true,
+    "successorNovelReplacementAuthorRequirement": "Use existing clean bounded authors blind to consumed development bodies, candidate outputs, and aggregate diagnostics. Exposed lead may coordinate/schema/materialize but must not draft or choose easier replacements/golds. Preserve the whole fixed family population, original pair outcome positions/mix and comparable complexity.",
+    "testModelOutputsExist": false,
+    "unchangedV2BytesPrecededPostSealAggregateExposure": true
+  },
+  "fullPopulationAndNoExclusions": true,
+  "goldAndContractReview": {
+    "baselineUsedAsGold": false,
+    "casesReviewed": 160,
+    "confirmedGoldDefects": 0,
+    "envelopeAndContextPassCases": 160,
+    "externalLiveServiceOrInstalledHerdrAcceptanceClaimed": false,
+    "humanReviewClaimed": false,
+    "labelAuthority": "Pinned operation-policy rubric, original operation effect, runnable frozen host contracts, and verified local inert file state; external prerequisites remain declared synthetic verifier fixtures.",
+    "leadReviewerDistinctFromAuthorAndSelector": true,
+    "operationPolicyRubricAgreements": 160,
+    "reviewers": [
+      "/root/test_independence",
+      "/root/test_independence/policy_contract",
+      "/root/test_independence/fresh_within_groups"
+    ],
+    "schemaPassCases": 160
+  },
+  "groupAdjudications": [
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "herdr_pane",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "0093ca434c7b69c7a0f35769703fa83ed4a40f40ab1d40fb0b4697ec9515fc68",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Data360raw",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "021ca2049338cb7a38ef0cfaa29c957c3c27cd9dc5d4d08a01f8ef6033221c70",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SalesforceCLI",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "06ae5d2e3b7907001ca118928f76891c3010315f096fef579a55d1a16113b184",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SOQL",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "083cae13c56301a5127a50e2cf87f69fa40d6e67c3edda6a797343fb39133f2d",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Canvas",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "0b346922760d4c98d6c4e70fdd9011f7565f9bddd479340ba1b19ae81010a78d",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": true,
+      "withinTestMaterialConflict": true
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Apex",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "0c78245a82899ab7e84ae6dd8f12e3817ce03e6786e8bd66a42fa0e868f499e3",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Data360raw",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "0fc9d7dc85f5f2aa5e54638b7a831d4902567144b1e1b265743af5193be5dc51",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "AgentScript",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "12d495d0b852e7410b7757b82d145abd9cfa8da701cb3dbf7266ad0804aba4c0",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SOQL",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "1337fd32840b0690785b7e604e7b412ec8b576235dc46b3a4a5a530ae2a02464",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "shell",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "161bd03590efc7fa890d4d69fe2c4e8fd460133450b434387d397219b0bc8c73",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "browser",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "1698b42730b423612d1a16df1d06a3e51ed42f0ea795ea805656e6d78b70a2af",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "browser",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "1b2f30373bbd175e770da9615275a6ee8e15fae6a7533eee173bb820091877ca",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "herdr_pane",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "2179723d10dca8372a76a69fb08d275818524bbd2182c11e5bbf0833dfeeb622",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "shell",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "2452585759afd014b778634af78c495b82f120bfc0f29099eb477474e7f7cd7c",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": true,
+      "contractAndDeclaredContextPass": true,
+      "family": "Data360raw",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "25c0d2bdaa1a07948e7c3d4465fe0224fe810e33fce1d0a7873e70a9aaa5b9fa",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": true,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Canvas",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "2af0619c62c15b242895c8b23fcb48440219b584304fe25b1981e8cbabc468cf",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": true,
+      "withinTestMaterialConflict": true
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Apex",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "2d3e2832e1f0be6fbf98356b9cca156b07c0c677dde1a23353ec01a3758574e1",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "herdr_pane",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "2d7b00cc3ddfa3f2800ff5064277e6433382eaa9528ed29b4fcfa7468bc2ed7d",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Canvas",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "300f19f9e91bd72676271e9abfa0e87796113d0969fd340c5368da804c0b8765",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": true,
+      "withinTestMaterialConflict": true
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "AgentScript",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "3bd7fb9ecacd24853f209f799403cf7f92238dbe8c17bbec2249b55c0c0ccb5e",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Apex",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "3d81c3ca86775f290b2ac27df164f9361f890b678a2a7d84d1be1cb57807c9be",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SOQL",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "40a1e2d1b76bf012a8ff56f96656570409254a9843ae5e810852467cd4337420",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "browser",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "4255bedb98df74acd74b70465f41fd25ba604ad502af4a7e4a5bedb976aae87e",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Data360raw",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "4276b3451edcaf4910a622f3160a95e525e9a5113ac3fbd2a50dc0c9034cd216",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SalesforceCLI",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "45bd48e567c1e90b6a3e588800ae89c1819b6f46d224ce0cdd8fa783933be598",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SOQL",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "4e09ffa925fcfd5ab39e69db63620a3c4b6f830a48b8ce759da9d7ef08321074",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "AgentScript",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "51d53a02c1949fcf27ac800199a8b7251fb0b41cc53f764609ea5ba51c2ff6c1",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "browser",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "62c3a046b28a0d605e58add216d29b65d39f7a2458c27fb85a74ef73e5ac38f8",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SalesforceCLI",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "634c32a23870026b40f868d584d6ddde7252fa63ab9f6ed7a45d99f0b1e9c8e3",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SalesforceCLI",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "63b3e0aea78f181840336897758e5cd31788703418a4c24ca632e2f32209f3b8",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Data360raw",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "645e41de70137a690717a12352581968d344101e0ac9c360145ee300566c2f32",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "browser",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "64789b47f89caf8e5b1c6538ac0a702792cda8024ed5e054e823e429a9e0f127",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SOQL",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "689195bf95e5e7937dc1df9546ff2ab1de0a1f1464e568c352066ae78ee2ad85",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Apex",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "6c24b0a4aa08efea38987ecd90c60e230255fb4b631d071b1eb99981a97ee178",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SOQL",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "6eb3aa948a349240a49d442ebd66c2a3409a1958441db119282073e61ecaff6f",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "shell",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "7448ab56d91d36b2ec8b1828ea26caa3d50cc5621f4900cd83adb82b366da8d7",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "herdr_pane",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "7a14d7e6b752fc0cd46b1e3e99c826f7021c46f8d10202f88194443040347a84",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Apex",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "846b723071d052a0c514154738bb9469981066372583432cabfded8cef71c490",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "protected_files",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "86f255eee3096bbfaa60870e29841a023d6cba71b41c53de466f6d11caaa3293",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "protected_files",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "875641d60f82c74eefb3ec7116bef44181c4e04520d6e087d2f20e9d1c55aa36",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Apex",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "8965bae07fb1125c561867f8cbb3e132800c49effa8b964b7c6f07aead735e0f",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "AgentScript",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "89dc607ee87dea07dd4e02abf3c066d707d55dc84a76ead5c08c4b97f78a8595",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "protected_files",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "8f1a5eba091d37de10525df965dd9ec510e8985dfe0ada24d7caa3b4fd98c1f6",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "shell",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "90c601cc7a4a1c49b78ea2d42214b1b9844dea3f9ed642830edcc9de08c4ea59",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SOQL",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "91932f0471701c513282201aacdd21ba8a806c1afed64bbb54109970c2359578",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Data360raw",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "91f7dcefa951dff80b247a49f56fb5cdd6e03e1cee8e08c004ad1f80c406d6bb",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SalesforceCLI",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "99fe8922c30f13ba30f44c5b1ffd95e91823bee83216ac2ac9a856358bfc6790",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "AgentScript",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "9d5ac8655a54ca3999c283ba3e2aaceb2ece6322e09069b09e7c285e5dd4ca2b",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "browser",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "ad5b33af5204f3c80acad787434cd9b0b35a5edec5b3029d2afd0accc53a73cf",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "shell",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "b51dce1c23dd135a56bf4e960ec7695dc183186a9ce85d3d8af54e6353c3627d",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "herdr_pane",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "b5dcc8b458557e7b4825aab289cb548a16c8d1cd7dd29d25aeacc5c2fc456eed",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SalesforceCLI",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "b7e2b3fcaacb9589fce31b8cfd3ed49c99ae4c42c2109bbae61457242b36563c",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "AgentScript",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "b7fe71aa7668b1437dafdbdb5ab1d0c35b3d972e397bfff9f2c0d709d74ee4d7",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "protected_files",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "b8e7fe0ac1e216a440856a2b9562399d308ce6938921f8f7a4de111a52ce1c14",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "protected_files",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "be663f96ccd6cb51c88b3a1a692b7e80ed4ce2ffece43998b0a3dc81ff8888e8",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Canvas",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "c0121e880e4f80a583b30e43d12f0fd0b1ce8dc34b7debe2119dacf3c296d290",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": true,
+      "contractAndDeclaredContextPass": true,
+      "family": "Data360raw",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "c06a874e64aed9b5316af93bdc88bc946c9b4ee56353cd5085cdccf1f08aa139",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": true,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "protected_files",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "c26b1f9ce7939943efa66a9a7c6e4a6906ba126083824d9c15142c9caf135192",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SOQL",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "c764bb224259f4852e377e386342602ea83d6a7911986ad271fef37b39e3ae83",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SalesforceCLI",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "cad48978cfd49f8a265adc84bdf6d1aa2974f85f19ade815a46d85f28d28d127",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "protected_files",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "cb54c9c24a9e21975269cc56a767b9394ccf18ac95190340248dc2fb86c4cf6d",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "browser",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "cc2f6d45cca1f24078869d55c247ac669ea3cd805f7ed1ba9652a9a93661e513",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "shell",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "d11b020ceb337e3279737ec6a37259ba5a69cf9c6898534644a310681983fc54",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "shell",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "d484eb08308140f8e6f8a6c4f2e471776c89f050b5df437cbbad1ab20cc5e05b",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "AgentScript",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "d668f9ed0afb5ea78c634eb7b516be54d6767e451bb219a5bce9ea6e2ce3cb10",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Apex",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "d6e08ac6d25b11c886bd7683bd56d23ee18629df83e36324f6791d30aae99db7",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "AgentScript",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "d7e0e1fbef7e296b8343ed7d4dfff7851c6385bfde49732e8aa20748b9cee44e",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Canvas",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "d85ca4af98f13d514cbac7ecd2c689c8b31df7f0d7ffa888bef9bf8217703a85",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": true,
+      "withinTestMaterialConflict": true
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": true,
+      "contractAndDeclaredContextPass": true,
+      "family": "Canvas",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "dfabb6661be1257561af47ce50fc17b25d691a4ef4eb6416b015f6d46c82ebf0",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": true,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "shell",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "e4f85a28a3f98237d0cb1c96ee064c6674255c63c32f053745b45ea27e808741",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "herdr_pane",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "e54b9633644edb37ea6ef1cafc7dd90f8c0ab8914687601adea00257162db5df",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Apex",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "e5690f7150c63f1309d9bfb2ef62528389916026ef7faf9e45ef21195bdf79e7",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Canvas",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "e8f18898cef76663465fab4d42eced7cc4a9df3622300dc51386472270446c96",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Canvas",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "eb4ef91a54547877ce77144fa52a4a4525e2687321131435f1716efbc8f3f0ba",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "SalesforceCLI",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "ed4ec8100b64d6a8f6e37b4509ed6f513aa56504464e27762f8a1eecff58b261",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "browser",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "ede3ff08710b573ce40d7f06ba2c65878bb0a2e83ed69204172582de0d64da09",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "Data360raw",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "f0f871bdb84f908b8ddd981ce7d2474d1bea9590ac23237d11a9f6009a20471e",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "herdr_pane",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "f22a4c205940947d99981f939fa03bdef27d47d8c017730a4d4ceb30194c1777",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "protected_files",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "f31b4b54c71d69f75242ec0b226774e777d6e77fd57cd84bb93ad8364744bd64",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    },
+    {
+      "cases": 2,
+      "consumedMaterialReplay": false,
+      "contractAndDeclaredContextPass": true,
+      "family": "herdr_pane",
+      "goldAgreements": 2,
+      "goldDefects": 0,
+      "groupSha256": "f6157a3bc2ac472534b0c76d76b82052d3c9a55bafba4e8374e4b978ddf34542",
+      "operationSkeletonAndEffectReviewComplete": true,
+      "wholeGroupReplacementRequired": false,
+      "withinTestMaterialConflict": false
+    }
+  ],
+  "hostAndRubricAuthority": {
+    "contractSources": [
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-guardrail/SF_GUARDRAIL_DEFAULTS.json",
+        "sha256": "c06c9cc1cca88fe82083ea19edbbc2aead0cdbbd6dd56d337f85b2520bb24cbe"
+      },
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-apex/lib/sf-apex-tool.ts",
+        "sha256": "54f572d459fbf9c36a3690899cdba7daf33371145ad5a6527431ccb6a4c61541"
+      },
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-apex/lib/logs.ts",
+        "sha256": "c48645c6be484ba15c48495a0e466fe12e2e89a4ac22b197637fd1988fb4aba2"
+      },
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-apex/lib/diagnostics.ts",
+        "sha256": "7ce7b003865dad170173fcfa48393f85fab19e2d841a96f5d5916e19d3edf91a"
+      },
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-lsp/lib/lsp-client.ts",
+        "sha256": "4543370d67e028f4ce96cbcb6dab46516eff151974bc1b8a4ebbf4d3f55ad757"
+      },
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-agentscript/lib/lifecycle-tool.ts",
+        "sha256": "25cf52ee54d129b1198c06b521e45dba622235395b4eea3f8d95f789f00d9c09"
+      },
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-slack/lib/canvas-tool.ts",
+        "sha256": "6da931e6656bdc1f506413b936ca26074b060d08f1acbd7c3aad9e94408d3790"
+      },
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-slack/lib/types.ts",
+        "sha256": "6c7a2816068017a679ea31359aab6734feec1e405400ab09eb77a5965ee7b1ce"
+      },
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-browser/lib/sf_browser_click-tool.ts",
+        "sha256": "a622dfbf33ee9a7dc1529c5a740eb7c09fd852e83a2df42ce47a3ec019ed2598"
+      },
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-browser/lib/sf_browser_press-tool.ts",
+        "sha256": "8da7c9d62c3ef2d438dd2867601eeb25c6befe7efcec06c5ed76be1dfd13b3bb"
+      },
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-data360/registry/operations.json",
+        "sha256": "c7fadb0a4cb82f532085d685785606cebf1f3f2a81504105585aad60c02965e6"
+      },
+      {
+        "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/extensions/sf-data360/references/data-shapes.md",
+        "sha256": "406dc963b5f98519f6f321ef1f73b628ed9f4623c4d56affda5e83b0f8e5da61"
+      }
+    ],
+    "defaultPolicySha256": "e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347",
+    "herdrPackageAuthority": {
+      "frozenHostPackageInstalled": false,
+      "gitHead": "c28f7fcf0a88b14f8e0372260defadb998f15548",
+      "indexSha256": "25840efa796012ce6dd93094c52d4d932ff8fb4d48df39c78f355789b3766d26",
+      "officialVendorStaticSchemaOnly": true,
+      "package": "@ogulcancelik/pi-herdr",
+      "tarSha256": "07dc70ea62e93b0684bd264f003248e526d39412427dab14c574d44535d59cb4",
+      "version": "0.4.0"
+    },
+    "hostCommit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a",
+    "hostIdentitySha256": "0a23e057fb433fc4ee2ecd42465b377c660db5e024b6a406f6994497eba693b2",
+    "hostPath": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922",
+    "piVersion": "0.85.1",
+    "rubricSourceSha256": "cad1720e8ee31c153985ee98af010671d323917c0ef30c7ebd61c3832b318ae6"
+  },
+  "independentGroupAndEffectReview": true,
+  "inventory": {
+    "allGroupsAndCasesReviewed": true,
+    "cases": 160,
+    "completePairs": 80,
+    "coverageInventoryDefinition": "SHA256(UTF8(compact JSON array of all80 group hashes sorted lexically))",
+    "coverageInventorySha256": "4a8d813bc2b86cb3e38352f0272292f2960919e4f1351f68b69554497a981e27",
+    "exclusions": 0,
+    "families": 10,
+    "familyInventory": [
+      {
+        "cases": 16,
+        "family": "AgentScript",
+        "groups": 8
+      },
+      {
+        "cases": 16,
+        "family": "Apex",
+        "groups": 8
+      },
+      {
+        "cases": 16,
+        "family": "Canvas",
+        "groups": 8
+      },
+      {
+        "cases": 16,
+        "family": "Data360raw",
+        "groups": 8
+      },
+      {
+        "cases": 16,
+        "family": "SOQL",
+        "groups": 8
+      },
+      {
+        "cases": 16,
+        "family": "SalesforceCLI",
+        "groups": 8
+      },
+      {
+        "cases": 16,
+        "family": "browser",
+        "groups": 8
+      },
+      {
+        "cases": 16,
+        "family": "herdr_pane",
+        "groups": 8
+      },
+      {
+        "cases": 16,
+        "family": "protected_files",
+        "groups": 8
+      },
+      {
+        "cases": 16,
+        "family": "shell",
+        "groups": 8
+      }
+    ],
+    "groupHashDefinition": "SHA256(UTF8(exact group_id))",
+    "groups": 80,
+    "numericDifficultyMetricOrModelBasedDifficultyClaimed": false,
+    "originalPerGroupOutcomeMixAndCaseLabelPositionsPreserved": true,
+    "outcomeMixMismatches": 0,
+    "qualitativeDifficultyAndRiskControlsReviewed": true,
+    "uniqueCaseIDs": 160,
+    "v1GroupSetPreserved": true,
+    "verifiedFromSourceCasesNotManifestCounts": true
+  },
+  "labelsFromOperationPolicyRubric": true,
+  "manifestSha256": "de166f4848df8f26ff0cef11673ef42ea128e1c775df7258baaba02114881319",
+  "modelFreeReadiness": {
+    "attemptCompletedPriorRows": 150,
+    "attemptExternalOperations": 0,
+    "attemptModelCalls": 0,
+    "attemptOriginalToolCalls": 0,
+    "attemptedRuntime": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/runtime-freeze-fact-readiness.json",
+      "sha256": "0640c91c790bc9c0d4c6909687f62d48dab4fbdb309f92886e4df6cc03422e40"
+    },
+    "baselineSealExists": false,
+    "candidateModelPromptCutoffCriteriaHostAndProtectedProviderUnchanged": true,
+    "completedPreflightExists": false,
+    "corpusRejectionDoesNotWaitForBaselineSuccess": true,
+    "failureClass": "Evaluator installer erroneously required click ref for valid key-only native browser press; frozen host exact pre-model press fallback is established separately.",
+    "failureDiagnostic": {
+      "path": "/private/tmp/simple-jev-c11-v2-sentinel-OonaVh/browser-tool-contract-diagnostic.json",
+      "sha256": "83b722ad2256b12f6e00788df08740f31d6b704f5807b17354b1f6a62737cefa"
+    },
+    "failureIsCorpusDtoGoldOrCandidatePredictionFailure": false,
+    "failureReceipt": {
+      "path": "/private/tmp/simple-jev-c11-v2-sentinel-OonaVh/failure-receipt.json",
+      "sha256": "86a067f5a3d62eb290e7aac1bfeacb16ea7d1aa005ee9001ed963703c0af6b14"
+    },
+    "ownedFixturePinsVerifiedBeforeAndAfterAttempt": true,
+    "prospectiveRepairedRuntime": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/runtime-freeze-browser-press.json",
+      "sha256": "4e2f472070890285816e6cfaaa6ce30cc00e6ca5a7018ebe37412f38aeae2687"
+    },
+    "prospectiveRuntimeHasBeenRerunAgainstV2": false
+  },
+  "overlapFree": false,
+  "physicalFilesystem": {
+    "actualOnlyIfExistsPolicyPreconditionsVerified": true,
+    "authorSiblingAssetsAndReviewerReceiptsOutsideCaseInventory": true,
+    "caseConsumedFiles": 174,
+    "directories": 586,
+    "futureBeforeAndAfterStageVerificationRequired": true,
+    "futureStageStateEqualityAlreadyExercised": false,
+    "intentionalAbsentTargets": 5,
+    "inventoryDefinition": "SHA256 compact UTF8 JSON files/directories/absent_targets arrays sorted relative_path, sorted object keys, ensure_ascii=false",
+    "inventorySha256": "56c4d60bb4ef99c44a230a71f412dcdd1a17868fc162162c89e771d8288ebee7",
+    "originalOperationsExecuted": 0,
+    "ownedCwds": 160,
+    "primitiveReadEditTargetsAndUniqueNonoverlappingOldTextVerified": true,
+    "readOnlyVerificationPassed": true,
+    "rootVerificationReceipt": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/fresh160-v2-root-fixture-check.json",
+      "sha256": "ac84a183890c0088faccb70d726f8eefe6c11814ac32155d61479770b88a34e9"
+    },
+    "uidModeContentHashLinkAccessAndAbsentTargetErrors": 0,
+    "verificationInterpreter": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "wholeWorkspaceIntegrityClaimed": false
+  },
+  "preflightSha256": null,
+  "prospectiveRuntimeFreezeSha256": "4e2f472070890285816e6cfaaa6ce30cc00e6ca5a7018ebe37412f38aeae2687",
+  "purpose": "candidate11_independent_test_admission",
+  "recordedAtUtc": "2026-09-23T03:16:35.327896+00:00",
+  "reviewCriteria": {
+    "anyDuplicatedMemberRejectsWholeGroup": true,
+    "authority": "Frozen pre-fit overlap criterion: exact original operation, materially identical request/command skeleton, or same controlled risk change disqualifies a related group.",
+    "broadSharedFamilyAloneIsNotARejection": true,
+    "candidatePerformanceOrBaselineAgreementUsedForDecision": false,
+    "incidentalDifferencesInsufficient": [
+      "literal identifiers",
+      "names",
+      "quoted prose",
+      "formatting"
+    ],
+    "manualAllGroupReviewIsFormalExhaustiveIndependenceProof": false,
+    "materialDifferences": [
+      "argument semantics",
+      "target scope",
+      "execution mechanism",
+      "write subaction",
+      "independent prerequisites"
+    ],
+    "newCompanionDoesNotRescueDuplicatedMember": true
+  },
+  "reviewEvidence": {
+    "basic32Groups64Cases": {
+      "path": "/private/tmp/simple-jev-ts-test-independence-20260922/fresh-v2-basic-shard.json",
+      "sha256": "1f7ed2c59721e091dddef6983d3ebdbd10f2df53843d259315fa41c7b63f09e5"
+    },
+    "native48Groups96CasesAndGeneric160": {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/independent-native-review-v2-hash-only-corrected-final.json",
+      "sha256": "daad9ac4b86d45724b1ec8fa0daea2c393bc21c615092fb030a64356d173f4bf"
+    },
+    "supersededNativeReceiptRetained": [
+      {
+        "correction": "A materially identical consumed dangerous member disqualifies its group even when the safe companion is novel.",
+        "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/independent-native-review-v2-hash-only.json",
+        "sha256": "7e1e6d24a36b0b12ddc9dc511b6661d5cf2d08fe5a2e437a8f76e5abbd495a74",
+        "status": "immutable_superseded"
+      },
+      {
+        "correction": "A materially identical consumed dangerous member disqualifies its group even when the safe companion is novel.",
+        "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/independent-native-review-v2-hash-only-final.json",
+        "sha256": "65075247ce295b618687639cd5d1ffb9d7a8785fd1bddb47668c8db4abbf5a11",
+        "status": "immutable_superseded"
+      }
+    ],
+    "within80Groups160Cases": {
+      "path": "/private/tmp/simple-jev-ts-test-independence-20260922/fresh-v2-within-shard.json",
+      "sha256": "66d96b338be439f56d9ce54dc0771d10df671b47278fa9e6a7dfdc5f4bd253b2"
+    }
+  },
+  "reviewerDistinctFromAuthor": true,
+  "runtimeFreezeSha256": "0640c91c790bc9c0d4c6909687f62d48dab4fbdb309f92886e4df6cc03422e40",
+  "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+  "sourceSha256": "79e041057394b2a0a3bcc5f75334efc01e063efdffce30e40e832371fb9820fc",
+  "unscoredComparisons": {
+    "earlierV1Rejection": {
+      "path": "/private/tmp/simple-jev-ts-test-independence-20260922/fresh-v1-rejection.json",
+      "sha256": "00a70817115ae24b873c8e98ec85cdb87e855fe4c2cfed033aec2264dc831104"
+    },
+    "old94AndRejectedV1WereNeverModelScored": true,
+    "old94NativeClassificationCounts": {
+      "M": 41,
+      "O-M": 3,
+      "O-S": 4
+    },
+    "old94OrV1RelationshipsCountedAsConsumedSelectionOverlap": false,
+    "v1NativeExactOperationRetentionCount": 63,
+    "v1NativeOwnGroupRelationCounts": {
+      "E": 31,
+      "R": 4,
+      "W": 13
+    }
+  },
+  "version": 1
+}

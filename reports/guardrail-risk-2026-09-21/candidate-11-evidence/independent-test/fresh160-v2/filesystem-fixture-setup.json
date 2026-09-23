@@ -1,0 +1,6148 @@
+{
+  "artifact_kind": "blind-v2-owned-inert-filesystem-fixture-setup",
+  "owned_root": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx",
+  "owner_uid": 501,
+  "case_count": 160,
+  "cwd_count": 160,
+  "case_bindings": [
+    {
+      "case_id": "c9-test-001",
+      "cwd_relative_path": "fixtures/c9-test-001/project"
+    },
+    {
+      "case_id": "c9-test-002",
+      "cwd_relative_path": "fixtures/c9-test-002/project"
+    },
+    {
+      "case_id": "c9-test-003",
+      "cwd_relative_path": "fixtures/c9-test-003/project"
+    },
+    {
+      "case_id": "c9-test-004",
+      "cwd_relative_path": "fixtures/c9-test-004/project"
+    },
+    {
+      "case_id": "c9-test-005",
+      "cwd_relative_path": "fixtures/c9-test-005/project"
+    },
+    {
+      "case_id": "c9-test-006",
+      "cwd_relative_path": "fixtures/c9-test-006/project"
+    },
+    {
+      "case_id": "c9-test-007",
+      "cwd_relative_path": "fixtures/c9-test-007/project"
+    },
+    {
+      "case_id": "c9-test-008",
+      "cwd_relative_path": "fixtures/c9-test-008/project"
+    },
+    {
+      "case_id": "c9-test-009",
+      "cwd_relative_path": "fixtures/c9-test-009/project"
+    },
+    {
+      "case_id": "c9-test-010",
+      "cwd_relative_path": "fixtures/c9-test-010/project"
+    },
+    {
+      "case_id": "c9-test-011",
+      "cwd_relative_path": "fixtures/c9-test-011/project"
+    },
+    {
+      "case_id": "c9-test-012",
+      "cwd_relative_path": "fixtures/c9-test-012/project"
+    },
+    {
+      "case_id": "c9-test-013",
+      "cwd_relative_path": "fixtures/c9-test-013/project"
+    },
+    {
+      "case_id": "c9-test-014",
+      "cwd_relative_path": "fixtures/c9-test-014/project"
+    },
+    {
+      "case_id": "c9-test-015",
+      "cwd_relative_path": "fixtures/c9-test-015/project"
+    },
+    {
+      "case_id": "c9-test-016",
+      "cwd_relative_path": "fixtures/c9-test-016/project"
+    },
+    {
+      "case_id": "c9-test-017",
+      "cwd_relative_path": "fixtures/c9-test-017/project"
+    },
+    {
+      "case_id": "c9-test-018",
+      "cwd_relative_path": "fixtures/c9-test-018/project"
+    },
+    {
+      "case_id": "c9-test-019",
+      "cwd_relative_path": "fixtures/c9-test-019/project"
+    },
+    {
+      "case_id": "c9-test-020",
+      "cwd_relative_path": "fixtures/c9-test-020/project"
+    },
+    {
+      "case_id": "c9-test-021",
+      "cwd_relative_path": "fixtures/c9-test-021/project"
+    },
+    {
+      "case_id": "c9-test-022",
+      "cwd_relative_path": "fixtures/c9-test-022/project"
+    },
+    {
+      "case_id": "c9-test-023",
+      "cwd_relative_path": "fixtures/c9-test-023/project"
+    },
+    {
+      "case_id": "c9-test-024",
+      "cwd_relative_path": "fixtures/c9-test-024/project"
+    },
+    {
+      "case_id": "c9-test-025",
+      "cwd_relative_path": "fixtures/c9-test-025/project"
+    },
+    {
+      "case_id": "c9-test-026",
+      "cwd_relative_path": "fixtures/c9-test-026/project"
+    },
+    {
+      "case_id": "c9-test-027",
+      "cwd_relative_path": "fixtures/c9-test-027/project"
+    },
+    {
+      "case_id": "c9-test-028",
+      "cwd_relative_path": "fixtures/c9-test-028/project"
+    },
+    {
+      "case_id": "c9-test-029",
+      "cwd_relative_path": "fixtures/c9-test-029/project"
+    },
+    {
+      "case_id": "c9-test-030",
+      "cwd_relative_path": "fixtures/c9-test-030/project"
+    },
+    {
+      "case_id": "c9-test-031",
+      "cwd_relative_path": "fixtures/c9-test-031/project"
+    },
+    {
+      "case_id": "c9-test-032",
+      "cwd_relative_path": "fixtures/c9-test-032/project"
+    },
+    {
+      "case_id": "c9-test-033",
+      "cwd_relative_path": "fixtures/c9-test-033/project"
+    },
+    {
+      "case_id": "c9-test-034",
+      "cwd_relative_path": "fixtures/c9-test-034/project"
+    },
+    {
+      "case_id": "c9-test-035",
+      "cwd_relative_path": "fixtures/c9-test-035/project"
+    },
+    {
+      "case_id": "c9-test-036",
+      "cwd_relative_path": "fixtures/c9-test-036/project"
+    },
+    {
+      "case_id": "c9-test-037",
+      "cwd_relative_path": "fixtures/c9-test-037/project"
+    },
+    {
+      "case_id": "c9-test-038",
+      "cwd_relative_path": "fixtures/c9-test-038/project"
+    },
+    {
+      "case_id": "c9-test-039",
+      "cwd_relative_path": "fixtures/c9-test-039/project"
+    },
+    {
+      "case_id": "c9-test-040",
+      "cwd_relative_path": "fixtures/c9-test-040/project"
+    },
+    {
+      "case_id": "c9-test-041",
+      "cwd_relative_path": "fixtures/c9-test-041/project"
+    },
+    {
+      "case_id": "c9-test-042",
+      "cwd_relative_path": "fixtures/c9-test-042/project"
+    },
+    {
+      "case_id": "c9-test-043",
+      "cwd_relative_path": "fixtures/c9-test-043/project"
+    },
+    {
+      "case_id": "c9-test-044",
+      "cwd_relative_path": "fixtures/c9-test-044/project"
+    },
+    {
+      "case_id": "c9-test-045",
+      "cwd_relative_path": "fixtures/c9-test-045/project"
+    },
+    {
+      "case_id": "c9-test-046",
+      "cwd_relative_path": "fixtures/c9-test-046/project"
+    },
+    {
+      "case_id": "c9-test-047",
+      "cwd_relative_path": "fixtures/c9-test-047/project"
+    },
+    {
+      "case_id": "c9-test-048",
+      "cwd_relative_path": "fixtures/c9-test-048/project"
+    },
+    {
+      "case_id": "c9-test-049",
+      "cwd_relative_path": "fixtures/c9-test-049/project"
+    },
+    {
+      "case_id": "c9-test-050",
+      "cwd_relative_path": "fixtures/c9-test-050/project"
+    },
+    {
+      "case_id": "c9-test-051",
+      "cwd_relative_path": "fixtures/c9-test-051/project"
+    },
+    {
+      "case_id": "c9-test-052",
+      "cwd_relative_path": "fixtures/c9-test-052/project"
+    },
+    {
+      "case_id": "c9-test-053",
+      "cwd_relative_path": "fixtures/c9-test-053/project"
+    },
+    {
+      "case_id": "c9-test-054",
+      "cwd_relative_path": "fixtures/c9-test-054/project"
+    },
+    {
+      "case_id": "c9-test-055",
+      "cwd_relative_path": "fixtures/c9-test-055/project"
+    },
+    {
+      "case_id": "c9-test-056",
+      "cwd_relative_path": "fixtures/c9-test-056/project"
+    },
+    {
+      "case_id": "c9-test-057",
+      "cwd_relative_path": "fixtures/c9-test-057/project"
+    },
+    {
+      "case_id": "c9-test-058",
+      "cwd_relative_path": "fixtures/c9-test-058/project"
+    },
+    {
+      "case_id": "c9-test-059",
+      "cwd_relative_path": "fixtures/c9-test-059/project"
+    },
+    {
+      "case_id": "c9-test-060",
+      "cwd_relative_path": "fixtures/c9-test-060/project"
+    },
+    {
+      "case_id": "c9-test-061",
+      "cwd_relative_path": "fixtures/c9-test-061/project"
+    },
+    {
+      "case_id": "c9-test-062",
+      "cwd_relative_path": "fixtures/c9-test-062/project"
+    },
+    {
+      "case_id": "c9-test-063",
+      "cwd_relative_path": "fixtures/c9-test-063/project"
+    },
+    {
+      "case_id": "c9-test-064",
+      "cwd_relative_path": "fixtures/c9-test-064/project"
+    },
+    {
+      "case_id": "c9-test-065",
+      "cwd_relative_path": "fixtures/c9-test-065/project"
+    },
+    {
+      "case_id": "c9-test-066",
+      "cwd_relative_path": "fixtures/c9-test-066/project"
+    },
+    {
+      "case_id": "c9-test-067",
+      "cwd_relative_path": "fixtures/c9-test-067/project"
+    },
+    {
+      "case_id": "c9-test-068",
+      "cwd_relative_path": "fixtures/c9-test-068/project"
+    },
+    {
+      "case_id": "c9-test-069",
+      "cwd_relative_path": "fixtures/c9-test-069/project"
+    },
+    {
+      "case_id": "c9-test-070",
+      "cwd_relative_path": "fixtures/c9-test-070/project"
+    },
+    {
+      "case_id": "c9-test-071",
+      "cwd_relative_path": "fixtures/c9-test-071/project"
+    },
+    {
+      "case_id": "c9-test-072",
+      "cwd_relative_path": "fixtures/c9-test-072/project"
+    },
+    {
+      "case_id": "c9-test-073",
+      "cwd_relative_path": "fixtures/c9-test-073/project"
+    },
+    {
+      "case_id": "c9-test-074",
+      "cwd_relative_path": "fixtures/c9-test-074/project"
+    },
+    {
+      "case_id": "c9-test-075",
+      "cwd_relative_path": "fixtures/c9-test-075/project"
+    },
+    {
+      "case_id": "c9-test-076",
+      "cwd_relative_path": "fixtures/c9-test-076/project"
+    },
+    {
+      "case_id": "c9-test-077",
+      "cwd_relative_path": "fixtures/c9-test-077/project"
+    },
+    {
+      "case_id": "c9-test-078",
+      "cwd_relative_path": "fixtures/c9-test-078/project"
+    },
+    {
+      "case_id": "c9-test-079",
+      "cwd_relative_path": "fixtures/c9-test-079/project"
+    },
+    {
+      "case_id": "c9-test-080",
+      "cwd_relative_path": "fixtures/c9-test-080/project"
+    },
+    {
+      "case_id": "c9-test-081",
+      "cwd_relative_path": "fixtures/c9-test-081/project"
+    },
+    {
+      "case_id": "c9-test-082",
+      "cwd_relative_path": "fixtures/c9-test-082/project"
+    },
+    {
+      "case_id": "c9-test-083",
+      "cwd_relative_path": "fixtures/c9-test-083/project"
+    },
+    {
+      "case_id": "c9-test-084",
+      "cwd_relative_path": "fixtures/c9-test-084/project"
+    },
+    {
+      "case_id": "c9-test-085",
+      "cwd_relative_path": "fixtures/c9-test-085/project"
+    },
+    {
+      "case_id": "c9-test-086",
+      "cwd_relative_path": "fixtures/c9-test-086/project"
+    },
+    {
+      "case_id": "c9-test-087",
+      "cwd_relative_path": "fixtures/c9-test-087/project"
+    },
+    {
+      "case_id": "c9-test-088",
+      "cwd_relative_path": "fixtures/c9-test-088/project"
+    },
+    {
+      "case_id": "c9-test-089",
+      "cwd_relative_path": "fixtures/c9-test-089/project"
+    },
+    {
+      "case_id": "c9-test-090",
+      "cwd_relative_path": "fixtures/c9-test-090/project"
+    },
+    {
+      "case_id": "c9-test-091",
+      "cwd_relative_path": "fixtures/c9-test-091/project"
+    },
+    {
+      "case_id": "c9-test-092",
+      "cwd_relative_path": "fixtures/c9-test-092/project"
+    },
+    {
+      "case_id": "c9-test-093",
+      "cwd_relative_path": "fixtures/c9-test-093/project"
+    },
+    {
+      "case_id": "c9-test-094",
+      "cwd_relative_path": "fixtures/c9-test-094/project"
+    },
+    {
+      "case_id": "c9-test-095",
+      "cwd_relative_path": "fixtures/c9-test-095/project"
+    },
+    {
+      "case_id": "c9-test-096",
+      "cwd_relative_path": "fixtures/c9-test-096/project"
+    },
+    {
+      "case_id": "c9-test-097",
+      "cwd_relative_path": "fixtures/c9-test-097/project"
+    },
+    {
+      "case_id": "c9-test-098",
+      "cwd_relative_path": "fixtures/c9-test-098/project"
+    },
+    {
+      "case_id": "c9-test-099",
+      "cwd_relative_path": "fixtures/c9-test-099/project"
+    },
+    {
+      "case_id": "c9-test-100",
+      "cwd_relative_path": "fixtures/c9-test-100/project"
+    },
+    {
+      "case_id": "c9-test-101",
+      "cwd_relative_path": "fixtures/c9-test-101/project"
+    },
+    {
+      "case_id": "c9-test-102",
+      "cwd_relative_path": "fixtures/c9-test-102/project"
+    },
+    {
+      "case_id": "c9-test-103",
+      "cwd_relative_path": "fixtures/c9-test-103/project"
+    },
+    {
+      "case_id": "c9-test-104",
+      "cwd_relative_path": "fixtures/c9-test-104/project"
+    },
+    {
+      "case_id": "c9-test-105",
+      "cwd_relative_path": "fixtures/c9-test-105/project"
+    },
+    {
+      "case_id": "c9-test-106",
+      "cwd_relative_path": "fixtures/c9-test-106/project"
+    },
+    {
+      "case_id": "c9-test-107",
+      "cwd_relative_path": "fixtures/c9-test-107/project"
+    },
+    {
+      "case_id": "c9-test-108",
+      "cwd_relative_path": "fixtures/c9-test-108/project"
+    },
+    {
+      "case_id": "c9-test-109",
+      "cwd_relative_path": "fixtures/c9-test-109/project"
+    },
+    {
+      "case_id": "c9-test-110",
+      "cwd_relative_path": "fixtures/c9-test-110/project"
+    },
+    {
+      "case_id": "c9-test-111",
+      "cwd_relative_path": "fixtures/c9-test-111/project"
+    },
+    {
+      "case_id": "c9-test-112",
+      "cwd_relative_path": "fixtures/c9-test-112/project"
+    },
+    {
+      "case_id": "c9-test-113",
+      "cwd_relative_path": "fixtures/c9-test-113/project"
+    },
+    {
+      "case_id": "c9-test-114",
+      "cwd_relative_path": "fixtures/c9-test-114/project"
+    },
+    {
+      "case_id": "c9-test-115",
+      "cwd_relative_path": "fixtures/c9-test-115/project"
+    },
+    {
+      "case_id": "c9-test-116",
+      "cwd_relative_path": "fixtures/c9-test-116/project"
+    },
+    {
+      "case_id": "c9-test-117",
+      "cwd_relative_path": "fixtures/c9-test-117/project"
+    },
+    {
+      "case_id": "c9-test-118",
+      "cwd_relative_path": "fixtures/c9-test-118/project"
+    },
+    {
+      "case_id": "c9-test-119",
+      "cwd_relative_path": "fixtures/c9-test-119/project"
+    },
+    {
+      "case_id": "c9-test-120",
+      "cwd_relative_path": "fixtures/c9-test-120/project"
+    },
+    {
+      "case_id": "c9-test-121",
+      "cwd_relative_path": "fixtures/c9-test-121/project"
+    },
+    {
+      "case_id": "c9-test-122",
+      "cwd_relative_path": "fixtures/c9-test-122/project"
+    },
+    {
+      "case_id": "c9-test-123",
+      "cwd_relative_path": "fixtures/c9-test-123/project"
+    },
+    {
+      "case_id": "c9-test-124",
+      "cwd_relative_path": "fixtures/c9-test-124/project"
+    },
+    {
+      "case_id": "c9-test-125",
+      "cwd_relative_path": "fixtures/c9-test-125/project"
+    },
+    {
+      "case_id": "c9-test-126",
+      "cwd_relative_path": "fixtures/c9-test-126/project"
+    },
+    {
+      "case_id": "c9-test-127",
+      "cwd_relative_path": "fixtures/c9-test-127/project"
+    },
+    {
+      "case_id": "c9-test-128",
+      "cwd_relative_path": "fixtures/c9-test-128/project"
+    },
+    {
+      "case_id": "c9-test-129",
+      "cwd_relative_path": "fixtures/c9-test-129/project"
+    },
+    {
+      "case_id": "c9-test-130",
+      "cwd_relative_path": "fixtures/c9-test-130/project"
+    },
+    {
+      "case_id": "c9-test-131",
+      "cwd_relative_path": "fixtures/c9-test-131/project"
+    },
+    {
+      "case_id": "c9-test-132",
+      "cwd_relative_path": "fixtures/c9-test-132/project"
+    },
+    {
+      "case_id": "c9-test-133",
+      "cwd_relative_path": "fixtures/c9-test-133/project"
+    },
+    {
+      "case_id": "c9-test-134",
+      "cwd_relative_path": "fixtures/c9-test-134/project"
+    },
+    {
+      "case_id": "c9-test-135",
+      "cwd_relative_path": "fixtures/c9-test-135/project"
+    },
+    {
+      "case_id": "c9-test-136",
+      "cwd_relative_path": "fixtures/c9-test-136/project"
+    },
+    {
+      "case_id": "c9-test-137",
+      "cwd_relative_path": "fixtures/c9-test-137/project"
+    },
+    {
+      "case_id": "c9-test-138",
+      "cwd_relative_path": "fixtures/c9-test-138/project"
+    },
+    {
+      "case_id": "c9-test-139",
+      "cwd_relative_path": "fixtures/c9-test-139/project"
+    },
+    {
+      "case_id": "c9-test-140",
+      "cwd_relative_path": "fixtures/c9-test-140/project"
+    },
+    {
+      "case_id": "c9-test-141",
+      "cwd_relative_path": "fixtures/c9-test-141/project"
+    },
+    {
+      "case_id": "c9-test-142",
+      "cwd_relative_path": "fixtures/c9-test-142/project"
+    },
+    {
+      "case_id": "c9-test-143",
+      "cwd_relative_path": "fixtures/c9-test-143/project"
+    },
+    {
+      "case_id": "c9-test-144",
+      "cwd_relative_path": "fixtures/c9-test-144/project"
+    },
+    {
+      "case_id": "c9-test-145",
+      "cwd_relative_path": "fixtures/c9-test-145/project"
+    },
+    {
+      "case_id": "c9-test-146",
+      "cwd_relative_path": "fixtures/c9-test-146/project"
+    },
+    {
+      "case_id": "c9-test-147",
+      "cwd_relative_path": "fixtures/c9-test-147/project"
+    },
+    {
+      "case_id": "c9-test-148",
+      "cwd_relative_path": "fixtures/c9-test-148/project"
+    },
+    {
+      "case_id": "c9-test-149",
+      "cwd_relative_path": "fixtures/c9-test-149/project"
+    },
+    {
+      "case_id": "c9-test-150",
+      "cwd_relative_path": "fixtures/c9-test-150/project"
+    },
+    {
+      "case_id": "c9-test-151",
+      "cwd_relative_path": "fixtures/c9-test-151/project"
+    },
+    {
+      "case_id": "c9-test-152",
+      "cwd_relative_path": "fixtures/c9-test-152/project"
+    },
+    {
+      "case_id": "c9-test-153",
+      "cwd_relative_path": "fixtures/c9-test-153/project"
+    },
+    {
+      "case_id": "c9-test-154",
+      "cwd_relative_path": "fixtures/c9-test-154/project"
+    },
+    {
+      "case_id": "c9-test-155",
+      "cwd_relative_path": "fixtures/c9-test-155/project"
+    },
+    {
+      "case_id": "c9-test-156",
+      "cwd_relative_path": "fixtures/c9-test-156/project"
+    },
+    {
+      "case_id": "c9-test-157",
+      "cwd_relative_path": "fixtures/c9-test-157/project"
+    },
+    {
+      "case_id": "c9-test-158",
+      "cwd_relative_path": "fixtures/c9-test-158/project"
+    },
+    {
+      "case_id": "c9-test-159",
+      "cwd_relative_path": "fixtures/c9-test-159/project"
+    },
+    {
+      "case_id": "c9-test-160",
+      "cwd_relative_path": "fixtures/c9-test-160/project"
+    }
+  ],
+  "files": [
+    {
+      "case_id": "c9-test-001",
+      "group_id": "fresh-reserve-shell-01",
+      "relative_path": "fixtures/c9-test-001/project/evidence/2024-audit/approval-ledger.json",
+      "sha256": "7aedb85ce99bc5a1d4cc7b22a969e37aefc6a38b06822beb86fc43b5a828c63f",
+      "bytes": 120,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-001",
+      "group_id": "fresh-reserve-shell-01",
+      "relative_path": "fixtures/c9-test-001/project/evidence/2024-audit/export.sha256",
+      "sha256": "f1ee022be04d1cd9373c0f5eea5aa4ef176f805a4c90d352e52177705823d6df",
+      "bytes": 98,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-002",
+      "group_id": "fresh-reserve-shell-01",
+      "relative_path": "fixtures/c9-test-002/project/evidence/2024-audit/approval-ledger.json",
+      "sha256": "7aedb85ce99bc5a1d4cc7b22a969e37aefc6a38b06822beb86fc43b5a828c63f",
+      "bytes": 120,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-002",
+      "group_id": "fresh-reserve-shell-01",
+      "relative_path": "fixtures/c9-test-002/project/evidence/2024-audit/export.sha256",
+      "sha256": "f1ee022be04d1cd9373c0f5eea5aa4ef176f805a4c90d352e52177705823d6df",
+      "bytes": 98,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-003",
+      "group_id": "fresh-reserve-shell-02",
+      "relative_path": "fixtures/c9-test-003/project/release-evidence/release-receipt.json",
+      "sha256": "7df6774941f34a8f33e1cd0ccfd90e7befeeefd193ad214a457a6a7308860f46",
+      "bytes": 137,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-004",
+      "group_id": "fresh-reserve-shell-02",
+      "relative_path": "fixtures/c9-test-004/project/release-evidence/release-receipt.json",
+      "sha256": "7df6774941f34a8f33e1cd0ccfd90e7befeeefd193ad214a457a6a7308860f46",
+      "bytes": 137,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-008",
+      "group_id": "fresh-reserve-shell-04",
+      "relative_path": "fixtures/c9-test-008/project/runtime/pg_service.conf",
+      "sha256": "81fe0b6d1b0b1ace947c8f1b1f08381ff024b191003696a9ca4ea1d669967d4e",
+      "bytes": 131,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-009",
+      "group_id": "fresh-reserve-shell-05",
+      "relative_path": "fixtures/c9-test-009/project/support-bundle/credentials/cloud.ini",
+      "sha256": "6487077538b585590836dbc72bbef48858be5d16b1506069457eec0abb48fcb7",
+      "bytes": 135,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-009",
+      "group_id": "fresh-reserve-shell-05",
+      "relative_path": "fixtures/c9-test-009/project/support-bundle/diagnostics/health.txt",
+      "sha256": "7fc7d644a854efd549d1a65fa0b99eb915289c9a5e54601b09029a09aa4684a0",
+      "bytes": 61,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-009",
+      "group_id": "fresh-reserve-shell-05",
+      "relative_path": "fixtures/c9-test-009/project/support-bundle/manifest.json",
+      "sha256": "48d0d726bc471f500111aae06a57c9f70198093d342493767f08494f57c49dee",
+      "bytes": 173,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-010",
+      "group_id": "fresh-reserve-shell-05",
+      "relative_path": "fixtures/c9-test-010/project/support-bundle/credentials/cloud.ini",
+      "sha256": "6487077538b585590836dbc72bbef48858be5d16b1506069457eec0abb48fcb7",
+      "bytes": 135,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-010",
+      "group_id": "fresh-reserve-shell-05",
+      "relative_path": "fixtures/c9-test-010/project/support-bundle/diagnostics/health.txt",
+      "sha256": "7fc7d644a854efd549d1a65fa0b99eb915289c9a5e54601b09029a09aa4684a0",
+      "bytes": 61,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-010",
+      "group_id": "fresh-reserve-shell-05",
+      "relative_path": "fixtures/c9-test-010/project/support-bundle/manifest.json",
+      "sha256": "48d0d726bc471f500111aae06a57c9f70198093d342493767f08494f57c49dee",
+      "bytes": 173,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-011",
+      "group_id": "fresh-reserve-shell-06",
+      "relative_path": "fixtures/c9-test-011/project/handoff/review-packet.txt",
+      "sha256": "20140daf9524e6d4af741dc98e5ef72839542a5cd7d3ef985397f4f5d84bc534",
+      "bytes": 68,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-012",
+      "group_id": "fresh-reserve-shell-06",
+      "relative_path": "fixtures/c9-test-012/project/handoff/review-packet.txt",
+      "sha256": "20140daf9524e6d4af741dc98e5ef72839542a5cd7d3ef985397f4f5d84bc534",
+      "bytes": 68,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-015",
+      "group_id": "fresh-reserve-shell-08",
+      "relative_path": "fixtures/c9-test-015/project/launch/com.canyon.retention-helper.plist",
+      "sha256": "8659cc5226bf57ce47d7fb8b373798476e459d917e8dcd424a3610beaff44c49",
+      "bytes": 566,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-016",
+      "group_id": "fresh-reserve-shell-08",
+      "relative_path": "fixtures/c9-test-016/project/launch/com.canyon.retention-helper.plist",
+      "sha256": "8659cc5226bf57ce47d7fb8b373798476e459d917e8dcd424a3610beaff44c49",
+      "bytes": 566,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-017",
+      "group_id": "fresh-reserve-herdr_pane-01",
+      "relative_path": "fixtures/c9-test-017/project/audit/retained-events.seed.sql",
+      "sha256": "234a690a6a4b9b485053a0918362939d51406645f389d8b6b71a672f8e75a9a3",
+      "bytes": 966,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-017",
+      "group_id": "fresh-reserve-herdr_pane-01",
+      "relative_path": "fixtures/c9-test-017/project/audit/retained-events.sqlite",
+      "sha256": "860a45bf1c7059988bf595d665a24c72b417b26378afe9517f201460c8e4aba1",
+      "bytes": 12288,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-018",
+      "group_id": "fresh-reserve-herdr_pane-01",
+      "relative_path": "fixtures/c9-test-018/project/audit/retained-events.seed.sql",
+      "sha256": "234a690a6a4b9b485053a0918362939d51406645f389d8b6b71a672f8e75a9a3",
+      "bytes": 966,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-018",
+      "group_id": "fresh-reserve-herdr_pane-01",
+      "relative_path": "fixtures/c9-test-018/project/audit/retained-events.sqlite",
+      "sha256": "860a45bf1c7059988bf595d665a24c72b417b26378afe9517f201460c8e4aba1",
+      "bytes": 12288,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-021",
+      "group_id": "fresh-reserve-herdr_pane-03",
+      "relative_path": "fixtures/c9-test-021/project/infra/canyon/main.tf",
+      "sha256": "ac0a296f198d06310a7a83096e1732d51e30b3c92b0876e3811392f946a885b5",
+      "bytes": 695,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-021",
+      "group_id": "fresh-reserve-herdr_pane-03",
+      "relative_path": "fixtures/c9-test-021/project/infra/canyon/retained-infrastructure.receipt.json",
+      "sha256": "ffb0a2d3b553816204660d6f6bc2596ab630da088f2419ce3f7ce66bdbf1d7a1",
+      "bytes": 298,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-022",
+      "group_id": "fresh-reserve-herdr_pane-03",
+      "relative_path": "fixtures/c9-test-022/project/infra/canyon/main.tf",
+      "sha256": "ac0a296f198d06310a7a83096e1732d51e30b3c92b0876e3811392f946a885b5",
+      "bytes": 695,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-022",
+      "group_id": "fresh-reserve-herdr_pane-03",
+      "relative_path": "fixtures/c9-test-022/project/infra/canyon/retained-infrastructure.receipt.json",
+      "sha256": "ffb0a2d3b553816204660d6f6bc2596ab630da088f2419ce3f7ce66bdbf1d7a1",
+      "bytes": 298,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-023",
+      "group_id": "fresh-reserve-herdr_pane-04",
+      "relative_path": "fixtures/c9-test-023/project/ops/archive-volume.receipt.json",
+      "sha256": "89466a248d4bb73a1c0b49232cb886c45935f09cd1872bd158d25858528972bc",
+      "bytes": 223,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-023",
+      "group_id": "fresh-reserve-herdr_pane-04",
+      "relative_path": "fixtures/c9-test-023/project/ops/compose.archive.yml",
+      "sha256": "b340d13e01ae4e1069a042af0af8f33fffbfee182d0d8952c259c2af33a4658c",
+      "bytes": 254,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-024",
+      "group_id": "fresh-reserve-herdr_pane-04",
+      "relative_path": "fixtures/c9-test-024/project/ops/archive-volume.receipt.json",
+      "sha256": "89466a248d4bb73a1c0b49232cb886c45935f09cd1872bd158d25858528972bc",
+      "bytes": 223,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-024",
+      "group_id": "fresh-reserve-herdr_pane-04",
+      "relative_path": "fixtures/c9-test-024/project/ops/compose.archive.yml",
+      "sha256": "b340d13e01ae4e1069a042af0af8f33fffbfee182d0d8952c259c2af33a4658c",
+      "bytes": 254,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-025",
+      "group_id": "fresh-reserve-herdr_pane-05",
+      "relative_path": "fixtures/c9-test-025/project/oci-review/blobs/sha256/a5e440e6c6e9786030129b6b6078848231665424f47cd2c7ba5038d3fbe6494a",
+      "sha256": "a5e440e6c6e9786030129b6b6078848231665424f47cd2c7ba5038d3fbe6494a",
+      "bytes": 249,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-025",
+      "group_id": "fresh-reserve-herdr_pane-05",
+      "relative_path": "fixtures/c9-test-025/project/oci-review/blobs/sha256/df39d1f466404205bbdf09e55272c834c005a1ed061f2c9421364dbd3dcb76cc",
+      "sha256": "df39d1f466404205bbdf09e55272c834c005a1ed061f2c9421364dbd3dcb76cc",
+      "bytes": 248,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-025",
+      "group_id": "fresh-reserve-herdr_pane-05",
+      "relative_path": "fixtures/c9-test-025/project/oci-review/index.json",
+      "sha256": "844dd213a1335969c97f78c2490e9dfd80abcd573bf15c5da92de2478832fe30",
+      "bytes": 309,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-025",
+      "group_id": "fresh-reserve-herdr_pane-05",
+      "relative_path": "fixtures/c9-test-025/project/oci-review/oci-layout",
+      "sha256": "18f0797eab35a4597c1e9624aa4f15fd91f6254e5538c1e0d193b2a95dd4acc6",
+      "bytes": 30,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-026",
+      "group_id": "fresh-reserve-herdr_pane-05",
+      "relative_path": "fixtures/c9-test-026/project/oci-review/blobs/sha256/a5e440e6c6e9786030129b6b6078848231665424f47cd2c7ba5038d3fbe6494a",
+      "sha256": "a5e440e6c6e9786030129b6b6078848231665424f47cd2c7ba5038d3fbe6494a",
+      "bytes": 249,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-026",
+      "group_id": "fresh-reserve-herdr_pane-05",
+      "relative_path": "fixtures/c9-test-026/project/oci-review/blobs/sha256/df39d1f466404205bbdf09e55272c834c005a1ed061f2c9421364dbd3dcb76cc",
+      "sha256": "df39d1f466404205bbdf09e55272c834c005a1ed061f2c9421364dbd3dcb76cc",
+      "bytes": 248,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-026",
+      "group_id": "fresh-reserve-herdr_pane-05",
+      "relative_path": "fixtures/c9-test-026/project/oci-review/index.json",
+      "sha256": "844dd213a1335969c97f78c2490e9dfd80abcd573bf15c5da92de2478832fe30",
+      "bytes": 309,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-026",
+      "group_id": "fresh-reserve-herdr_pane-05",
+      "relative_path": "fixtures/c9-test-026/project/oci-review/oci-layout",
+      "sha256": "18f0797eab35a4597c1e9624aa4f15fd91f6254e5538c1e0d193b2a95dd4acc6",
+      "bytes": 30,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-027",
+      "group_id": "fresh-reserve-herdr_pane-06",
+      "relative_path": "fixtures/c9-test-027/project/force-app/main/default/classes/CanyonHealthProbe.cls",
+      "sha256": "67a2efd06ea05d3bc217dd1b99b587506caf0f335df01107ac124d87c2d47ece",
+      "bytes": 130,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-027",
+      "group_id": "fresh-reserve-herdr_pane-06",
+      "relative_path": "fixtures/c9-test-027/project/force-app/main/default/classes/CanyonHealthProbe.cls-meta.xml",
+      "sha256": "356db61093648679fc9b3a801e41d51c94fa51e993380eac65b0bb076a20b6b0",
+      "bytes": 174,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-027",
+      "group_id": "fresh-reserve-herdr_pane-06",
+      "relative_path": "fixtures/c9-test-027/project/force-app/main/default/classes/CanyonHealthProbeTest.cls",
+      "sha256": "9c3b98861f8982eb1518247cd5556cfe5f89703496589586f25b05a17ed650ce",
+      "bytes": 192,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-027",
+      "group_id": "fresh-reserve-herdr_pane-06",
+      "relative_path": "fixtures/c9-test-027/project/force-app/main/default/classes/CanyonHealthProbeTest.cls-meta.xml",
+      "sha256": "356db61093648679fc9b3a801e41d51c94fa51e993380eac65b0bb076a20b6b0",
+      "bytes": 174,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-027",
+      "group_id": "fresh-reserve-herdr_pane-06",
+      "relative_path": "fixtures/c9-test-027/project/sfdx-project.json",
+      "sha256": "b601eed07395ea57e93b7fd825ec50eb11a10bc258e0156fcbef702cb3a4ad79",
+      "bytes": 148,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-028",
+      "group_id": "fresh-reserve-herdr_pane-06",
+      "relative_path": "fixtures/c9-test-028/project/force-app/main/default/classes/CanyonHealthProbe.cls",
+      "sha256": "67a2efd06ea05d3bc217dd1b99b587506caf0f335df01107ac124d87c2d47ece",
+      "bytes": 130,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-028",
+      "group_id": "fresh-reserve-herdr_pane-06",
+      "relative_path": "fixtures/c9-test-028/project/force-app/main/default/classes/CanyonHealthProbe.cls-meta.xml",
+      "sha256": "356db61093648679fc9b3a801e41d51c94fa51e993380eac65b0bb076a20b6b0",
+      "bytes": 174,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-028",
+      "group_id": "fresh-reserve-herdr_pane-06",
+      "relative_path": "fixtures/c9-test-028/project/force-app/main/default/classes/CanyonHealthProbeTest.cls",
+      "sha256": "9c3b98861f8982eb1518247cd5556cfe5f89703496589586f25b05a17ed650ce",
+      "bytes": 192,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-028",
+      "group_id": "fresh-reserve-herdr_pane-06",
+      "relative_path": "fixtures/c9-test-028/project/force-app/main/default/classes/CanyonHealthProbeTest.cls-meta.xml",
+      "sha256": "356db61093648679fc9b3a801e41d51c94fa51e993380eac65b0bb076a20b6b0",
+      "bytes": 174,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-028",
+      "group_id": "fresh-reserve-herdr_pane-06",
+      "relative_path": "fixtures/c9-test-028/project/sfdx-project.json",
+      "sha256": "b601eed07395ea57e93b7fd825ec50eb11a10bc258e0156fcbef702cb3a4ad79",
+      "bytes": 148,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-031",
+      "group_id": "fresh-reserve-herdr_pane-08",
+      "relative_path": "fixtures/c9-test-031/project/package.json",
+      "sha256": "79639615bb3c8b737b3f011cea5b1b59a472a080d0c6268dd123d16313cfa82a",
+      "bytes": 267,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-031",
+      "group_id": "fresh-reserve-herdr_pane-08",
+      "relative_path": "fixtures/c9-test-031/project/request-approval.spec.js",
+      "sha256": "8ab8c1c5ec4ae11daa1c8392c9e7ee1ea3b5e65d3319f3cd90448879c37f6fe4",
+      "bytes": 273,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-031",
+      "group_id": "fresh-reserve-herdr_pane-08",
+      "relative_path": "fixtures/c9-test-031/project/src/request-approval.js",
+      "sha256": "6d07f131b9f7e62ae7af6094abf9e280389e81a8675d52a7ca06ea88a93480ea",
+      "bytes": 128,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-032",
+      "group_id": "fresh-reserve-herdr_pane-08",
+      "relative_path": "fixtures/c9-test-032/project/package.json",
+      "sha256": "79639615bb3c8b737b3f011cea5b1b59a472a080d0c6268dd123d16313cfa82a",
+      "bytes": 267,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-032",
+      "group_id": "fresh-reserve-herdr_pane-08",
+      "relative_path": "fixtures/c9-test-032/project/request-approval.spec.js",
+      "sha256": "8ab8c1c5ec4ae11daa1c8392c9e7ee1ea3b5e65d3319f3cd90448879c37f6fe4",
+      "bytes": 273,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-032",
+      "group_id": "fresh-reserve-herdr_pane-08",
+      "relative_path": "fixtures/c9-test-032/project/src/request-approval.js",
+      "sha256": "6d07f131b9f7e62ae7af6094abf9e280389e81a8675d52a7ca06ea88a93480ea",
+      "bytes": 128,
+      "mode_octal": "0644",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-033",
+      "group_id": "fresh-reserve-protected_files-01",
+      "relative_path": "fixtures/c9-test-033/project/.env.local",
+      "sha256": "6c530ad5b9d30a0f2f49cd88d69c77af2d2f862bdf5803f563784c78d4418d6e",
+      "bytes": 72,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-034",
+      "group_id": "fresh-reserve-protected_files-01",
+      "relative_path": "fixtures/c9-test-034/project/.env.sample",
+      "sha256": "8a35134965aba20dc17cc171a4da76c9dce199c26cec8ec38fa948b8666fa16e",
+      "bytes": 49,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-036",
+      "group_id": "fresh-reserve-protected_files-02",
+      "relative_path": "fixtures/c9-test-036/project/migration/package.xml",
+      "sha256": "38586a597493c8ff5111a791f9630e72fe442429d97bca854680fdc725c48ee9",
+      "bytes": 112,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-037",
+      "group_id": "fresh-reserve-protected_files-03",
+      "relative_path": "fixtures/c9-test-037/project/.sfdx/agents/ServiceDesk/sessions/rehearsal-state.json",
+      "sha256": "4ef77fe8bd315b85d3011747ac99103f68b43363250f765982aa629f7b6d02f8",
+      "bytes": 59,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-038",
+      "group_id": "fresh-reserve-protected_files-03",
+      "relative_path": "fixtures/c9-test-038/project/.sf/orgs/org-routing.json",
+      "sha256": "e0bd24f8953a881832961848c1eea7744343ed0091c2b402c558a32e3f300856",
+      "bytes": 109,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-039",
+      "group_id": "fresh-reserve-protected_files-04",
+      "relative_path": "fixtures/c9-test-039/project/.sf/config.json",
+      "sha256": "0e9aaba6e2c1399aed722a1281504fb2301b828006d2de0198293d8d7a017626",
+      "bytes": 65,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-040",
+      "group_id": "fresh-reserve-protected_files-04",
+      "relative_path": "fixtures/c9-test-040/project/config/project-settings.json",
+      "sha256": "3d567acf0adbe9d130722a922e88f7cd56285092671b6487f06541562f9185d0",
+      "bytes": 68,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-042",
+      "group_id": "fresh-reserve-protected_files-05",
+      "relative_path": "fixtures/c9-test-042/project/.sfdx/sourcePathInfos.json",
+      "sha256": "2fece937e5ad29caa72857fd405a22b0c7b98ee9d7b9223ef2a3f6f53f6035aa",
+      "bytes": 43,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-043",
+      "group_id": "fresh-reserve-protected_files-06",
+      "relative_path": "fixtures/c9-test-043/project/.env.production",
+      "sha256": "2fb9fca8c8fe625624099eb5aece7ae75b28fb6b0f39810238a3a83f12157962",
+      "bytes": 55,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-044",
+      "group_id": "fresh-reserve-protected_files-06",
+      "relative_path": "fixtures/c9-test-044/project/.env.test",
+      "sha256": "66b1a0d3a8e74e834e27f552c5bb963400052b336595fcf7473bbd26c8df3768",
+      "bytes": 44,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-045",
+      "group_id": "fresh-reserve-protected_files-07",
+      "relative_path": "fixtures/c9-test-045/project/.dev.vars",
+      "sha256": "2d06cae4e1569a10c4730207c6138d934499a56f597073fbaa004361f61abd3f",
+      "bytes": 82,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-047",
+      "group_id": "fresh-reserve-protected_files-08",
+      "relative_path": "fixtures/c9-test-047/project/review/destructiveChangesPre.xml",
+      "sha256": "d24381b2bb4d77b4d785d6f0a16374f1eeb2392f78926c1a2f9e3ef93ce06f10",
+      "bytes": 188,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-048",
+      "group_id": "fresh-reserve-protected_files-08",
+      "relative_path": "fixtures/c9-test-048/project/review/destructiveChangesPre.xml",
+      "sha256": "d24381b2bb4d77b4d785d6f0a16374f1eeb2392f78926c1a2f9e3ef93ce06f10",
+      "bytes": 188,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-049",
+      "group_id": "fresh-reserve-salesforcecli-01",
+      "relative_path": "fixtures/c9-test-049/project/fixtures/september-renewals.csv",
+      "sha256": "f55dd2d268493947c1ac8ec043c6191e812b349d49503dac945a0773ca1a6ba4",
+      "bytes": 55,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-049",
+      "group_id": "fresh-reserve-salesforcecli-01",
+      "relative_path": "fixtures/c9-test-049/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-050",
+      "group_id": "fresh-reserve-salesforcecli-01",
+      "relative_path": "fixtures/c9-test-050/project/fixtures/september-renewals.csv",
+      "sha256": "f55dd2d268493947c1ac8ec043c6191e812b349d49503dac945a0773ca1a6ba4",
+      "bytes": 55,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-050",
+      "group_id": "fresh-reserve-salesforcecli-01",
+      "relative_path": "fixtures/c9-test-050/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-051",
+      "group_id": "fresh-reserve-salesforcecli-02",
+      "relative_path": "fixtures/c9-test-051/project/fixtures/read-only-review.json",
+      "sha256": "21edd3cdf29b45b08f0b121d6dcf0594945a8bbfa1f5f874a47783e59959f814",
+      "bytes": 66,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-051",
+      "group_id": "fresh-reserve-salesforcecli-02",
+      "relative_path": "fixtures/c9-test-051/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-052",
+      "group_id": "fresh-reserve-salesforcecli-02",
+      "relative_path": "fixtures/c9-test-052/project/fixtures/read-only-review.json",
+      "sha256": "21edd3cdf29b45b08f0b121d6dcf0594945a8bbfa1f5f874a47783e59959f814",
+      "bytes": 66,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-052",
+      "group_id": "fresh-reserve-salesforcecli-02",
+      "relative_path": "fixtures/c9-test-052/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-053",
+      "group_id": "fresh-reserve-salesforcecli-03",
+      "relative_path": "fixtures/c9-test-053/project/force-app/main/default/classes/RenewalProbe.cls",
+      "sha256": "407244f1c79449efb3911defa4d0ece0e65754e6a91bc45ca5b75c45be4a36e4",
+      "bytes": 87,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-053",
+      "group_id": "fresh-reserve-salesforcecli-03",
+      "relative_path": "fixtures/c9-test-053/project/force-app/main/default/classes/RenewalProbe.cls-meta.xml",
+      "sha256": "096abcda22e447a43b0d80d243da9c8418b424946a0ddc7eeffe9f905aecb7e3",
+      "bytes": 145,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-053",
+      "group_id": "fresh-reserve-salesforcecli-03",
+      "relative_path": "fixtures/c9-test-053/project/manifests/monthly-renewal.xml",
+      "sha256": "9dbe5c4249668b4acb31ef712791b397eee4ca418d429e8eacbcceacb4839a2b",
+      "bytes": 180,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-053",
+      "group_id": "fresh-reserve-salesforcecli-03",
+      "relative_path": "fixtures/c9-test-053/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-054",
+      "group_id": "fresh-reserve-salesforcecli-03",
+      "relative_path": "fixtures/c9-test-054/project/force-app/main/default/classes/RenewalProbe.cls",
+      "sha256": "407244f1c79449efb3911defa4d0ece0e65754e6a91bc45ca5b75c45be4a36e4",
+      "bytes": 87,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-054",
+      "group_id": "fresh-reserve-salesforcecli-03",
+      "relative_path": "fixtures/c9-test-054/project/force-app/main/default/classes/RenewalProbe.cls-meta.xml",
+      "sha256": "096abcda22e447a43b0d80d243da9c8418b424946a0ddc7eeffe9f905aecb7e3",
+      "bytes": 145,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-054",
+      "group_id": "fresh-reserve-salesforcecli-03",
+      "relative_path": "fixtures/c9-test-054/project/manifests/monthly-renewal.xml",
+      "sha256": "9dbe5c4249668b4acb31ef712791b397eee4ca418d429e8eacbcceacb4839a2b",
+      "bytes": 180,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-054",
+      "group_id": "fresh-reserve-salesforcecli-03",
+      "relative_path": "fixtures/c9-test-054/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-055",
+      "group_id": "fresh-reserve-salesforcecli-04",
+      "relative_path": "fixtures/c9-test-055/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-056",
+      "group_id": "fresh-reserve-salesforcecli-04",
+      "relative_path": "fixtures/c9-test-056/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-057",
+      "group_id": "fresh-reserve-salesforcecli-05",
+      "relative_path": "fixtures/c9-test-057/project/force-app/main/default/classes/RenewalProbe.cls",
+      "sha256": "407244f1c79449efb3911defa4d0ece0e65754e6a91bc45ca5b75c45be4a36e4",
+      "bytes": 87,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-057",
+      "group_id": "fresh-reserve-salesforcecli-05",
+      "relative_path": "fixtures/c9-test-057/project/force-app/main/default/classes/RenewalProbe.cls-meta.xml",
+      "sha256": "096abcda22e447a43b0d80d243da9c8418b424946a0ddc7eeffe9f905aecb7e3",
+      "bytes": 145,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-057",
+      "group_id": "fresh-reserve-salesforcecli-05",
+      "relative_path": "fixtures/c9-test-057/project/scripts/probe-only.apex",
+      "sha256": "a3ba3e0e7045b4ed56d0f356c9cfa65ffd47dac2518d43a630628c69c78fa677",
+      "bytes": 45,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-057",
+      "group_id": "fresh-reserve-salesforcecli-05",
+      "relative_path": "fixtures/c9-test-057/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-058",
+      "group_id": "fresh-reserve-salesforcecli-05",
+      "relative_path": "fixtures/c9-test-058/project/force-app/main/default/classes/RenewalProbe.cls",
+      "sha256": "407244f1c79449efb3911defa4d0ece0e65754e6a91bc45ca5b75c45be4a36e4",
+      "bytes": 87,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-058",
+      "group_id": "fresh-reserve-salesforcecli-05",
+      "relative_path": "fixtures/c9-test-058/project/force-app/main/default/classes/RenewalProbe.cls-meta.xml",
+      "sha256": "096abcda22e447a43b0d80d243da9c8418b424946a0ddc7eeffe9f905aecb7e3",
+      "bytes": 145,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-058",
+      "group_id": "fresh-reserve-salesforcecli-05",
+      "relative_path": "fixtures/c9-test-058/project/scripts/probe-only.apex",
+      "sha256": "a3ba3e0e7045b4ed56d0f356c9cfa65ffd47dac2518d43a630628c69c78fa677",
+      "bytes": 45,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-058",
+      "group_id": "fresh-reserve-salesforcecli-05",
+      "relative_path": "fixtures/c9-test-058/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-059",
+      "group_id": "fresh-reserve-salesforcecli-06",
+      "relative_path": "fixtures/c9-test-059/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-060",
+      "group_id": "fresh-reserve-salesforcecli-06",
+      "relative_path": "fixtures/c9-test-060/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-061",
+      "group_id": "fresh-reserve-salesforcecli-07",
+      "relative_path": "fixtures/c9-test-061/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-062",
+      "group_id": "fresh-reserve-salesforcecli-07",
+      "relative_path": "fixtures/c9-test-062/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-063",
+      "group_id": "fresh-reserve-salesforcecli-08",
+      "relative_path": "fixtures/c9-test-063/project/.sf/sourceTracking/fixture-tracking.json",
+      "sha256": "f588607b6238948a95621646c5a2dcb367b697e8618c6fdf21a7119438335d03",
+      "bytes": 109,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-063",
+      "group_id": "fresh-reserve-salesforcecli-08",
+      "relative_path": "fixtures/c9-test-063/project/force-app/main/default/classes/RenewalProbe.cls",
+      "sha256": "407244f1c79449efb3911defa4d0ece0e65754e6a91bc45ca5b75c45be4a36e4",
+      "bytes": 87,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-063",
+      "group_id": "fresh-reserve-salesforcecli-08",
+      "relative_path": "fixtures/c9-test-063/project/force-app/main/default/classes/RenewalProbe.cls-meta.xml",
+      "sha256": "096abcda22e447a43b0d80d243da9c8418b424946a0ddc7eeffe9f905aecb7e3",
+      "bytes": 145,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-063",
+      "group_id": "fresh-reserve-salesforcecli-08",
+      "relative_path": "fixtures/c9-test-063/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-064",
+      "group_id": "fresh-reserve-salesforcecli-08",
+      "relative_path": "fixtures/c9-test-064/project/.sf/sourceTracking/fixture-tracking.json",
+      "sha256": "f588607b6238948a95621646c5a2dcb367b697e8618c6fdf21a7119438335d03",
+      "bytes": 109,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-064",
+      "group_id": "fresh-reserve-salesforcecli-08",
+      "relative_path": "fixtures/c9-test-064/project/force-app/main/default/classes/RenewalProbe.cls",
+      "sha256": "407244f1c79449efb3911defa4d0ece0e65754e6a91bc45ca5b75c45be4a36e4",
+      "bytes": 87,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-064",
+      "group_id": "fresh-reserve-salesforcecli-08",
+      "relative_path": "fixtures/c9-test-064/project/force-app/main/default/classes/RenewalProbe.cls-meta.xml",
+      "sha256": "096abcda22e447a43b0d80d243da9c8418b424946a0ddc7eeffe9f905aecb7e3",
+      "bytes": 145,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-064",
+      "group_id": "fresh-reserve-salesforcecli-08",
+      "relative_path": "fixtures/c9-test-064/project/sfdx-project.json",
+      "sha256": "8daf4efc89deb3f2541c53b9cb9fbc7cc0563eccebdfb66990b6b3acaf1be291",
+      "bytes": 102,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-073",
+      "group_id": "fresh-reserve-soql-05",
+      "relative_path": "fixtures/c9-test-073/project/.sf-pi/artifacts/soql/geographic-account-sample/flattened.json",
+      "sha256": "d62fc51d6012874911ffd7844cf6740a96437d3cbcae825140344edd893950d3",
+      "bytes": 301,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-073",
+      "group_id": "fresh-reserve-soql-05",
+      "relative_path": "fixtures/c9-test-073/project/.sf-pi/artifacts/soql/geographic-account-sample/raw.json",
+      "sha256": "e1445d86fe46b9ec9e75306222fd9767fae47166d93e3eb5df476acf022111df",
+      "bytes": 384,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-074",
+      "group_id": "fresh-reserve-soql-05",
+      "relative_path": "fixtures/c9-test-074/project/.sf-pi/artifacts/soql/geographic-account-sample/flattened.json",
+      "sha256": "d62fc51d6012874911ffd7844cf6740a96437d3cbcae825140344edd893950d3",
+      "bytes": 301,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-074",
+      "group_id": "fresh-reserve-soql-05",
+      "relative_path": "fixtures/c9-test-074/project/.sf-pi/artifacts/soql/geographic-account-sample/raw.json",
+      "sha256": "e1445d86fe46b9ec9e75306222fd9767fae47166d93e3eb5df476acf022111df",
+      "bytes": 384,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-097",
+      "group_id": "fresh-reserve-apex-01",
+      "relative_path": "fixtures/c9-test-097/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-098",
+      "group_id": "fresh-reserve-apex-01",
+      "relative_path": "fixtures/c9-test-098/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-099",
+      "group_id": "fresh-reserve-apex-02",
+      "relative_path": "fixtures/c9-test-099/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-100",
+      "group_id": "fresh-reserve-apex-02",
+      "relative_path": "fixtures/c9-test-100/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-101",
+      "group_id": "fresh-reserve-apex-03",
+      "relative_path": "fixtures/c9-test-101/project/force-app/main/default/classes/EntitlementExpiryQueue.cls",
+      "sha256": "6729c84fb95ab7081ca3b19dcbe3729998ad1a0f05d8ea2fda1d7973414fa3ce",
+      "bytes": 701,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-101",
+      "group_id": "fresh-reserve-apex-03",
+      "relative_path": "fixtures/c9-test-101/project/force-app/main/default/classes/EntitlementExpiryQueue.cls-meta.xml",
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "bytes": 174,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-101",
+      "group_id": "fresh-reserve-apex-03",
+      "relative_path": "fixtures/c9-test-101/project/force-app/main/default/classes/EntitlementExpiryQueueTest.cls",
+      "sha256": "cdbb47a3f503b18561c8039b5c15ec1a7f631293bc18dfd39fb5789c24693e9c",
+      "bytes": 618,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-101",
+      "group_id": "fresh-reserve-apex-03",
+      "relative_path": "fixtures/c9-test-101/project/force-app/main/default/classes/EntitlementExpiryQueueTest.cls-meta.xml",
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "bytes": 174,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-101",
+      "group_id": "fresh-reserve-apex-03",
+      "relative_path": "fixtures/c9-test-101/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-102",
+      "group_id": "fresh-reserve-apex-03",
+      "relative_path": "fixtures/c9-test-102/project/force-app/main/default/classes/EntitlementExpiryQueue.cls",
+      "sha256": "6729c84fb95ab7081ca3b19dcbe3729998ad1a0f05d8ea2fda1d7973414fa3ce",
+      "bytes": 701,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-102",
+      "group_id": "fresh-reserve-apex-03",
+      "relative_path": "fixtures/c9-test-102/project/force-app/main/default/classes/EntitlementExpiryQueue.cls-meta.xml",
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "bytes": 174,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-102",
+      "group_id": "fresh-reserve-apex-03",
+      "relative_path": "fixtures/c9-test-102/project/force-app/main/default/classes/EntitlementExpiryQueueTest.cls",
+      "sha256": "cdbb47a3f503b18561c8039b5c15ec1a7f631293bc18dfd39fb5789c24693e9c",
+      "bytes": 618,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-102",
+      "group_id": "fresh-reserve-apex-03",
+      "relative_path": "fixtures/c9-test-102/project/force-app/main/default/classes/EntitlementExpiryQueueTest.cls-meta.xml",
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "bytes": 174,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-102",
+      "group_id": "fresh-reserve-apex-03",
+      "relative_path": "fixtures/c9-test-102/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-103",
+      "group_id": "fresh-reserve-apex-04",
+      "relative_path": "fixtures/c9-test-103/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-104",
+      "group_id": "fresh-reserve-apex-04",
+      "relative_path": "fixtures/c9-test-104/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-105",
+      "group_id": "fresh-reserve-apex-05",
+      "relative_path": "fixtures/c9-test-105/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-106",
+      "group_id": "fresh-reserve-apex-05",
+      "relative_path": "fixtures/c9-test-106/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-107",
+      "group_id": "fresh-reserve-apex-06",
+      "relative_path": "fixtures/c9-test-107/project/force-app/main/default/classes/InventoryProjectionHandler.cls",
+      "sha256": "a68507386c91156d8c60bc5487a0ea7e387790cb62933b478fe0c1b06ec5230c",
+      "bytes": 209,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-107",
+      "group_id": "fresh-reserve-apex-06",
+      "relative_path": "fixtures/c9-test-107/project/force-app/main/default/classes/InventoryProjectionHandler.cls-meta.xml",
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "bytes": 174,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-107",
+      "group_id": "fresh-reserve-apex-06",
+      "relative_path": "fixtures/c9-test-107/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-108",
+      "group_id": "fresh-reserve-apex-06",
+      "relative_path": "fixtures/c9-test-108/project/force-app/main/default/classes/InventoryProjectionHandler.cls",
+      "sha256": "a68507386c91156d8c60bc5487a0ea7e387790cb62933b478fe0c1b06ec5230c",
+      "bytes": 209,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-108",
+      "group_id": "fresh-reserve-apex-06",
+      "relative_path": "fixtures/c9-test-108/project/force-app/main/default/classes/InventoryProjectionHandler.cls-meta.xml",
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "bytes": 174,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-108",
+      "group_id": "fresh-reserve-apex-06",
+      "relative_path": "fixtures/c9-test-108/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-109",
+      "group_id": "fresh-reserve-apex-07",
+      "relative_path": "fixtures/c9-test-109/project/force-app/main/default/classes/TerritorySplitBatch.cls",
+      "sha256": "9663e28e00acab73d6c998403a7e0982f77a3d17f56c5c125cd0dbcc0f9ec754",
+      "bytes": 578,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-109",
+      "group_id": "fresh-reserve-apex-07",
+      "relative_path": "fixtures/c9-test-109/project/force-app/main/default/classes/TerritorySplitBatch.cls-meta.xml",
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "bytes": 174,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-109",
+      "group_id": "fresh-reserve-apex-07",
+      "relative_path": "fixtures/c9-test-109/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-110",
+      "group_id": "fresh-reserve-apex-07",
+      "relative_path": "fixtures/c9-test-110/project/force-app/main/default/classes/TerritorySplitBatch.cls",
+      "sha256": "9663e28e00acab73d6c998403a7e0982f77a3d17f56c5c125cd0dbcc0f9ec754",
+      "bytes": 578,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-110",
+      "group_id": "fresh-reserve-apex-07",
+      "relative_path": "fixtures/c9-test-110/project/force-app/main/default/classes/TerritorySplitBatch.cls-meta.xml",
+      "sha256": "87b91a7450c6f89862eaf12fd41e143807888c976d917c53283bcfa8bf75cb1f",
+      "bytes": 174,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-110",
+      "group_id": "fresh-reserve-apex-07",
+      "relative_path": "fixtures/c9-test-110/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-111",
+      "group_id": "fresh-reserve-apex-08",
+      "relative_path": "fixtures/c9-test-111/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-112",
+      "group_id": "fresh-reserve-apex-08",
+      "relative_path": "fixtures/c9-test-112/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-113",
+      "group_id": "fresh-reserve-agentscript-01",
+      "relative_path": "fixtures/c9-test-113/project/agent-bundles/bridge-support.agent",
+      "sha256": "7ffa062006110c2ac6e67aa7235b5030fd87bf6ed06e4ff877752511a60b6735",
+      "bytes": 1131,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-113",
+      "group_id": "fresh-reserve-agentscript-01",
+      "relative_path": "fixtures/c9-test-113/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-113",
+      "group_id": "fresh-reserve-agentscript-01",
+      "relative_path": "fixtures/c9-test-113/project/tests/agentforce/BridgeSupport.v6.release.json",
+      "sha256": "189b952ea2167d561c9cc94b8c2d437ba6893586f731d3cba4eb9410c2600f33",
+      "bytes": 1002,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-114",
+      "group_id": "fresh-reserve-agentscript-01",
+      "relative_path": "fixtures/c9-test-114/project/agent-bundles/bridge-support.agent",
+      "sha256": "7ffa062006110c2ac6e67aa7235b5030fd87bf6ed06e4ff877752511a60b6735",
+      "bytes": 1131,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-114",
+      "group_id": "fresh-reserve-agentscript-01",
+      "relative_path": "fixtures/c9-test-114/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-114",
+      "group_id": "fresh-reserve-agentscript-01",
+      "relative_path": "fixtures/c9-test-114/project/tests/agentforce/BridgeSupport.v6.release.json",
+      "sha256": "189b952ea2167d561c9cc94b8c2d437ba6893586f731d3cba4eb9410c2600f33",
+      "bytes": 1002,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-115",
+      "group_id": "fresh-reserve-agentscript-02",
+      "relative_path": "fixtures/c9-test-115/project/agent-bundles/dispatch.agent",
+      "sha256": "42ba7ea439d6ab6f19e8ef832a9f58a4f9775892b440f1b44107fb0316f3e5b4",
+      "bytes": 1005,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-115",
+      "group_id": "fresh-reserve-agentscript-02",
+      "relative_path": "fixtures/c9-test-115/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-115",
+      "group_id": "fresh-reserve-agentscript-02",
+      "relative_path": "fixtures/c9-test-115/project/tests/dispatch-release.eval.json",
+      "sha256": "48670518795e36811cfee990413591d8c35e6ebb4f5d6d9c08f1994eb0004df7",
+      "bytes": 1006,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-116",
+      "group_id": "fresh-reserve-agentscript-02",
+      "relative_path": "fixtures/c9-test-116/project/agent-bundles/dispatch.agent",
+      "sha256": "42ba7ea439d6ab6f19e8ef832a9f58a4f9775892b440f1b44107fb0316f3e5b4",
+      "bytes": 1005,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-116",
+      "group_id": "fresh-reserve-agentscript-02",
+      "relative_path": "fixtures/c9-test-116/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-116",
+      "group_id": "fresh-reserve-agentscript-02",
+      "relative_path": "fixtures/c9-test-116/project/tests/dispatch-release.eval.json",
+      "sha256": "48670518795e36811cfee990413591d8c35e6ebb4f5d6d9c08f1994eb0004df7",
+      "bytes": 1006,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-117",
+      "group_id": "fresh-reserve-agentscript-03",
+      "relative_path": "fixtures/c9-test-117/project/service-agents/claims.agent",
+      "sha256": "810efb83848cbc66439619f7196cc4a3d7a2c5206994090d087a94d323dd066e",
+      "bytes": 1139,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-117",
+      "group_id": "fresh-reserve-agentscript-03",
+      "relative_path": "fixtures/c9-test-117/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-118",
+      "group_id": "fresh-reserve-agentscript-03",
+      "relative_path": "fixtures/c9-test-118/project/service-agents/claims.agent",
+      "sha256": "810efb83848cbc66439619f7196cc4a3d7a2c5206994090d087a94d323dd066e",
+      "bytes": 1139,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-118",
+      "group_id": "fresh-reserve-agentscript-03",
+      "relative_path": "fixtures/c9-test-118/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-119",
+      "group_id": "fresh-reserve-agentscript-04",
+      "relative_path": "fixtures/c9-test-119/project/agents/parcel_handoff.agent",
+      "sha256": "c612f04683884669424bca278c7733ae2434a3c564a496a79840034f68cd0fe0",
+      "bytes": 978,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-119",
+      "group_id": "fresh-reserve-agentscript-04",
+      "relative_path": "fixtures/c9-test-119/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-120",
+      "group_id": "fresh-reserve-agentscript-04",
+      "relative_path": "fixtures/c9-test-120/project/agents/parcel_handoff.agent",
+      "sha256": "c612f04683884669424bca278c7733ae2434a3c564a496a79840034f68cd0fe0",
+      "bytes": 978,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-120",
+      "group_id": "fresh-reserve-agentscript-04",
+      "relative_path": "fixtures/c9-test-120/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-121",
+      "group_id": "fresh-reserve-agentscript-05",
+      "relative_path": "fixtures/c9-test-121/project/bundles/partner.agent",
+      "sha256": "aefed448aa62eb5498b6f33e4e8ffc44d92606b0845278fbf07f50f0e0341690",
+      "bytes": 819,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-121",
+      "group_id": "fresh-reserve-agentscript-05",
+      "relative_path": "fixtures/c9-test-121/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-122",
+      "group_id": "fresh-reserve-agentscript-05",
+      "relative_path": "fixtures/c9-test-122/project/bundles/partner.agent",
+      "sha256": "aefed448aa62eb5498b6f33e4e8ffc44d92606b0845278fbf07f50f0e0341690",
+      "bytes": 819,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-122",
+      "group_id": "fresh-reserve-agentscript-05",
+      "relative_path": "fixtures/c9-test-122/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-123",
+      "group_id": "fresh-reserve-agentscript-06",
+      "relative_path": "fixtures/c9-test-123/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-124",
+      "group_id": "fresh-reserve-agentscript-06",
+      "relative_path": "fixtures/c9-test-124/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-125",
+      "group_id": "fresh-reserve-agentscript-07",
+      "relative_path": "fixtures/c9-test-125/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-125",
+      "group_id": "fresh-reserve-agentscript-07",
+      "relative_path": "fixtures/c9-test-125/project/support/warranty.agent",
+      "sha256": "15237eee36442a3598fd56d339ce2297cae75e5fb09a7fec23874af60ae3d451",
+      "bytes": 1028,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-126",
+      "group_id": "fresh-reserve-agentscript-07",
+      "relative_path": "fixtures/c9-test-126/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-126",
+      "group_id": "fresh-reserve-agentscript-07",
+      "relative_path": "fixtures/c9-test-126/project/support/warranty.agent",
+      "sha256": "15237eee36442a3598fd56d339ce2297cae75e5fb09a7fec23874af60ae3d451",
+      "bytes": 1028,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-127",
+      "group_id": "fresh-reserve-agentscript-08",
+      "relative_path": "fixtures/c9-test-127/project/routing/seasonal.agent",
+      "sha256": "f41fe8745fd736145adb2266420145141422a060f8f727cafc14ee7ef22e69df",
+      "bytes": 987,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-127",
+      "group_id": "fresh-reserve-agentscript-08",
+      "relative_path": "fixtures/c9-test-127/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-128",
+      "group_id": "fresh-reserve-agentscript-08",
+      "relative_path": "fixtures/c9-test-128/project/routing/seasonal.agent",
+      "sha256": "f41fe8745fd736145adb2266420145141422a060f8f727cafc14ee7ef22e69df",
+      "bytes": 987,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    },
+    {
+      "case_id": "c9-test-128",
+      "group_id": "fresh-reserve-agentscript-08",
+      "relative_path": "fixtures/c9-test-128/project/sfdx-project.json",
+      "sha256": "b15fda053c888e1b85f4b6633e6b3fb625e12f6e2b06c1432b24314e59c35b86",
+      "bytes": 144,
+      "mode_octal": "0600",
+      "owner_uid": 501,
+      "hardlink_count": 1,
+      "readable_writable": true
+    }
+  ],
+  "directories": [
+    {
+      "case_id": "c9-test-001",
+      "relative_path": "fixtures/c9-test-001",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-001",
+      "relative_path": "fixtures/c9-test-001/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-001",
+      "relative_path": "fixtures/c9-test-001/project/evidence",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-001",
+      "relative_path": "fixtures/c9-test-001/project/evidence/2024-audit",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-002",
+      "relative_path": "fixtures/c9-test-002",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-002",
+      "relative_path": "fixtures/c9-test-002/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-002",
+      "relative_path": "fixtures/c9-test-002/project/evidence",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-002",
+      "relative_path": "fixtures/c9-test-002/project/evidence/2024-audit",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-003",
+      "relative_path": "fixtures/c9-test-003",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-003",
+      "relative_path": "fixtures/c9-test-003/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-003",
+      "relative_path": "fixtures/c9-test-003/project/release-evidence",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-004",
+      "relative_path": "fixtures/c9-test-004",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-004",
+      "relative_path": "fixtures/c9-test-004/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-004",
+      "relative_path": "fixtures/c9-test-004/project/release-evidence",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-005",
+      "relative_path": "fixtures/c9-test-005",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-005",
+      "relative_path": "fixtures/c9-test-005/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-006",
+      "relative_path": "fixtures/c9-test-006",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-006",
+      "relative_path": "fixtures/c9-test-006/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-007",
+      "relative_path": "fixtures/c9-test-007",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-007",
+      "relative_path": "fixtures/c9-test-007/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-008",
+      "relative_path": "fixtures/c9-test-008",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-008",
+      "relative_path": "fixtures/c9-test-008/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-008",
+      "relative_path": "fixtures/c9-test-008/project/runtime",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-009",
+      "relative_path": "fixtures/c9-test-009",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-009",
+      "relative_path": "fixtures/c9-test-009/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-009",
+      "relative_path": "fixtures/c9-test-009/project/support-bundle",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-009",
+      "relative_path": "fixtures/c9-test-009/project/support-bundle/credentials",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-009",
+      "relative_path": "fixtures/c9-test-009/project/support-bundle/diagnostics",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-010",
+      "relative_path": "fixtures/c9-test-010",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-010",
+      "relative_path": "fixtures/c9-test-010/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-010",
+      "relative_path": "fixtures/c9-test-010/project/support-bundle",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-010",
+      "relative_path": "fixtures/c9-test-010/project/support-bundle/credentials",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-010",
+      "relative_path": "fixtures/c9-test-010/project/support-bundle/diagnostics",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-011",
+      "relative_path": "fixtures/c9-test-011",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-011",
+      "relative_path": "fixtures/c9-test-011/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-011",
+      "relative_path": "fixtures/c9-test-011/project/handoff",
+      "mode_octal": "0750",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-012",
+      "relative_path": "fixtures/c9-test-012",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-012",
+      "relative_path": "fixtures/c9-test-012/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-012",
+      "relative_path": "fixtures/c9-test-012/project/handoff",
+      "mode_octal": "0750",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-013",
+      "relative_path": "fixtures/c9-test-013",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-013",
+      "relative_path": "fixtures/c9-test-013/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-014",
+      "relative_path": "fixtures/c9-test-014",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-014",
+      "relative_path": "fixtures/c9-test-014/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-015",
+      "relative_path": "fixtures/c9-test-015",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-015",
+      "relative_path": "fixtures/c9-test-015/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-015",
+      "relative_path": "fixtures/c9-test-015/project/launch",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-016",
+      "relative_path": "fixtures/c9-test-016",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-016",
+      "relative_path": "fixtures/c9-test-016/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-016",
+      "relative_path": "fixtures/c9-test-016/project/launch",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-017",
+      "relative_path": "fixtures/c9-test-017",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-017",
+      "relative_path": "fixtures/c9-test-017/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-017",
+      "relative_path": "fixtures/c9-test-017/project/audit",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-018",
+      "relative_path": "fixtures/c9-test-018",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-018",
+      "relative_path": "fixtures/c9-test-018/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-018",
+      "relative_path": "fixtures/c9-test-018/project/audit",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-019",
+      "relative_path": "fixtures/c9-test-019",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-019",
+      "relative_path": "fixtures/c9-test-019/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-020",
+      "relative_path": "fixtures/c9-test-020",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-020",
+      "relative_path": "fixtures/c9-test-020/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-021",
+      "relative_path": "fixtures/c9-test-021",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-021",
+      "relative_path": "fixtures/c9-test-021/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-021",
+      "relative_path": "fixtures/c9-test-021/project/infra",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-021",
+      "relative_path": "fixtures/c9-test-021/project/infra/canyon",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-022",
+      "relative_path": "fixtures/c9-test-022",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-022",
+      "relative_path": "fixtures/c9-test-022/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-022",
+      "relative_path": "fixtures/c9-test-022/project/infra",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-022",
+      "relative_path": "fixtures/c9-test-022/project/infra/canyon",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-023",
+      "relative_path": "fixtures/c9-test-023",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-023",
+      "relative_path": "fixtures/c9-test-023/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-023",
+      "relative_path": "fixtures/c9-test-023/project/ops",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-024",
+      "relative_path": "fixtures/c9-test-024",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-024",
+      "relative_path": "fixtures/c9-test-024/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-024",
+      "relative_path": "fixtures/c9-test-024/project/ops",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-025",
+      "relative_path": "fixtures/c9-test-025",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-025",
+      "relative_path": "fixtures/c9-test-025/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-025",
+      "relative_path": "fixtures/c9-test-025/project/oci-review",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-025",
+      "relative_path": "fixtures/c9-test-025/project/oci-review/blobs",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-025",
+      "relative_path": "fixtures/c9-test-025/project/oci-review/blobs/sha256",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-026",
+      "relative_path": "fixtures/c9-test-026",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-026",
+      "relative_path": "fixtures/c9-test-026/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-026",
+      "relative_path": "fixtures/c9-test-026/project/oci-review",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-026",
+      "relative_path": "fixtures/c9-test-026/project/oci-review/blobs",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-026",
+      "relative_path": "fixtures/c9-test-026/project/oci-review/blobs/sha256",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-027",
+      "relative_path": "fixtures/c9-test-027",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-027",
+      "relative_path": "fixtures/c9-test-027/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-027",
+      "relative_path": "fixtures/c9-test-027/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-027",
+      "relative_path": "fixtures/c9-test-027/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-027",
+      "relative_path": "fixtures/c9-test-027/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-027",
+      "relative_path": "fixtures/c9-test-027/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-028",
+      "relative_path": "fixtures/c9-test-028",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-028",
+      "relative_path": "fixtures/c9-test-028/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-028",
+      "relative_path": "fixtures/c9-test-028/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-028",
+      "relative_path": "fixtures/c9-test-028/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-028",
+      "relative_path": "fixtures/c9-test-028/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-028",
+      "relative_path": "fixtures/c9-test-028/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-029",
+      "relative_path": "fixtures/c9-test-029",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-029",
+      "relative_path": "fixtures/c9-test-029/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-030",
+      "relative_path": "fixtures/c9-test-030",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-030",
+      "relative_path": "fixtures/c9-test-030/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-031",
+      "relative_path": "fixtures/c9-test-031",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-031",
+      "relative_path": "fixtures/c9-test-031/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-031",
+      "relative_path": "fixtures/c9-test-031/project/src",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-032",
+      "relative_path": "fixtures/c9-test-032",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-032",
+      "relative_path": "fixtures/c9-test-032/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-032",
+      "relative_path": "fixtures/c9-test-032/project/src",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-033",
+      "relative_path": "fixtures/c9-test-033",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-033",
+      "relative_path": "fixtures/c9-test-033/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-034",
+      "relative_path": "fixtures/c9-test-034",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-034",
+      "relative_path": "fixtures/c9-test-034/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-035",
+      "relative_path": "fixtures/c9-test-035",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-035",
+      "relative_path": "fixtures/c9-test-035/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-035",
+      "relative_path": "fixtures/c9-test-035/project/migration",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-036",
+      "relative_path": "fixtures/c9-test-036",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-036",
+      "relative_path": "fixtures/c9-test-036/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-036",
+      "relative_path": "fixtures/c9-test-036/project/migration",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-037",
+      "relative_path": "fixtures/c9-test-037",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-037",
+      "relative_path": "fixtures/c9-test-037/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-037",
+      "relative_path": "fixtures/c9-test-037/project/.sfdx",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-037",
+      "relative_path": "fixtures/c9-test-037/project/.sfdx/agents",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-037",
+      "relative_path": "fixtures/c9-test-037/project/.sfdx/agents/ServiceDesk",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-037",
+      "relative_path": "fixtures/c9-test-037/project/.sfdx/agents/ServiceDesk/sessions",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-038",
+      "relative_path": "fixtures/c9-test-038",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-038",
+      "relative_path": "fixtures/c9-test-038/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-038",
+      "relative_path": "fixtures/c9-test-038/project/.sf",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-038",
+      "relative_path": "fixtures/c9-test-038/project/.sf/orgs",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-039",
+      "relative_path": "fixtures/c9-test-039",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-039",
+      "relative_path": "fixtures/c9-test-039/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-039",
+      "relative_path": "fixtures/c9-test-039/project/.sf",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-040",
+      "relative_path": "fixtures/c9-test-040",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-040",
+      "relative_path": "fixtures/c9-test-040/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-040",
+      "relative_path": "fixtures/c9-test-040/project/config",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-041",
+      "relative_path": "fixtures/c9-test-041",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-041",
+      "relative_path": "fixtures/c9-test-041/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-041",
+      "relative_path": "fixtures/c9-test-041/project/.sfdx",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-041",
+      "relative_path": "fixtures/c9-test-041/project/.sfdx/agents",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-041",
+      "relative_path": "fixtures/c9-test-041/project/.sfdx/agents/ServiceDesk",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-041",
+      "relative_path": "fixtures/c9-test-041/project/.sfdx/agents/ServiceDesk/sessions",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-042",
+      "relative_path": "fixtures/c9-test-042",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-042",
+      "relative_path": "fixtures/c9-test-042/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-042",
+      "relative_path": "fixtures/c9-test-042/project/.sfdx",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-043",
+      "relative_path": "fixtures/c9-test-043",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-043",
+      "relative_path": "fixtures/c9-test-043/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-044",
+      "relative_path": "fixtures/c9-test-044",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-044",
+      "relative_path": "fixtures/c9-test-044/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-045",
+      "relative_path": "fixtures/c9-test-045",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-045",
+      "relative_path": "fixtures/c9-test-045/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-046",
+      "relative_path": "fixtures/c9-test-046",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-046",
+      "relative_path": "fixtures/c9-test-046/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-047",
+      "relative_path": "fixtures/c9-test-047",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-047",
+      "relative_path": "fixtures/c9-test-047/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-047",
+      "relative_path": "fixtures/c9-test-047/project/review",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-048",
+      "relative_path": "fixtures/c9-test-048",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-048",
+      "relative_path": "fixtures/c9-test-048/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-048",
+      "relative_path": "fixtures/c9-test-048/project/review",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-049",
+      "relative_path": "fixtures/c9-test-049",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-049",
+      "relative_path": "fixtures/c9-test-049/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-049",
+      "relative_path": "fixtures/c9-test-049/project/fixtures",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-049",
+      "relative_path": "fixtures/c9-test-049/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-050",
+      "relative_path": "fixtures/c9-test-050",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-050",
+      "relative_path": "fixtures/c9-test-050/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-050",
+      "relative_path": "fixtures/c9-test-050/project/fixtures",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-050",
+      "relative_path": "fixtures/c9-test-050/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-051",
+      "relative_path": "fixtures/c9-test-051",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-051",
+      "relative_path": "fixtures/c9-test-051/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-051",
+      "relative_path": "fixtures/c9-test-051/project/fixtures",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-051",
+      "relative_path": "fixtures/c9-test-051/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-052",
+      "relative_path": "fixtures/c9-test-052",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-052",
+      "relative_path": "fixtures/c9-test-052/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-052",
+      "relative_path": "fixtures/c9-test-052/project/fixtures",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-052",
+      "relative_path": "fixtures/c9-test-052/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-053",
+      "relative_path": "fixtures/c9-test-053",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-053",
+      "relative_path": "fixtures/c9-test-053/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-053",
+      "relative_path": "fixtures/c9-test-053/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-053",
+      "relative_path": "fixtures/c9-test-053/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-053",
+      "relative_path": "fixtures/c9-test-053/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-053",
+      "relative_path": "fixtures/c9-test-053/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-053",
+      "relative_path": "fixtures/c9-test-053/project/manifests",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-054",
+      "relative_path": "fixtures/c9-test-054",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-054",
+      "relative_path": "fixtures/c9-test-054/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-054",
+      "relative_path": "fixtures/c9-test-054/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-054",
+      "relative_path": "fixtures/c9-test-054/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-054",
+      "relative_path": "fixtures/c9-test-054/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-054",
+      "relative_path": "fixtures/c9-test-054/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-054",
+      "relative_path": "fixtures/c9-test-054/project/manifests",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-055",
+      "relative_path": "fixtures/c9-test-055",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-055",
+      "relative_path": "fixtures/c9-test-055/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-055",
+      "relative_path": "fixtures/c9-test-055/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-056",
+      "relative_path": "fixtures/c9-test-056",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-056",
+      "relative_path": "fixtures/c9-test-056/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-056",
+      "relative_path": "fixtures/c9-test-056/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-057",
+      "relative_path": "fixtures/c9-test-057",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-057",
+      "relative_path": "fixtures/c9-test-057/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-057",
+      "relative_path": "fixtures/c9-test-057/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-057",
+      "relative_path": "fixtures/c9-test-057/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-057",
+      "relative_path": "fixtures/c9-test-057/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-057",
+      "relative_path": "fixtures/c9-test-057/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-057",
+      "relative_path": "fixtures/c9-test-057/project/scripts",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-058",
+      "relative_path": "fixtures/c9-test-058",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-058",
+      "relative_path": "fixtures/c9-test-058/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-058",
+      "relative_path": "fixtures/c9-test-058/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-058",
+      "relative_path": "fixtures/c9-test-058/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-058",
+      "relative_path": "fixtures/c9-test-058/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-058",
+      "relative_path": "fixtures/c9-test-058/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-058",
+      "relative_path": "fixtures/c9-test-058/project/scripts",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-059",
+      "relative_path": "fixtures/c9-test-059",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-059",
+      "relative_path": "fixtures/c9-test-059/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-059",
+      "relative_path": "fixtures/c9-test-059/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-060",
+      "relative_path": "fixtures/c9-test-060",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-060",
+      "relative_path": "fixtures/c9-test-060/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-060",
+      "relative_path": "fixtures/c9-test-060/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-061",
+      "relative_path": "fixtures/c9-test-061",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-061",
+      "relative_path": "fixtures/c9-test-061/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-061",
+      "relative_path": "fixtures/c9-test-061/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-062",
+      "relative_path": "fixtures/c9-test-062",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-062",
+      "relative_path": "fixtures/c9-test-062/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-062",
+      "relative_path": "fixtures/c9-test-062/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-063",
+      "relative_path": "fixtures/c9-test-063",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-063",
+      "relative_path": "fixtures/c9-test-063/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-063",
+      "relative_path": "fixtures/c9-test-063/project/.sf",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-063",
+      "relative_path": "fixtures/c9-test-063/project/.sf/sourceTracking",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-063",
+      "relative_path": "fixtures/c9-test-063/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-063",
+      "relative_path": "fixtures/c9-test-063/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-063",
+      "relative_path": "fixtures/c9-test-063/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-063",
+      "relative_path": "fixtures/c9-test-063/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-064",
+      "relative_path": "fixtures/c9-test-064",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-064",
+      "relative_path": "fixtures/c9-test-064/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-064",
+      "relative_path": "fixtures/c9-test-064/project/.sf",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-064",
+      "relative_path": "fixtures/c9-test-064/project/.sf/sourceTracking",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-064",
+      "relative_path": "fixtures/c9-test-064/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-064",
+      "relative_path": "fixtures/c9-test-064/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-064",
+      "relative_path": "fixtures/c9-test-064/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-064",
+      "relative_path": "fixtures/c9-test-064/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-065",
+      "relative_path": "fixtures/c9-test-065",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-065",
+      "relative_path": "fixtures/c9-test-065/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-066",
+      "relative_path": "fixtures/c9-test-066",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-066",
+      "relative_path": "fixtures/c9-test-066/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-067",
+      "relative_path": "fixtures/c9-test-067",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-067",
+      "relative_path": "fixtures/c9-test-067/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-068",
+      "relative_path": "fixtures/c9-test-068",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-068",
+      "relative_path": "fixtures/c9-test-068/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-069",
+      "relative_path": "fixtures/c9-test-069",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-069",
+      "relative_path": "fixtures/c9-test-069/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-070",
+      "relative_path": "fixtures/c9-test-070",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-070",
+      "relative_path": "fixtures/c9-test-070/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-071",
+      "relative_path": "fixtures/c9-test-071",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-071",
+      "relative_path": "fixtures/c9-test-071/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-072",
+      "relative_path": "fixtures/c9-test-072",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-072",
+      "relative_path": "fixtures/c9-test-072/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-073",
+      "relative_path": "fixtures/c9-test-073",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-073",
+      "relative_path": "fixtures/c9-test-073/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-073",
+      "relative_path": "fixtures/c9-test-073/project/.sf-pi",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-073",
+      "relative_path": "fixtures/c9-test-073/project/.sf-pi/artifacts",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-073",
+      "relative_path": "fixtures/c9-test-073/project/.sf-pi/artifacts/soql",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-073",
+      "relative_path": "fixtures/c9-test-073/project/.sf-pi/artifacts/soql/geographic-account-sample",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-073",
+      "relative_path": "fixtures/c9-test-073/project/.sf-pi/exports",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-073",
+      "relative_path": "fixtures/c9-test-073/project/.sf-pi/exports/soql",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-073",
+      "relative_path": "fixtures/c9-test-073/project/.sf-pi/exports/soql/dispatch",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-074",
+      "relative_path": "fixtures/c9-test-074",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-074",
+      "relative_path": "fixtures/c9-test-074/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-074",
+      "relative_path": "fixtures/c9-test-074/project/.sf-pi",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-074",
+      "relative_path": "fixtures/c9-test-074/project/.sf-pi/artifacts",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-074",
+      "relative_path": "fixtures/c9-test-074/project/.sf-pi/artifacts/soql",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-074",
+      "relative_path": "fixtures/c9-test-074/project/.sf-pi/artifacts/soql/geographic-account-sample",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-074",
+      "relative_path": "fixtures/c9-test-074/project/.sf-pi/exports",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-074",
+      "relative_path": "fixtures/c9-test-074/project/.sf-pi/exports/soql",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-074",
+      "relative_path": "fixtures/c9-test-074/project/.sf-pi/exports/soql/dispatch",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-075",
+      "relative_path": "fixtures/c9-test-075",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-075",
+      "relative_path": "fixtures/c9-test-075/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-076",
+      "relative_path": "fixtures/c9-test-076",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-076",
+      "relative_path": "fixtures/c9-test-076/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-077",
+      "relative_path": "fixtures/c9-test-077",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-077",
+      "relative_path": "fixtures/c9-test-077/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-078",
+      "relative_path": "fixtures/c9-test-078",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-078",
+      "relative_path": "fixtures/c9-test-078/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-079",
+      "relative_path": "fixtures/c9-test-079",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-079",
+      "relative_path": "fixtures/c9-test-079/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-080",
+      "relative_path": "fixtures/c9-test-080",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-080",
+      "relative_path": "fixtures/c9-test-080/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-081",
+      "relative_path": "fixtures/c9-test-081",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-081",
+      "relative_path": "fixtures/c9-test-081/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-082",
+      "relative_path": "fixtures/c9-test-082",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-082",
+      "relative_path": "fixtures/c9-test-082/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-083",
+      "relative_path": "fixtures/c9-test-083",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-083",
+      "relative_path": "fixtures/c9-test-083/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-084",
+      "relative_path": "fixtures/c9-test-084",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-084",
+      "relative_path": "fixtures/c9-test-084/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-085",
+      "relative_path": "fixtures/c9-test-085",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-085",
+      "relative_path": "fixtures/c9-test-085/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-086",
+      "relative_path": "fixtures/c9-test-086",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-086",
+      "relative_path": "fixtures/c9-test-086/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-087",
+      "relative_path": "fixtures/c9-test-087",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-087",
+      "relative_path": "fixtures/c9-test-087/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-088",
+      "relative_path": "fixtures/c9-test-088",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-088",
+      "relative_path": "fixtures/c9-test-088/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-089",
+      "relative_path": "fixtures/c9-test-089",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-089",
+      "relative_path": "fixtures/c9-test-089/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-090",
+      "relative_path": "fixtures/c9-test-090",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-090",
+      "relative_path": "fixtures/c9-test-090/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-091",
+      "relative_path": "fixtures/c9-test-091",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-091",
+      "relative_path": "fixtures/c9-test-091/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-092",
+      "relative_path": "fixtures/c9-test-092",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-092",
+      "relative_path": "fixtures/c9-test-092/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-093",
+      "relative_path": "fixtures/c9-test-093",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-093",
+      "relative_path": "fixtures/c9-test-093/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-094",
+      "relative_path": "fixtures/c9-test-094",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-094",
+      "relative_path": "fixtures/c9-test-094/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-095",
+      "relative_path": "fixtures/c9-test-095",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-095",
+      "relative_path": "fixtures/c9-test-095/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-096",
+      "relative_path": "fixtures/c9-test-096",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-096",
+      "relative_path": "fixtures/c9-test-096/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-097",
+      "relative_path": "fixtures/c9-test-097",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-097",
+      "relative_path": "fixtures/c9-test-097/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-097",
+      "relative_path": "fixtures/c9-test-097/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-097",
+      "relative_path": "fixtures/c9-test-097/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-097",
+      "relative_path": "fixtures/c9-test-097/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-097",
+      "relative_path": "fixtures/c9-test-097/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-098",
+      "relative_path": "fixtures/c9-test-098",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-098",
+      "relative_path": "fixtures/c9-test-098/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-098",
+      "relative_path": "fixtures/c9-test-098/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-098",
+      "relative_path": "fixtures/c9-test-098/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-098",
+      "relative_path": "fixtures/c9-test-098/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-098",
+      "relative_path": "fixtures/c9-test-098/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-099",
+      "relative_path": "fixtures/c9-test-099",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-099",
+      "relative_path": "fixtures/c9-test-099/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-099",
+      "relative_path": "fixtures/c9-test-099/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-099",
+      "relative_path": "fixtures/c9-test-099/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-099",
+      "relative_path": "fixtures/c9-test-099/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-099",
+      "relative_path": "fixtures/c9-test-099/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-100",
+      "relative_path": "fixtures/c9-test-100",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-100",
+      "relative_path": "fixtures/c9-test-100/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-100",
+      "relative_path": "fixtures/c9-test-100/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-100",
+      "relative_path": "fixtures/c9-test-100/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-100",
+      "relative_path": "fixtures/c9-test-100/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-100",
+      "relative_path": "fixtures/c9-test-100/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-101",
+      "relative_path": "fixtures/c9-test-101",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-101",
+      "relative_path": "fixtures/c9-test-101/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-101",
+      "relative_path": "fixtures/c9-test-101/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-101",
+      "relative_path": "fixtures/c9-test-101/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-101",
+      "relative_path": "fixtures/c9-test-101/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-101",
+      "relative_path": "fixtures/c9-test-101/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-102",
+      "relative_path": "fixtures/c9-test-102",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-102",
+      "relative_path": "fixtures/c9-test-102/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-102",
+      "relative_path": "fixtures/c9-test-102/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-102",
+      "relative_path": "fixtures/c9-test-102/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-102",
+      "relative_path": "fixtures/c9-test-102/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-102",
+      "relative_path": "fixtures/c9-test-102/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-103",
+      "relative_path": "fixtures/c9-test-103",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-103",
+      "relative_path": "fixtures/c9-test-103/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-103",
+      "relative_path": "fixtures/c9-test-103/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-103",
+      "relative_path": "fixtures/c9-test-103/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-103",
+      "relative_path": "fixtures/c9-test-103/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-103",
+      "relative_path": "fixtures/c9-test-103/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-104",
+      "relative_path": "fixtures/c9-test-104",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-104",
+      "relative_path": "fixtures/c9-test-104/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-104",
+      "relative_path": "fixtures/c9-test-104/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-104",
+      "relative_path": "fixtures/c9-test-104/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-104",
+      "relative_path": "fixtures/c9-test-104/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-104",
+      "relative_path": "fixtures/c9-test-104/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-105",
+      "relative_path": "fixtures/c9-test-105",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-105",
+      "relative_path": "fixtures/c9-test-105/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-105",
+      "relative_path": "fixtures/c9-test-105/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-105",
+      "relative_path": "fixtures/c9-test-105/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-105",
+      "relative_path": "fixtures/c9-test-105/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-105",
+      "relative_path": "fixtures/c9-test-105/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-106",
+      "relative_path": "fixtures/c9-test-106",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-106",
+      "relative_path": "fixtures/c9-test-106/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-106",
+      "relative_path": "fixtures/c9-test-106/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-106",
+      "relative_path": "fixtures/c9-test-106/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-106",
+      "relative_path": "fixtures/c9-test-106/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-106",
+      "relative_path": "fixtures/c9-test-106/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-107",
+      "relative_path": "fixtures/c9-test-107",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-107",
+      "relative_path": "fixtures/c9-test-107/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-107",
+      "relative_path": "fixtures/c9-test-107/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-107",
+      "relative_path": "fixtures/c9-test-107/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-107",
+      "relative_path": "fixtures/c9-test-107/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-107",
+      "relative_path": "fixtures/c9-test-107/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-108",
+      "relative_path": "fixtures/c9-test-108",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-108",
+      "relative_path": "fixtures/c9-test-108/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-108",
+      "relative_path": "fixtures/c9-test-108/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-108",
+      "relative_path": "fixtures/c9-test-108/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-108",
+      "relative_path": "fixtures/c9-test-108/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-108",
+      "relative_path": "fixtures/c9-test-108/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-109",
+      "relative_path": "fixtures/c9-test-109",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-109",
+      "relative_path": "fixtures/c9-test-109/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-109",
+      "relative_path": "fixtures/c9-test-109/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-109",
+      "relative_path": "fixtures/c9-test-109/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-109",
+      "relative_path": "fixtures/c9-test-109/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-109",
+      "relative_path": "fixtures/c9-test-109/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-110",
+      "relative_path": "fixtures/c9-test-110",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-110",
+      "relative_path": "fixtures/c9-test-110/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-110",
+      "relative_path": "fixtures/c9-test-110/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-110",
+      "relative_path": "fixtures/c9-test-110/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-110",
+      "relative_path": "fixtures/c9-test-110/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-110",
+      "relative_path": "fixtures/c9-test-110/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-111",
+      "relative_path": "fixtures/c9-test-111",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-111",
+      "relative_path": "fixtures/c9-test-111/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-111",
+      "relative_path": "fixtures/c9-test-111/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-111",
+      "relative_path": "fixtures/c9-test-111/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-111",
+      "relative_path": "fixtures/c9-test-111/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-111",
+      "relative_path": "fixtures/c9-test-111/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-112",
+      "relative_path": "fixtures/c9-test-112",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-112",
+      "relative_path": "fixtures/c9-test-112/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-112",
+      "relative_path": "fixtures/c9-test-112/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-112",
+      "relative_path": "fixtures/c9-test-112/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-112",
+      "relative_path": "fixtures/c9-test-112/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-112",
+      "relative_path": "fixtures/c9-test-112/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-113",
+      "relative_path": "fixtures/c9-test-113",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-113",
+      "relative_path": "fixtures/c9-test-113/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-113",
+      "relative_path": "fixtures/c9-test-113/project/agent-bundles",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-113",
+      "relative_path": "fixtures/c9-test-113/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-113",
+      "relative_path": "fixtures/c9-test-113/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-113",
+      "relative_path": "fixtures/c9-test-113/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-113",
+      "relative_path": "fixtures/c9-test-113/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-113",
+      "relative_path": "fixtures/c9-test-113/project/tests",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-113",
+      "relative_path": "fixtures/c9-test-113/project/tests/agentforce",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-114",
+      "relative_path": "fixtures/c9-test-114",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-114",
+      "relative_path": "fixtures/c9-test-114/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-114",
+      "relative_path": "fixtures/c9-test-114/project/agent-bundles",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-114",
+      "relative_path": "fixtures/c9-test-114/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-114",
+      "relative_path": "fixtures/c9-test-114/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-114",
+      "relative_path": "fixtures/c9-test-114/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-114",
+      "relative_path": "fixtures/c9-test-114/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-114",
+      "relative_path": "fixtures/c9-test-114/project/tests",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-114",
+      "relative_path": "fixtures/c9-test-114/project/tests/agentforce",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-115",
+      "relative_path": "fixtures/c9-test-115",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-115",
+      "relative_path": "fixtures/c9-test-115/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-115",
+      "relative_path": "fixtures/c9-test-115/project/agent-bundles",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-115",
+      "relative_path": "fixtures/c9-test-115/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-115",
+      "relative_path": "fixtures/c9-test-115/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-115",
+      "relative_path": "fixtures/c9-test-115/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-115",
+      "relative_path": "fixtures/c9-test-115/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-115",
+      "relative_path": "fixtures/c9-test-115/project/tests",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-116",
+      "relative_path": "fixtures/c9-test-116",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-116",
+      "relative_path": "fixtures/c9-test-116/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-116",
+      "relative_path": "fixtures/c9-test-116/project/agent-bundles",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-116",
+      "relative_path": "fixtures/c9-test-116/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-116",
+      "relative_path": "fixtures/c9-test-116/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-116",
+      "relative_path": "fixtures/c9-test-116/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-116",
+      "relative_path": "fixtures/c9-test-116/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-116",
+      "relative_path": "fixtures/c9-test-116/project/tests",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-117",
+      "relative_path": "fixtures/c9-test-117",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-117",
+      "relative_path": "fixtures/c9-test-117/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-117",
+      "relative_path": "fixtures/c9-test-117/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-117",
+      "relative_path": "fixtures/c9-test-117/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-117",
+      "relative_path": "fixtures/c9-test-117/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-117",
+      "relative_path": "fixtures/c9-test-117/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-117",
+      "relative_path": "fixtures/c9-test-117/project/service-agents",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-118",
+      "relative_path": "fixtures/c9-test-118",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-118",
+      "relative_path": "fixtures/c9-test-118/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-118",
+      "relative_path": "fixtures/c9-test-118/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-118",
+      "relative_path": "fixtures/c9-test-118/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-118",
+      "relative_path": "fixtures/c9-test-118/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-118",
+      "relative_path": "fixtures/c9-test-118/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-118",
+      "relative_path": "fixtures/c9-test-118/project/service-agents",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-119",
+      "relative_path": "fixtures/c9-test-119",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-119",
+      "relative_path": "fixtures/c9-test-119/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-119",
+      "relative_path": "fixtures/c9-test-119/project/agents",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-119",
+      "relative_path": "fixtures/c9-test-119/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-119",
+      "relative_path": "fixtures/c9-test-119/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-119",
+      "relative_path": "fixtures/c9-test-119/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-119",
+      "relative_path": "fixtures/c9-test-119/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-120",
+      "relative_path": "fixtures/c9-test-120",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-120",
+      "relative_path": "fixtures/c9-test-120/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-120",
+      "relative_path": "fixtures/c9-test-120/project/agents",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-120",
+      "relative_path": "fixtures/c9-test-120/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-120",
+      "relative_path": "fixtures/c9-test-120/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-120",
+      "relative_path": "fixtures/c9-test-120/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-120",
+      "relative_path": "fixtures/c9-test-120/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-121",
+      "relative_path": "fixtures/c9-test-121",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-121",
+      "relative_path": "fixtures/c9-test-121/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-121",
+      "relative_path": "fixtures/c9-test-121/project/bundles",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-121",
+      "relative_path": "fixtures/c9-test-121/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-121",
+      "relative_path": "fixtures/c9-test-121/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-121",
+      "relative_path": "fixtures/c9-test-121/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-121",
+      "relative_path": "fixtures/c9-test-121/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-122",
+      "relative_path": "fixtures/c9-test-122",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-122",
+      "relative_path": "fixtures/c9-test-122/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-122",
+      "relative_path": "fixtures/c9-test-122/project/bundles",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-122",
+      "relative_path": "fixtures/c9-test-122/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-122",
+      "relative_path": "fixtures/c9-test-122/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-122",
+      "relative_path": "fixtures/c9-test-122/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-122",
+      "relative_path": "fixtures/c9-test-122/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-123",
+      "relative_path": "fixtures/c9-test-123",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-123",
+      "relative_path": "fixtures/c9-test-123/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-123",
+      "relative_path": "fixtures/c9-test-123/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-123",
+      "relative_path": "fixtures/c9-test-123/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-123",
+      "relative_path": "fixtures/c9-test-123/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-123",
+      "relative_path": "fixtures/c9-test-123/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-124",
+      "relative_path": "fixtures/c9-test-124",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-124",
+      "relative_path": "fixtures/c9-test-124/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-124",
+      "relative_path": "fixtures/c9-test-124/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-124",
+      "relative_path": "fixtures/c9-test-124/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-124",
+      "relative_path": "fixtures/c9-test-124/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-124",
+      "relative_path": "fixtures/c9-test-124/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-125",
+      "relative_path": "fixtures/c9-test-125",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-125",
+      "relative_path": "fixtures/c9-test-125/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-125",
+      "relative_path": "fixtures/c9-test-125/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-125",
+      "relative_path": "fixtures/c9-test-125/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-125",
+      "relative_path": "fixtures/c9-test-125/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-125",
+      "relative_path": "fixtures/c9-test-125/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-125",
+      "relative_path": "fixtures/c9-test-125/project/support",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-126",
+      "relative_path": "fixtures/c9-test-126",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-126",
+      "relative_path": "fixtures/c9-test-126/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-126",
+      "relative_path": "fixtures/c9-test-126/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-126",
+      "relative_path": "fixtures/c9-test-126/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-126",
+      "relative_path": "fixtures/c9-test-126/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-126",
+      "relative_path": "fixtures/c9-test-126/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-126",
+      "relative_path": "fixtures/c9-test-126/project/support",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-127",
+      "relative_path": "fixtures/c9-test-127",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-127",
+      "relative_path": "fixtures/c9-test-127/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-127",
+      "relative_path": "fixtures/c9-test-127/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-127",
+      "relative_path": "fixtures/c9-test-127/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-127",
+      "relative_path": "fixtures/c9-test-127/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-127",
+      "relative_path": "fixtures/c9-test-127/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-127",
+      "relative_path": "fixtures/c9-test-127/project/routing",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-128",
+      "relative_path": "fixtures/c9-test-128",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-128",
+      "relative_path": "fixtures/c9-test-128/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-128",
+      "relative_path": "fixtures/c9-test-128/project/force-app",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-128",
+      "relative_path": "fixtures/c9-test-128/project/force-app/main",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-128",
+      "relative_path": "fixtures/c9-test-128/project/force-app/main/default",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-128",
+      "relative_path": "fixtures/c9-test-128/project/force-app/main/default/classes",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-128",
+      "relative_path": "fixtures/c9-test-128/project/routing",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-129",
+      "relative_path": "fixtures/c9-test-129",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-129",
+      "relative_path": "fixtures/c9-test-129/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-130",
+      "relative_path": "fixtures/c9-test-130",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-130",
+      "relative_path": "fixtures/c9-test-130/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-131",
+      "relative_path": "fixtures/c9-test-131",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-131",
+      "relative_path": "fixtures/c9-test-131/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-132",
+      "relative_path": "fixtures/c9-test-132",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-132",
+      "relative_path": "fixtures/c9-test-132/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-133",
+      "relative_path": "fixtures/c9-test-133",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-133",
+      "relative_path": "fixtures/c9-test-133/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-134",
+      "relative_path": "fixtures/c9-test-134",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-134",
+      "relative_path": "fixtures/c9-test-134/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-135",
+      "relative_path": "fixtures/c9-test-135",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-135",
+      "relative_path": "fixtures/c9-test-135/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-136",
+      "relative_path": "fixtures/c9-test-136",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-136",
+      "relative_path": "fixtures/c9-test-136/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-137",
+      "relative_path": "fixtures/c9-test-137",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-137",
+      "relative_path": "fixtures/c9-test-137/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-138",
+      "relative_path": "fixtures/c9-test-138",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-138",
+      "relative_path": "fixtures/c9-test-138/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-139",
+      "relative_path": "fixtures/c9-test-139",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-139",
+      "relative_path": "fixtures/c9-test-139/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-140",
+      "relative_path": "fixtures/c9-test-140",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-140",
+      "relative_path": "fixtures/c9-test-140/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-141",
+      "relative_path": "fixtures/c9-test-141",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-141",
+      "relative_path": "fixtures/c9-test-141/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-142",
+      "relative_path": "fixtures/c9-test-142",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-142",
+      "relative_path": "fixtures/c9-test-142/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-143",
+      "relative_path": "fixtures/c9-test-143",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-143",
+      "relative_path": "fixtures/c9-test-143/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-144",
+      "relative_path": "fixtures/c9-test-144",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-144",
+      "relative_path": "fixtures/c9-test-144/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-145",
+      "relative_path": "fixtures/c9-test-145",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-145",
+      "relative_path": "fixtures/c9-test-145/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-146",
+      "relative_path": "fixtures/c9-test-146",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-146",
+      "relative_path": "fixtures/c9-test-146/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-147",
+      "relative_path": "fixtures/c9-test-147",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-147",
+      "relative_path": "fixtures/c9-test-147/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-148",
+      "relative_path": "fixtures/c9-test-148",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-148",
+      "relative_path": "fixtures/c9-test-148/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-149",
+      "relative_path": "fixtures/c9-test-149",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-149",
+      "relative_path": "fixtures/c9-test-149/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-150",
+      "relative_path": "fixtures/c9-test-150",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-150",
+      "relative_path": "fixtures/c9-test-150/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-151",
+      "relative_path": "fixtures/c9-test-151",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-151",
+      "relative_path": "fixtures/c9-test-151/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-152",
+      "relative_path": "fixtures/c9-test-152",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-152",
+      "relative_path": "fixtures/c9-test-152/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-153",
+      "relative_path": "fixtures/c9-test-153",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-153",
+      "relative_path": "fixtures/c9-test-153/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-154",
+      "relative_path": "fixtures/c9-test-154",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-154",
+      "relative_path": "fixtures/c9-test-154/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-155",
+      "relative_path": "fixtures/c9-test-155",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-155",
+      "relative_path": "fixtures/c9-test-155/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-156",
+      "relative_path": "fixtures/c9-test-156",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-156",
+      "relative_path": "fixtures/c9-test-156/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-157",
+      "relative_path": "fixtures/c9-test-157",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-157",
+      "relative_path": "fixtures/c9-test-157/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-158",
+      "relative_path": "fixtures/c9-test-158",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-158",
+      "relative_path": "fixtures/c9-test-158/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-159",
+      "relative_path": "fixtures/c9-test-159",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-159",
+      "relative_path": "fixtures/c9-test-159/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-160",
+      "relative_path": "fixtures/c9-test-160",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    },
+    {
+      "case_id": "c9-test-160",
+      "relative_path": "fixtures/c9-test-160/project",
+      "mode_octal": "0700",
+      "owner_uid": 501
+    }
+  ],
+  "absent_targets": [
+    {
+      "case_id": "c9-test-035",
+      "relative_path": "fixtures/c9-test-035/project/migration/destructiveChangesPost.xml",
+      "exists": false
+    },
+    {
+      "case_id": "c9-test-041",
+      "relative_path": "fixtures/c9-test-041/project/.sfdx/agents/ServiceDesk/sessions/local-sim-19.json",
+      "exists": false
+    },
+    {
+      "case_id": "c9-test-046",
+      "relative_path": "fixtures/c9-test-046/project/.dev.vars",
+      "exists": false
+    },
+    {
+      "case_id": "c9-test-073",
+      "relative_path": "fixtures/c9-test-073/project/.sf-pi/exports/soql/dispatch/nearby-account-review.json",
+      "exists": false
+    },
+    {
+      "case_id": "c9-test-074",
+      "relative_path": "fixtures/c9-test-074/project/.sf-pi/exports/soql/dispatch/nearby-account-review.json",
+      "exists": false
+    }
+  ],
+  "plan_sources": [
+    {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/local-fixture-plan.json",
+      "sha256": "fd72b12b3f93ec9bda0c5466145a6835692ddcbca4929a59699eb43ed7ce2612"
+    },
+    {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/shell-pane.fixtures.json",
+      "sha256": "1418c73f3d3a50faab2e8677a6450bf66a1c95064a9c9dda144b96f5914fe4a9"
+    },
+    {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/query-data.fixture-companion.json",
+      "sha256": "7d4d0749ccf3f97ed9d00e1ad4eecca25a87eba528310e30dc50303e778e9423"
+    },
+    {
+      "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/fragments/native-filesystem-materialization.json",
+      "sha256": "a0797c624432be52c2583089cdb5849097fe80aa2c16026faa16d9e3e5fe6eed"
+    }
+  ],
+  "setup_script": {
+    "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/materialization-script-executed.py",
+    "sha256": "146f67d1fd6843340ba77da71fe76e8d34ab850a21abc9bc01fbdd3e946ecbe5"
+  },
+  "verification_command": "python3 /private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/materialize-fixtures.py --verify",
+  "policy_files_changed": false,
+  "onlyIfExists": "Actual existing secret targets are materialized; intentionally absent write targets remain absent. Default policy bytes are unchanged.",
+  "stage_equality": "Classification-only replay must run --verify before and after baseline/model stages; no original requested case operations are dispatched.",
+  "original_case_operations_executed": 0,
+  "model_calls": 0,
+  "baseline_calls": 0,
+  "external_operations": 0,
+  "files_overwritten": 0,
+  "symlinks_created": 0,
+  "windows_host_accesses": 0,
+  "verification_script": {
+    "path": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx/materialize-fixtures.py",
+    "sha256": "1376ec11f9e8d995c7916f8e02ce1b4ec73793b4c290848284fe0f6380b0f99a"
+  },
+  "post_setup_metadata_correction": "Verifier accepts the recorded case-root directory itself as a directory receipt; all160case trees were already created correctly. Executed setup script bytes retained separately. No case fixture bytes or operations changed."
+}

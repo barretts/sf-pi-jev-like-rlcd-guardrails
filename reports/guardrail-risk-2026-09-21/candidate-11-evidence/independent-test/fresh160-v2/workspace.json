@@ -1,0 +1,14 @@
+{
+  "artifact_kind": "new_owned_blind_test_v2_workspace",
+  "owned_root": "/private/tmp/simple-jev-c11-fresh-blind-v2-20260923-9_mc4usx",
+  "uid": 501,
+  "gid": 20,
+  "mode_octal": "0o700",
+  "created_at_utc": "2026-09-23T02:34:04.028234+00:00",
+  "v1_source": "/private/tmp/simple-jev-c11-fresh-blind-reserve-20260923/test.json",
+  "v1_sha256": "39cda67adb06315b63687dbb355d97b991e3d0a110bc618e92aed275c8dad060",
+  "v2_sealed": false,
+  "model_calls": 0,
+  "case_operations_executed": 0,
+  "root_authorized_complete_group_repairs": true
+}

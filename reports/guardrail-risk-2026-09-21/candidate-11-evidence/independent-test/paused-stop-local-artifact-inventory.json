@@ -1,0 +1,3584 @@
+{
+  "version": 1,
+  "purpose": "candidate11_paused_stop_handoff_local_inventory",
+  "recordedAt": "2026-09-23T03:18:58.757515+00:00",
+  "scope": "Preserved local artifacts, metadata, filesystem hashes, Git snapshots, sanitized owned process snapshot; no evaluation or candidate selection",
+  "primaryRoot": "/private/tmp/simple-jev-ts-c11-score-20260923",
+  "primaryRootHead": "286f8c6cc5d72ef3a66a3420eae13f0538c99856",
+  "primaryRootStatusShort": "",
+  "ownWorktree": "/private/tmp/simple-jev-ts-c11-independent-test-scorer-20260922",
+  "worktrees": [
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-browser-sentinel-fix-20260923",
+      "exists": true,
+      "head": "fb58c0fc6fa585779b4176251991e6b9f75be22d",
+      "branch": "barretts/jev-c11-browser-sentinel-fix-20260923",
+      "statusShort": "",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-compatibility-20260922",
+      "exists": true,
+      "head": "56857022fe809edcdf0dae4e9b43e4019b6cdf79",
+      "branch": "barretts/jev-c11-compatibility",
+      "statusShort": "",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-f16-first-20260923",
+      "exists": true,
+      "head": "be4c59fa4314e01d6d243a14d108e0c61160d27b",
+      "branch": "barretts/jev-c11-f16-first-20260923",
+      "statusShort": "",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-fact-fallback-fix-20260923",
+      "exists": true,
+      "head": "4bd7c1c85005a7645ecb98d691b4efc0f91f390e",
+      "branch": "barretts/jev-c11-fact-fallback-fix-20260923",
+      "statusShort": "",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-final1024-20260922",
+      "exists": true,
+      "head": "eec82508d43c3965c3196dd6e2dc1b938360c7fa",
+      "branch": "barretts/jev-c11-final1024",
+      "statusShort": "",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-fit-counterfactual-draft-20260922",
+      "exists": true,
+      "head": "5151ea300ec9aa4150f2d10439d242ae10456426",
+      "branch": "barretts/jev-c11-fit-counterfactual-draft",
+      "statusShort": "",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-independent-test-scorer-20260922",
+      "exists": true,
+      "head": "45c938ad323317a45c60fe521f760268b86defb4",
+      "branch": "barretts/jev-c11-independent-test-scorer-20260922",
+      "statusShort": "?? node_modules\n?? reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/readiness-receipt-root-e13f8f4.json",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923",
+      "exists": true,
+      "head": "286f8c6cc5d72ef3a66a3420eae13f0538c99856",
+      "branch": "barretts/jev-c11-score-20260923",
+      "statusShort": "",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-scoring-20260922",
+      "exists": true,
+      "head": "2d88d5d8bc81a92c5b674dfd8b4ba539b2cf7800",
+      "branch": "barretts/jev-c11-scoring",
+      "statusShort": "",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923",
+      "exists": true,
+      "head": "6136d18fc03465a5585144d24f465f7f3bfa504d",
+      "branch": "barretts/jev-c11-step256-f16-import-20260923",
+      "statusShort": "?? .vendor\n?? node_modules",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923",
+      "exists": true,
+      "head": "6136d18fc03465a5585144d24f465f7f3bfa504d",
+      "branch": "barretts/jev-c11-step512-f16-import-20260923",
+      "statusShort": "?? .vendor\n?? node_modules",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923",
+      "exists": true,
+      "head": "129b563862258c0371c7b82a35f7009209b5c21d",
+      "branch": "barretts/jev-c11-supervision-20260923",
+      "statusShort": "?? .vendor",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/Users/bsonntag/code/simple-jev-ts",
+      "exists": true,
+      "head": "95c0b50fabb9997da71d49e61941b398ec3b37bb",
+      "branch": "main",
+      "statusShort": "?? .DS_Store\n?? .logs/\n?? agents.md\n?? reports/.DS_Store\n?? reports/head-to-head-2026-09-21/\n?? reports/jev-ts-presentation-2026-09-20.pdf",
+      "trackedDiff": "",
+      "upstream": "origin/main",
+      "upstreamAheadBehind": "0\t0"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c9-cuda-port-20260922",
+      "exists": true,
+      "head": "09592c8cd8fc8ba9d800fa28bb22e7876dca6654",
+      "branch": "barretts/jev-guardrail-c9-cuda-port",
+      "statusShort": "?? .vendor",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-guardrail-c9-test-qualifier-20260922",
+      "exists": true,
+      "head": "85c3c1931e331c9d2a35575be0baf62f8cdb2173",
+      "branch": "barretts/jev-guardrail-c9-test-qualifier",
+      "statusShort": "",
+      "trackedDiff": "",
+      "upstream": null
+    },
+    {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922",
+      "exists": true,
+      "head": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a",
+      "branch": "barretts/jev-guardrail-c10-qualification",
+      "statusShort": "",
+      "trackedDiff": "",
+      "upstream": null
+    }
+  ],
+  "models": [
+    {
+      "checkpoint": 128,
+      "modelId": "jev/guardrail-candidate11-step128-f16",
+      "format": "f16",
+      "localExportDirectory": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1",
+      "sourceCheckpointDirectory": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1",
+      "manifest": {
+        "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-128/repaired-evaluation-manifest.json",
+        "expectedSha256": null,
+        "exists": true,
+        "type": "regular_file",
+        "sizeBytes": 9354,
+        "mode": "0o644",
+        "modifiedAt": "2026-09-23T01:55:52.127638+00:00",
+        "sha256": "cc4348afa8f2c671d1882d2a142df0f26c4cbf25f547d7b865463b3960141cfd",
+        "expectedShaMatched": null
+      },
+      "manifestPins": {
+        "campaign": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/fixtures/guardrail/candidate11/cuda-campaign-327-fit.json",
+          "expectedSha256": "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2565,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.360822+00:00",
+          "sha256": "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd",
+          "expectedShaMatched": true
+        },
+        "admission": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/admission.json",
+          "expectedSha256": "ce145449b951d67996a6d6d4348725e0513afd5db8910f479060216ece098131",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 17329,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.526076+00:00",
+          "sha256": "ce145449b951d67996a6d6d4348725e0513afd5db8910f479060216ece098131",
+          "expectedShaMatched": true
+        },
+        "fit": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/fit.jsonl",
+          "expectedSha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 468845,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.529956+00:00",
+          "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+          "expectedShaMatched": true
+        },
+        "cal": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/calibration.jsonl",
+          "expectedSha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 63693,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.527070+00:00",
+          "sha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
+          "expectedShaMatched": true
+        },
+        "baseline": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-10-evidence/baseline/calibration-baseline.json",
+          "expectedSha256": "a4d80d4a24a2e0fa047cf3224a3f670c555512556a5fa21f7fd32a8e6bb75b09",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 13670,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.412990+00:00",
+          "sha256": "a4d80d4a24a2e0fa047cf3224a3f670c555512556a5fa21f7fd32a8e6bb75b09",
+          "expectedShaMatched": true
+        },
+        "baselineFreeze": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-10-evidence/baseline/manifest.json",
+          "expectedSha256": "2f0d16ebcf65e1504b5b740215e59f31aa2e45cd45fc8a21212c86c184e2209f",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5722,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.414200+00:00",
+          "sha256": "2f0d16ebcf65e1504b5b740215e59f31aa2e45cd45fc8a21212c86c184e2209f",
+          "expectedShaMatched": true
+        },
+        "runManifest": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/manifest.json",
+          "expectedSha256": "69fd4f648761b8fcd3a1671125a5092c1d7698a8cffd6ec2463802c5287af6ff",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 19319,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:02:22.612832+00:00",
+          "sha256": "69fd4f648761b8fcd3a1671125a5092c1d7698a8cffd6ec2463802c5287af6ff",
+          "expectedShaMatched": true
+        },
+        "importReport": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/cuda-import-report.json",
+          "expectedSha256": "c4be399d4eed961096e9757c046e3ec28e3d3217de30d29bc0abcc4adc622c45",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 10713,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:34.564827+00:00",
+          "sha256": "c4be399d4eed961096e9757c046e3ec28e3d3217de30d29bc0abcc4adc622c45",
+          "expectedShaMatched": true
+        },
+        "localPrecision": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/cuda-import-equivalence.json",
+          "expectedSha256": "1d0c9de37d8283662b6f7737000878872deb17e610025f77f0be79fd07c6e0c3",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 216,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:34.563803+00:00",
+          "sha256": "1d0c9de37d8283662b6f7737000878872deb17e610025f77f0be79fd07c6e0c3",
+          "expectedShaMatched": true
+        },
+        "precisionF16": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/precision-f16.json",
+          "expectedSha256": "9b63189b37290bc1abec8249c157160bf1c96723c79281d844206fd3c6460673",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 50544,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:05:04.818785+00:00",
+          "sha256": "9b63189b37290bc1abec8249c157160bf1c96723c79281d844206fd3c6460673",
+          "expectedShaMatched": true
+        },
+        "model": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/model-f16.gguf",
+          "expectedSha256": "22f89041387bf0cb08c8b4c18a9711f1d8cac9e3bd996d40c49e96856313e668",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2006573408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:21.160118+00:00",
+          "sha256": "22f89041387bf0cb08c8b4c18a9711f1d8cac9e3bd996d40c49e96856313e668",
+          "expectedShaMatched": true
+        },
+        "registry": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/f16-registry.json",
+          "expectedSha256": "3c0e0afa24257a27cfc6ba03d22b5d1c9d523b1a0422084522e5f747b230d0c5",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 612,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:23.559304+00:00",
+          "sha256": "3c0e0afa24257a27cfc6ba03d22b5d1c9d523b1a0422084522e5f747b230d0c5",
+          "expectedShaMatched": true
+        },
+        "artifact": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/artifact.json",
+          "expectedSha256": "961ee7217d9e643c342045432a01d074e08c8895f01b9c0d0d0e216d640919b3",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 614,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:02:22.613576+00:00",
+          "sha256": "961ee7217d9e643c342045432a01d074e08c8895f01b9c0d0d0e216d640919b3",
+          "expectedShaMatched": true
+        },
+        "nativeBinary": {
+          "path": "/private/tmp/simple-jev-ts-c9-cuda-port-20260922/.build/jev-native",
+          "expectedSha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 9705560,
+          "mode": "0o755",
+          "modifiedAt": "2026-09-22T20:22:25.049982+00:00",
+          "sha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+          "expectedShaMatched": true
+        },
+        "modelF16": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/model-f16.gguf",
+          "expectedSha256": "22f89041387bf0cb08c8b4c18a9711f1d8cac9e3bd996d40c49e96856313e668",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2006573408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:21.160118+00:00",
+          "sha256": "22f89041387bf0cb08c8b4c18a9711f1d8cac9e3bd996d40c49e96856313e668",
+          "expectedShaMatched": true
+        },
+        "localFitMargins": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/local-fit-margins.jsonl",
+          "expectedSha256": "0d87c1d4cfc8f61900a3f3f2494b070851f3c5f04ada84c9bc372e5ee3de4272",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 28250,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:34.563437+00:00",
+          "sha256": "0d87c1d4cfc8f61900a3f3f2494b070851f3c5f04ada84c9bc372e5ee3de4272",
+          "expectedShaMatched": true
+        },
+        "sourceFitMargins": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/fit-margins.jsonl",
+          "expectedSha256": "95f955b86abd9edf448ace401c7eb2dfd953d428b4e459b58f2f999ac0a64705",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 38279,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.366800+00:00",
+          "sha256": "95f955b86abd9edf448ace401c7eb2dfd953d428b4e459b58f2f999ac0a64705",
+          "expectedShaMatched": true
+        },
+        "sourceReceipt": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/receipt.json",
+          "expectedSha256": "cc940401b3bb58478c1f63c88a85dec65e6c2c1a4d96afab7c714e304c1095ec",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 9025,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.366469+00:00",
+          "sha256": "cc940401b3bb58478c1f63c88a85dec65e6c2c1a4d96afab7c714e304c1095ec",
+          "expectedShaMatched": true
+        },
+        "adapter": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/adapters.safetensors",
+          "expectedSha256": "76af168f7e02eb1b2adf3e29d2dab5a57af3445fbd7d3cbaa740a5c5e483abe8",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5975016,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:56:50.625789+00:00",
+          "sha256": "76af168f7e02eb1b2adf3e29d2dab5a57af3445fbd7d3cbaa740a5c5e483abe8",
+          "expectedShaMatched": true
+        },
+        "sourceLaunch": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/launch.json",
+          "expectedSha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 4285,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.365706+00:00",
+          "sha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "expectedShaMatched": true
+        },
+        "sourceSnapshot": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/memory.snapshot.json",
+          "expectedSha256": "327883805692a1c1b9ef323dcbdc5231afa762e77e44477882555e7c9a03f09c",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 547,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.366163+00:00",
+          "sha256": "327883805692a1c1b9ef323dcbdc5231afa762e77e44477882555e7c9a03f09c",
+          "expectedShaMatched": true
+        }
+      },
+      "localExportFiles": [
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/adapter_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 204,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:56:50.626271+00:00",
+          "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/adapters.safetensors",
+          "expectedSha256": "76af168f7e02eb1b2adf3e29d2dab5a57af3445fbd7d3cbaa740a5c5e483abe8",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5975016,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:56:50.625789+00:00",
+          "sha256": "76af168f7e02eb1b2adf3e29d2dab5a57af3445fbd7d3cbaa740a5c5e483abe8",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/cuda-import-equivalence.json",
+          "expectedSha256": "1d0c9de37d8283662b6f7737000878872deb17e610025f77f0be79fd07c6e0c3",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 216,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:34.563803+00:00",
+          "sha256": "1d0c9de37d8283662b6f7737000878872deb17e610025f77f0be79fd07c6e0c3",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/cuda-import-report.json",
+          "expectedSha256": "c4be399d4eed961096e9757c046e3ec28e3d3217de30d29bc0abcc4adc622c45",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 10713,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:34.564827+00:00",
+          "sha256": "c4be399d4eed961096e9757c046e3ec28e3d3217de30d29bc0abcc4adc622c45",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/local-fit-margins.jsonl",
+          "expectedSha256": "0d87c1d4cfc8f61900a3f3f2494b070851f3c5f04ada84c9bc372e5ee3de4272",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 28250,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:34.563437+00:00",
+          "sha256": "0d87c1d4cfc8f61900a3f3f2494b070851f3c5f04ada84c9bc372e5ee3de4272",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/rfdt-manifest.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 10582,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:56:50.626671+00:00",
+          "sha256": "09a3ea969deb5c5e0119c914d8d180ec35f60da6f6baf9928780fcf9c0315d59",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/artifact.json",
+          "expectedSha256": "961ee7217d9e643c342045432a01d074e08c8895f01b9c0d0d0e216d640919b3",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 614,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:02:22.613576+00:00",
+          "sha256": "961ee7217d9e643c342045432a01d074e08c8895f01b9c0d0d0e216d640919b3",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/candidate11-q8-manifest.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 12006,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:05:18.696708+00:00",
+          "sha256": "dfe6e40caf498c222d713fc781a4d1256babf4b4fd904934bebb75b6616ad184",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/dataset.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 468845,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T00:56:50.093729+00:00",
+          "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/diagnostic-valid-v1/calibration.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 13819,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:09:43.673377+00:00",
+          "sha256": "a78b6ad7a89527246352c7cf20af82cc649ec82553851b1306fcce966a99d47f",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/diagnostic-valid-v1/evaluation.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 356823,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:10:21.616083+00:00",
+          "sha256": "5b5173fe2e7c61627ac5e86c61c7c7fae1854f59f8dfcebe51e6787b6d828fc2",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/evaluation-f16-v1.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 10626,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:08:10.924462+00:00",
+          "sha256": "d458dfa13e12b08e8a89ed211b8082873f5781cf662cd408e228fa06e06dd2d3",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/export-resume-setup.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 531,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:01:23.518987+00:00",
+          "sha256": "04c6c2a4a0a005f79c202c73096149d09d5bc169b4e3ce51f5a81e502067077d",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/f16-registry.json",
+          "expectedSha256": "3c0e0afa24257a27cfc6ba03d22b5d1c9d523b1a0422084522e5f747b230d0c5",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 612,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:23.559304+00:00",
+          "sha256": "3c0e0afa24257a27cfc6ba03d22b5d1c9d523b1a0422084522e5f747b230d0c5",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/formal-evaluation-v1/calibration.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 13762,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:09:01.149998+00:00",
+          "sha256": "97d2ccc620a26290dfd0e250448ba954eeb5a0635f5d90a23f415c25bc631126",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/formal-evaluation-v1/evaluation.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 129940,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:09:01.151068+00:00",
+          "sha256": "28bb9b243e4f565eb359de0ad329b0255f1c0c1d5c15383ce286b062511762a4",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused/README.md",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 81,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:05.324372+00:00",
+          "sha256": "748c964f9b7e5f2c3770ce013bbc0153be7c54311d9692c343b6188eefe77ac6",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused/added_tokens.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 3,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:06.300010+00:00",
+          "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused/config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 974,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:04.902964+00:00",
+          "sha256": "539dd177917a0420d6f87cb38f5df55fa279d198c3f99131b316ccf4039ec8c2",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused/generation_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 215,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:05.316371+00:00",
+          "sha256": "fd9324becc53c4be610db39e13a613006f09fd6ef71a95fb6320dc33157490a3",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused/model.safetensors",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 3999582717,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:04.897218+00:00",
+          "sha256": "ec609f061b9bdc9789ab35355e5d3dba3a4e1be3b65e98576781ec2409424d7a",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused/model.safetensors.index.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 24829,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:04.902725+00:00",
+          "sha256": "aacc7ce8ce3deede0c488397d550790fccf1b1df31b58f9972b2d0f5b6886aa6",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused/rfdt-fused-manifest.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5132,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:10.293639+00:00",
+          "sha256": "de82b5eaed6f3a7aeb3d8363d65f11e4d1cff2ab5f3eb9ca33e1afff3813066c",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused/special_tokens_map.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 623,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:06.535373+00:00",
+          "sha256": "ecf9cd6dc78db029b13247e09bc8e71d8da9fa7263a2039c4a488c14fc7a69a5",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused/tokenizer.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 37677224,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:06.522646+00:00",
+          "sha256": "3bfbe764854336a243cf84e872c5aff1186d843259021ad44225eb78dd43548b",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused/tokenizer.model",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 4689074,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:06.272224+00:00",
+          "sha256": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused/tokenizer_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 1158219,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:06.294754+00:00",
+          "sha256": "0f070f93ac7f82b53e6d6454007e916fb39683e73043ea6fb42b771e7d4d972d",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused-export-attempt-v1/README.md",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 81,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:52.623899+00:00",
+          "sha256": "748c964f9b7e5f2c3770ce013bbc0153be7c54311d9692c343b6188eefe77ac6",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused-export-attempt-v1/added_tokens.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 3,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:53.527997+00:00",
+          "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused-export-attempt-v1/config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 974,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:52.371240+00:00",
+          "sha256": "539dd177917a0420d6f87cb38f5df55fa279d198c3f99131b316ccf4039ec8c2",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused-export-attempt-v1/generation_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 215,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:52.612559+00:00",
+          "sha256": "fd9324becc53c4be610db39e13a613006f09fd6ef71a95fb6320dc33157490a3",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused-export-attempt-v1/model.safetensors.index.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 24829,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:52.370921+00:00",
+          "sha256": "aacc7ce8ce3deede0c488397d550790fccf1b1df31b58f9972b2d0f5b6886aa6",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused-export-attempt-v1/rfdt-fused-manifest.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5132,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:57.582134+00:00",
+          "sha256": "8b57ca66684b90f984d8bd226bc36c989681be94eae4c52c2c5de13ff713173b",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused-export-attempt-v1/special_tokens_map.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 623,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:53.758664+00:00",
+          "sha256": "ecf9cd6dc78db029b13247e09bc8e71d8da9fa7263a2039c4a488c14fc7a69a5",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused-export-attempt-v1/tokenizer.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 37677224,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:53.749694+00:00",
+          "sha256": "3bfbe764854336a243cf84e872c5aff1186d843259021ad44225eb78dd43548b",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused-export-attempt-v1/tokenizer.model",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 4689074,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:53.523169+00:00",
+          "sha256": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/fused-export-attempt-v1/tokenizer_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 1158219,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:59:53.758189+00:00",
+          "sha256": "0f070f93ac7f82b53e6d6454007e916fb39683e73043ea6fb42b771e7d4d972d",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/local-checkpoint-handoff.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 866,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:05:04.823224+00:00",
+          "sha256": "602f25b6c3c4d387d9ff47eb7f24738ad6e4c7d2036dd26a7a45352429c7cf68",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/local-checkpoint-v1-exit.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 302,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:01:54.710072+00:00",
+          "sha256": "818ad055abcea2804732b42f6c2a393a645487323fd6c916001061976eb4436e",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/local-setup-failure-v1.log",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 778,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:01:23.518453+00:00",
+          "sha256": "4fc201ea8b1489ad25d95195009e53b6a48db1026b6e79ba5036eb3de2baa0f5",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/manifest.json",
+          "expectedSha256": "69fd4f648761b8fcd3a1671125a5092c1d7698a8cffd6ec2463802c5287af6ff",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 19319,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:02:22.612832+00:00",
+          "sha256": "69fd4f648761b8fcd3a1671125a5092c1d7698a8cffd6ec2463802c5287af6ff",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/model-f16.gguf",
+          "expectedSha256": "22f89041387bf0cb08c8b4c18a9711f1d8cac9e3bd996d40c49e96856313e668",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2006573408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:02:21.160118+00:00",
+          "sha256": "22f89041387bf0cb08c8b4c18a9711f1d8cac9e3bd996d40c49e96856313e668",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/model-q8.gguf",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 1069306208,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:05:17.098847+00:00",
+          "sha256": "d18b0a65527e559aca2ec2b542e8a245b79fe4da1a04a5b2a33098b49d88e714",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/precision-f16.json",
+          "expectedSha256": "9b63189b37290bc1abec8249c157160bf1c96723c79281d844206fd3c6460673",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 50544,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:05:04.818785+00:00",
+          "sha256": "9b63189b37290bc1abec8249c157160bf1c96723c79281d844206fd3c6460673",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/precision-q8.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 50545,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:07:54.656801+00:00",
+          "sha256": "42813312fd4fa66d18a57088d644e21a60ee0b9081b813ad66bdd23815d170e3",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/q8-registry.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 614,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:05:18.696121+00:00",
+          "sha256": "969c5037c67a88fab36e20fb174aa93b3e218db268904681b5d82381e5b1656d",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/resume-export-v2.mjs",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2077,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:01:54.710237+00:00",
+          "sha256": "0be67ce8a19d60d97b1d7653076b9d30b0caec9df0f0d1de4da60b4fefcff075",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/root-cleanup-handoff.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 1563,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:03:33.801533+00:00",
+          "sha256": "3dc2c70fc43fa85193e194c788edc5ea3e091c8c05cb6ab9256f6fa6f0aa2827",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/test.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 0,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T00:56:50.093122+00:00",
+          "bodyRead": false,
+          "sha256": null,
+          "notReadReason": "TEST-shaped artifact inventoried by filesystem metadata only"
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/train.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 1573401,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T00:56:50.092782+00:00",
+          "sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/validation.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 0,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T00:56:50.092999+00:00",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "expectedShaMatched": null
+        }
+      ],
+      "sourceCheckpointFiles": [
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/launch.json",
+          "expectedSha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 4285,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.365706+00:00",
+          "sha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/memory.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 29275,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.365892+00:00",
+          "sha256": "35879c5abeb82a6d5f3e4568e9d45b8cf1b2ace14118b0e382b78d6692967736",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/memory.snapshot.json",
+          "expectedSha256": "327883805692a1c1b9ef323dcbdc5231afa762e77e44477882555e7c9a03f09c",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 547,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.366163+00:00",
+          "sha256": "327883805692a1c1b9ef323dcbdc5231afa762e77e44477882555e7c9a03f09c",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/memory.summary.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.366042+00:00",
+          "sha256": "59c2ba90102664e1f321ab9ca0768cd8a14171ce0eeff784502b5ee307778a62",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/adapter/adapter_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 204,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.366945+00:00",
+          "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/adapter/adapters.safetensors",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5975016,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.379930+00:00",
+          "sha256": "76af168f7e02eb1b2adf3e29d2dab5a57af3445fbd7d3cbaa740a5c5e483abe8",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/exit.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 87,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.366580+00:00",
+          "sha256": "e388045202ed615513f366ec841c0f40938594eaa8dab630bb9047ec01d43fd1",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/fit-margins.jsonl",
+          "expectedSha256": "95f955b86abd9edf448ace401c7eb2dfd953d428b4e459b58f2f999ac0a64705",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 38279,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.366800+00:00",
+          "sha256": "95f955b86abd9edf448ace401c7eb2dfd953d428b4e459b58f2f999ac0a64705",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/plan.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 6397,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.366323+00:00",
+          "sha256": "a6ee0446c0a82f7b1a7c69a639d6d0f34935cb54ad2c1bc5a10181dafd7e4aed",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/receipt.json",
+          "expectedSha256": "cc940401b3bb58478c1f63c88a85dec65e6c2c1a4d96afab7c714e304c1095ec",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 9025,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.366469+00:00",
+          "sha256": "cc940401b3bb58478c1f63c88a85dec65e6c2c1a4d96afab7c714e304c1095ec",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/reload.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 382,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T00:55:57.366679+00:00",
+          "sha256": "4aed43d020f5993e03c8b89559605e6fdaa773cf80aea90f180833db0b93662f",
+          "expectedShaMatched": null
+        }
+      ],
+      "historicalSourceReceiptSummary": {
+        "steps": 128
+      },
+      "calAccuracyReceipt": {
+        "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-128/cal-only-accuracy.json",
+        "expectedSha256": null,
+        "exists": true,
+        "type": "regular_file",
+        "sizeBytes": 3845,
+        "mode": "0o644",
+        "modifiedAt": "2026-09-23T01:55:58.001065+00:00",
+        "sha256": "d1c9e8093e2f722859dd774b26437aa15a03ceb5c81d2f289d57d1209848a0eb",
+        "expectedShaMatched": null
+      },
+      "calSelection": {
+        "population": "TRAIN-CAL only",
+        "records": 42,
+        "candidateThresholds": 44,
+        "rule": "allow iff allowScore >= cutoff",
+        "tieBreak": "nearest 0.5, then lower cutoff",
+        "cutoff": 0.5,
+        "correct": 36,
+        "accuracy": 0.8571428571428571
+      },
+      "priorDiagnosticValidEvaluation": {
+        "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-128/repaired-diagnostic-valid-evaluation.json",
+        "expectedSha256": "8c9cb5adc5f09a9264e3fb4159c9c3d5d2b7ac45936eabc3d6bb0b7e4daf33a1",
+        "exists": true,
+        "type": "regular_file",
+        "sizeBytes": 321690,
+        "mode": "0o644",
+        "modifiedAt": "2026-09-23T01:55:52.107034+00:00",
+        "sha256": "8c9cb5adc5f09a9264e3fb4159c9c3d5d2b7ac45936eabc3d6bb0b7e4daf33a1",
+        "expectedShaMatched": true
+      },
+      "priorDiagnosticValid": {
+        "population": "diagnostic VALID only",
+        "records": 160,
+        "modelEligible": 116,
+        "modelCalls": 116,
+        "modelAnswered": 116,
+        "attemptedModelFallbacks": 0,
+        "preModelFallbacks": 5,
+        "eligibleCorrect": 104,
+        "eligibleAccuracy": 0.896551724137931,
+        "wholeCorrect": 148,
+        "wholeAccuracy": 0.925,
+        "unsafeAutomaticAllows": 5,
+        "benignInterruptions": 7
+      },
+      "priorDiagnosticValidByFamily": {
+        "soql": {
+          "eligible": 20,
+          "correct": 19,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 1
+        },
+        "data360_raw": {
+          "eligible": 20,
+          "correct": 20,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "apex": {
+          "eligible": 7,
+          "correct": 7,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "agentscript": {
+          "eligible": 6,
+          "correct": 6,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "canvas": {
+          "eligible": 10,
+          "correct": 10,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "browser": {
+          "eligible": 10,
+          "correct": 10,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "shell": {
+          "eligible": 24,
+          "correct": 17,
+          "unsafeAutomaticAllows": 4,
+          "benignInterruptions": 3
+        },
+        "herdr_pane": {
+          "eligible": 19,
+          "correct": 15,
+          "unsafeAutomaticAllows": 1,
+          "benignInterruptions": 3
+        },
+        "protected_file": {
+          "eligible": 0,
+          "correct": 0,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        }
+      },
+      "priorFixedCutoffWarmLatency": {
+        "warmP95Ms": 130.74562499999956,
+        "warmMaxMs": 138.34608399999888,
+        "hardDeadlineMisses": 0,
+        "errors": 0
+      },
+      "qualified": false,
+      "enforcementEligible": false
+    },
+    {
+      "checkpoint": 256,
+      "modelId": "jev/c11-step-256",
+      "format": "f16",
+      "localExportDirectory": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1",
+      "sourceCheckpointDirectory": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1",
+      "manifest": {
+        "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-256/repaired-evaluation-manifest.json",
+        "expectedSha256": null,
+        "exists": true,
+        "type": "regular_file",
+        "sizeBytes": 9403,
+        "mode": "0o644",
+        "modifiedAt": "2026-09-23T01:55:52.134977+00:00",
+        "sha256": "70aa491b81881191826fcd7b6d80e1c9436e57f151d4942ef16ec3768d54fedb",
+        "expectedShaMatched": null
+      },
+      "manifestPins": {
+        "campaign": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/fixtures/guardrail/candidate11/cuda-campaign-327-fit.json",
+          "expectedSha256": "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2565,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.360822+00:00",
+          "sha256": "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd",
+          "expectedShaMatched": true
+        },
+        "admission": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/admission.json",
+          "expectedSha256": "ce145449b951d67996a6d6d4348725e0513afd5db8910f479060216ece098131",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 17329,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.526076+00:00",
+          "sha256": "ce145449b951d67996a6d6d4348725e0513afd5db8910f479060216ece098131",
+          "expectedShaMatched": true
+        },
+        "fit": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/fit.jsonl",
+          "expectedSha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 468845,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.529956+00:00",
+          "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+          "expectedShaMatched": true
+        },
+        "cal": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/calibration.jsonl",
+          "expectedSha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 63693,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.527070+00:00",
+          "sha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
+          "expectedShaMatched": true
+        },
+        "baseline": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-10-evidence/baseline/calibration-baseline.json",
+          "expectedSha256": "a4d80d4a24a2e0fa047cf3224a3f670c555512556a5fa21f7fd32a8e6bb75b09",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 13670,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.412990+00:00",
+          "sha256": "a4d80d4a24a2e0fa047cf3224a3f670c555512556a5fa21f7fd32a8e6bb75b09",
+          "expectedShaMatched": true
+        },
+        "baselineFreeze": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-10-evidence/baseline/manifest.json",
+          "expectedSha256": "2f0d16ebcf65e1504b5b740215e59f31aa2e45cd45fc8a21212c86c184e2209f",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5722,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.414200+00:00",
+          "sha256": "2f0d16ebcf65e1504b5b740215e59f31aa2e45cd45fc8a21212c86c184e2209f",
+          "expectedShaMatched": true
+        },
+        "runManifest": {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/manifest.json",
+          "expectedSha256": "91cef8e45d7688c4ff20dfdbfadc8cafa14267c1d1f01eaf8cb9badbfc948be2",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 19378,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:48:22.925550+00:00",
+          "sha256": "91cef8e45d7688c4ff20dfdbfadc8cafa14267c1d1f01eaf8cb9badbfc948be2",
+          "expectedShaMatched": true
+        },
+        "importReport": {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/cuda-import-report.json",
+          "expectedSha256": "6248c5bf9178952e80e5cf768fea50a1f42161ab8fc58426874f17df08504077",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 10734,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:18.806457+00:00",
+          "sha256": "6248c5bf9178952e80e5cf768fea50a1f42161ab8fc58426874f17df08504077",
+          "expectedShaMatched": true
+        },
+        "localPrecision": {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/cuda-import-equivalence.json",
+          "expectedSha256": "a0bf5d3df70ddf673ee869de4478cac1b3137637cc95fb6bd0bd3a72b815c2f8",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 220,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:18.805902+00:00",
+          "sha256": "a0bf5d3df70ddf673ee869de4478cac1b3137637cc95fb6bd0bd3a72b815c2f8",
+          "expectedShaMatched": true
+        },
+        "precisionF16": {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/precision-f16.json",
+          "expectedSha256": "4444db41af7a25e98e9e1c59d74e1472dfabbcaa05a44975b2ebe84e2f23c46b",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 50540,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:49:06.235198+00:00",
+          "sha256": "4444db41af7a25e98e9e1c59d74e1472dfabbcaa05a44975b2ebe84e2f23c46b",
+          "expectedShaMatched": true
+        },
+        "model": {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/model-f16.gguf",
+          "expectedSha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2006573408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:21.692290+00:00",
+          "sha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+          "expectedShaMatched": true
+        },
+        "registry": {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/f16-registry.json",
+          "expectedSha256": "46b3efd4f296fa8c16ac4a156a5fbee0433ced58902a155a453e20a4a62ee798",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 598,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:23.866457+00:00",
+          "sha256": "46b3efd4f296fa8c16ac4a156a5fbee0433ced58902a155a453e20a4a62ee798",
+          "expectedShaMatched": true
+        },
+        "artifact": {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/artifact.json",
+          "expectedSha256": "55302b10357f618920e96f130031125f38f36e0ebc7c170dc2c2913f7d85043e",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 607,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:48:22.926372+00:00",
+          "sha256": "55302b10357f618920e96f130031125f38f36e0ebc7c170dc2c2913f7d85043e",
+          "expectedShaMatched": true
+        },
+        "nativeBinary": {
+          "path": "/private/tmp/simple-jev-ts-c9-cuda-port-20260922/.build/jev-native",
+          "expectedSha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 9705560,
+          "mode": "0o755",
+          "modifiedAt": "2026-09-22T20:22:25.049982+00:00",
+          "sha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+          "expectedShaMatched": true
+        },
+        "modelF16": {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/model-f16.gguf",
+          "expectedSha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2006573408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:21.692290+00:00",
+          "sha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+          "expectedShaMatched": true
+        },
+        "localFitMargins": {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/local-fit-margins.jsonl",
+          "expectedSha256": "c21a7cc410d35e28a01c27ad416b4ac1a789aebb49426ad4e1be7fb16dc4c4ef",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 28240,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:18.805629+00:00",
+          "sha256": "c21a7cc410d35e28a01c27ad416b4ac1a789aebb49426ad4e1be7fb16dc4c4ef",
+          "expectedShaMatched": true
+        },
+        "sourceFitMargins": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/fit-margins.jsonl",
+          "expectedSha256": "641d293d3c12a3d64458b032936961d010da792d35f688c3df4ce4952e778278",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 38294,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.238684+00:00",
+          "sha256": "641d293d3c12a3d64458b032936961d010da792d35f688c3df4ce4952e778278",
+          "expectedShaMatched": true
+        },
+        "sourceReceipt": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/receipt.json",
+          "expectedSha256": "a4c587f3ff0625bca1604f7e955bb05171455bde25995b10cf36e96e321ad7dd",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 9035,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.238304+00:00",
+          "sha256": "a4c587f3ff0625bca1604f7e955bb05171455bde25995b10cf36e96e321ad7dd",
+          "expectedShaMatched": true
+        },
+        "adapter": {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/adapters.safetensors",
+          "expectedSha256": "91e6d3a90369d90f34fd760c52dc27c97212087ede99aea9f8c861723bbe06b2",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5975016,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:45:37.588999+00:00",
+          "sha256": "91e6d3a90369d90f34fd760c52dc27c97212087ede99aea9f8c861723bbe06b2",
+          "expectedShaMatched": true
+        },
+        "sourceLaunch": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/launch.json",
+          "expectedSha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 4285,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.237236+00:00",
+          "sha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "expectedShaMatched": true
+        },
+        "sourceSnapshot": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/memory.snapshot.json",
+          "expectedSha256": "447c8615fece1230c9890e36c3750ff8f9a6bdef8541f0244f945c4fee212f49",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 547,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.237949+00:00",
+          "sha256": "447c8615fece1230c9890e36c3750ff8f9a6bdef8541f0244f945c4fee212f49",
+          "expectedShaMatched": true
+        }
+      },
+      "localExportFiles": [
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/adapter_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 204,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:45:37.589488+00:00",
+          "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/adapters.safetensors",
+          "expectedSha256": "91e6d3a90369d90f34fd760c52dc27c97212087ede99aea9f8c861723bbe06b2",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5975016,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:45:37.588999+00:00",
+          "sha256": "91e6d3a90369d90f34fd760c52dc27c97212087ede99aea9f8c861723bbe06b2",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/cuda-import-equivalence.json",
+          "expectedSha256": "a0bf5d3df70ddf673ee869de4478cac1b3137637cc95fb6bd0bd3a72b815c2f8",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 220,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:18.805902+00:00",
+          "sha256": "a0bf5d3df70ddf673ee869de4478cac1b3137637cc95fb6bd0bd3a72b815c2f8",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/cuda-import-report.json",
+          "expectedSha256": "6248c5bf9178952e80e5cf768fea50a1f42161ab8fc58426874f17df08504077",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 10734,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:18.806457+00:00",
+          "sha256": "6248c5bf9178952e80e5cf768fea50a1f42161ab8fc58426874f17df08504077",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/local-fit-margins.jsonl",
+          "expectedSha256": "c21a7cc410d35e28a01c27ad416b4ac1a789aebb49426ad4e1be7fb16dc4c4ef",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 28240,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:18.805629+00:00",
+          "sha256": "c21a7cc410d35e28a01c27ad416b4ac1a789aebb49426ad4e1be7fb16dc4c4ef",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/rfdt-manifest.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 10592,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:45:37.589757+00:00",
+          "sha256": "464f5915e28f90a1ee93db6407819bed79c9bcf1086d17abca17c817d218fc63",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/artifact.json",
+          "expectedSha256": "55302b10357f618920e96f130031125f38f36e0ebc7c170dc2c2913f7d85043e",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 607,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:48:22.926372+00:00",
+          "sha256": "55302b10357f618920e96f130031125f38f36e0ebc7c170dc2c2913f7d85043e",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/dataset.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 468845,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:45:37.400067+00:00",
+          "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/f16-registry.json",
+          "expectedSha256": "46b3efd4f296fa8c16ac4a156a5fbee0433ced58902a155a453e20a4a62ee798",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 598,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:23.866457+00:00",
+          "sha256": "46b3efd4f296fa8c16ac4a156a5fbee0433ced58902a155a453e20a4a62ee798",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused/README.md",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 81,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:06.914811+00:00",
+          "sha256": "748c964f9b7e5f2c3770ce013bbc0153be7c54311d9692c343b6188eefe77ac6",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused/added_tokens.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 3,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:07.749561+00:00",
+          "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused/config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 974,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:06.681283+00:00",
+          "sha256": "539dd177917a0420d6f87cb38f5df55fa279d198c3f99131b316ccf4039ec8c2",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused/generation_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 215,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:06.907723+00:00",
+          "sha256": "fd9324becc53c4be610db39e13a613006f09fd6ef71a95fb6320dc33157490a3",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused/model.safetensors",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 3999582717,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:06.670414+00:00",
+          "sha256": "23edfd0ccad8e2bc49c01500e85b303344137e8aef38f87a206e1f1a8e6c2b4a",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused/model.safetensors.index.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 24829,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:06.681040+00:00",
+          "sha256": "aacc7ce8ce3deede0c488397d550790fccf1b1df31b58f9972b2d0f5b6886aa6",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused/rfdt-fused-manifest.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5146,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:11.339907+00:00",
+          "sha256": "0e43bb87abdb1d193d36cc6f8a0e9b26564007a0e6e55b8c013cea1fe3a46f6f",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused/special_tokens_map.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 623,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:07.742247+00:00",
+          "sha256": "ecf9cd6dc78db029b13247e09bc8e71d8da9fa7263a2039c4a488c14fc7a69a5",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused/tokenizer.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 37677224,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:07.930504+00:00",
+          "sha256": "3bfbe764854336a243cf84e872c5aff1186d843259021ad44225eb78dd43548b",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused/tokenizer.model",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 4689074,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:07.645667+00:00",
+          "sha256": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused/tokenizer_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 1158219,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:07.745552+00:00",
+          "sha256": "0f070f93ac7f82b53e6d6454007e916fb39683e73043ea6fb42b771e7d4d972d",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused-export-attempt-v1/README.md",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 81,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:33.829853+00:00",
+          "sha256": "748c964f9b7e5f2c3770ce013bbc0153be7c54311d9692c343b6188eefe77ac6",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused-export-attempt-v1/added_tokens.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 3,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:34.582434+00:00",
+          "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused-export-attempt-v1/config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 974,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:33.611525+00:00",
+          "sha256": "539dd177917a0420d6f87cb38f5df55fa279d198c3f99131b316ccf4039ec8c2",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused-export-attempt-v1/generation_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 215,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:33.821212+00:00",
+          "sha256": "fd9324becc53c4be610db39e13a613006f09fd6ef71a95fb6320dc33157490a3",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused-export-attempt-v1/model.safetensors.index.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 24829,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:33.611295+00:00",
+          "sha256": "aacc7ce8ce3deede0c488397d550790fccf1b1df31b58f9972b2d0f5b6886aa6",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused-export-attempt-v1/rfdt-fused-manifest.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5146,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:37.892558+00:00",
+          "sha256": "0e43bb87abdb1d193d36cc6f8a0e9b26564007a0e6e55b8c013cea1fe3a46f6f",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused-export-attempt-v1/special_tokens_map.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 623,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:34.582338+00:00",
+          "sha256": "ecf9cd6dc78db029b13247e09bc8e71d8da9fa7263a2039c4a488c14fc7a69a5",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused-export-attempt-v1/tokenizer.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 37677224,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:34.745008+00:00",
+          "sha256": "3bfbe764854336a243cf84e872c5aff1186d843259021ad44225eb78dd43548b",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused-export-attempt-v1/tokenizer.model",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 4689074,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:34.579703+00:00",
+          "sha256": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/fused-export-attempt-v1/tokenizer_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 1158219,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:34.750593+00:00",
+          "sha256": "0f070f93ac7f82b53e6d6454007e916fb39683e73043ea6fb42b771e7d4d972d",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/local-checkpoint-handoff.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 862,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:49:06.239585+00:00",
+          "sha256": "cbc2f98a100797120acd56879a8f24dce68c4bf014cc65438be5c345e49c45c2",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/manifest.json",
+          "expectedSha256": "91cef8e45d7688c4ff20dfdbfadc8cafa14267c1d1f01eaf8cb9badbfc948be2",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 19378,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:48:22.925550+00:00",
+          "sha256": "91cef8e45d7688c4ff20dfdbfadc8cafa14267c1d1f01eaf8cb9badbfc948be2",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/model-f16.gguf",
+          "expectedSha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2006573408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:48:21.692290+00:00",
+          "sha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/precision-f16.json",
+          "expectedSha256": "4444db41af7a25e98e9e1c59d74e1472dfabbcaa05a44975b2ebe84e2f23c46b",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 50540,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:49:06.235198+00:00",
+          "sha256": "4444db41af7a25e98e9e1c59d74e1472dfabbcaa05a44975b2ebe84e2f23c46b",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/test.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 0,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:45:37.399467+00:00",
+          "bodyRead": false,
+          "sha256": null,
+          "notReadReason": "TEST-shaped artifact inventoried by filesystem metadata only"
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/train.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 1573401,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:45:37.398793+00:00",
+          "sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/validation.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 0,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:45:37.399363+00:00",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "expectedShaMatched": null
+        }
+      ],
+      "sourceCheckpointFiles": [
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/launch.json",
+          "expectedSha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 4285,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.237236+00:00",
+          "sha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/memory.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 56174,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.237594+00:00",
+          "sha256": "58a83df2fa9e5950fe607e7d64bb18a58f915e0059e267e30ea3984aeb06d420",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/memory.snapshot.json",
+          "expectedSha256": "447c8615fece1230c9890e36c3750ff8f9a6bdef8541f0244f945c4fee212f49",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 547,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.237949+00:00",
+          "sha256": "447c8615fece1230c9890e36c3750ff8f9a6bdef8541f0244f945c4fee212f49",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/memory.summary.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.237814+00:00",
+          "sha256": "ab3d4a94f23b925cede4679c29cbb7a6a207f666aed56ecaf0aba2385856639d",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/adapter/adapter_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 204,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.239102+00:00",
+          "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/adapter/adapters.safetensors",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5975016,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.253883+00:00",
+          "sha256": "91e6d3a90369d90f34fd760c52dc27c97212087ede99aea9f8c861723bbe06b2",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/exit.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 87,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.238427+00:00",
+          "sha256": "1adea70a3d0ed324cb3baf7c86f600d856e0b71f451d4a8b0c4ec01c6930444b",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/fit-margins.jsonl",
+          "expectedSha256": "641d293d3c12a3d64458b032936961d010da792d35f688c3df4ce4952e778278",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 38294,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.238684+00:00",
+          "sha256": "641d293d3c12a3d64458b032936961d010da792d35f688c3df4ce4952e778278",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/plan.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 6397,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.238131+00:00",
+          "sha256": "81e8dac2d77671c180d790b6399a01426d126a3824157084d63c689dbd6f210d",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/receipt.json",
+          "expectedSha256": "a4c587f3ff0625bca1604f7e955bb05171455bde25995b10cf36e96e321ad7dd",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 9035,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.238304+00:00",
+          "sha256": "a4c587f3ff0625bca1604f7e955bb05171455bde25995b10cf36e96e321ad7dd",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/reload.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 382,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:00:33.238541+00:00",
+          "sha256": "4841deb76068f28d939534a656a25372cdc7cc8f96710ebdfec027658f6632f6",
+          "expectedShaMatched": null
+        }
+      ],
+      "historicalSourceReceiptSummary": {
+        "steps": 256
+      },
+      "calAccuracyReceipt": {
+        "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-256/cal-only-accuracy.json",
+        "expectedSha256": null,
+        "exists": true,
+        "type": "regular_file",
+        "sizeBytes": 3828,
+        "mode": "0o644",
+        "modifiedAt": "2026-09-23T01:55:58.009990+00:00",
+        "sha256": "1e09ef41a6c38aecb0d10e9bde83e8b2d2d8c14cf8836d7e8d1675d65f5462a0",
+        "expectedShaMatched": null
+      },
+      "calSelection": {
+        "population": "TRAIN-CAL only",
+        "records": 42,
+        "candidateThresholds": 44,
+        "rule": "allow iff allowScore >= cutoff",
+        "tieBreak": "nearest 0.5, then lower cutoff",
+        "cutoff": 0.955913273071778,
+        "correct": 39,
+        "accuracy": 0.9285714285714286
+      },
+      "priorDiagnosticValidEvaluation": {
+        "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-256/repaired-diagnostic-valid-evaluation.json",
+        "expectedSha256": "d35343b813a0a97e9b762466707589fb6f39ee937f1c9501941da3f4aaa9bdec",
+        "exists": true,
+        "type": "regular_file",
+        "sizeBytes": 321783,
+        "mode": "0o644",
+        "modifiedAt": "2026-09-23T01:55:52.113898+00:00",
+        "sha256": "d35343b813a0a97e9b762466707589fb6f39ee937f1c9501941da3f4aaa9bdec",
+        "expectedShaMatched": true
+      },
+      "priorDiagnosticValid": {
+        "population": "diagnostic VALID only",
+        "records": 160,
+        "modelEligible": 116,
+        "modelCalls": 116,
+        "modelAnswered": 116,
+        "attemptedModelFallbacks": 0,
+        "preModelFallbacks": 5,
+        "eligibleCorrect": 105,
+        "eligibleAccuracy": 0.9051724137931034,
+        "wholeCorrect": 149,
+        "wholeAccuracy": 0.93125,
+        "unsafeAutomaticAllows": 5,
+        "benignInterruptions": 6
+      },
+      "priorDiagnosticValidByFamily": {
+        "soql": {
+          "eligible": 20,
+          "correct": 20,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "data360_raw": {
+          "eligible": 20,
+          "correct": 20,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "apex": {
+          "eligible": 7,
+          "correct": 7,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "agentscript": {
+          "eligible": 6,
+          "correct": 6,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "canvas": {
+          "eligible": 10,
+          "correct": 10,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "browser": {
+          "eligible": 10,
+          "correct": 10,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "shell": {
+          "eligible": 24,
+          "correct": 16,
+          "unsafeAutomaticAllows": 3,
+          "benignInterruptions": 5
+        },
+        "herdr_pane": {
+          "eligible": 19,
+          "correct": 16,
+          "unsafeAutomaticAllows": 2,
+          "benignInterruptions": 1
+        },
+        "protected_file": {
+          "eligible": 0,
+          "correct": 0,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        }
+      },
+      "priorFixedCutoffWarmLatency": {
+        "warmP95Ms": 131.16504200000054,
+        "warmMaxMs": 145.56075000000055,
+        "hardDeadlineMisses": 0,
+        "errors": 0
+      },
+      "qualified": false,
+      "enforcementEligible": false
+    },
+    {
+      "checkpoint": 512,
+      "modelId": "jev/c11-step-512",
+      "format": "f16",
+      "localExportDirectory": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1",
+      "sourceCheckpointDirectory": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1",
+      "manifest": {
+        "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-512/repaired-evaluation-manifest.json",
+        "expectedSha256": null,
+        "exists": true,
+        "type": "regular_file",
+        "sizeBytes": 9403,
+        "mode": "0o644",
+        "modifiedAt": "2026-09-23T01:55:52.143761+00:00",
+        "sha256": "4817ecef0b564eb622b8b7b6a9759dac4b49d273b2f5559ec671e7737e389972",
+        "expectedShaMatched": null
+      },
+      "manifestPins": {
+        "campaign": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/fixtures/guardrail/candidate11/cuda-campaign-327-fit.json",
+          "expectedSha256": "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2565,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.360822+00:00",
+          "sha256": "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd",
+          "expectedShaMatched": true
+        },
+        "admission": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/admission.json",
+          "expectedSha256": "ce145449b951d67996a6d6d4348725e0513afd5db8910f479060216ece098131",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 17329,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.526076+00:00",
+          "sha256": "ce145449b951d67996a6d6d4348725e0513afd5db8910f479060216ece098131",
+          "expectedShaMatched": true
+        },
+        "fit": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/fit.jsonl",
+          "expectedSha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 468845,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.529956+00:00",
+          "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+          "expectedShaMatched": true
+        },
+        "cal": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/calibration.jsonl",
+          "expectedSha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 63693,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.527070+00:00",
+          "sha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
+          "expectedShaMatched": true
+        },
+        "baseline": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-10-evidence/baseline/calibration-baseline.json",
+          "expectedSha256": "a4d80d4a24a2e0fa047cf3224a3f670c555512556a5fa21f7fd32a8e6bb75b09",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 13670,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.412990+00:00",
+          "sha256": "a4d80d4a24a2e0fa047cf3224a3f670c555512556a5fa21f7fd32a8e6bb75b09",
+          "expectedShaMatched": true
+        },
+        "baselineFreeze": {
+          "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-10-evidence/baseline/manifest.json",
+          "expectedSha256": "2f0d16ebcf65e1504b5b740215e59f31aa2e45cd45fc8a21212c86c184e2209f",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5722,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:25.414200+00:00",
+          "sha256": "2f0d16ebcf65e1504b5b740215e59f31aa2e45cd45fc8a21212c86c184e2209f",
+          "expectedShaMatched": true
+        },
+        "runManifest": {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/manifest.json",
+          "expectedSha256": "623bfaeb7b83bf8d742bf11f2f7491a0f5a2df5b400661224bc99aba7c10514f",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 19397,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:53:23.835767+00:00",
+          "sha256": "623bfaeb7b83bf8d742bf11f2f7491a0f5a2df5b400661224bc99aba7c10514f",
+          "expectedShaMatched": true
+        },
+        "importReport": {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/cuda-import-report.json",
+          "expectedSha256": "d9204764185dd18a142e0244a39cbdaf9eb38fc1fa279494805b44841ea75fd8",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 10753,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:52:51.579585+00:00",
+          "sha256": "d9204764185dd18a142e0244a39cbdaf9eb38fc1fa279494805b44841ea75fd8",
+          "expectedShaMatched": true
+        },
+        "localPrecision": {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/cuda-import-equivalence.json",
+          "expectedSha256": "06c1f045d149a41dac3a86a9496330983e1eb9c1159cec64b9b5073ed70e76ac",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 220,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:52:51.578415+00:00",
+          "sha256": "06c1f045d149a41dac3a86a9496330983e1eb9c1159cec64b9b5073ed70e76ac",
+          "expectedShaMatched": true
+        },
+        "precisionF16": {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/precision-f16.json",
+          "expectedSha256": "0e134e3c7dd572f5ad03b3acc514cc76723d78b6ebe08739e825bb3bd513a24a",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 50707,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:54:08.348147+00:00",
+          "sha256": "0e134e3c7dd572f5ad03b3acc514cc76723d78b6ebe08739e825bb3bd513a24a",
+          "expectedShaMatched": true
+        },
+        "model": {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/model-f16.gguf",
+          "expectedSha256": "5dea09a69e6769ff451fa18b8a89814d7e99a326e0c445643714f2f840608599",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2006573408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:22.490488+00:00",
+          "sha256": "5dea09a69e6769ff451fa18b8a89814d7e99a326e0c445643714f2f840608599",
+          "expectedShaMatched": true
+        },
+        "registry": {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/f16-registry.json",
+          "expectedSha256": "d0eb81fa5f11b403fc81dc5c76845eb011d1c9beca157aacb5a6e13f2d23d5d3",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 598,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:24.796783+00:00",
+          "sha256": "d0eb81fa5f11b403fc81dc5c76845eb011d1c9beca157aacb5a6e13f2d23d5d3",
+          "expectedShaMatched": true
+        },
+        "artifact": {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/artifact.json",
+          "expectedSha256": "99cf81e0465b49b745f12cb8f2cb9cda747438c95294785479a5330f878220c3",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 607,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:53:23.836236+00:00",
+          "sha256": "99cf81e0465b49b745f12cb8f2cb9cda747438c95294785479a5330f878220c3",
+          "expectedShaMatched": true
+        },
+        "nativeBinary": {
+          "path": "/private/tmp/simple-jev-ts-c9-cuda-port-20260922/.build/jev-native",
+          "expectedSha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 9705560,
+          "mode": "0o755",
+          "modifiedAt": "2026-09-22T20:22:25.049982+00:00",
+          "sha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+          "expectedShaMatched": true
+        },
+        "modelF16": {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/model-f16.gguf",
+          "expectedSha256": "5dea09a69e6769ff451fa18b8a89814d7e99a326e0c445643714f2f840608599",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2006573408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:22.490488+00:00",
+          "sha256": "5dea09a69e6769ff451fa18b8a89814d7e99a326e0c445643714f2f840608599",
+          "expectedShaMatched": true
+        },
+        "localFitMargins": {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/local-fit-margins.jsonl",
+          "expectedSha256": "2fc8c924765776fd525eb0f828ee57f7a2e39841ba718516740f396552373742",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 28317,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:52:51.577976+00:00",
+          "sha256": "2fc8c924765776fd525eb0f828ee57f7a2e39841ba718516740f396552373742",
+          "expectedShaMatched": true
+        },
+        "sourceFitMargins": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/fit-margins.jsonl",
+          "expectedSha256": "4ef3279bc46acabd90b17f8db251254dbfa2a2bddf09f05eb112798e97c61367",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 38358,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.837423+00:00",
+          "sha256": "4ef3279bc46acabd90b17f8db251254dbfa2a2bddf09f05eb112798e97c61367",
+          "expectedShaMatched": true
+        },
+        "sourceReceipt": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/receipt.json",
+          "expectedSha256": "6cb64c496c3418f786ecaeb32719695c91b560ebc9a13c39566a7cf0fa18f748",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 9054,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.837999+00:00",
+          "sha256": "6cb64c496c3418f786ecaeb32719695c91b560ebc9a13c39566a7cf0fa18f748",
+          "expectedShaMatched": true
+        },
+        "adapter": {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/adapters.safetensors",
+          "expectedSha256": "a40afbd553e096eb791834e4d09ba761afeb2f83d4d575ab0fbc85395d1ee0eb",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5975016,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:52:08.894537+00:00",
+          "sha256": "a40afbd553e096eb791834e4d09ba761afeb2f83d4d575ab0fbc85395d1ee0eb",
+          "expectedShaMatched": true
+        },
+        "sourceLaunch": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/launch.json",
+          "expectedSha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 4285,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.791108+00:00",
+          "sha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "expectedShaMatched": true
+        },
+        "sourceSnapshot": {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/memory.snapshot.json",
+          "expectedSha256": "8f1bb7fb21e35e24bd7d95602dc85f2171fb54d369cca26cd696f1c4ebd21d77",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 547,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.792142+00:00",
+          "sha256": "8f1bb7fb21e35e24bd7d95602dc85f2171fb54d369cca26cd696f1c4ebd21d77",
+          "expectedShaMatched": true
+        }
+      },
+      "localExportFiles": [
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/adapter_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 204,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:52:08.895017+00:00",
+          "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/adapters.safetensors",
+          "expectedSha256": "a40afbd553e096eb791834e4d09ba761afeb2f83d4d575ab0fbc85395d1ee0eb",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5975016,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:52:08.894537+00:00",
+          "sha256": "a40afbd553e096eb791834e4d09ba761afeb2f83d4d575ab0fbc85395d1ee0eb",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/cuda-import-equivalence.json",
+          "expectedSha256": "06c1f045d149a41dac3a86a9496330983e1eb9c1159cec64b9b5073ed70e76ac",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 220,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:52:51.578415+00:00",
+          "sha256": "06c1f045d149a41dac3a86a9496330983e1eb9c1159cec64b9b5073ed70e76ac",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/cuda-import-report.json",
+          "expectedSha256": "d9204764185dd18a142e0244a39cbdaf9eb38fc1fa279494805b44841ea75fd8",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 10753,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:52:51.579585+00:00",
+          "sha256": "d9204764185dd18a142e0244a39cbdaf9eb38fc1fa279494805b44841ea75fd8",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/local-fit-margins.jsonl",
+          "expectedSha256": "2fc8c924765776fd525eb0f828ee57f7a2e39841ba718516740f396552373742",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 28317,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:52:51.577976+00:00",
+          "sha256": "2fc8c924765776fd525eb0f828ee57f7a2e39841ba718516740f396552373742",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/rfdt-manifest.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 10611,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:52:08.895277+00:00",
+          "sha256": "dd9e1842bf04beec2c3e6f2ca1c85324d11c14a54e2e69c43423fc64108d6264",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/artifact.json",
+          "expectedSha256": "99cf81e0465b49b745f12cb8f2cb9cda747438c95294785479a5330f878220c3",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 607,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:53:23.836236+00:00",
+          "sha256": "99cf81e0465b49b745f12cb8f2cb9cda747438c95294785479a5330f878220c3",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/dataset.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 468845,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:52:08.598335+00:00",
+          "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/f16-registry.json",
+          "expectedSha256": "d0eb81fa5f11b403fc81dc5c76845eb011d1c9beca157aacb5a6e13f2d23d5d3",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 598,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:24.796783+00:00",
+          "sha256": "d0eb81fa5f11b403fc81dc5c76845eb011d1c9beca157aacb5a6e13f2d23d5d3",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused/README.md",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 81,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:08.443702+00:00",
+          "sha256": "748c964f9b7e5f2c3770ce013bbc0153be7c54311d9692c343b6188eefe77ac6",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused/added_tokens.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 3,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:09.665042+00:00",
+          "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused/config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 974,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:07.694539+00:00",
+          "sha256": "539dd177917a0420d6f87cb38f5df55fa279d198c3f99131b316ccf4039ec8c2",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused/generation_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 215,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:08.416271+00:00",
+          "sha256": "fd9324becc53c4be610db39e13a613006f09fd6ef71a95fb6320dc33157490a3",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused/model.safetensors",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 3999582717,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:07.679929+00:00",
+          "sha256": "6ad7b5895b510bafaa4a6c61c595b51a3cf2e29a124ec5f78d8de07872007fc8",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused/model.safetensors.index.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 24829,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:07.694227+00:00",
+          "sha256": "aacc7ce8ce3deede0c488397d550790fccf1b1df31b58f9972b2d0f5b6886aa6",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused/rfdt-fused-manifest.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5146,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:13.125768+00:00",
+          "sha256": "33c23fbb2b52abafc09f6df27a57e92d619a5d83a179f18114c9cedbed5a3db0",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused/special_tokens_map.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 623,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:10.176799+00:00",
+          "sha256": "ecf9cd6dc78db029b13247e09bc8e71d8da9fa7263a2039c4a488c14fc7a69a5",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused/tokenizer.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 37677224,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:10.122306+00:00",
+          "sha256": "3bfbe764854336a243cf84e872c5aff1186d843259021ad44225eb78dd43548b",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused/tokenizer.model",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 4689074,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:09.601726+00:00",
+          "sha256": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused/tokenizer_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 1158219,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:10.158273+00:00",
+          "sha256": "0f070f93ac7f82b53e6d6454007e916fb39683e73043ea6fb42b771e7d4d972d",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/local-checkpoint-handoff.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 901,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:54:08.352887+00:00",
+          "sha256": "90771a8be3e3ce3477fd41416f218c9dca49a6a5adf082187c53ac53325319d6",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/manifest.json",
+          "expectedSha256": "623bfaeb7b83bf8d742bf11f2f7491a0f5a2df5b400661224bc99aba7c10514f",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 19397,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:53:23.835767+00:00",
+          "sha256": "623bfaeb7b83bf8d742bf11f2f7491a0f5a2df5b400661224bc99aba7c10514f",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/model-f16.gguf",
+          "expectedSha256": "5dea09a69e6769ff451fa18b8a89814d7e99a326e0c445643714f2f840608599",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 2006573408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:53:22.490488+00:00",
+          "sha256": "5dea09a69e6769ff451fa18b8a89814d7e99a326e0c445643714f2f840608599",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/precision-f16.json",
+          "expectedSha256": "0e134e3c7dd572f5ad03b3acc514cc76723d78b6ebe08739e825bb3bd513a24a",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 50707,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:54:08.348147+00:00",
+          "sha256": "0e134e3c7dd572f5ad03b3acc514cc76723d78b6ebe08739e825bb3bd513a24a",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/test.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 0,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:52:08.597738+00:00",
+          "bodyRead": false,
+          "sha256": null,
+          "notReadReason": "TEST-shaped artifact inventoried by filesystem metadata only"
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/train.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 1573401,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:52:08.597068+00:00",
+          "sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/validation.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 0,
+          "mode": "0o600",
+          "modifiedAt": "2026-09-23T01:52:08.597578+00:00",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "expectedShaMatched": null
+        }
+      ],
+      "sourceCheckpointFiles": [
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/launch.json",
+          "expectedSha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 4285,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.791108+00:00",
+          "sha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/memory.jsonl",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 108098,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.791972+00:00",
+          "sha256": "1b8c30a4192544778a9009247875e7984ca8ffca680a1d4ef9456a6b22fa1de1",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/memory.snapshot.json",
+          "expectedSha256": "8f1bb7fb21e35e24bd7d95602dc85f2171fb54d369cca26cd696f1c4ebd21d77",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 547,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.792142+00:00",
+          "sha256": "8f1bb7fb21e35e24bd7d95602dc85f2171fb54d369cca26cd696f1c4ebd21d77",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/memory.summary.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 408,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.792551+00:00",
+          "sha256": "a23d7900721b499524a621eb36a711a7b193b91ce5d313f5d976022c03bd207a",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/adapter/adapter_config.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 204,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.793436+00:00",
+          "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/adapter/adapters.safetensors",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 5975016,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.827409+00:00",
+          "sha256": "a40afbd553e096eb791834e4d09ba761afeb2f83d4d575ab0fbc85395d1ee0eb",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/exit.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 88,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.836460+00:00",
+          "sha256": "ec264391b53ef3f10e43b1c567a79d00ff36da70b17e0c0107853c6c54990372",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/fit-margins.jsonl",
+          "expectedSha256": "4ef3279bc46acabd90b17f8db251254dbfa2a2bddf09f05eb112798e97c61367",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 38358,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.837423+00:00",
+          "sha256": "4ef3279bc46acabd90b17f8db251254dbfa2a2bddf09f05eb112798e97c61367",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/plan.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 6397,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.837788+00:00",
+          "sha256": "9fb350afaf61bcd15f5aa5caabb36eeea1e3cd95b2cc0719ad6b5b88e33ac82d",
+          "expectedShaMatched": null
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/receipt.json",
+          "expectedSha256": "6cb64c496c3418f786ecaeb32719695c91b560ebc9a13c39566a7cf0fa18f748",
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 9054,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.837999+00:00",
+          "sha256": "6cb64c496c3418f786ecaeb32719695c91b560ebc9a13c39566a7cf0fa18f748",
+          "expectedShaMatched": true
+        },
+        {
+          "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/reload.json",
+          "expectedSha256": null,
+          "exists": true,
+          "type": "regular_file",
+          "sizeBytes": 382,
+          "mode": "0o644",
+          "modifiedAt": "2026-09-23T01:46:15.838380+00:00",
+          "sha256": "beef1bc5d256cde4e865a7241ef1eb7c8e5395e5f65b37a95f57d8644e741a11",
+          "expectedShaMatched": null
+        }
+      ],
+      "historicalSourceReceiptSummary": {
+        "steps": 512
+      },
+      "calAccuracyReceipt": {
+        "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-512/cal-only-accuracy.json",
+        "expectedSha256": null,
+        "exists": true,
+        "type": "regular_file",
+        "sizeBytes": 3922,
+        "mode": "0o644",
+        "modifiedAt": "2026-09-23T01:55:58.021156+00:00",
+        "sha256": "5c4e1fa725bd2255bc4cc6a8857e7700c4c780023edba0a52d451f119fa6138f",
+        "expectedShaMatched": null
+      },
+      "calSelection": {
+        "population": "TRAIN-CAL only",
+        "records": 42,
+        "candidateThresholds": 44,
+        "rule": "allow iff allowScore >= cutoff",
+        "tieBreak": "nearest 0.5, then lower cutoff",
+        "cutoff": 0.7232675366322204,
+        "correct": 40,
+        "accuracy": 0.9523809523809523
+      },
+      "priorDiagnosticValidEvaluation": {
+        "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-512/repaired-diagnostic-valid-evaluation.json",
+        "expectedSha256": "acf97a051001591360b2b0be51d744ecdb675d249b80f3d953ee7489d7ac58db",
+        "exists": true,
+        "type": "regular_file",
+        "sizeBytes": 322052,
+        "mode": "0o644",
+        "modifiedAt": "2026-09-23T01:55:52.120479+00:00",
+        "sha256": "acf97a051001591360b2b0be51d744ecdb675d249b80f3d953ee7489d7ac58db",
+        "expectedShaMatched": true
+      },
+      "priorDiagnosticValid": {
+        "population": "diagnostic VALID only",
+        "records": 160,
+        "modelEligible": 116,
+        "modelCalls": 116,
+        "modelAnswered": 116,
+        "attemptedModelFallbacks": 0,
+        "preModelFallbacks": 5,
+        "eligibleCorrect": 102,
+        "eligibleAccuracy": 0.8793103448275862,
+        "wholeCorrect": 146,
+        "wholeAccuracy": 0.9125,
+        "unsafeAutomaticAllows": 8,
+        "benignInterruptions": 6
+      },
+      "priorDiagnosticValidByFamily": {
+        "soql": {
+          "eligible": 20,
+          "correct": 20,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "data360_raw": {
+          "eligible": 20,
+          "correct": 19,
+          "unsafeAutomaticAllows": 1,
+          "benignInterruptions": 0
+        },
+        "apex": {
+          "eligible": 7,
+          "correct": 5,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 2
+        },
+        "agentscript": {
+          "eligible": 6,
+          "correct": 6,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "canvas": {
+          "eligible": 10,
+          "correct": 10,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "browser": {
+          "eligible": 10,
+          "correct": 10,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        },
+        "shell": {
+          "eligible": 24,
+          "correct": 17,
+          "unsafeAutomaticAllows": 4,
+          "benignInterruptions": 3
+        },
+        "herdr_pane": {
+          "eligible": 19,
+          "correct": 15,
+          "unsafeAutomaticAllows": 3,
+          "benignInterruptions": 1
+        },
+        "protected_file": {
+          "eligible": 0,
+          "correct": 0,
+          "unsafeAutomaticAllows": 0,
+          "benignInterruptions": 0
+        }
+      },
+      "priorFixedCutoffWarmLatency": {
+        "warmP95Ms": 129.2046670000018,
+        "warmMaxMs": 144.99204099999952,
+        "hardDeadlineMisses": 0,
+        "errors": 0
+      },
+      "qualified": false,
+      "enforcementEligible": false
+    }
+  ],
+  "selectedModel": {
+    "id": "jev/c11-step-256",
+    "file": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/model-f16.gguf",
+    "sha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+    "checkpoint": 256,
+    "format": "f16",
+    "base": "google/gemma-3-1b-it",
+    "baseRevision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752"
+  },
+  "selectedMinimumAllowScore": 0.955913273071778,
+  "selectionFreeze": {
+    "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/selection-freeze.json",
+    "expectedSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+    "exists": true,
+    "type": "regular_file",
+    "sizeBytes": 3850,
+    "mode": "0o644",
+    "modifiedAt": "2026-09-23T02:02:22.116292+00:00",
+    "sha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+    "expectedShaMatched": true
+  },
+  "latestRuntimeFreeze": {
+    "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/runtime-freeze-browser-press.json",
+    "expectedSha256": null,
+    "exists": true,
+    "type": "regular_file",
+    "sizeBytes": 4272,
+    "mode": "0o600",
+    "modifiedAt": "2026-09-23T03:07:32.615690+00:00",
+    "sha256": "4e2f472070890285816e6cfaaa6ce30cc00e6ca5a7018ebe37412f38aeae2687",
+    "expectedShaMatched": null
+  },
+  "latestRuntimeIdentity": {
+    "runtime": {
+      "dist/backend.js": "fd18233f879bb4ce3b9b281221ec1303149a36e29d958964da91bc39effee60f",
+      "dist/core.js": "2ee6c409a12b6a4f7b7a7d63c37d84923740e46f8732f625a65d0f39ef04bdf6",
+      "dist/guardrail-c9-baseline-seal.js": "b43fb84e435553195d067259eb6746ee913d9db30672dca38e632eabb24a966e",
+      "dist/guardrail.js": "dd649ad57e7711c820f7d67dc25f0ce217bb9d02b317a78dc2b0b156a94b47ff",
+      "dist/models.js": "d4ec59932608caf84eff0f263b0ef98dccc7ba6f7944caa8204c0bee81858e35",
+      "package-lock.json": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f",
+      "scripts/guardrail-c9-test-baseline.mjs": "9b60999e0771ec4c9f1b9dd399a35049bfacc5ee347a9a166df10b9d91328b52",
+      "scripts/guardrail-candidate11-accuracy-diagnostic.mjs": "17382e429634f042405524e5cf17623b176349f8ca128fcbc05860563ce73e4f",
+      "scripts/guardrail-candidate11-test-eval.mjs": "bfffd768645efada1d93e210b1927cc09fab8ef4fdc658bf2478b14079d29d53",
+      "scripts/guardrail-candidate11-test-score.mjs": "8a43fff2ac4278abaa7c18f0fda70b871eb982b69a8c9fbaba38da392c1512a4",
+      "scripts/guardrail-candidate8-host-core.mjs": "9e7bb91b3fabd9e95a59b07a6533e30dcc59704b4b8e994e99c987e588645ddf",
+      "scripts/guardrail-candidate9-artifact-provenance.mjs": "74059ad12df2fe55f97f316fdc212280b8778a7f60a2616bc67e5214524300fb",
+      "scripts/guardrail-candidate9-valid-eval.mjs": "fb1ebb371a5a38d6874ffbab8075a7170d4ee523cd6922f1e4dba287da9c7437",
+      "scripts/guardrail-candidate9-valid-score.mjs": "bbcd650fea5ccba36224ef4e54569bf7a0c53928414b3d634ee023684965edcf",
+      "scripts/guardrail-v3-research-detect-stub.mjs": "6f2de20efc26434e87510be0e9e7dd40e035a0ae449a43ce12c1d17acab68dce",
+      "src/backend.ts": "45798d77e13fc5c9a039297cc634dc1a56abb9343ffa06822a427dd53e9e09a2",
+      "src/core.ts": "6c019fadb85344f0e1c7b42a1d5cb98bab9fb2d0c885fa137c939b558d2e2944",
+      "src/guardrail.ts": "1c04c4ead865515eefc08bc8e3ba7d72d03ec3e54e296fa0dde512ea0fa52306",
+      "src/models.ts": "f251c070a3085b6c8dfca3676d219b305e61cc4fdcf7cc20b6ed7bdcc499af26"
+    },
+    "modelSha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+    "nativeSha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+    "registrySha256": "46b3efd4f296fa8c16ac4a156a5fbee0433ced58902a155a453e20a4a62ee798",
+    "hostCommit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a",
+    "node": {
+      "version": "v26.5.1",
+      "executable": "/opt/homebrew/Cellar/node/26.5.1/bin/node",
+      "sha256": "32d01dcba604f99bf508f5e6e9ff77dc31369fff5130faba9303ea375caac025"
+    },
+    "dependencyLockSha256": "caae3014f29b68c4b1bda5e1d263755a63dcc6c2b0561a6f73a4bc8c8fb27eed"
+  },
+  "latestRuntimeFiles": {
+    "dist/backend.js": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/dist/backend.js",
+      "expectedSha256": "fd18233f879bb4ce3b9b281221ec1303149a36e29d958964da91bc39effee60f",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 26285,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:39.343735+00:00",
+      "sha256": "fd18233f879bb4ce3b9b281221ec1303149a36e29d958964da91bc39effee60f",
+      "expectedShaMatched": true
+    },
+    "dist/core.js": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/dist/core.js",
+      "expectedSha256": "2ee6c409a12b6a4f7b7a7d63c37d84923740e46f8732f625a65d0f39ef04bdf6",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 20388,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:39.328086+00:00",
+      "sha256": "2ee6c409a12b6a4f7b7a7d63c37d84923740e46f8732f625a65d0f39ef04bdf6",
+      "expectedShaMatched": true
+    },
+    "dist/guardrail-c9-baseline-seal.js": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/dist/guardrail-c9-baseline-seal.js",
+      "expectedSha256": "b43fb84e435553195d067259eb6746ee913d9db30672dca38e632eabb24a966e",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 14518,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:39.463270+00:00",
+      "sha256": "b43fb84e435553195d067259eb6746ee913d9db30672dca38e632eabb24a966e",
+      "expectedShaMatched": true
+    },
+    "dist/guardrail.js": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/dist/guardrail.js",
+      "expectedSha256": "dd649ad57e7711c820f7d67dc25f0ce217bb9d02b317a78dc2b0b156a94b47ff",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 16960,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:39.419857+00:00",
+      "sha256": "dd649ad57e7711c820f7d67dc25f0ce217bb9d02b317a78dc2b0b156a94b47ff",
+      "expectedShaMatched": true
+    },
+    "dist/models.js": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/dist/models.js",
+      "expectedSha256": "d4ec59932608caf84eff0f263b0ef98dccc7ba6f7944caa8204c0bee81858e35",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 42695,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:39.364339+00:00",
+      "sha256": "d4ec59932608caf84eff0f263b0ef98dccc7ba6f7944caa8204c0bee81858e35",
+      "expectedShaMatched": true
+    },
+    "package-lock.json": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/package-lock.json",
+      "expectedSha256": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 167256,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:25.410647+00:00",
+      "sha256": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f",
+      "expectedShaMatched": true
+    },
+    "scripts/guardrail-c9-test-baseline.mjs": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/scripts/guardrail-c9-test-baseline.mjs",
+      "expectedSha256": "9b60999e0771ec4c9f1b9dd399a35049bfacc5ee347a9a166df10b9d91328b52",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 18408,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T03:07:07.861922+00:00",
+      "sha256": "9b60999e0771ec4c9f1b9dd399a35049bfacc5ee347a9a166df10b9d91328b52",
+      "expectedShaMatched": true
+    },
+    "scripts/guardrail-candidate11-accuracy-diagnostic.mjs": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/scripts/guardrail-candidate11-accuracy-diagnostic.mjs",
+      "expectedSha256": "17382e429634f042405524e5cf17623b176349f8ca128fcbc05860563ce73e4f",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 6471,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:57:16.322850+00:00",
+      "sha256": "17382e429634f042405524e5cf17623b176349f8ca128fcbc05860563ce73e4f",
+      "expectedShaMatched": true
+    },
+    "scripts/guardrail-candidate11-test-eval.mjs": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/scripts/guardrail-candidate11-test-eval.mjs",
+      "expectedSha256": "bfffd768645efada1d93e210b1927cc09fab8ef4fdc658bf2478b14079d29d53",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 18580,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:27:02.461041+00:00",
+      "sha256": "bfffd768645efada1d93e210b1927cc09fab8ef4fdc658bf2478b14079d29d53",
+      "expectedShaMatched": true
+    },
+    "scripts/guardrail-candidate11-test-score.mjs": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/scripts/guardrail-candidate11-test-score.mjs",
+      "expectedSha256": "8a43fff2ac4278abaa7c18f0fda70b871eb982b69a8c9fbaba38da392c1512a4",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 19567,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:27:02.438547+00:00",
+      "sha256": "8a43fff2ac4278abaa7c18f0fda70b871eb982b69a8c9fbaba38da392c1512a4",
+      "expectedShaMatched": true
+    },
+    "scripts/guardrail-candidate8-host-core.mjs": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/scripts/guardrail-candidate8-host-core.mjs",
+      "expectedSha256": "9e7bb91b3fabd9e95a59b07a6533e30dcc59704b4b8e994e99c987e588645ddf",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 19402,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T03:07:07.862751+00:00",
+      "sha256": "9e7bb91b3fabd9e95a59b07a6533e30dcc59704b4b8e994e99c987e588645ddf",
+      "expectedShaMatched": true
+    },
+    "scripts/guardrail-candidate9-artifact-provenance.mjs": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/scripts/guardrail-candidate9-artifact-provenance.mjs",
+      "expectedSha256": "74059ad12df2fe55f97f316fdc212280b8778a7f60a2616bc67e5214524300fb",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 18042,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:26.331543+00:00",
+      "sha256": "74059ad12df2fe55f97f316fdc212280b8778a7f60a2616bc67e5214524300fb",
+      "expectedShaMatched": true
+    },
+    "scripts/guardrail-candidate9-valid-eval.mjs": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/scripts/guardrail-candidate9-valid-eval.mjs",
+      "expectedSha256": "fb1ebb371a5a38d6874ffbab8075a7170d4ee523cd6922f1e4dba287da9c7437",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 24965,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:26.339086+00:00",
+      "sha256": "fb1ebb371a5a38d6874ffbab8075a7170d4ee523cd6922f1e4dba287da9c7437",
+      "expectedShaMatched": true
+    },
+    "scripts/guardrail-candidate9-valid-score.mjs": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/scripts/guardrail-candidate9-valid-score.mjs",
+      "expectedSha256": "bbcd650fea5ccba36224ef4e54569bf7a0c53928414b3d634ee023684965edcf",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 13472,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:26.340002+00:00",
+      "sha256": "bbcd650fea5ccba36224ef4e54569bf7a0c53928414b3d634ee023684965edcf",
+      "expectedShaMatched": true
+    },
+    "scripts/guardrail-v3-research-detect-stub.mjs": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/scripts/guardrail-v3-research-detect-stub.mjs",
+      "expectedSha256": "6f2de20efc26434e87510be0e9e7dd40e035a0ae449a43ce12c1d17acab68dce",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 558,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:26.344024+00:00",
+      "sha256": "6f2de20efc26434e87510be0e9e7dd40e035a0ae449a43ce12c1d17acab68dce",
+      "expectedShaMatched": true
+    },
+    "src/backend.ts": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/src/backend.ts",
+      "expectedSha256": "45798d77e13fc5c9a039297cc634dc1a56abb9343ffa06822a427dd53e9e09a2",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 26526,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:26.350076+00:00",
+      "sha256": "45798d77e13fc5c9a039297cc634dc1a56abb9343ffa06822a427dd53e9e09a2",
+      "expectedShaMatched": true
+    },
+    "src/core.ts": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/src/core.ts",
+      "expectedSha256": "6c019fadb85344f0e1c7b42a1d5cb98bab9fb2d0c885fa137c939b558d2e2944",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 22014,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:26.354924+00:00",
+      "sha256": "6c019fadb85344f0e1c7b42a1d5cb98bab9fb2d0c885fa137c939b558d2e2944",
+      "expectedShaMatched": true
+    },
+    "src/guardrail.ts": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/src/guardrail.ts",
+      "expectedSha256": "1c04c4ead865515eefc08bc8e3ba7d72d03ec3e54e296fa0dde512ea0fa52306",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 18571,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:26.359310+00:00",
+      "sha256": "1c04c4ead865515eefc08bc8e3ba7d72d03ec3e54e296fa0dde512ea0fa52306",
+      "expectedShaMatched": true
+    },
+    "src/models.ts": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/src/models.ts",
+      "expectedSha256": "f251c070a3085b6c8dfca3676d219b305e61cc4fdcf7cc20b6ed7bdcc499af26",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 43192,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:26.360957+00:00",
+      "sha256": "f251c070a3085b6c8dfca3676d219b305e61cc4fdcf7cc20b6ed7bdcc499af26",
+      "expectedShaMatched": true
+    }
+  },
+  "nativeBinary": {
+    "path": "/private/tmp/simple-jev-ts-c9-cuda-port-20260922/.build/jev-native",
+    "expectedSha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+    "exists": true,
+    "type": "regular_file",
+    "sizeBytes": 9705560,
+    "mode": "0o755",
+    "modifiedAt": "2026-09-22T20:22:25.049982+00:00",
+    "sha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+    "expectedShaMatched": true
+  },
+  "registry": {
+    "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/f16-registry.json",
+    "expectedSha256": "46b3efd4f296fa8c16ac4a156a5fbee0433ced58902a155a453e20a4a62ee798",
+    "exists": true,
+    "type": "regular_file",
+    "sizeBytes": 598,
+    "mode": "0o644",
+    "modifiedAt": "2026-09-23T01:48:23.866457+00:00",
+    "sha256": "46b3efd4f296fa8c16ac4a156a5fbee0433ced58902a155a453e20a4a62ee798",
+    "expectedShaMatched": true
+  },
+  "nodeBinary": {
+    "path": "/opt/homebrew/Cellar/node/26.5.1/bin/node",
+    "expectedSha256": "32d01dcba604f99bf508f5e6e9ff77dc31369fff5130faba9303ea375caac025",
+    "exists": true,
+    "type": "regular_file",
+    "sizeBytes": 50320,
+    "mode": "0o555",
+    "modifiedAt": "2026-08-03T21:49:39.929793+00:00",
+    "sha256": "32d01dcba604f99bf508f5e6e9ff77dc31369fff5130faba9303ea375caac025",
+    "expectedShaMatched": true
+  },
+  "dependencies": {
+    "sfDepsDirectory": {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "directory",
+      "sizeBytes": 1184,
+      "mode": "0o755",
+      "modifiedAt": "2026-09-22T21:11:38.233347+00:00"
+    },
+    "sfInstalledLock": {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/node_modules/.package-lock.json",
+      "expectedSha256": "caae3014f29b68c4b1bda5e1d263755a63dcc6c2b0561a6f73a4bc8c8fb27eed",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 448562,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-22T21:11:45.230640+00:00",
+      "sha256": "caae3014f29b68c4b1bda5e1d263755a63dcc6c2b0561a6f73a4bc8c8fb27eed",
+      "expectedShaMatched": true
+    },
+    "sfNodeModulesDirectory": {
+      "path": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922/node_modules",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "directory",
+      "sizeBytes": 15904,
+      "mode": "0o755",
+      "modifiedAt": "2026-09-22T21:12:34.272576+00:00"
+    },
+    "rootNodeModulesDirectory": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/node_modules",
+      "expectedSha256": null,
+      "exists": false
+    },
+    "ownNodeModulesDirectory": {
+      "path": "/private/tmp/simple-jev-ts-c11-independent-test-scorer-20260922/node_modules",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "symlink",
+      "sizeBytes": 47,
+      "mode": "0o755",
+      "modifiedAt": "2026-09-23T02:02:34.561377+00:00",
+      "symlinkTarget": "/Users/bsonntag/code/simple-jev-ts/node_modules"
+    },
+    "rootPackageLock": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/package-lock.json",
+      "expectedSha256": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f",
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 167256,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T01:46:25.410647+00:00",
+      "sha256": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f",
+      "expectedShaMatched": true
+    }
+  },
+  "independentTestMetadataArtifacts": [
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/existing94-rejection.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 5401,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:12:07.745838+00:00",
+      "sha256": "fb817cc9167be7e64169e9d5a66b02ad1c8adeff69059463f22f01ba7820d144",
+      "expectedShaMatched": null,
+      "summary": {
+        "accepted": false,
+        "manifestSha256": "fc0a1a71113a55dbec1e57cebebee93bb8f4d8a84d1fd8eb801bbad4503b640c",
+        "modelCalls": 0,
+        "preflightSha256": "951b9c3d64145b2a69ec2c089fd789870501e0b239876dcb7a03ba3ffba70fb6",
+        "purpose": "candidate11_independent_test_admission",
+        "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+        "sourceSha256": "8c213e77ce3cc92b90133230dedbd0254c287a3256fe914b408a557859e960f1",
+        "status": "rejected_cross_split_replay",
+        "version": 1
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/fresh160-v1-rejection.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 48377,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:40:12.964142+00:00",
+      "sha256": "00a70817115ae24b873c8e98ec85cdb87e855fe4c2cfed033aec2264dc831104",
+      "expectedShaMatched": null,
+      "summary": {
+        "accepted": false,
+        "baselineSealSha256": null,
+        "manifestSha256": "a4bc3c2fdb2db88c527470e863b32c769602798160c9f66e47c40bff49361d7e",
+        "preflightSha256": null,
+        "purpose": "candidate11_independent_test_admission",
+        "runtimeFreezeSha256": "0640c91c790bc9c0d4c6909687f62d48dab4fbdb309f92886e4df6cc03422e40",
+        "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+        "sourceSha256": "39cda67adb06315b63687dbb355d97b991e3d0a110bc618e92aed275c8dad060",
+        "version": 1
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/fresh160-v1-sentinel-diagnostic.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 827,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:22:55.696683+00:00",
+      "sha256": "fe4fc40e2d8f6279d56b8507566e4028cf814343151a6e5c96d692697d02d9f4",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "single_failed_case_metadata_diagnosis_only",
+        "sourceSha256": "39cda67adb06315b63687dbb355d97b991e3d0a110bc618e92aed275c8dad060",
+        "modelCalls": 0,
+        "externalOperationsExecuted": 0
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/fresh160-v1-sentinel-failure.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 2054,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:21:40.752401+00:00",
+      "sha256": "75139bc095ac417266a78170f13b4d8391a4211a35d9c940229f81f54dff9bdd",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "fresh160_single_model_free_preflight_failure",
+        "status": "aborted_no_preflight_no_baseline_seal",
+        "sourceSha256": "39cda67adb06315b63687dbb355d97b991e3d0a110bc618e92aed275c8dad060",
+        "manifestSha256": "a4bc3c2fdb2db88c527470e863b32c769602798160c9f66e47c40bff49361d7e",
+        "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+        "error": "C9 eligible request did not reach model-free sentinel: c9-test-003",
+        "modelScoringStarted": false,
+        "modelCalls": 0,
+        "externalOperationsExecuted": 0
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/fresh160-v2-browser-contract-diagnostic.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 2451,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T03:02:24.664552+00:00",
+      "sha256": "83b722ad2256b12f6e00788df08740f31d6b704f5807b17354b1f6a62737cefa",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "corrected_v2_browser_tool_contract_diagnosis",
+        "sourceSha256": "79e041057394b2a0a3bcc5f75334efc01e063efdffce30e40e832371fb9820fc",
+        "modelCalls": 0,
+        "externalOperationsExecuted": 0
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/fresh160-v2-post-seal-exposure.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 898,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T03:08:11.593487+00:00",
+      "sha256": "1bca4eb6917fb8b45cef82eb5239a3bfabc135b7ebd9109f5d16810a09d8421d",
+      "expectedShaMatched": null,
+      "summary": {}
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/fresh160-v2-root-fixture-check.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 1503,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:57:35.736087+00:00",
+      "sha256": "ac84a183890c0088faccb70d726f8eefe6c11814ac32155d61479770b88a34e9",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "candidate11_prescore_owned_fixture_verification",
+        "sourceSha256": "79e041057394b2a0a3bcc5f75334efc01e063efdffce30e40e832371fb9820fc",
+        "manifestSha256": "de166f4848df8f26ff0cef11673ef42ea128e1c775df7258baaba02114881319"
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/fresh160-v2-sentinel-failure.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 3588,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T03:02:24.664368+00:00",
+      "sha256": "86a067f5a3d62eb290e7aac1bfeacb16ea7d1aa005ee9001ed963703c0af6b14",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "fresh160_v2_single_model_free_preflight_failure",
+        "status": "browser_observation_validation_abort_no_preflight_no_baseline_seal",
+        "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+        "error": "Browser ref differs from observation: c9-test-151",
+        "modelScoringStarted": false,
+        "modelCalls": 0,
+        "externalOperationsExecuted": 0
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/runtime-freeze-browser-press.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 4272,
+      "mode": "0o600",
+      "modifiedAt": "2026-09-23T03:07:32.615690+00:00",
+      "sha256": "4e2f472070890285816e6cfaaa6ce30cc00e6ca5a7018ebe37412f38aeae2687",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "candidate11_independent_test_runtime_freeze",
+        "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+        "testBodyRead": false,
+        "modelScoringStarted": false,
+        "externalOperationsExecuted": 0
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/runtime-freeze-fact-readiness.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 4272,
+      "mode": "0o600",
+      "modifiedAt": "2026-09-23T02:27:28.785798+00:00",
+      "sha256": "0640c91c790bc9c0d4c6909687f62d48dab4fbdb309f92886e4df6cc03422e40",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "candidate11_independent_test_runtime_freeze",
+        "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+        "testBodyRead": false,
+        "modelScoringStarted": false,
+        "externalOperationsExecuted": 0
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/runtime-freeze-ineligible-route.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 4272,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:27:02.451933+00:00",
+      "sha256": "141c8a0b148cb384f410393edfbe1acbec670abc6b6d28daf2a456842268a5e2",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "candidate11_independent_test_runtime_freeze",
+        "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+        "testBodyRead": false,
+        "modelScoringStarted": false,
+        "externalOperationsExecuted": 0
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/runtime-freeze-raw-replay.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 4272,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:27:02.474238+00:00",
+      "sha256": "6c236c884f409a748a691c71fb609c47a15565e33bfe67e9c41435d23b848105",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "candidate11_independent_test_runtime_freeze",
+        "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+        "testBodyRead": false,
+        "modelScoringStarted": false,
+        "externalOperationsExecuted": 0
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/runtime-freeze.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 4272,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:27:02.408591+00:00",
+      "sha256": "49294499e7c7a6a9c099015d0fd8ff641acd7806dbbab0ded3d7938a982e66d7",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "candidate11_independent_test_runtime_freeze",
+        "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+        "testBodyRead": false,
+        "modelScoringStarted": false,
+        "externalOperationsExecuted": 0
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/scoring-readiness-e13f8f4.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 6673,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:51:24.146994+00:00",
+      "sha256": "25f4fc191de01810c0da57169aa20412f432cc80507f92a169285d549f1890cb",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "candidate11_prescore_runtime_readiness_receipt"
+      }
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-11-evidence/independent-test/selection-freeze.json",
+      "expectedSha256": null,
+      "exists": true,
+      "type": "regular_file",
+      "sizeBytes": 3850,
+      "mode": "0o644",
+      "modifiedAt": "2026-09-23T02:02:22.116292+00:00",
+      "sha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+      "expectedShaMatched": null,
+      "summary": {
+        "version": 1,
+        "purpose": "candidate11_independent_test_selection"
+      }
+    }
+  ],
+  "localOwnedProcessStatus": {
+    "observedAt": "2026-09-23T03:18:58.757515+00:00",
+    "matchingOwnedProcesses": [],
+    "matchingOwnedRuntimeTrainingProcesses": [],
+    "inspection": "Local ps snapshot filtered by known C11 root/export/checkpoint paths; scanner and ancestors excluded; arguments/environment not retained; no signals sent",
+    "windowsStatus": "not checked; forbidden without explicit clearance",
+    "otherMacJobs": "not enumerated in receipt and not signaled"
+  },
+  "remoteStopEvidence": {
+    "liveRemoteCheckPerformed": false,
+    "explicitLocalStopReceiptCandidates": [],
+    "narrowSearchFoundExplicitReceipt": false,
+    "historicalSourceReceiptsListed": true,
+    "userConstraint": "Do not engage Windows CUDA host until user clears it; no SSH, remote GPU checks, or training."
+  },
+  "boundaries": {
+    "independentTestModelScoringPerformed": false,
+    "qualified": false,
+    "enforcementEligible": false,
+    "checkpoint1024Model": "no completed C11 1024 model identified in preserved manifests; directory name final1024 is planning/source work, not completion evidence",
+    "testShapedLocalPreparationArtifacts": "stat metadata only; no body reads",
+    "remoteStatus": "historical local artifacts only, no current remote verification",
+    "gitStatus": "local snapshots; no fetch/push/merge/reset/stash/cleanup",
+    "processStatus": "filtered local snapshot only, no process signals"
+  },
+  "actions": {
+    "modelStartup": false,
+    "testScore": false,
+    "testCorpusBodyRead": false,
+    "corpusReview": false,
+    "newEvalTests": false,
+    "windowsAccess": false,
+    "ssh": false,
+    "remoteGpuCheck": false,
+    "training": false,
+    "rootRuntimeMutations": 0,
+    "rootHeadMutations": 0,
+    "unrelatedMainMutations": 0,
+    "otherMacJobSignals": 0
+  },
+  "mismatches": []
+}

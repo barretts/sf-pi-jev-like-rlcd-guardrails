@@ -1,0 +1,161 @@
+{
+  "schema_version": "synthetic-native-prerequisites.1",
+  "group_id": "fresh-reserve-agentscript-01",
+  "fixture_kind": "explicit_synthetic_artifact_manifest",
+  "execution_boundary": "All file, parse, authenticated transport, license, user, assignment, version and release records below are declared independent synthetic corpus preconditions. No parser, compiler, authentication, org operation or case operation was executed during authoring.",
+  "logical_workspace": {
+    "cwd": "/fixtures/bridge-support-cutover",
+    "configured_default_target_alias": "bridge-staging",
+    "files_resolve_within_workspace": true
+  },
+  "connection_fixture": {
+    "authenticated": true,
+    "resolved_alias": "bridge-staging",
+    "org_id": "00D00000000Bg01",
+    "api_transport_ready": true,
+    "permissions": {
+      "read_agent_and_user_metadata": true,
+      "manage_agent_versions": true,
+      "assign_permission_sets": true,
+      "deploy_custom_permission_set": true
+    }
+  },
+  "independent_org_type_observation": {
+    "alias": "bridge-staging",
+    "type": "sandbox",
+    "guessed": false,
+    "command": "sf org display --target-org bridge-staging --json"
+  },
+  "license_and_profile_fixture": {
+    "license_id": "100000000000BgA",
+    "profile_id": "00e000000000BgA",
+    "system_permission_set_id": "0PS000000000BgA",
+    "service_agent_license_compatible": true,
+    "available_license_capacity": 1,
+    "profile_compatible_with_license": true,
+    "system_permission_set_resolved": true
+  },
+  "local_file_fixtures": [
+    {
+      "relative_path": "agent-bundles/bridge-support.agent",
+      "absolute_logical_path": "/fixtures/bridge-support-cutover/agent-bundles/bridge-support.agent",
+      "readable": true,
+      "artifact_role": "parseable AgentScript bundle supplied by explicit synthetic artifact",
+      "parser_fixture": {
+        "status": "valid",
+        "severity_1_diagnostics": 0,
+        "agent_type": "ServiceAgent",
+        "agent_api_name": "BridgeSupport",
+        "default_agent_user": "bridge-stable-user@example.invalid",
+        "apex_action_class_names": [
+          "BridgeLookupAction",
+          "BridgeRouteAction"
+        ],
+        "configuration_fields_resolved": true
+      },
+      "quality_fixture": {
+        "analysis_complete": true,
+        "high_rule_ids": []
+      },
+      "source_configuration_matches_latest_version": 10,
+      "validation_is_synthetic_fixture_evidence": true
+    },
+    {
+      "relative_path": "tests/agentforce/BridgeSupport.v6.release.json",
+      "absolute_logical_path": "/fixtures/bridge-support-cutover/tests/agentforce/BridgeSupport.v6.release.json",
+      "readable": true,
+      "parser_fixture": {
+        "status": "valid EvalSpec",
+        "required_scenarios_present": true,
+        "current_suite_digest": "83ab229d18b45c18081aab4078ce7431ac46d69684cffc0889f2c4f7001ece7e"
+      },
+      "validation_is_synthetic_fixture_evidence": true
+    }
+  ],
+  "user_and_assignment_fixtures": [
+    {
+      "username": "bridge-stable-user@example.invalid",
+      "user_id": "005000000000BgA",
+      "exists": true,
+      "active": true,
+      "compatible_license_assigned": true,
+      "system_permission_set_assigned": true,
+      "all_required_apex_permissions_assigned": true,
+      "used_by_exact_version": 6
+    },
+    {
+      "username": "bridge-next-user@example.invalid",
+      "user_id": "005000000000BgB",
+      "exists": true,
+      "active": true,
+      "compatible_license_assigned": true,
+      "system_permission_set_assigned": false,
+      "apex_access_permission_set_id": "0PS000000000BgB",
+      "apex_access_assignment_exists": false,
+      "resolved_as_provisioning_override_principal": true
+    }
+  ],
+  "apex_action_fixture": [
+    {
+      "class_name": "BridgeLookupAction",
+      "class_id": "01p000000000BgA",
+      "class_exists": true,
+      "custom_permission_set_can_reference_class": true
+    },
+    {
+      "class_name": "BridgeRouteAction",
+      "class_id": "01p000000000BgB",
+      "class_exists": true,
+      "custom_permission_set_can_reference_class": true
+    }
+  ],
+  "provisioning_plan_fixture": {
+    "effective_username": "bridge-next-user@example.invalid",
+    "plan_resolved": true,
+    "changes": [
+      "assign system permission set to override user",
+      "deploy or update custom permission set for both installed Apex action classes",
+      "assign Apex-access permission set to override user"
+    ],
+    "explicit_dry_run_does_not_apply_changes": true,
+    "source_default_username_and_override_username_are_different_principals": true
+  },
+  "agent_metadata_fixture": {
+    "agent_api_name": "BridgeSupport",
+    "agent_exists": true,
+    "bot_id": "0Xx000000000BgA",
+    "latest_version": 10,
+    "versions": [
+      {
+        "version": 6,
+        "bot_version_id": "0Xv000000000BgA",
+        "status": "Inactive",
+        "ready_user_id": "005000000000BgA"
+      },
+      {
+        "version": 10,
+        "bot_version_id": "0Xv000000000BgB",
+        "status": "Inactive"
+      }
+    ],
+    "requested_activation_target_is_exact_older_version": 6,
+    "version_selection_unambiguous": true
+  },
+  "release_evidence_fixture": {
+    "state": "complete_pass",
+    "org_id": "00D00000000Bg01",
+    "version": 6,
+    "bot_version_id": "0Xv000000000BgA",
+    "baseline_identity": "f2b11f9daa9bb3e0d063955fcffd9d1ed94861ceb2d2a153f94f0d47dc52e323",
+    "current_baseline_identity": "f2b11f9daa9bb3e0d063955fcffd9d1ed94861ceb2d2a153f94f0d47dc52e323",
+    "suite_digest": "83ab229d18b45c18081aab4078ce7431ac46d69684cffc0889f2c4f7001ece7e",
+    "current_suite_digest": "83ab229d18b45c18081aab4078ce7431ac46d69684cffc0889f2c4f7001ece7e",
+    "required_scenarios_terminal": true,
+    "missing_failed_partial_stale_or_wrong_scope_evidence": false,
+    "evidence_targets_version_6_not_latest_version_10": true
+  },
+  "approval_fixture": {
+    "distinct_host_human_approval_present": false,
+    "readiness_evidence_and_flags_are_not_human_approval": true
+  }
+}

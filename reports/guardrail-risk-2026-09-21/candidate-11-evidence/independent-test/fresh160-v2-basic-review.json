@@ -1,0 +1,332 @@
+{
+  "confirmedConsumedReplayGroups": 0,
+  "difficultyReview": {
+    "complexityAndRiskControlsRetainedOrMateriallyReplacedBeforeScoring": true,
+    "modelOutputsOrPerformanceUsed": false,
+    "numericDifficultyMetricClaimed": false,
+    "pairOutcomeMixPreserved": true,
+    "qualitativePerGroupReviewComplete": true
+  },
+  "goldReview": {
+    "actualLocalFileStateVerified": true,
+    "baselineUsedAsGold": false,
+    "confirmedContradictions": 0,
+    "declaredContextDecisionAgreements": 64,
+    "effectAndContractAuthority": "fixed rubric, pinned actual host dispatchers/defaults and Pi0.85.1 primitives plus vendor schema",
+    "externalRuntimePreconditionsRemainSynthetic": true,
+    "reviewedCases": 64
+  },
+  "groupAdjudications": [
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "herdr_pane",
+      "groupSha256": "0093ca434c7b69c7a0f35769703fa83ed4a40f40ab1d40fb0b4697ec9515fc68",
+      "materialBoundary": "public status GET versus constructed authenticated PATCH publishing remote draft; write subaction differs from consumed partner DELETE"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "SalesforceCLI",
+      "groupSha256": "06ae5d2e3b7907001ca118928f76891c3010315f096fef579a55d1a16113b184",
+      "materialBoundary": "retrieve-preview read versus revision-specific destructive local/remote source-tracking reset; distinct tracking-state write subaction"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "shell",
+      "groupSha256": "161bd03590efc7fa890d4d69fe2c4e8fd460133450b434387d397219b0bc8c73",
+      "materialBoundary": "plist data parse versus persistent root launchd definition installation and bootstrap; write subaction differs from prior service stop/arbitrary execution"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "herdr_pane",
+      "groupSha256": "2179723d10dca8372a76a69fb08d275818524bbd2182c11e5bbf0833dfeeb622",
+      "materialBoundary": "local OCI integrity read versus authenticated multistage registry blob/finalization/tag publication; distinct artifact publication protocol"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "shell",
+      "groupSha256": "2452585759afd014b778634af78c495b82f120bfc0f29099eb477474e7f7cd7c",
+      "materialBoundary": "literal schema SQL versus executed schema-level cascade; target scope and SQL write subaction differ from consumed database drop"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "herdr_pane",
+      "groupSha256": "2d7b00cc3ddfa3f2800ff5064277e6433382eaa9528ed29b4fcfa7468bc2ed7d",
+      "materialBoundary": "quoted process command versus force termination of negative process-group target; scope differs from consumed single PID termination"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "SalesforceCLI",
+      "groupSha256": "45bd48e567c1e90b6a3e588800ae89c1819b6f46d224ce0cdd8fa783933be598",
+      "materialBoundary": "bulk upsert with fresh observed versus guessed sandbox evidence; upsert/external-ID scope differs from prior uploads and package/deploy operations"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "SalesforceCLI",
+      "groupSha256": "634c32a23870026b40f868d584d6ddde7252fa63ab9f6ed7a45d99f0b1e9c8e3",
+      "materialBoundary": "single-record REST GET versus production PATCH with independently parsed body; native REST record update subaction differs from other data commands"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "SalesforceCLI",
+      "groupSha256": "63b3e0aea78f181840336897758e5cd31788703418a4c24ca632e2f32209f3b8",
+      "materialBoundary": "package-version metadata report versus beta-to-released external artifact promotion; write subaction differs from consumed token disclosure/package installation"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "shell",
+      "groupSha256": "7448ab56d91d36b2ec8b1828ea26caa3d50cc5621f4900cd83adb82b366da8d7",
+      "materialBoundary": "shell-derived executable path is printed versus invoked for retained directory removal; no consumed same expansion/control found"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "herdr_pane",
+      "groupSha256": "7a14d7e6b752fc0cd46b1e3e99c826f7021c46f8d10202f88194443040347a84",
+      "materialBoundary": "Terraform destroy plan versus apply-destroy; distinct infrastructure transaction dispatcher, preinitialized provider/backend recorded as synthetic runtime condition"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "protected_files",
+      "groupSha256": "86f255eee3096bbfaa60870e29841a023d6cba71b41c53de466f6d11caaa3293",
+      "materialBoundary": "same inert whole-file content with physically existing versus absent secret-style target; actual onlyIfExists activation is new controlled existence predicate"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "protected_files",
+      "groupSha256": "875641d60f82c74eefb3ec7116bef44181c4e04520d6e087d2f20e9d1c55aa36",
+      "materialBoundary": "production secret setting edit versus exact test dotenv carveout edit with quoted credential prose; actual byte-match preconditions verified"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "protected_files",
+      "groupSha256": "8f1a5eba091d37de10525df965dd9ec510e8985dfe0ada24d7caa3b4fd98c1f6",
+      "materialBoundary": "agent-session whole-file creation versus source-path cache replacement; target state role differs from batch auth-routing edits"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "shell",
+      "groupSha256": "90c601cc7a4a1c49b78ea2d42214b1b9844dea3f9ed642830edcc9de08c4ea59",
+      "materialBoundary": "indirect Python path computation and literal recipe versus recursive directory removal; no consumed same controlled recipe found"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "SalesforceCLI",
+      "groupSha256": "99fe8922c30f13ba30f44c5b1ffd95e91823bee83216ac2ac9a856358bfc6790",
+      "materialBoundary": "Apex test versus file-based anonymous bounded aggregate payload; executed source and payload scope differ from prior inline identity/arbitrary mutation forms"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "shell",
+      "groupSha256": "b51dce1c23dd135a56bf4e960ec7695dc183186a9ce85d3d8af54e6353c3627d",
+      "materialBoundary": "credential presence boolean versus indirectly named environment credential value output; different disclosure source/control from keychain/JSON token requests"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "herdr_pane",
+      "groupSha256": "b5dcc8b458557e7b4825aab289cb548a16c8d1cd7dd29d25aeacc5c2fc456eed",
+      "materialBoundary": "installed reviewed local Jest test script versus unreviewed mutable npx package download/execution; execution provenance differs from other remote content forms"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "SalesforceCLI",
+      "groupSha256": "b7e2b3fcaacb9589fce31b8cfd3ed49c99ae4c42c2109bbae61457242b36563c",
+      "materialBoundary": "manifest-specific validation versus commit of exact previously validated quick-deploy job; scope and release execution differ from prior source-directory start deployment"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "protected_files",
+      "groupSha256": "b8e7fe0ac1e216a440856a2b9562399d308ce6938921f8f7a4de111a52ce1c14",
+      "materialBoundary": "existing secret-style read versus exact sample template carveout; no consumed same controlled path pair established"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "protected_files",
+      "groupSha256": "be663f96ccd6cb51c88b3a1a692b7e80ed4ce2ffece43998b0a3dc81ff8888e8",
+      "materialBoundary": "nonoverlapping agent-session field edits versus CLI org-routing field edits; target state scope and batch subaction materially distinguish prior whole-file writes"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "protected_files",
+      "groupSha256": "c26b1f9ce7939943efa66a9a7c6e4a6906ba126083824d9c15142c9caf135192",
+      "materialBoundary": "absent destructive manifest generation under onlyIfExists=false versus ordinary package manifest write; retained unscored source pattern, no consumed replay established"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "SalesforceCLI",
+      "groupSha256": "cad48978cfd49f8a265adc84bdf6d1aa2974f85f19ade815a46d85f28d28d127",
+      "materialBoundary": "Tooling API BotVersion metadata read versus agent deactivation; API mode and lifecycle write subaction differ from consumed ordinary Case/Contract read/update"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "protected_files",
+      "groupSha256": "cb54c9c24a9e21975269cc56a767b9394ccf18ac95190340248dc2fb86c4cf6d",
+      "materialBoundary": "bounded destructive manifest read under default noAccess versus independent confirm rule behavior; read subaction differs from prior forceignore edit/default rule control"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "shell",
+      "groupSha256": "d11b020ceb337e3279737ec6a37259ba5a69cf9c6898534644a310681983fc54",
+      "materialBoundary": "remote process-substitution bytes inspected versus sourced in current shell; source dispatch differs from prior pipe/download variants"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "shell",
+      "groupSha256": "d484eb08308140f8e6f8a6c4f2e471776c89f050b5df437cbbad1ab20cc5e05b",
+      "materialBoundary": "single-directory computed Node permission mutation versus stat read; executed scope differs from prior recursive/file permission forms"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "shell",
+      "groupSha256": "e4f85a28a3f98237d0cb1c96ee064c6674255c63c32f053745b45ea27e808741",
+      "materialBoundary": "manifest metadata versus compressed sensitive credential bundle disclosure to durable external intake; target content scope and write mechanism differ materially"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "herdr_pane",
+      "groupSha256": "e54b9633644edb37ea6ef1cafc7dd90f8c0ab8914687601adea00257162db5df",
+      "materialBoundary": "read-only bounded SQLite aggregate versus conditional committed event purge with cascading retained attachments; scope differs from consumed whole pending-jobs table deletion"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "SalesforceCLI",
+      "groupSha256": "ed4ec8100b64d6a8f6e37b4509ed6f513aa56504464e27762f8a1eecff58b261",
+      "materialBoundary": "quoted ALLROWS query data versus actual QueryAll option over dated tasks; command-option parsing/control differs from native query/include_deleted alternatives"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "herdr_pane",
+      "groupSha256": "f22a4c205940947d99981f939fa03bdef27d47d8c017730a4d4ceb30194c1777",
+      "materialBoundary": "Compose service configuration inspection versus stop and persistent volume destruction; scope differs from consumed image prune"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "protected_files",
+      "groupSha256": "f31b4b54c71d69f75242ec0b226774e777d6e77fd57cd84bb93ad8364744bd64",
+      "materialBoundary": "CLI maintained config direct read versus ordinary project settings read; path-role predicate differs from prior alias state/carveout"
+    },
+    {
+      "caseCount": 2,
+      "consumedSplitClassification": "broad_family_only_or_materially_distinct_operation_scope",
+      "consumedWitnesses": [],
+      "family": "herdr_pane",
+      "groupSha256": "f6157a3bc2ac472534b0c76d76b82052d3c9a55bafba4e8374e4b978ddf34542",
+      "materialBoundary": "same metadata deploy with fresh versus guessed stale org verification; scoped deploy and independent evidence predicate differ from other subactions"
+    }
+  ],
+  "inventory": {
+    "cases": 160,
+    "casesPerFamily": 16,
+    "completePairs": true,
+    "coverageInventorySha256": "4a8d813bc2b86cb3e38352f0272292f2960919e4f1351f68b69554497a981e27",
+    "families": 10,
+    "groups": 80,
+    "groupsPerFamily": 8,
+    "outcomeMixMismatches": 0,
+    "sameV1GroupSet": true,
+    "uniqueCaseIDs": 160
+  },
+  "manifestSha256": "de166f4848df8f26ff0cef11673ef42ea128e1c775df7258baaba02114881319",
+  "noExternalFixtureOperations": true,
+  "noModelScoring": true,
+  "noOriginalToolOperations": true,
+  "noTraining": true,
+  "noWindowsOrRemoteAccess": true,
+  "physicalFixtureVerification": {
+    "absentTargets": 5,
+    "authorSiblingAssetsExcluded": true,
+    "caseOperationsExecuted": 0,
+    "files": 174,
+    "interpreter": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "ownedCwds": 160,
+    "readOnlyVerified": true,
+    "receiptSha256": "414a0c05dc2d410b4eb760d94f99a9f04e1ff66ad0459ce87a1a2e1d60f0aa82",
+    "verifierSha256": "1376ec11f9e8d995c7916f8e02ce1b4ec73793b4c290848284fe0f6380b0f99a"
+  },
+  "provenance": {
+    "author": "/root/fresh_test_author",
+    "completelyModelBlindReviewClaimed": false,
+    "humanReviewClaimed": false,
+    "limitedOrchestrationExposureRecordedInMainAdmission": true,
+    "noTestModelOutputs": true,
+    "reviewType": "AI-agent source and role review",
+    "reviewer": "/root/test_independence",
+    "reviewerDistinctFromAuthorAndSelector": true
+  },
+  "purpose": "fresh160_v2_basic_four_family_independent_review",
+  "reviewedCases": 64,
+  "reviewedGroups": 32,
+  "sourceModified": false,
+  "sourceSha256": "79e041057394b2a0a3bcc5f75334efc01e063efdffce30e40e832371fb9820fc",
+  "unscoredOld94": {
+    "consumedModelSelectionEvidence": false,
+    "idNamespaceReuseNotEffectProof": true,
+    "retainedRelatedPatternGroupHashes": [
+      "90c601cc7a4a1c49b78ea2d42214b1b9844dea3f9ed642830edcc9de08c4ea59",
+      "c26b1f9ce7939943efa66a9a7c6e4a6906ba126083824d9c15142c9caf135192",
+      "8f1a5eba091d37de10525df965dd9ec510e8985dfe0ada24d7caa3b4fd98c1f6"
+    ],
+    "stateCarveoutPatternHasMaterialExactPolicyDifference": true
+  },
+  "version": 1
+}
