@@ -300,7 +300,7 @@ class LaunchTests(unittest.TestCase):
                 def owned_identity(pid, *unused):
                     if pid == 101:
                         state['monitor_checks'] += 1
-                        return defect != 'missing' or state['monitor_checks'] == 1
+                        return defect != 'missing' or state['monitor_checks'] <= 2
                     return True
                 def tick(): state['monotonic'] = 31
                 record = Mock(return_value=sample)
@@ -308,7 +308,8 @@ class LaunchTests(unittest.TestCase):
                 with patch.object(launch, 'process_start_ticks', side_effect=lambda pid: 501 if pid == 101 else 502), \
                         patch.object(launch, 'identity', side_effect=owned_identity), patch.object(launch, 'last_record', record), \
                         patch.object(launch, 'confirmed_stop', return_value={'signalled': True, 'exitConfirmed': True}) as stop, \
-                        patch.object(launch.os, 'pidfd_open', create=True, return_value=99), patch.object(launch.os, 'close') as close_fd, \
+                        patch.object(launch.os, 'pidfd_open', create=True, side_effect=[99, 100]), patch.object(launch.os, 'close') as close_fd, \
+                        patch.object(launch.select, 'select', return_value=([], [], [])), \
                         patch.object(launch.signal, 'signal'), patch.object(launch.time, 'time', return_value=14.0), \
                         patch.object(launch.time, 'monotonic', side_effect=lambda: state['monotonic']), \
                         patch.object(launch.time, 'sleep', side_effect=lambda _: tick()):
@@ -316,7 +317,7 @@ class LaunchTests(unittest.TestCase):
                 self.assertEqual(outcome['reason'], expected_reason)
                 self.assertTrue(all(call.args[0] == 102 and call.args[3] == 502 and call.args[4] == attestation['worker_command']
                                     for call in stop.call_args_list))
-                close_fd.assert_called_once_with(99)
+                self.assertEqual([call.args for call in close_fd.call_args_list], [(100,), (99,)])
                 journal = [json.loads(line) for line in (root / 'root-guardian.jsonl').read_text().splitlines()]
                 self.assertEqual(journal[0]['worker_start_ticks'], 502)
                 self.assertEqual(journal[0]['watchdog_start_ticks'], 501)
@@ -344,6 +345,153 @@ class LaunchTests(unittest.TestCase):
                         patch.object(launch, 'confirmed_stop', return_value={'signalled': True, 'exitConfirmed': False}) as stop:
                     with self.assertRaises((ValueError, RuntimeError)): launch.supervise(root, pin)
                 if defect == 'pin': stop.assert_not_called()
+
+    def final_supervision_fixture(self, temporary):
+        args = self.prepare(Path(temporary), 'candidate11')
+        with patch.object(launch.cuda_worker, 'load_contract'), patch.object(
+                launch.monitor, 'sample', return_value=(7_000_000_000, 30)), patch.object(
+                launch.subprocess, 'Popen', side_effect=[Mock(pid=101), Mock(pid=102)]):
+            attestation = launch.run(args)
+        root = Path(args.run_root)
+        rows = [{'time_unix': stamp, 'elapsed_seconds': stamp-10, 'dedicated_bytes': 9_000_000_000,
+                 'shared_bytes': 40, 'dedicated_delta_bytes': 2_000_000_000, 'shared_delta_bytes': 10} for stamp in (11.0,12.0)]
+        summary = {'worker_pid': 102, 'reason': 'worker_exit', 'samples': 2, 'sampling_interval_seconds': 2.0,
+                   'peak_total_dedicated_bytes': 9_000_000_000, 'peak_dedicated_delta_bytes': 2_000_000_000,
+                   'peak_shared_delta_bytes': 10,
+                   **{key:attestation[key] for key in ('hard_budget_bytes','stop_dedicated_delta_bytes',
+                      'shared_growth_limit_bytes','stop_total_dedicated_bytes')}}
+        (root / 'memory.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
+        (root / 'memory.summary.json').write_text(json.dumps(summary)+'\n')
+        return root, attestation, rows, summary
+
+    def test_delayed_worker_readiness_and_monitor_finalization_complete_before_terminal(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root, _, rows, summary = self.final_supervision_fixture(temporary)
+            (root / 'memory.summary.json').unlink()
+            state = {'worker_checks': 0, 'worker_ready': False, 'monitor_ready': False}
+            events = []
+            def owned(pid, *_):
+                if pid == 102:
+                    state['worker_checks'] += 1
+                    return state['worker_checks'] <= 2
+                return True
+            def wait(fds, _write, _error, timeout):
+                events.append((fds[0], timeout))
+                if fds == [99]:
+                    if timeout == 5: state['worker_ready'] = True
+                    return ([99] if state['worker_ready'] else [], [], [])
+                self.assertEqual((fds, timeout), ([100], 20))
+                self.assertFalse((root/'memory.summary.json').exists())
+                # A genuine in-flight successful counter row completes before monitor exit.
+                rows.append({**rows[0], 'time_unix': 13.0, 'elapsed_seconds': 3.0})
+                (root/'memory.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
+                summary['samples'] = 3
+                (root/'memory.summary.json').write_text(json.dumps(summary)+'\n')
+                state['monitor_ready'] = True
+                return ([100], [], [])
+            with patch.object(launch, 'process_start_ticks', side_effect=lambda pid: 501 if pid==101 else 502), \
+                    patch.object(launch, 'identity', side_effect=owned), \
+                    patch.object(launch.os, 'pidfd_open', create=True, side_effect=[99,100]), \
+                    patch.object(launch.os, 'close') as close, patch.object(launch.signal, 'signal'), \
+                    patch.object(launch.select, 'select', side_effect=wait), \
+                    patch.object(launch.time, 'time', return_value=14.0):
+                result = launch.supervise(root, launch.digest(root/'launch.json'))
+            self.assertEqual(result['status'], 'worker_exit')
+            self.assertTrue(state['monitor_ready'])
+            self.assertEqual(events[:2], [(99,5),(100,20)])
+            self.assertEqual([call.args for call in close.call_args_list], [(100,),(99,)])
+            records = [json.loads(line) for line in (root/'root-guardian.jsonl').read_text().splitlines()]
+            self.assertEqual(set(records[-1]), {'status','worker_pid','time_unix'})
+            self.assertEqual(records[-1]['status'], 'worker_exit')
+
+    def test_final_monitor_errors_missing_summary_and_invalid_durable_rows_cannot_emit_worker_exit(self):
+        for defect in ('inflight_nonzero','error_then_valid','summary_reason','summary_missing','partial',
+                       'wrong_pid','samples','peak','budget','total','dedicated','shared','empty','single'):
+            with self.subTest(defect=defect), tempfile.TemporaryDirectory() as temporary:
+                root, _, rows, summary = self.final_supervision_fixture(temporary)
+                if defect in ('inflight_nonzero','error_then_valid'):
+                    rows.append({'time_unix':13.0,'monitor_error':'CalledProcessError','detail':'real synthetic nonzero exit status 1'})
+                    summary['reason']='monitor_error'
+                    if defect=='error_then_valid':
+                        rows.append({**rows[0],'time_unix':13.5,'elapsed_seconds':3.5}); summary['reason']='worker_exit'
+                elif defect=='summary_reason': summary['reason']='dedicated_stop_threshold'
+                elif defect=='wrong_pid': summary['worker_pid']=True
+                elif defect=='samples': summary['samples']=True
+                elif defect=='peak': summary['peak_total_dedicated_bytes']+=1
+                elif defect=='budget': summary['hard_budget_bytes']+=1
+                elif defect=='total': rows[0].update(dedicated_bytes=16_000_000_000,dedicated_delta_bytes=9_000_000_000)
+                elif defect=='dedicated': rows[0].update(dedicated_bytes=14_500_000_000,dedicated_delta_bytes=7_500_000_000)
+                elif defect=='shared': rows[0].update(shared_bytes=128_000_030,shared_delta_bytes=128_000_000)
+                elif defect in ('empty','single'):
+                    rows=rows[:0 if defect=='empty' else 1]; summary['samples']=len(rows)
+                    if not rows:
+                        summary.update(peak_total_dedicated_bytes=0,peak_dedicated_delta_bytes=0,peak_shared_delta_bytes=0)
+                (root/'memory.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows)+('{"partial":' if defect=='partial' else ''))
+                (root/'memory.summary.json').write_text(json.dumps(summary)+'\n')
+                if defect=='summary_missing': (root/'memory.summary.json').unlink()
+                checks={'worker':0}
+                def owned(pid,*_):
+                    if pid==102: checks['worker']+=1; return checks['worker']<=2
+                    return True
+                with patch.object(launch,'process_start_ticks',return_value=456), patch.object(launch,'identity',side_effect=owned), \
+                        patch.object(launch.os,'pidfd_open',create=True,side_effect=[99,100]), patch.object(launch.os,'close'), \
+                        patch.object(launch.signal,'signal'), patch.object(launch.select,'select',side_effect=lambda fds,*_: (fds,[],[])), \
+                        patch.object(launch.time,'time',return_value=14.0):
+                    result=launch.supervise(root,launch.digest(root/'launch.json'))
+                self.assertEqual((result['status'],result['reason']),('stop','watchdog_completion_invalid'))
+                self.assertNotIn('"status": "worker_exit"',(root/'root-guardian.jsonl').read_text())
+                if defect=='inflight_nonzero':
+                    self.assertIn('CalledProcessError',(root/'memory.jsonl').read_text())
+                    self.assertEqual(json.loads((root/'memory.summary.json').read_text())['reason'],'monitor_error')
+
+    def test_unconfirmed_monitor_exit_cannot_emit_final_terminal_record(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root, _, _, _=self.final_supervision_fixture(temporary)
+            checks={'worker':0}
+            def owned(pid,*_):
+                if pid==102: checks['worker']+=1; return checks['worker']<=2
+                return True
+            with patch.object(launch,'process_start_ticks',return_value=456), patch.object(launch,'identity',side_effect=owned), \
+                    patch.object(launch.os,'pidfd_open',create=True,side_effect=[99,100]), patch.object(launch.os,'close'), \
+                    patch.object(launch.signal,'signal'), patch.object(launch.select,'select',side_effect=lambda fds,*_: ([99] if fds==[99] else [],[],[])) as wait:
+                with self.assertRaisesRegex(RuntimeError,'watchdog completion was not confirmed'): launch.supervise(root,launch.digest(root/'launch.json'))
+            self.assertIn(([100],[],[],20),[call.args for call in wait.call_args_list])
+            self.assertNotIn('"status": "worker_exit"',(root/'root-guardian.jsonl').read_text())
+
+    def test_live_worker_watchdog_loss_stops_immediately_without_five_second_pre_stop_wait(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root, _, _, _=self.final_supervision_fixture(temporary)
+            checks={'monitor':0}; events=[]
+            def owned(pid,*_):
+                if pid==101: checks['monitor']+=1; return checks['monitor']<=2
+                return True
+            def wait(fds,_write,_error,timeout):
+                events.append(('wait',fds[0],timeout)); return ([],[],[])
+            def stop(*args,**kwargs):
+                events.append(('stop',args[0],kwargs['pidfd'])); return {'signalled':True,'exitConfirmed':True}
+            with patch.object(launch,'process_start_ticks',return_value=456), patch.object(launch,'identity',side_effect=owned), \
+                    patch.object(launch.os,'pidfd_open',create=True,side_effect=[99,100]), patch.object(launch.os,'close'), \
+                    patch.object(launch.signal,'signal'), patch.object(launch.select,'select',side_effect=wait), \
+                    patch.object(launch,'confirmed_stop',side_effect=stop), patch.object(launch.time,'time',return_value=14.0):
+                result=launch.supervise(root,launch.digest(root/'launch.json'))
+            self.assertEqual(result['reason'],'watchdog_missing')
+            first_stop=next(index for index,event in enumerate(events) if event[0]=='stop')
+            self.assertEqual(events[:first_stop],[('wait',99,0)])
+            self.assertEqual(events[first_stop],('stop',102,99))
+
+    def test_monitor_pidfd_capture_failure_cleans_up_only_captured_owned_worker(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root, attestation, _, _=self.final_supervision_fixture(temporary)
+            original=ProcessLookupError('synthetic monitor exited during pidfd capture')
+            with patch.object(launch,'process_start_ticks',return_value=456), patch.object(launch,'identity',return_value=True), \
+                    patch.object(launch.os,'pidfd_open',create=True,side_effect=[99,original]), patch.object(launch.os,'close') as close, \
+                    patch.object(launch,'confirmed_stop',return_value={'signalled':True,'exitConfirmed':True}) as stop:
+                with self.assertRaises(ProcessLookupError) as caught: launch.supervise(root,launch.digest(root/'launch.json'))
+            self.assertIs(caught.exception,original)
+            stop.assert_called_once_with(102,Path(attestation['worker_command'][1]),root.resolve()/'run',456,
+                                         attestation['worker_command'],pidfd=99)
+            close.assert_called_once_with(99)
+            self.assertFalse((root/'root-guardian.jsonl').exists())
 
     def test_last_record_ignores_partial_tail_without_replacing_valid_sample(self):
         with tempfile.TemporaryDirectory() as temporary:

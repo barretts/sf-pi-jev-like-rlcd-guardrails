@@ -339,11 +339,13 @@ def identity(pid, script, output, start_ticks, expected_command=None):
         return False
 
 
-def confirmed_stop(pid, script, output, start_ticks, expected_command=None):
+def confirmed_stop(pid, script, output, start_ticks, expected_command=None, pidfd=None):
+    if pidfd is not None and select.select([pidfd], [], [], 0)[0]:
+        return {"signalled": False, "exitConfirmed": True}
     if not identity(pid, script, output, start_ticks, expected_command):
         return {"signalled": False, "identityPresent": False}
     try:
-        fd = os.pidfd_open(pid)
+        fd = os.pidfd_open(pid) if pidfd is None else pidfd
     except ProcessLookupError:
         return {"signalled": False, "identityPresent": False}
     try:
@@ -359,7 +361,8 @@ def confirmed_stop(pid, script, output, start_ticks, expected_command=None):
         except ProcessLookupError:
             return {"signalled": True, "exitConfirmed": bool(select.select([fd], [], [], 5)[0])}
     finally:
-        os.close(fd)
+        if pidfd is None:
+            os.close(fd)
 
 
 def last_record(path):
@@ -372,6 +375,52 @@ def last_record(path):
     if not raw.endswith(b"\n"):
         lines = lines[:-1]
     return json.loads(lines[-1])
+
+
+def validate_monitor_completion(root: Path, launch: dict) -> None:
+    journal, summary_path = root / "memory.jsonl", root / "memory.summary.json"
+    if any(not path.is_file() or path.is_symlink() for path in (journal, summary_path)):
+        raise ValueError("Completed watchdog files must be regular files")
+    raw = journal.read_bytes()
+    if raw and not raw.endswith(b"\n"):
+        raise ValueError("Completed watchdog journal has a partial line")
+    rows = [json.loads(line) for line in raw.splitlines()]
+    summary = json.loads(summary_path.read_bytes())
+    if len(rows) < 2:
+        raise ValueError("Completed watchdog requires at least two genuine samples")
+    if any(not isinstance(row, dict) or "monitor_error" in row for row in rows):
+        raise ValueError("Completed watchdog journal contains a monitor error")
+    if (not isinstance(summary, dict) or summary.get("reason") != "worker_exit"
+            or type(summary.get("worker_pid")) is not int or summary["worker_pid"] != launch["worker_pid"]
+            or type(summary.get("samples")) is not int or summary["samples"] != len(rows)
+            or summary.get("sampling_interval_seconds") != 2.0):
+        raise ValueError("Completed watchdog summary is not a bound worker_exit")
+    for key in ("hard_budget_bytes", "stop_dedicated_delta_bytes", "shared_growth_limit_bytes", "stop_total_dedicated_bytes"):
+        if summary.get(key) != launch[key]:
+            raise ValueError("Completed watchdog stop contract changed")
+    peaks = {"peak_total_dedicated_bytes": 0, "peak_dedicated_delta_bytes": 0, "peak_shared_delta_bytes": 0}
+    previous = None
+    for row in rows:
+        stamp, elapsed = row.get("time_unix"), row.get("elapsed_seconds")
+        if (any(type(value) not in (int, float) or not math.isfinite(value) for value in (stamp, elapsed))
+                or elapsed < 0 or stamp > time.time()
+                or any(type(row.get(key)) is not int or row[key] < 0 for key in (
+                    "dedicated_bytes", "shared_bytes", "dedicated_delta_bytes", "shared_delta_bytes"))
+                or (previous is not None and (stamp <= previous[0] or elapsed <= previous[1]))
+                or row["dedicated_delta_bytes"] != max(0, row["dedicated_bytes"] - launch["baseline_dedicated_bytes"])
+                or row["shared_delta_bytes"] != max(0, row["shared_bytes"] - launch["baseline_shared_bytes"])):
+            raise ValueError("Completed watchdog sample identity or clocks changed")
+        previous = (stamp, elapsed)
+        for key, value in (("peak_total_dedicated_bytes", row["dedicated_bytes"]),
+                           ("peak_dedicated_delta_bytes", row["dedicated_delta_bytes"]),
+                           ("peak_shared_delta_bytes", row["shared_delta_bytes"])):
+            peaks[key] = max(peaks[key], value)
+    if (any(type(summary.get(key)) is not int or summary[key] != value for key, value in peaks.items())
+            or peaks["peak_total_dedicated_bytes"] <= 0
+            or peaks["peak_total_dedicated_bytes"] >= launch["stop_total_dedicated_bytes"]
+            or peaks["peak_dedicated_delta_bytes"] >= launch["stop_dedicated_delta_bytes"]
+            or peaks["peak_shared_delta_bytes"] >= launch["shared_growth_limit_bytes"]):
+        raise ValueError("Completed watchdog peaks or memory limits changed")
 
 
 def supervise(run_root: Path, launch_sha256: str) -> dict:
@@ -421,17 +470,19 @@ def supervise(run_root: Path, launch_sha256: str) -> dict:
         worker_fd = os.pidfd_open(worker[0])
         guard.callback(os.close, worker_fd)
         def stop_on_guard_exit():
-            outcome = confirmed_stop(*worker)
+            outcome = confirmed_stop(*worker, pidfd=worker_fd)
             if outcome.get("identityPresent") is not False and outcome.get("exitConfirmed") is not True:
                 raise RuntimeError("Owned worker stop was not confirmed during guard cleanup")
         guard.callback(stop_on_guard_exit)
+        monitor_fd = os.pidfd_open(monitor_identity[0])
+        guard.callback(os.close, monitor_fd)
         def interrupted(signum, _frame):
             raise InterruptedError(f"Root supervision interrupted by signal {signum}")
         for sig in (signal.SIGTERM, signal.SIGINT):
             previous = signal.signal(sig, interrupted)
             guard.callback(signal.signal, sig, previous)
-        if not identity(*worker):
-            raise RuntimeError("Owned worker changed before guard attachment")
+        if not identity(*worker) or not identity(*monitor_identity):
+            raise RuntimeError("Owned worker or watchdog changed before guard attachment")
         with (root / "root-guardian.jsonl").open("x", buffering=1) as log:
             def record(value):
                 value["time_unix"] = time.time()
@@ -444,6 +495,8 @@ def supervise(run_root: Path, launch_sha256: str) -> dict:
                 reason = None
                 sample = None
                 if not identity(*monitor_identity):
+                    if select.select([worker_fd], [], [], 0)[0]:
+                        break
                     reason = "watchdog_missing"
                 try:
                     journal = root / "memory.jsonl"
@@ -488,7 +541,7 @@ def supervise(run_root: Path, launch_sha256: str) -> dict:
                 if time.monotonic() - last_change >= 30:
                     reason = "watchdog_journal_stale"
                 if reason:
-                    outcome = confirmed_stop(*worker)
+                    outcome = confirmed_stop(*worker, pidfd=worker_fd)
                     result = record({"status": "stop", "reason": reason, "worker": outcome})
                     if outcome.get("identityPresent") is not False and outcome.get("exitConfirmed") is not True:
                         raise RuntimeError("Owned worker stop was not confirmed")
@@ -498,8 +551,16 @@ def supervise(run_root: Path, launch_sha256: str) -> dict:
                     record({"status": "healthy", "journalAgeSeconds": now - last_change, "sample": sample})
                     last_status = now
                 time.sleep(1)
-            if not select.select([worker_fd], [], [], 0)[0]:
+            if not select.select([worker_fd], [], [], 5)[0]:
                 raise RuntimeError("Owned worker identity disappeared without confirmed exit")
+            # A counter call already in flight must finish, preserving its real outcome.
+            if not select.select([monitor_fd], [], [], 20)[0]:
+                raise RuntimeError("Owned watchdog completion was not confirmed within 20 seconds")
+            try:
+                validate_monitor_completion(root, launch)
+            except (OSError, ValueError, KeyError, TypeError):
+                return record({"status": "stop", "reason": "watchdog_completion_invalid",
+                               "worker": {"signalled": False, "exitConfirmed": True}})
             return record({"status": "worker_exit", "worker_pid": worker[0]})
 
 

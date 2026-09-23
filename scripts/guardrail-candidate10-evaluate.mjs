@@ -120,9 +120,9 @@ export const C11_SOURCE_RUNTIME = Object.freeze({
   "rfdt/gemma3_fp32.py":
     "ce62f5b1928d981c3276776f9100f10f252f3904337774be63a74347b46a5256",
   "rfdt/cuda_memory_monitor.py":
-    "f6b0ef11392451e053bcebf0c4a8b10e7e340cb67c46c1f1bbcaac07154949b4",
+    "3b532d0f0053157cfb31b6b4b108b63a2a54a6d724dcf95a236c5c04b5b518d5",
   "rfdt/cuda_campaign_launch.py":
-    "05c23f68e40d7f112146591cf9926c18cc732dbe622f64ac3d3cad5aae0a348f",
+    "5abc631c362c8c9f67efca80ba693da0c73b8187856cc30f59d198397deaa841",
   "rfdt/cuda_import.py":
     "4dcc19d891c435fbd4abcd09b2a5243eb31110895e710a8286ac18f4ee56f466",
   "fixtures/guardrail/candidate9/objective-plan-B.json":
