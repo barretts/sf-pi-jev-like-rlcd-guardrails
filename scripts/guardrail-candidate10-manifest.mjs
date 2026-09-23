@@ -5,6 +5,7 @@
  * --quantizer-binary FILE --native-binary FILE --sf-deps DIR
  * --format f16|q8_0 --output FRESH_MANIFEST
  * Optional: --sf-pi DIR (defaults to the frozen prospective host).
+ * C11 selected F16 permits all four Q8 inputs to be absent; supplied Q8 must be complete.
  */
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
@@ -58,13 +59,20 @@ export async function assembleC11Manifest(options, dependencies) {
 async function assembleManifest(options, candidate11, dependencies) {
   const candidate = candidate11 ? "candidate11" : "candidate10";
   const api = { pin, document, bytes: readFile, ...dependencies };
-  for (const name of [
-    "handoff",
-    "cudaRun",
+  const q8Inputs = [
     "q8Manifest",
     "q8Registry",
     "precisionQ8",
     "quantizerBinary",
+  ];
+  const hasQ8 =
+    !candidate11 ||
+    options?.format !== "f16" ||
+    q8Inputs.some((name) => Object.hasOwn(options ?? {}, name));
+  for (const name of [
+    "handoff",
+    "cudaRun",
+    ...(hasQ8 ? q8Inputs : []),
     "nativeBinary",
     "sfDeps",
   ])
@@ -75,7 +83,9 @@ async function assembleManifest(options, candidate11, dependencies) {
   if (!["f16", "q8_0"].includes(options.format))
     throw new Error("Required --format f16|q8_0");
   const handoff = await api.document(options.handoff);
-  const quantization = await api.document(options.q8Manifest);
+  const quantization = hasQ8
+    ? await api.document(options.q8Manifest)
+    : undefined;
   const freezePin = await api.pin(resolve(baselineRoot, "manifest.json"));
   if (freezePin.sha256 !== C10_HOST.freezeSha256)
     throw new Error("Prospective baseline manifest changed");
@@ -101,21 +111,23 @@ async function assembleManifest(options, candidate11, dependencies) {
     source.qualified !== false ||
     artifact.file !== handoff.model ||
     artifact.run_manifest !== resolve(handoff.run, "manifest.json") ||
-    quantization.sourceWeights?.sha256 !== artifact.sha256 ||
-    quantization.sourceWeights?.file !== handoff.model
+    (hasQ8 &&
+      (quantization.sourceWeights?.sha256 !== artifact.sha256 ||
+        quantization.sourceWeights?.file !== handoff.model))
   )
     throw new Error("Local checkpoint, CUDA source and Q8 export do not match");
-  const q8Registry = await api.document(options.q8Registry);
-  const q8Artifact = q8Registry.artifacts?.find(
+  const q8Registry = hasQ8 ? await api.document(options.q8Registry) : undefined;
+  const q8Artifact = q8Registry?.artifacts?.find(
     (candidate) =>
       candidate.id ===
       (quantization.output?.modelId ?? quantization.output?.id),
   );
   if (
-    !q8Artifact ||
-    q8Artifact.file !== quantization.output?.file ||
-    q8Artifact.sha256 !== quantization.output?.sha256 ||
-    q8Artifact.training_run !== artifact.training_run
+    hasQ8 &&
+    (!q8Artifact ||
+      q8Artifact.file !== quantization.output?.file ||
+      q8Artifact.sha256 !== quantization.output?.sha256 ||
+      q8Artifact.training_run !== artifact.training_run)
   )
     throw new Error("Q8 registry is not bound to this checkpoint");
   const memory = candidate11
@@ -152,15 +164,19 @@ async function assembleManifest(options, candidate11, dependencies) {
       "adapter/cuda-import-equivalence.json",
     ),
     precisionF16: handoff.precision,
-    precisionQ8: options.precisionQ8,
     model: selected.file,
     registry: options.format === "f16" ? handoff.registry : options.q8Registry,
     artifact: handoff.artifact,
     nativeBinary: options.nativeBinary,
     modelF16: handoff.model,
-    modelQ8: q8Artifact.file,
-    quantizationManifest: options.q8Manifest,
-    quantizerBinary: options.quantizerBinary,
+    ...(hasQ8
+      ? {
+          precisionQ8: options.precisionQ8,
+          modelQ8: q8Artifact.file,
+          quantizationManifest: options.q8Manifest,
+          quantizerBinary: options.quantizerBinary,
+        }
+      : {}),
     localFitMargins: resolve(handoff.run, "adapter/local-fit-margins.jsonl"),
     sourceFitMargins: resolve(options.cudaRun, "run/fit-margins.jsonl"),
     sourceReceipt: resolve(options.cudaRun, "run/receipt.json"),
@@ -185,7 +201,7 @@ async function assembleManifest(options, candidate11, dependencies) {
                   "memory.snapshot.json",
                 ),
               }),
-          registryQ8: options.q8Registry,
+          ...(hasQ8 ? { registryQ8: options.q8Registry } : {}),
         }
       : {}),
   };
@@ -200,10 +216,11 @@ async function assembleManifest(options, candidate11, dependencies) {
     runtime[name] = (await api.pin(resolve(root, name))).sha256;
   if (candidate11) {
     if (
-      quantization.purpose !== "candidate11_fit_only_q8_derivation" ||
-      quantization.output?.registrySha256 !== files.registryQ8.sha256 ||
-      quantization.output?.id !== artifact.id + "-q8" ||
-      quantization.output?.training_run !== artifact.training_run
+      hasQ8 &&
+      (quantization.purpose !== "candidate11_fit_only_q8_derivation" ||
+        quantization.output?.registrySha256 !== files.registryQ8.sha256 ||
+        quantization.output?.id !== artifact.id + "-q8" ||
+        quantization.output?.training_run !== artifact.training_run)
     )
       throw new Error(
         "C11 retained Q8 registry or checkpoint provenance changed",

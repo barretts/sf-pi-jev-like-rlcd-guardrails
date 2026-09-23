@@ -13,10 +13,14 @@ import {
   prepareCandidate9CalibrationRows,
 } from "../scripts/guardrail-candidate9-cal-score.mjs";
 import { candidate8OperationSha256 } from "../scripts/guardrail-candidate8-host-core.mjs";
-import { assembleC11Manifest } from "../scripts/guardrail-candidate10-manifest.mjs";
+import {
+  assembleC10Manifest,
+  assembleC11Manifest,
+} from "../scripts/guardrail-candidate10-manifest.mjs";
 import { runC11Q8 } from "../scripts/guardrail-candidate10-q8.mjs";
 import {
   C11_CAMPAIGN_SHA256,
+  C10_CAMPAIGN_SHA256,
   C11_SOURCE_RUNTIME,
   C10_HOST,
   validateC10Manifest,
@@ -691,6 +695,269 @@ async function withFixture(fn, step) {
     await f.cleanup();
   }
 }
+
+const q8Inputs = ["q8Manifest", "q8Registry", "precisionQ8", "quantizerBinary"];
+const q8FileNames = [
+  "precisionQ8",
+  "modelQ8",
+  "quantizationManifest",
+  "quantizerBinary",
+  "registryQ8",
+];
+async function removeUnselectedQ8(f) {
+  const inputs = Object.fromEntries(
+    q8Inputs.map((name) => [name, f.options[name]]),
+  );
+  const paths = [...Object.values(inputs), f.quantization.output.file];
+  for (const name of q8Inputs) delete f.options[name];
+  for (const path of paths) {
+    f.documents.delete(path);
+    f.buffers.delete(path);
+    f.pins.delete(path);
+    await rm(path, { force: true });
+  }
+  f.evaluator.verifyQuantizerRuntime = async () => {
+    throw Error("Absent Q8 must not inspect a quantizer");
+  };
+  return { inputs, paths };
+}
+
+test("selected C11 F16 assembles and formally scores with genuinely absent Q8 evidence", async () => {
+  await withFixture(async (f) => {
+    const { paths } = await removeUnselectedQ8(f);
+    const manifest = await f.assemble();
+    validateC11Manifest(manifest);
+    for (const name of q8FileNames)
+      assert.equal(Object.hasOwn(manifest.files, name), false);
+    const result = await evaluateC11(
+      manifest,
+      resolve(f.temp, "f16-only"),
+      f.evaluator,
+    );
+    assert.equal(
+      result.status,
+      "valid_pass_test_and_hook_pending",
+      result.failures.join("\n"),
+    );
+    assert.equal(result.precisionOutcomes.f16.passed, true);
+    assert.deepEqual(result.precisionOutcomes.q8_0, {
+      passed: false,
+      reason: "unselected Q8 evidence absent; no attempt supplied",
+    });
+    assert.equal(Object.hasOwn(result.precisionChecks, "q8_0"), false);
+    assert.equal(result.qualified, false);
+    assert.equal(result.heldOutTestRead, false);
+    assert.deepEqual(f.counters(), { nativeCalls: 42, replayCalls: 1 });
+    for (const path of paths) assert.equal(f.reads.includes(path), false);
+  }, 256);
+});
+
+test("absent-Q8 F16 preserves formal CAL veto and fixed-.5 unqualified diagnostic VALID", async () => {
+  await withFixture(async (f) => {
+    await removeUnselectedQ8(f);
+    const manifest = await f.assemble();
+    f.setVeto();
+    f.reads.length = 0;
+    const formal = await evaluateC11(
+      manifest,
+      resolve(f.temp, "f16-only-formal"),
+      f.evaluator,
+    );
+    assert.equal(formal.status, "rejected_cal", formal.failures.join("\n"));
+    assert.equal(formal.validation, undefined);
+    assert.equal(f.counters().replayCalls, 0);
+    for (const identity of Object.values(manifest.valid))
+      assert.equal(f.reads.includes(identity.path), false);
+    const diagnostic = await evaluateC11Diagnostic(
+      manifest,
+      resolve(f.temp, "f16-only-diagnostic"),
+      f.evaluator,
+    );
+    assert.equal(
+      diagnostic.status,
+      "diagnostic_valid_complete",
+      diagnostic.failures.join("\n"),
+    );
+    assert.equal(diagnostic.selection.accepted, false);
+    for (const report of [diagnostic, diagnostic.validation]) {
+      assert.equal(report.diagnosticOnly, true);
+      assert.equal(report.enforcementEligible, false);
+      assert.equal(report.candidateAdmission, false);
+      assert.equal(report.fixedDiagnosticMinimumAllowScore, 0.5);
+    }
+    assert.equal(diagnostic.qualified, false);
+  }, 256);
+});
+
+test("partial or type-invalid Q8 inputs/pins reject instead of becoming absent unselected Q8", async () => {
+  for (const name of q8Inputs)
+    await withFixture(async (f) => {
+      const { inputs } = await removeUnselectedQ8(f);
+      f.options[name] = inputs[name];
+      await assert.rejects(f.assemble(), /Required absolute --/);
+      assert.equal(f.counters().nativeCalls, 0);
+    }, 256);
+  for (const name of q8FileNames)
+    await withFixture(async (f) => {
+      const complete = await f.assemble();
+      await removeUnselectedQ8(f);
+      const manifest = await f.assemble();
+      manifest.files[name] = complete.files[name];
+      assert.throws(
+        () => validateC11Manifest(manifest),
+        /Q8 evidence must be complete/,
+      );
+      manifest.files[name] = null;
+      assert.throws(
+        () => validateC11Manifest(manifest),
+        /Q8 evidence must be complete/,
+      );
+      assert.equal(f.counters().nativeCalls, 0);
+    }, 256);
+  await withFixture(async (f) => {
+    await removeUnselectedQ8(f);
+    f.options.q8Manifest = undefined;
+    await assert.rejects(f.assemble(), /Required absolute --q8-manifest/);
+  }, 256);
+});
+
+test("absent-Q8 F16 still requires full source/import/327 FIT proof/model/native/registry/artifact and host seals", async () => {
+  const mutations = [
+    (f) => {
+      f.f16Proof.answered = 326;
+      f.f16Proof.records.pop();
+    },
+    (f) => {
+      f.f16Proof.records[0].sourceId = f.f16Proof.records[1].sourceId;
+    },
+    (f) => {
+      f.f16Proof.records[0].referenceMargin = 2;
+    },
+    (f) => {
+      f.f16Proof.nativeBinarySha256 = "a".repeat(64);
+    },
+    (f) => {
+      f.f16Proof.modelSha256 = "a".repeat(64);
+    },
+    (f) => {
+      f.imported.reload_verified = false;
+      f.run.training.reload_verified = false;
+    },
+    (f) => {
+      f.documents.get(
+        resolve(f.local, "adapter/cuda-import-equivalence.json"),
+      ).rows = 326;
+    },
+    (f, manifest) => {
+      f.documents.get(manifest.files.baselineFreeze.path).host.baselineSha256 =
+        "a".repeat(64);
+    },
+    (f, manifest) => {
+      manifest.files.model.sha256 = "a".repeat(64);
+    },
+    (f, manifest) => {
+      manifest.files.nativeBinary.sha256 = "a".repeat(64);
+    },
+    (f, manifest) => {
+      manifest.runtime["dist/backend.js"] = "a".repeat(64);
+    },
+    (f, manifest) => {
+      f.documents.get(manifest.files.artifact.path).file = resolve(
+        f.local,
+        "foreign-f16.gguf",
+      );
+    },
+    async (f, manifest) => {
+      const path = manifest.files.registry.path;
+      const registry = JSON.parse(await readFile(path));
+      registry.artifacts[0].training_run = "foreign-run";
+      await writeFile(path, encode(registry));
+      manifest.files.registry = f.put(path, registry);
+    },
+  ];
+  for (const mutate of mutations)
+    await withFixture(async (f) => {
+      await removeUnselectedQ8(f);
+      const manifest = await f.assemble();
+      await mutate(f, manifest);
+      for (const name of [
+        "precisionF16",
+        "importReport",
+        "runManifest",
+        "localPrecision",
+        "artifact",
+      ]) {
+        const path = manifest.files[name].path;
+        manifest.files[name] = f.put(path, f.documents.get(path));
+      }
+      const result = await evaluateC11(
+        manifest,
+        resolve(f.temp, "invalid-f16-only"),
+        f.evaluator,
+      );
+      assert.equal(
+        result.status,
+        "failed",
+        "required F16 proof/seal mutation must reject",
+      );
+      assert.equal(f.counters().nativeCalls, 0);
+    }, 256);
+  for (const name of [
+    "precisionF16",
+    "modelF16",
+    "registry",
+    "artifact",
+    "sourceReceipt",
+    "sourceLaunch",
+    "importReport",
+    "localFitMargins",
+    "nativeBinary",
+    "baselineFreeze",
+  ])
+    await withFixture(async (f) => {
+      await removeUnselectedQ8(f);
+      const manifest = await f.assemble();
+      delete manifest.files[name];
+      assert.throws(() => validateC11Manifest(manifest), /pins/);
+    }, 256);
+});
+
+test("C10 F16 and selected C11 Q8 retain strict complete-Q8 requirements", async () => {
+  await withFixture(async (f) => {
+    const complete = await f.assemble();
+    const c10 = structuredClone(complete);
+    c10.purpose = "candidate10_native_evaluation";
+    c10.files.campaign.sha256 = C10_CAMPAIGN_SHA256;
+    validateC10Manifest(c10);
+    await removeUnselectedQ8(f);
+    const manifest = await f.assemble();
+    for (const name of q8FileNames) delete c10.files[name];
+    assert.throws(() => validateC10Manifest(c10), /pins/);
+    await assert.rejects(
+      assembleC10Manifest(f.options),
+      /Required absolute --q8-manifest/,
+    );
+    f.options.format = "q8_0";
+    await assert.rejects(f.assemble(), /Required absolute --q8-manifest/);
+    manifest.format = "q8_0";
+    assert.throws(
+      () => validateC11Manifest(manifest),
+      /Q8 evidence must be complete/,
+    );
+  }, 256);
+  await withFixture(async (f) => {
+    f.options.format = "q8_0";
+    const manifest = await f.assemble();
+    const result = await evaluateC11(
+      manifest,
+      resolve(f.temp, "failed-selected-q8"),
+      f.evaluator,
+    );
+    assert.equal(result.status, "failed");
+    assert.match(result.failures[0], /selected export failed/);
+    assert.equal(f.counters().nativeCalls, 0);
+  }, 256);
+});
 
 test("C11 linked manifest → CAL → sealed VALID uses genuine export verification and retains failed Q8 independently", async () => {
   await withFixture(async (f) => {

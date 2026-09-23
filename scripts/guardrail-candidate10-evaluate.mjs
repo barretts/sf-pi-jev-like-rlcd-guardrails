@@ -88,6 +88,24 @@ const requiredFiles = [
   "sourceReceipt",
   "adapter",
 ];
+const c11Q8Files = [
+  "precisionQ8",
+  "modelQ8",
+  "quantizationManifest",
+  "quantizerBinary",
+  "registryQ8",
+];
+function c11Q8EvidencePresent(manifest) {
+  const supplied = c11Q8Files.filter((name) =>
+    Object.hasOwn(manifest.files ?? {}, name),
+  );
+  if (supplied.length === 0 && manifest.format === "f16") return false;
+  if (supplied.length !== c11Q8Files.length)
+    fail(
+      "C11 Q8 evidence must be complete, or entirely absent for selected F16",
+    );
+  return true;
+}
 const requiredRuntime = [
   "rfdt/worker.py",
   "rfdt/cuda_import.py",
@@ -152,6 +170,7 @@ export function validateC11Manifest(manifest) {
   return validateManifest(manifest, true);
 }
 function validateManifest(manifest, candidate11) {
+  const hasQ8 = !candidate11 || c11Q8EvidencePresent(manifest ?? {});
   if (
     manifest?.version !== 1 ||
     manifest.purpose !==
@@ -165,9 +184,11 @@ function validateManifest(manifest, candidate11) {
     !isAbsolute(manifest.sfDeps ?? "") ||
     (candidate11
       ? [
-          ...requiredFiles,
+          ...requiredFiles.filter(
+            (name) => hasQ8 || !c11Q8Files.includes(name),
+          ),
           "sourceLaunch",
-          "registryQ8",
+          ...(hasQ8 ? ["registryQ8"] : []),
           ...(manifest.files?.sourceSnapshot
             ? ["sourceSnapshot"]
             : C11_FINAL_FILES),
@@ -204,6 +225,7 @@ function validateManifest(manifest, candidate11) {
     manifest.files.baseline.sha256 !== baselineSha ||
     manifest.files.baselineFreeze.sha256 !== C10_HOST.freezeSha256 ||
     (candidate11 &&
+      hasQ8 &&
       manifest.files.quantizerBinary.sha256 !==
         "e2c48c541efe39436f0edbbbfe0e65c9185e1bb1d6295fcfb28ebc38c1e77985")
   )
@@ -257,13 +279,18 @@ async function capture(manifest) {
   const trainDigest = await digest(run.prepared.files.train);
   verifyC10PreparedInputs(run, trainDigest);
   identities.preparedTrain = trainDigest;
-  const quantization = await json(manifest.files.quantizationManifest);
-  const runtime = await verifyQuantizerRuntime(
-    manifest.files.quantizerBinary.path,
-    quantization.quantizer?.runtimeLibraries,
-    quantization.quantizer?.runtimeLibraryLinks,
-  );
-  Object.assign(identities, runtime);
+  if (
+    manifest.purpose !== "candidate11_native_evaluation" ||
+    c11Q8EvidencePresent(manifest)
+  ) {
+    const quantization = await json(manifest.files.quantizationManifest);
+    const runtime = await verifyQuantizerRuntime(
+      manifest.files.quantizerBinary.path,
+      quantization.quantizer?.runtimeLibraries,
+      quantization.quantizer?.runtimeLibraryLinks,
+    );
+    Object.assign(identities, runtime);
+  }
   if (git(manifest.sfPi, "rev-parse", "HEAD") !== C10_HOST.commit)
     fail("host commit changed");
   try {
@@ -1139,6 +1166,7 @@ async function evaluateRun(
   const campaignSha256 = candidate11
     ? C11_CAMPAIGN_SHA256
     : C10_CAMPAIGN_SHA256;
+  const hasQ8 = !candidate11 || c11Q8EvidencePresent(manifest);
   const api = {
     json,
     pinned,
@@ -1285,13 +1313,21 @@ async function evaluateRun(
     )
       fail("complete FP32 CUDA checkpoint/import/equivalence proof required");
     const f16 = await api.json(manifest.files.precisionF16);
-    const q8 = await api.json(manifest.files.precisionQ8);
-    report.precisionChecks = { f16, q8_0: q8 };
-    report.precisionOutcomes = {};
-    for (const [format, proof, modelSha] of [
+    const q8 = hasQ8 ? await api.json(manifest.files.precisionQ8) : undefined;
+    report.precisionChecks = { f16, ...(hasQ8 ? { q8_0: q8 } : {}) };
+    report.precisionOutcomes = hasQ8
+      ? {}
+      : {
+          q8_0: {
+            passed: false,
+            reason: "unselected Q8 evidence absent; no attempt supplied",
+          },
+        };
+    const precisionAttempts = [
       ["f16", f16, manifest.files.modelF16.sha256],
-      ["q8_0", q8, manifest.files.modelQ8.sha256],
-    ]) {
+      ...(hasQ8 ? [["q8_0", q8, manifest.files.modelQ8.sha256]] : []),
+    ];
+    for (const [format, proof, modelSha] of precisionAttempts) {
       if (candidate11)
         verifyC11PrecisionAttempt(
           proof,
@@ -1316,63 +1352,67 @@ async function evaluateRun(
     }
     if (!report.precisionOutcomes[manifest.format].passed)
       fail("selected export failed its FIT precision check");
-    const quantization = await api.json(manifest.files.quantizationManifest);
     const descriptor = await api.json(manifest.files.artifact);
-    if (candidate11) {
-      const q8Artifact = await api.verifyArtifact(
-        manifest.files.modelQ8.path,
-        "classifier",
-        quantization.output?.modelId,
-        { registryPath: manifest.files.registryQ8.path },
-      );
-      if (
-        quantization.output?.registrySha256 !==
-          manifest.files.registryQ8.sha256 ||
-        quantization.sourceWeights?.id !== descriptor.id ||
-        quantization.sourceWeights?.training_run !== run.id ||
-        quantization.sourceWeights?.base_model !== "google/gemma-3-1b-it" ||
-        quantization.sourceWeights?.template_version !== "v2" ||
-        quantization.output?.id !== descriptor.id + "-q8" ||
-        quantization.output?.modelId !== quantization.output.id ||
-        quantization.output?.training_run !== run.id ||
-        quantization.output?.base_model !== "google/gemma-3-1b-it" ||
-        quantization.output?.template_version !== "v2" ||
-        q8Artifact.training_run !== run.id ||
-        q8Artifact.base_model !== "google/gemma-3-1b-it" ||
-        q8Artifact.template_version !== "v2" ||
-        q8Artifact.sha256 !== manifest.files.modelQ8.sha256
-      )
-        fail(
-          "C11 retained Q8 registry, lineage, model, or training provenance changed",
+    if (hasQ8) {
+      const quantization = await api.json(manifest.files.quantizationManifest);
+      if (candidate11) {
+        const q8Artifact = await api.verifyArtifact(
+          manifest.files.modelQ8.path,
+          "classifier",
+          quantization.output?.modelId,
+          { registryPath: manifest.files.registryQ8.path },
         );
+        if (
+          quantization.output?.registrySha256 !==
+            manifest.files.registryQ8.sha256 ||
+          quantization.sourceWeights?.id !== descriptor.id ||
+          quantization.sourceWeights?.training_run !== run.id ||
+          quantization.sourceWeights?.base_model !== "google/gemma-3-1b-it" ||
+          quantization.sourceWeights?.template_version !== "v2" ||
+          quantization.output?.id !== descriptor.id + "-q8" ||
+          quantization.output?.modelId !== quantization.output.id ||
+          quantization.output?.training_run !== run.id ||
+          quantization.output?.base_model !== "google/gemma-3-1b-it" ||
+          quantization.output?.template_version !== "v2" ||
+          q8Artifact.training_run !== run.id ||
+          q8Artifact.base_model !== "google/gemma-3-1b-it" ||
+          q8Artifact.template_version !== "v2" ||
+          q8Artifact.sha256 !== manifest.files.modelQ8.sha256
+        )
+          fail(
+            "C11 retained Q8 registry, lineage, model, or training provenance changed",
+          );
+      }
+      if (
+        (candidate11 &&
+          (quantization.purpose !== "candidate11_fit_only_q8_derivation" ||
+            quantization.qualified !== false ||
+            canonical(quantization.sourceCheckpoint) !==
+              canonical(
+                c11Q8SourceIdentity(run, imported, manifest.runtime),
+              ))) ||
+        quantization.qualification !== false ||
+        quantization.sourceWeights?.sha256 !== manifest.files.modelF16.sha256 ||
+        resolve(quantization.sourceWeights?.file ?? "") !==
+          manifest.files.modelF16.path ||
+        quantization.output?.sha256 !== manifest.files.modelQ8.sha256 ||
+        resolve(quantization.output?.file ?? "") !==
+          manifest.files.modelQ8.path ||
+        quantization.quantizer?.type !== "Q8_0" ||
+        quantization.quantizer?.leaveOutputTensorUnquantized !== true ||
+        quantization.quantizer?.importanceMatrix !== null ||
+        quantization.quantizer?.sourceRevision !==
+          "f072b103714dfa1eee531f80b24512faf38e3dd2" ||
+        quantization.quantizer?.binarySha256 !==
+          manifest.files.quantizerBinary.sha256
+      )
+        fail("Q8 same-weight quantization provenance incomplete");
+      await api.verifyQuantizerRuntime(
+        manifest.files.quantizerBinary.path,
+        quantization.quantizer.runtimeLibraries,
+        quantization.quantizer.runtimeLibraryLinks,
+      );
     }
-    if (
-      (candidate11 &&
-        (quantization.purpose !== "candidate11_fit_only_q8_derivation" ||
-          quantization.qualified !== false ||
-          canonical(quantization.sourceCheckpoint) !==
-            canonical(c11Q8SourceIdentity(run, imported, manifest.runtime)))) ||
-      quantization.qualification !== false ||
-      quantization.sourceWeights?.sha256 !== manifest.files.modelF16.sha256 ||
-      resolve(quantization.sourceWeights?.file ?? "") !==
-        manifest.files.modelF16.path ||
-      quantization.output?.sha256 !== manifest.files.modelQ8.sha256 ||
-      resolve(quantization.output?.file ?? "") !==
-        manifest.files.modelQ8.path ||
-      quantization.quantizer?.type !== "Q8_0" ||
-      quantization.quantizer?.leaveOutputTensorUnquantized !== true ||
-      quantization.quantizer?.importanceMatrix !== null ||
-      quantization.quantizer?.sourceRevision !==
-        "f072b103714dfa1eee531f80b24512faf38e3dd2" ||
-      quantization.quantizer?.binarySha256 !==
-        manifest.files.quantizerBinary.sha256
-    )
-      fail("Q8 same-weight quantization provenance incomplete");
-    await api.verifyQuantizerRuntime(
-      manifest.files.quantizerBinary.path,
-      quantization.quantizer.runtimeLibraries,
-      quantization.quantizer.runtimeLibraryLinks,
-    );
     const localMarginsBytes = await api.pinned(manifest.files.localFitMargins);
     if (sha(localMarginsBytes) !== imported.local_fit_margins_sha256)
       fail("local FIT reference changed");
@@ -1427,7 +1467,7 @@ async function evaluateRun(
       fail("cross-backend equivalence aggregate tampering");
     if (
       localMargins.size !== 327 ||
-      [f16, q8].some((proof) =>
+      precisionAttempts.some(([, proof]) =>
         proof.records.some(
           (row) => localMargins.get(row.sourceId) !== row.referenceMargin,
         ),
