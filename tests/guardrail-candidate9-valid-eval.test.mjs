@@ -177,7 +177,7 @@ test("C9 real replay refuses an incomplete model and cutoff invocation before op
   assert.match(result.stderr, /required absolute paths and pins/);
 });
 
-test("C9 shadow provider carries selected identity and rejects worker drift", async () => {
+test("C9 shadow provider recovers after failure but rejects unexplained worker drift", async () => {
   const pins = {
     scoringProtocolSha256: "a".repeat(64),
     modelSha256: "b".repeat(64),
@@ -188,16 +188,19 @@ test("C9 shadow provider carries selected identity and rejects worker drift", as
   };
   const status = {
     ready: false,
+    state: "cold",
     generation: 1,
     artifact: { sha256: pins.modelSha256 },
   };
   let disposed = false;
   let classified;
+  let failNext = false;
   const backendModule = {
     NativeBackend: class {
       status = status;
       async warmup() {
         status.ready = true;
+        status.state = "ready";
       }
     },
     Classifier: class {
@@ -209,6 +212,17 @@ test("C9 shadow provider carries selected identity and rejects worker drift", as
   const guardrail = {
     async classifyGuardrailRisk(...args) {
       classified = args;
+      if (failNext) {
+        failNext = false;
+        status.ready = false;
+        status.state = "failed";
+        throw new Error("native request deadline");
+      }
+      if (status.state === "failed") {
+        status.generation++;
+        status.ready = true;
+        status.state = "ready";
+      }
       return { action: "abstain", allowScore: 0.8 };
     },
   };
@@ -242,7 +256,12 @@ test("C9 shadow provider carries selected identity and rejects worker drift", as
   assert.equal(classified[1], input);
   assert.equal(classified[2], "jev/synthetic-q8_0");
   assert.equal(classified[4], pins.minimumAllowScore);
-  status.generation = 2;
+  failNext = true;
+  await assert.rejects(() => provider.evaluate(input), /native request deadline/);
+  assert.equal(status.ready, false);
+  assert.equal((await provider.evaluate(input)).action, "abstain");
+  assert.equal(status.generation, 2);
+  status.generation = 3;
   await assert.rejects(
     () => provider.evaluate(input),
     /worker or model changed/,

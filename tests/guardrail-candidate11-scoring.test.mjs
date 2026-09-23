@@ -523,16 +523,34 @@ async function fixture(checkpoint = 128) {
   };
   let veto = false,
     nativeCalls = 0,
-    replayCalls = 0;
+    replayCalls = 0,
+    failNativeAt = null,
+    nativeStatus;
   class NativeBackend {
     constructor() {
-      this.status = { generation: 1, artifact: { sha256: f16Hash.sha256 } };
+      this.status = {
+        state: "ready",
+        ready: true,
+        generation: 1,
+        artifact: { sha256: f16Hash.sha256 },
+      };
+      nativeStatus = this.status;
     }
     async warmup() {}
   }
   class Classifier {
     async classify(request) {
       nativeCalls++;
+      if (nativeCalls === failNativeAt) {
+        nativeStatus.ready = false;
+        nativeStatus.state = "failed";
+        throw new Error("synthetic native request deadline");
+      }
+      if (nativeStatus.state === "failed") {
+        nativeStatus.generation++;
+        nativeStatus.ready = true;
+        nativeStatus.state = "ready";
+      }
       const row = calRows.find(
         (row) => canonical(row.request.state) === canonical(request.state),
       );
@@ -682,6 +700,9 @@ async function fixture(checkpoint = 128) {
     setVeto: () => {
       veto = true;
     },
+    failNativeAt: (call) => {
+      failNativeAt = call;
+    },
     counters: () => ({ nativeCalls, replayCalls }),
     cleanup: () => rm(temp, { recursive: true, force: true }),
   };
@@ -749,6 +770,29 @@ test("selected C11 F16 assembles and formally scores with genuinely absent Q8 ev
     assert.equal(result.heldOutTestRead, false);
     assert.deepEqual(f.counters(), { nativeCalls: 42, replayCalls: 1 });
     for (const path of paths) assert.equal(f.reads.includes(path), false);
+  }, 256);
+});
+
+test("C11 CAL keeps the failed row and scores later rows on a fresh native worker", async () => {
+  await withFixture(async (f) => {
+    await removeUnselectedQ8(f);
+    const manifest = await f.assemble();
+    f.failNativeAt(2);
+    const result = await evaluateC11Diagnostic(
+      manifest,
+      resolve(f.temp, "worker-recovery"),
+      f.evaluator,
+    );
+    assert.equal(result.status, "diagnostic_valid_complete");
+    assert.equal(result.calibration.records.length, 42);
+    assert.equal(result.calibration.records[1].modelAnswered, false);
+    assert.match(
+      result.calibration.records[1].error,
+      /synthetic native request deadline/,
+    );
+    assert.equal(result.calibration.records[2].modelAnswered, true);
+    assert.equal(result.calibration.records[41].modelAnswered, true);
+    assert.deepEqual(f.counters(), { nativeCalls: 42, replayCalls: 1 });
   }, 256);
 });
 

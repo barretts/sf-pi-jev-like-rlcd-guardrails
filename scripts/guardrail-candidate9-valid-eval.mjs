@@ -368,6 +368,7 @@ export function createCandidate9ShadowProvider({
     const native = new backendModule.NativeBackend(config);
     const classifier = new backendModule.Classifier(config, native);
     let generation = null;
+    let recovering = false;
     const provider = {
       version: 2,
       id: "jev",
@@ -379,27 +380,42 @@ export function createCandidate9ShadowProvider({
       calibrationPolicySha256: pins.policySha256,
       calibrationBaselineSha256: pins.hostBaselineSha256,
       async evaluate(input, signal) {
-        if (
-          native.status.generation !== generation ||
-          native.status.artifact?.sha256 !== pins.modelSha256
+        const before = native.status;
+        if (!before.ready) {
+          if (before.state !== "failed" && before.state !== "initializing")
+            throw new Error("C9 native worker or model changed before evaluation");
+          recovering = true;
+        } else if (
+          before.artifact?.sha256 !== pins.modelSha256 ||
+          (before.generation !== generation && !recovering)
         )
           throw new Error(
             "C9 native worker or model changed before evaluation",
           );
-        const prediction = await guardrail.classifyGuardrailRisk(
-          classifier,
-          input,
-          modelId,
-          signal,
-          pins.minimumAllowScore,
-        );
+        let prediction;
+        try {
+          prediction = await guardrail.classifyGuardrailRisk(
+            classifier,
+            input,
+            modelId,
+            signal,
+            pins.minimumAllowScore,
+          );
+        } catch (error) {
+          if (!native.status.ready) recovering = true;
+          throw error;
+        }
+        const after = native.status;
         if (
-          native.status.generation !== generation ||
-          native.status.artifact?.sha256 !== pins.modelSha256
+          !after.ready ||
+          after.artifact?.sha256 !== pins.modelSha256 ||
+          (before.ready && after.generation !== before.generation)
         )
           throw new Error(
             "C9 native worker or model changed during evaluation",
           );
+        generation = after.generation;
+        recovering = false;
         return prediction;
       },
     };

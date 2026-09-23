@@ -1531,13 +1531,21 @@ async function evaluateRun(
       const started = performance.now();
       await native.warmup();
       report.coldInitializationMs = performance.now() - started;
-      const generation = native.status.generation;
+      let generation = native.status.generation;
+      let recovering = false;
       for (const row of prepared) {
         const started = performance.now();
         try {
+          const before = native.status;
+          if (before.ready === false) {
+            if (before.state !== "failed" && before.state !== "initializing")
+              fail("worker generation/model changed");
+            recovering = true;
+          }
           if (
-            native.status.generation !== generation ||
-            native.status.artifact?.sha256 !== artifact.sha256
+            (before.generation !== generation && !recovering) ||
+            (before.ready !== false &&
+              before.artifact?.sha256 !== artifact.sha256)
           )
             fail("worker generation/model changed");
           const prediction = await guardrail.classifyGuardrailRisk(
@@ -1545,12 +1553,18 @@ async function evaluateRun(
             row.state,
             artifact.id,
           );
+          const after = native.status;
           if (
             prediction.inputSha256 !== row.inputSha256 ||
             prediction.calibration !== "uncalibrated" ||
-            native.status.generation !== generation
+            after.ready === false ||
+            after.artifact?.sha256 !== artifact.sha256 ||
+            (before.ready !== false &&
+              after.generation !== before.generation)
           )
             fail("invalid native prediction identity");
+          generation = after.generation;
+          recovering = false;
           records.push({
             id: row.id,
             inputSha256: row.inputSha256,
@@ -1561,6 +1575,7 @@ async function evaluateRun(
             elapsedMs: performance.now() - started,
           });
         } catch (error) {
+          if (native.status.ready === false) recovering = true;
           records.push({
             id: row.id,
             inputSha256: row.inputSha256,
