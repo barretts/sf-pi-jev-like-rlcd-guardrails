@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "purpose": "portable_trained_model_bundle_integrity_and_smoke_not_qualification",
+  "recordedAtUtc": "2026-09-23T04:25:42.900105+00:00",
+  "sourceCommit": "85b12f998141081ebd9199982541a7a50520724f",
+  "modelCopy": {
+    "file": "model.gguf",
+    "bytes": 2006573408,
+    "sha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+    "regularFile": true,
+    "differentInodeFromOriginal": true,
+    "weightsUnmodified": true
+  },
+  "runtimeCopy": {
+    "compiledModulesChecked": 4,
+    "sourceModulesChecked": 4,
+    "matchesFrozenRuntime": true
+  },
+  "setupCheck": {
+    "result": "passed",
+    "runFromOutsideProjectDirectory": true,
+    "modelInferencePerformed": false
+  },
+  "harmlessInference": {
+    "calls": 1,
+    "exitCode": 0,
+    "deviceRequested": "auto",
+    "hostPlatform": "Darwin",
+    "hostArchitecture": "arm64",
+    "resultFile": "verification/harmless-demo-result.json",
+    "originalToolCalls": 0,
+    "externalOperations": 0,
+    "remainingOwnedNativeProcesses": 0,
+    "boundary": "One harmless sample establishes local bundle execution. It is not corpus accuracy, independent TEST, qualification, a latency percentile, or production acceptance."
+  },
+  "trainingRuns": 0,
+  "windowsOrSshAccess": 0,
+  "recipientNeedsRetraining": false,
+  "recipientNeedsPrivateRepositoryAccessForIncludedMacDemo": false,
+  "slowCpuModeAndOtherPlatformRebuild": "Instructions provided; not exercised in this smoke."
+}

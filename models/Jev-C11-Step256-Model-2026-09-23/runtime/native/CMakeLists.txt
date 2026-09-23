@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 3.20)
+project(jev_native LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(LLAMA_BUILD_COMMON ON CACHE BOOL "" FORCE)
+set(LLAMA_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(LLAMA_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+set(LLAMA_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(LLAMA_BUILD_SERVER OFF CACHE BOOL "" FORCE)
+set(LLAMA_BUILD_MTMD OFF CACHE BOOL "" FORCE)
+set(GGML_BLAS OFF CACHE BOOL "" FORCE)
+set(GGML_CPU_REPACK OFF CACHE BOOL "" FORCE)
+set(LLAMA_OPENSSL OFF CACHE BOOL "" FORCE)
+find_package(Git REQUIRED)
+execute_process(
+  COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../.vendor/llama.cpp"
+  OUTPUT_VARIABLE LLAMA_BUILD_COMMIT
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  RESULT_VARIABLE JEV_NATIVE_GIT_RESULT
+)
+string(LENGTH "${LLAMA_BUILD_COMMIT}" JEV_NATIVE_GIT_HASH_LENGTH)
+if(NOT JEV_NATIVE_GIT_RESULT EQUAL 0 OR
+   NOT JEV_NATIVE_GIT_HASH_LENGTH EQUAL 40 OR
+   NOT LLAMA_BUILD_COMMIT MATCHES "^[0-9a-f]+$")
+  message(FATAL_ERROR "Cannot identify the exact llama.cpp source revision")
+endif()
+add_subdirectory(../.vendor/llama.cpp llama)
+add_executable(jev-native main.cpp)
+target_include_directories(jev-native PRIVATE ../.vendor/llama.cpp/vendor)
+target_link_libraries(jev-native PRIVATE llama llama-common)

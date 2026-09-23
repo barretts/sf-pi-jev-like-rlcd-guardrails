@@ -1,0 +1,8 @@
+{
+  "name": "jev-c11-portable-runtime",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.19"
+  }
+}

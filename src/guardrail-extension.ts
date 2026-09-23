@@ -1,7 +1,7 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { performance } from "node:perf_hooks";
+import { fileURLToPath } from "node:url";
 import { types } from "node:util";
 import {
   Classifier,
@@ -32,7 +32,9 @@ import {
 export function guardrailConfig(env: NodeJS.ProcessEnv = process.env): Config {
   const bundle = resolve(
     env.JEV_GUARDRAIL_BUNDLE ??
-      join(homedir(), "Desktop", "Jev-C11-Step256-Model-2026-09-23"),
+      fileURLToPath(
+        new URL("../models/Jev-C11-Step256-Model-2026-09-23/", import.meta.url),
+      ),
   );
   const config = configFromEnv({
     JEV_DEVICE: env.JEV_DEVICE,

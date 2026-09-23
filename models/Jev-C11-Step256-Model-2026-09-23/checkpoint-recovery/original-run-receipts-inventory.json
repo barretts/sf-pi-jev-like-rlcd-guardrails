@@ -1,0 +1,767 @@
+{
+  "version": 1,
+  "scope": "Five expressly authorized C11 cleanup roots only; local metadata inspection, no model predictions or TEST scoring.",
+  "pushedCommit": "85b12f998141081ebd9199982541a7a50520724f",
+  "desktopBundle": "/Users/bsonntag/Desktop/Jev-C11-Step256-Model-2026-09-23",
+  "files": [
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-128-replay-v2/calibration.json",
+      "bytes": 13778,
+      "sha256": "0302421e5598bcea87b4e2612e38e45fa0e2afec49579e3eb13c86540fcc498c",
+      "archiveRelativePath": "simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-128-replay-v2/calibration.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-256-replay-v1/calibration.json",
+      "bytes": 13782,
+      "sha256": "b530c64cb740e75aae35eaeed0258fc767af53e21343d3ab50c5f268904c858e",
+      "archiveRelativePath": "simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-256-replay-v1/calibration.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-512-replay-v1/calibration.json",
+      "bytes": 13787,
+      "sha256": "1a7e3b4bad949df08dafc198e34400ca2bbda6cf820fba095339266013427788",
+      "archiveRelativePath": "simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-512-replay-v1/calibration.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-rebuildable-cleanup-20260923.json",
+      "bytes": 911,
+      "sha256": "c21065a0cf416cbc00c5effd4045c945787c99cbc51cd549e36570ab143810f2",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-rebuildable-cleanup-20260923.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-retention-inventory.json",
+      "bytes": 4094,
+      "sha256": "fed8c3c30a94b038ba8df5b93d27aa51b5ac3a4d943d27d8b0decea84dc0fcee",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-retention-inventory.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-retention-inventory-v2.json",
+      "bytes": 4094,
+      "sha256": "d3418fe4dbb6a2d92f94224b2eac2dbb539fecc70624b571eb39d70fd5dafcc1",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-retention-inventory-v2.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/memory.snapshot.json",
+      "bytes": 547,
+      "sha256": "447c8615fece1230c9890e36c3750ff8f9a6bdef8541f0244f945c4fee212f49",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/memory.snapshot.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/memory.jsonl",
+      "bytes": 56174,
+      "sha256": "58a83df2fa9e5950fe607e7d64bb18a58f915e0059e267e30ea3984aeb06d420",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/memory.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/memory.summary.json",
+      "bytes": 408,
+      "sha256": "ab3d4a94f23b925cede4679c29cbb7a6a207f666aed56ecaf0aba2385856639d",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/memory.summary.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/launch.json",
+      "bytes": 4285,
+      "sha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/launch.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/exit.json",
+      "bytes": 87,
+      "sha256": "1adea70a3d0ed324cb3baf7c86f600d856e0b71f451d4a8b0c4ec01c6930444b",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/exit.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/plan.json",
+      "bytes": 6397,
+      "sha256": "81e8dac2d77671c180d790b6399a01426d126a3824157084d63c689dbd6f210d",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/plan.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/reload.json",
+      "bytes": 382,
+      "sha256": "4841deb76068f28d939534a656a25372cdc7cc8f96710ebdfec027658f6632f6",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/reload.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/fit-margins.jsonl",
+      "bytes": 38294,
+      "sha256": "641d293d3c12a3d64458b032936961d010da792d35f688c3df4ce4952e778278",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/fit-margins.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/receipt.json",
+      "bytes": 9035,
+      "sha256": "a4c587f3ff0625bca1604f7e955bb05171455bde25995b10cf36e96e321ad7dd",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/receipt.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/train.jsonl",
+      "bytes": 1573401,
+      "sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/train.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/q8-registry.json",
+      "bytes": 614,
+      "sha256": "969c5037c67a88fab36e20fb174aa93b3e218db268904681b5d82381e5b1656d",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/q8-registry.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/candidate11-q8-manifest.json",
+      "bytes": 12006,
+      "sha256": "dfe6e40caf498c222d713fc781a4d1256babf4b4fd904934bebb75b6616ad184",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/candidate11-q8-manifest.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/local-checkpoint-handoff.json",
+      "bytes": 866,
+      "sha256": "602f25b6c3c4d387d9ff47eb7f24738ad6e4c7d2036dd26a7a45352429c7cf68",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/local-checkpoint-handoff.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/precision-q8.json",
+      "bytes": 50545,
+      "sha256": "42813312fd4fa66d18a57088d644e21a60ee0b9081b813ad66bdd23815d170e3",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/precision-q8.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/f16-registry.json",
+      "bytes": 612,
+      "sha256": "3c0e0afa24257a27cfc6ba03d22b5d1c9d523b1a0422084522e5f747b230d0c5",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/f16-registry.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/resume-export-v2.mjs",
+      "bytes": 2077,
+      "sha256": "0be67ce8a19d60d97b1d7653076b9d30b0caec9df0f0d1de4da60b4fefcff075",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/resume-export-v2.mjs"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/evaluation-f16-v1.json",
+      "bytes": 10626,
+      "sha256": "d458dfa13e12b08e8a89ed211b8082873f5781cf662cd408e228fa06e06dd2d3",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/evaluation-f16-v1.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/local-checkpoint-v1-exit.json",
+      "bytes": 302,
+      "sha256": "818ad055abcea2804732b42f6c2a393a645487323fd6c916001061976eb4436e",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/local-checkpoint-v1-exit.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/local-setup-failure-v1.log",
+      "bytes": 778,
+      "sha256": "4fc201ea8b1489ad25d95195009e53b6a48db1026b6e79ba5036eb3de2baa0f5",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/local-setup-failure-v1.log"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/root-cleanup-handoff.json",
+      "bytes": 1563,
+      "sha256": "3dc2c70fc43fa85193e194c788edc5ea3e091c8c05cb6ab9256f6fa6f0aa2827",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/root-cleanup-handoff.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/export-resume-setup.json",
+      "bytes": 531,
+      "sha256": "04c6c2a4a0a005f79c202c73096149d09d5bc169b4e3ce51f5a81e502067077d",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/export-resume-setup.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/formal-evaluation-v1/calibration.json",
+      "bytes": 13762,
+      "sha256": "97d2ccc620a26290dfd0e250448ba954eeb5a0635f5d90a23f415c25bc631126",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/formal-evaluation-v1/calibration.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/formal-evaluation-v1/evaluation.json",
+      "bytes": 129940,
+      "sha256": "28bb9b243e4f565eb359de0ad329b0255f1c0c1d5c15383ce286b062511762a4",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/formal-evaluation-v1/evaluation.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/cuda-import-equivalence.json",
+      "bytes": 216,
+      "sha256": "1d0c9de37d8283662b6f7737000878872deb17e610025f77f0be79fd07c6e0c3",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/cuda-import-equivalence.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/cuda-import-report.json",
+      "bytes": 10713,
+      "sha256": "c4be399d4eed961096e9757c046e3ec28e3d3217de30d29bc0abcc4adc622c45",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/cuda-import-report.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/local-fit-margins.jsonl",
+      "bytes": 28250,
+      "sha256": "0d87c1d4cfc8f61900a3f3f2494b070851f3c5f04ada84c9bc372e5ee3de4272",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/local-fit-margins.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/rfdt-manifest.json",
+      "bytes": 10582,
+      "sha256": "09a3ea969deb5c5e0119c914d8d180ec35f60da6f6baf9928780fcf9c0315d59",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/rfdt-manifest.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/diagnostic-valid-v1/calibration.json",
+      "bytes": 13819,
+      "sha256": "a78b6ad7a89527246352c7cf20af82cc649ec82553851b1306fcce966a99d47f",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/diagnostic-valid-v1/calibration.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/diagnostic-valid-v1/evaluation.json",
+      "bytes": 356823,
+      "sha256": "5b5173fe2e7c61627ac5e86c61c7c7fae1854f59f8dfcebe51e6787b6d828fc2",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/diagnostic-valid-v1/evaluation.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/memory.snapshot.json",
+      "bytes": 547,
+      "sha256": "327883805692a1c1b9ef323dcbdc5231afa762e77e44477882555e7c9a03f09c",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/memory.snapshot.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/memory.jsonl",
+      "bytes": 29275,
+      "sha256": "35879c5abeb82a6d5f3e4568e9d45b8cf1b2ace14118b0e382b78d6692967736",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/memory.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/memory.summary.json",
+      "bytes": 408,
+      "sha256": "59c2ba90102664e1f321ab9ca0768cd8a14171ce0eeff784502b5ee307778a62",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/memory.summary.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/exit.json",
+      "bytes": 87,
+      "sha256": "e388045202ed615513f366ec841c0f40938594eaa8dab630bb9047ec01d43fd1",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/exit.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/plan.json",
+      "bytes": 6397,
+      "sha256": "a6ee0446c0a82f7b1a7c69a639d6d0f34935cb54ad2c1bc5a10181dafd7e4aed",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/plan.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/reload.json",
+      "bytes": 382,
+      "sha256": "4aed43d020f5993e03c8b89559605e6fdaa773cf80aea90f180833db0b93662f",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/reload.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/fit-margins.jsonl",
+      "bytes": 38279,
+      "sha256": "95f955b86abd9edf448ace401c7eb2dfd953d428b4e459b58f2f999ac0a64705",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/fit-margins.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/receipt.json",
+      "bytes": 9025,
+      "sha256": "cc940401b3bb58478c1f63c88a85dec65e6c2c1a4d96afab7c714e304c1095ec",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/receipt.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/memory.snapshot.json",
+      "bytes": 547,
+      "sha256": "8f1bb7fb21e35e24bd7d95602dc85f2171fb54d369cca26cd696f1c4ebd21d77",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/memory.snapshot.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/memory.jsonl",
+      "bytes": 108098,
+      "sha256": "1b8c30a4192544778a9009247875e7984ca8ffca680a1d4ef9456a6b22fa1de1",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/memory.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/memory.summary.json",
+      "bytes": 408,
+      "sha256": "a23d7900721b499524a621eb36a711a7b193b91ce5d313f5d976022c03bd207a",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/memory.summary.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/exit.json",
+      "bytes": 88,
+      "sha256": "ec264391b53ef3f10e43b1c567a79d00ff36da70b17e0c0107853c6c54990372",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/exit.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/plan.json",
+      "bytes": 6397,
+      "sha256": "9fb350afaf61bcd15f5aa5caabb36eeea1e3cd95b2cc0719ad6b5b88e33ac82d",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/plan.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/reload.json",
+      "bytes": 382,
+      "sha256": "beef1bc5d256cde4e865a7241ef1eb7c8e5395e5f65b37a95f57d8644e741a11",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/reload.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/fit-margins.jsonl",
+      "bytes": 38358,
+      "sha256": "4ef3279bc46acabd90b17f8db251254dbfa2a2bddf09f05eb112798e97c61367",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/fit-margins.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/receipt.json",
+      "bytes": 9054,
+      "sha256": "6cb64c496c3418f786ecaeb32719695c91b560ebc9a13c39566a7cf0fa18f748",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/receipt.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-resume-export-v1.mjs",
+      "bytes": 2314,
+      "sha256": "b427ba018b7659d19a97d883284c4e6aef376db865fafa3b5835fade07cd2262",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-resume-export-v1.mjs"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-failed-fusion-cleanup-v1.json",
+      "bytes": 1627,
+      "sha256": "496c56ae6a1928377e9b69bedcf9a1795c176b9b6835c58a191042171227df2c",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-failed-fusion-cleanup-v1.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-resume-export-v1.log",
+      "bytes": 725,
+      "sha256": "ada64429b0aebcdffab348f6f84f9c034ccce3c001998d34287c3a9e6ad0a457",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-resume-export-v1.log"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1.log",
+      "bytes": 725,
+      "sha256": "24512892e225b99545b232b12f03e59e2792ea990e20b5960542fcb980dad461",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1.log"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/local-checkpoint-handoff.json",
+      "bytes": 862,
+      "sha256": "cbc2f98a100797120acd56879a8f24dce68c4bf014cc65438be5c345e49c45c2",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/local-checkpoint-handoff.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/f16-registry.json",
+      "bytes": 598,
+      "sha256": "46b3efd4f296fa8c16ac4a156a5fbee0433ced58902a155a453e20a4a62ee798",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/f16-registry.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/cuda-import-equivalence.json",
+      "bytes": 220,
+      "sha256": "a0bf5d3df70ddf673ee869de4478cac1b3137637cc95fb6bd0bd3a72b815c2f8",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/cuda-import-equivalence.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/cuda-import-report.json",
+      "bytes": 10734,
+      "sha256": "6248c5bf9178952e80e5cf768fea50a1f42161ab8fc58426874f17df08504077",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/cuda-import-report.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/local-fit-margins.jsonl",
+      "bytes": 28240,
+      "sha256": "c21a7cc410d35e28a01c27ad416b4ac1a789aebb49426ad4e1be7fb16dc4c4ef",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/local-fit-margins.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/rfdt-manifest.json",
+      "bytes": 10592,
+      "sha256": "464f5915e28f90a1ee93db6407819bed79c9bcf1086d17abca17c817d218fc63",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/rfdt-manifest.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1.log",
+      "bytes": 725,
+      "sha256": "185e5c98f2c79baa37f22375cc862b04239eb8ebeb19a30e5db6c42976e88597",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1.log"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/local-checkpoint-handoff.json",
+      "bytes": 901,
+      "sha256": "90771a8be3e3ce3477fd41416f218c9dca49a6a5adf082187c53ac53325319d6",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/local-checkpoint-handoff.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/f16-registry.json",
+      "bytes": 598,
+      "sha256": "d0eb81fa5f11b403fc81dc5c76845eb011d1c9beca157aacb5a6e13f2d23d5d3",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/f16-registry.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/cuda-import-equivalence.json",
+      "bytes": 220,
+      "sha256": "06c1f045d149a41dac3a86a9496330983e1eb9c1159cec64b9b5073ed70e76ac",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/cuda-import-equivalence.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/cuda-import-report.json",
+      "bytes": 10753,
+      "sha256": "d9204764185dd18a142e0244a39cbdaf9eb38fc1fa279494805b44841ea75fd8",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/cuda-import-report.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/local-fit-margins.jsonl",
+      "bytes": 28317,
+      "sha256": "2fc8c924765776fd525eb0f828ee57f7a2e39841ba718516740f396552373742",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/local-fit-margins.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/rfdt-manifest.json",
+      "bytes": 10611,
+      "sha256": "dd9e1842bf04beec2c3e6f2ca1c85324d11c14a54e2e69c43423fc64108d6264",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/rfdt-manifest.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1.tar.gz",
+      "bytes": 5526472,
+      "sha256": "0803927ac9cb8b479179d9eae7afc9bcee016d27f0010c91cbde171e3d24d7a7",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1.tar.gz"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1.tar.gz",
+      "bytes": 5534026,
+      "sha256": "31fdf928c7a21290f56449701de0f3668b1e52d26a7fce01369bed5ddde76209",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1.tar.gz"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1.tar.gz",
+      "bytes": 5544937,
+      "sha256": "356dd3454f9a2cb8524c6036bf5c2be9cab639425ce9a8525b65abdb591d6618",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1.tar.gz"
+    }
+  ],
+  "alreadyPreservedOrDuplicate": [
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-512-replay-v1-manifest.json",
+      "bytes": 9403,
+      "sha256": "4817ecef0b564eb622b8b7b6a9759dac4b49d273b2f5559ec671e7737e389972",
+      "archiveRelativePath": "simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-512-replay-v1-manifest.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-512/repaired-evaluation-manifest.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-256-replay-v1-manifest.json",
+      "bytes": 9403,
+      "sha256": "70aa491b81881191826fcd7b6d80e1c9436e57f151d4942ef16ec3768d54fedb",
+      "archiveRelativePath": "simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-256-replay-v1-manifest.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-256/repaired-evaluation-manifest.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-128-replay-v2-manifest.json",
+      "bytes": 9354,
+      "sha256": "cc4348afa8f2c671d1882d2a142df0f26c4cbf25f547d7b865463b3960141cfd",
+      "archiveRelativePath": "simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-128-replay-v2-manifest.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-128/repaired-evaluation-manifest.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-128-replay-v2/evaluation.json",
+      "bytes": 321690,
+      "sha256": "8c9cb5adc5f09a9264e3fb4159c9c3d5d2b7ac45936eabc3d6bb0b7e4daf33a1",
+      "archiveRelativePath": "simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-128-replay-v2/evaluation.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-128/repaired-diagnostic-valid-evaluation.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-256-replay-v1/evaluation.json",
+      "bytes": 321783,
+      "sha256": "d35343b813a0a97e9b762466707589fb6f39ee937f1c9501941da3f4aaa9bdec",
+      "archiveRelativePath": "simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-256-replay-v1/evaluation.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-256/repaired-diagnostic-valid-evaluation.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-512-replay-v1/evaluation.json",
+      "bytes": 322052,
+      "sha256": "acf97a051001591360b2b0be51d744ecdb675d249b80f3d953ee7489d7ac58db",
+      "archiveRelativePath": "simple-jev-ts-c11-score-20260923/.build/guardrail/c11-step-512-replay-v1/evaluation.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-11-evidence/step-512/repaired-diagnostic-valid-evaluation.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/adapter/adapter_config.json",
+      "bytes": 204,
+      "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/run/adapter/adapter_config.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/128/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/256/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-8-evidence/runs/256/adapter-config.json",
+        "desktop:checkpoint-recovery/step-512/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-256/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-128/adapter/adapter_config.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/test.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/test.jsonl",
+      "alreadyPreservedAs": [
+        "pushed:reports/pi-context-demo-2026-09-20/ffmpeg-render.log"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/precision-f16.json",
+      "bytes": 50544,
+      "sha256": "9b63189b37290bc1abec8249c157160bf1c96723c79281d844206fd3c6460673",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/precision-f16.json",
+      "alreadyPreservedAs": [
+        "desktop:checkpoint-recovery/step-128/precision-f16.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/validation.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/validation.jsonl",
+      "alreadyPreservedAs": [
+        "pushed:reports/pi-context-demo-2026-09-20/ffmpeg-render.log"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/dataset.jsonl",
+      "bytes": 468845,
+      "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/dataset.jsonl",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/fit.jsonl"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/manifest.json",
+      "bytes": 19319,
+      "sha256": "69fd4f648761b8fcd3a1671125a5092c1d7698a8cffd6ec2463802c5287af6ff",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/manifest.json",
+      "alreadyPreservedAs": [
+        "desktop:checkpoint-recovery/step-128/manifest.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/artifact.json",
+      "bytes": 614,
+      "sha256": "961ee7217d9e643c342045432a01d074e08c8895f01b9c0d0d0e216d640919b3",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/artifact.json",
+      "alreadyPreservedAs": [
+        "desktop:checkpoint-recovery/step-128/artifact.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/adapter_config.json",
+      "bytes": 204,
+      "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/adapter_config.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/128/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/256/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-8-evidence/runs/256/adapter-config.json",
+        "desktop:checkpoint-recovery/step-512/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-256/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-128/adapter/adapter_config.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/launch.json",
+      "bytes": 4285,
+      "sha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/launch.json",
+      "duplicateOfRetention": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/launch.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/adapter/adapter_config.json",
+      "bytes": 204,
+      "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/adapter/adapter_config.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/128/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/256/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-8-evidence/runs/256/adapter-config.json",
+        "desktop:checkpoint-recovery/step-512/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-256/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-128/adapter/adapter_config.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/launch.json",
+      "bytes": 4285,
+      "sha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/launch.json",
+      "duplicateOfRetention": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-256-source-v1/launch.json"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/adapter/adapter_config.json",
+      "bytes": 204,
+      "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+      "archiveRelativePath": "simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-512-source-v1/run/adapter/adapter_config.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/128/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/256/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-8-evidence/runs/256/adapter-config.json",
+        "desktop:checkpoint-recovery/step-512/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-256/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-128/adapter/adapter_config.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/train.jsonl",
+      "bytes": 1573401,
+      "sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/train.jsonl",
+      "duplicateOfRetention": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/train.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/test.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/test.jsonl",
+      "alreadyPreservedAs": [
+        "pushed:reports/pi-context-demo-2026-09-20/ffmpeg-render.log"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/precision-f16.json",
+      "bytes": 50540,
+      "sha256": "4444db41af7a25e98e9e1c59d74e1472dfabbcaa05a44975b2ebe84e2f23c46b",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/precision-f16.json",
+      "alreadyPreservedAs": [
+        "desktop:checkpoint-recovery/step-256/precision-f16.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/validation.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/validation.jsonl",
+      "alreadyPreservedAs": [
+        "pushed:reports/pi-context-demo-2026-09-20/ffmpeg-render.log"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/dataset.jsonl",
+      "bytes": 468845,
+      "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/dataset.jsonl",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/fit.jsonl"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/manifest.json",
+      "bytes": 19378,
+      "sha256": "91cef8e45d7688c4ff20dfdbfadc8cafa14267c1d1f01eaf8cb9badbfc948be2",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/manifest.json",
+      "alreadyPreservedAs": [
+        "desktop:checkpoint-recovery/step-256/manifest.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/artifact.json",
+      "bytes": 607,
+      "sha256": "55302b10357f618920e96f130031125f38f36e0ebc7c170dc2c2913f7d85043e",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/artifact.json",
+      "alreadyPreservedAs": [
+        "desktop:checkpoint-recovery/step-256/artifact.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/adapter_config.json",
+      "bytes": 204,
+      "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+      "archiveRelativePath": "simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/adapter/adapter_config.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/128/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/256/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-8-evidence/runs/256/adapter-config.json",
+        "desktop:checkpoint-recovery/step-512/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-256/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-128/adapter/adapter_config.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/train.jsonl",
+      "bytes": 1573401,
+      "sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/train.jsonl",
+      "duplicateOfRetention": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/train.jsonl"
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/test.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/test.jsonl",
+      "alreadyPreservedAs": [
+        "pushed:reports/pi-context-demo-2026-09-20/ffmpeg-render.log"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/precision-f16.json",
+      "bytes": 50707,
+      "sha256": "0e134e3c7dd572f5ad03b3acc514cc76723d78b6ebe08739e825bb3bd513a24a",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/precision-f16.json",
+      "alreadyPreservedAs": [
+        "desktop:checkpoint-recovery/step-512/precision-f16.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/validation.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/validation.jsonl",
+      "alreadyPreservedAs": [
+        "pushed:reports/pi-context-demo-2026-09-20/ffmpeg-render.log"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/dataset.jsonl",
+      "bytes": 468845,
+      "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/dataset.jsonl",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/fit.jsonl"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/manifest.json",
+      "bytes": 19397,
+      "sha256": "623bfaeb7b83bf8d742bf11f2f7491a0f5a2df5b400661224bc99aba7c10514f",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/manifest.json",
+      "alreadyPreservedAs": [
+        "desktop:checkpoint-recovery/step-512/manifest.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/artifact.json",
+      "bytes": 607,
+      "sha256": "99cf81e0465b49b745f12cb8f2cb9cda747438c95294785479a5330f878220c3",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/artifact.json",
+      "alreadyPreservedAs": [
+        "desktop:checkpoint-recovery/step-512/artifact.json"
+      ]
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/adapter_config.json",
+      "bytes": 204,
+      "sha256": "1cf21d415fb7c2c85259f2eece8ac911c4e25a59c46834e7c772754c5b50d131",
+      "archiveRelativePath": "simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter/adapter_config.json",
+      "alreadyPreservedAs": [
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/128/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-7-evidence/runs/256/adapter/adapter_config.json",
+        "pushed:reports/guardrail-risk-2026-09-21/candidate-8-evidence/runs/256/adapter-config.json",
+        "desktop:checkpoint-recovery/step-512/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-256/adapter/adapter_config.json",
+        "desktop:checkpoint-recovery/step-128/adapter/adapter_config.json"
+      ]
+    }
+  ],
+  "excludedLargeOrRebuildableCount": 13,
+  "retentionBytes": 19346010,
+  "boundaries": "Excluded merged weights, fused exports, tokenizers, native/build caches, adapter tensors already preserved by root. Included the three source checkpoint tar.gz archives at root request. Hash-only comparisons; no labels read or inference."
+}

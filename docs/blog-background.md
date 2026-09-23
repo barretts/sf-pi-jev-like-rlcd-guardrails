@@ -234,6 +234,17 @@ demo in the Desktop folder `Jev-C11-Step256-Model-2026-09-23`. That demo treats
 proposed operations as data and does not execute them or enable SF Guardrail.
 Its exploratory slow mode does not satisfy the production timing gate.
 
+After the repository was reduced to the guardrail feature and renamed
+`sf-pi-jev-guardrails`, the complete 64-file Desktop bundle was added at
+`models/Jev-C11-Step256-Model-2026-09-23/` with its original bytes preserved.
+Git LFS carries the large artifacts. The copy includes the merged model,
+checkpoint adapters and recovery material, receipts, standalone runtime,
+demo, model cards and license texts; the original Desktop folder is retained.
+The provider now defaults to that directory inside its installed checkout.
+The lightweight npm source tarball excludes the bundle and requires an
+external copy selected with `JEV_GUARDRAIL_BUNDLE`. Versioning the bundle
+changes its availability, not its qualification or the recorded safety result.
+
 Separate recorded Pi SDK tests exercised the real session/extension machinery
 with counter-only tools and scripted provider outputs: 430 guardrail tests
 passed with two skipped, plus 31 runtime-surface checks. Ten matched stub
@@ -304,7 +315,8 @@ git show 85b12f998141081ebd9199982541a7a50520724f:reports/guardrail-risk-2026-09
 ```
 
 Historical references to ignored `.build` files or removed temporary worktrees
-may not resolve. Git does not contain the heavy weights or every private raw
-run. This background deliberately preserves the distinction between source
+may not resolve. The current trained bundle is versioned through Git LFS, but
+the repository does not contain every private raw run or the original HF base
+needed for fresh training. This background preserves the distinction between source
 checks, runnable models, controlled harnesses, diagnostic effectiveness,
 independent qualification, production adoption, and human approval.

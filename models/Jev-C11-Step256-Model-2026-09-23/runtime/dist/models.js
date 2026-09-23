@@ -1,0 +1,907 @@
+import { createHash, randomUUID } from "node:crypto";
+import { createReadStream } from "node:fs";
+import { lstat, mkdir, open, readdir, readFile, rename, rm, rmdir, stat, writeFile, } from "node:fs/promises";
+import { dirname, isAbsolute, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { buildResponse, canonical, preparePrompt, } from "./core.js";
+export const GEMMA_TRAINING_REVISION = "dcc83ea841ab6100d6b47a070329e1ba4cf78752";
+export const RFDT_QUALITY_SUITE_SHA256 = "cd3de2d07db024aeb0f8d22be394ffa9024307680efbe2967569c325bc7af3c9";
+export const AGENT_MODEL_ID = "google/gemma-4-31B-it-qat-q4_0";
+const root = fileURLToPath(new URL("../", import.meta.url));
+const localRegistryDefault = () => join(process.cwd(), ".jev", "artifacts.json");
+export async function approvedModels() {
+    const data = JSON.parse(await readFile(join(root, "models/registry.json"), "utf8"));
+    if (data.schema_version !== 1 || !Array.isArray(data.models))
+        throw new Error("Invalid model registry");
+    return data.models;
+}
+export async function modelDescriptor(id) {
+    const model = (await approvedModels()).find((m) => m.id === id);
+    if (!model)
+        throw new Error(`Unapproved model: ${id}. Only pinned Google models are permitted.`);
+    return model;
+}
+export async function hashArtifact(file, signal) {
+    const details = await stat(file);
+    if (!details.isFile())
+        throw new Error("Artifact must be a regular file");
+    const hash = createHash("sha256");
+    for await (const chunk of createReadStream(file, { signal })) {
+        signal?.throwIfAborted();
+        hash.update(chunk);
+    }
+    return { sha256: hash.digest("hex"), size: details.size };
+}
+async function localArtifacts(registryPath) {
+    try {
+        const data = JSON.parse(await readFile(registryPath, "utf8"));
+        if (data.version !== 1 || !Array.isArray(data.artifacts))
+            throw new Error("Invalid local artifact registry");
+        const ids = new Set();
+        for (const artifact of data.artifacts) {
+            if (!artifact ||
+                !/^jev\/[a-zA-Z0-9._-]+$/.test(artifact.id ?? "") ||
+                ids.has(artifact.id) ||
+                artifact.base_model !== "google/gemma-3-1b-it" ||
+                artifact.revision !== GEMMA_TRAINING_REVISION ||
+                !Array.isArray(artifact.roles) ||
+                artifact.roles.length !== 1 ||
+                artifact.roles[0] !== "classifier" ||
+                !["v1", "v2"].includes(artifact.template_version) ||
+                typeof artifact.training_run !== "string" ||
+                !/^[a-zA-Z0-9._-]+$/.test(artifact.training_run ?? "") ||
+                typeof artifact.file !== "string" ||
+                !isAbsolute(artifact.file) ||
+                !/^[a-f0-9]{64}$/.test(artifact.sha256 ?? "") ||
+                !Number.isSafeInteger(artifact.size) ||
+                artifact.size <= 0 ||
+                artifact.license !== "gemma")
+                throw new Error("Invalid local artifact: only pinned Gemma RFDT derivatives with a jev/ identity and classifier role are permitted");
+            ids.add(artifact.id);
+        }
+        return data.artifacts;
+    }
+    catch (error) {
+        if (error.code === "ENOENT")
+            return [];
+        throw error;
+    }
+}
+export async function verifyArtifact(file, role = "classifier", modelId, opts = {}) {
+    if (!["classifier", "agent", "teacher"].includes(role))
+        throw new Error("Invalid model role");
+    const absolute = resolve(file);
+    const identity = await hashArtifact(absolute, opts.signal);
+    const candidates = [
+        ...(await approvedModels()),
+        ...(await localArtifacts(opts.registryPath ?? localRegistryDefault())),
+    ];
+    const descriptor = candidates.find((m) => m.roles.includes(role) &&
+        (!modelId || m.id === modelId) &&
+        m.sha256 === identity.sha256 &&
+        m.size === identity.size);
+    if (!descriptor ||
+        !descriptor.base_model.startsWith("google/gemma-") ||
+        !/^[a-f0-9]{64}$/.test(descriptor.sha256))
+        throw new Error("Unapproved model artifact: role, pinned Google lineage, size and checksum must match an approved artifact. No fallback is permitted.");
+    return { ...descriptor, file: absolute };
+}
+const MODEL_RANGE_SIZE = 64 * 1024 * 1024;
+function ownerIsAlive(pid) {
+    try {
+        process.kill(pid, 0);
+        return true;
+    }
+    catch (error) {
+        return error.code !== "ESRCH";
+    }
+}
+async function saveDownloadJournal(state) {
+    const temporary = join(state.directory, `journal.${randomUUID()}.tmp`);
+    const handle = await open(temporary, "wx", 0o600);
+    try {
+        await handle.writeFile(JSON.stringify(state.journal));
+        await handle.sync();
+    }
+    finally {
+        await handle.close();
+    }
+    await rename(temporary, join(state.directory, "journal.json"));
+}
+function isOwnedDownloadEntry(name) {
+    return (["owner.json", "journal.json", "artifact.part"].includes(name) ||
+        /^journal\.[a-f0-9-]{36}\.tmp$/.test(name));
+}
+async function removeOwnedDownload(state) {
+    for (const entry of await readdir(state.directory, { withFileTypes: true })) {
+        if (isOwnedDownloadEntry(entry.name) && !entry.isDirectory())
+            await rm(join(state.directory, entry.name), { force: true });
+    }
+    // A caller adding unrelated content to an owned directory must not lose it.
+    try {
+        await rmdir(state.directory);
+    }
+    catch (error) {
+        if (error.code !== "ENOTEMPTY")
+            throw error;
+    }
+}
+function releaseDownloadReader(reader) {
+    if (!reader)
+        return;
+    // cancel() settles pending reads, but an underlying source can return a
+    // never-settling cancellation promise. Initiate cancellation without waiting.
+    try {
+        void reader.cancel().catch(() => { });
+    }
+    catch { }
+    try {
+        reader.releaseLock();
+    }
+    catch { }
+}
+async function ownRangeDownload(destination, descriptor) {
+    const identity = {
+        repository: descriptor.repository,
+        revision: descriptor.revision,
+        file: descriptor.file,
+        source_file: descriptor.source_file ?? descriptor.file,
+        sha256: descriptor.sha256,
+        size: descriptor.size,
+        range_size: MODEL_RANGE_SIZE,
+    };
+    const serialized = JSON.stringify(identity);
+    const key = createHash("sha256").update(serialized).digest("hex");
+    const prefix = `${descriptor.file}.${key}.resume.`;
+    const parent = dirname(destination);
+    const activeName = () => `${prefix}active-${process.pid}-${randomUUID()}`;
+    const writeOwner = async (directory) => writeFile(join(directory, "owner.json"), JSON.stringify({ version: 1, state: "active", pid: process.pid, key }), { mode: 0o600 });
+    for (const entry of await readdir(parent, { withFileTypes: true })) {
+        if (!entry.isDirectory() || !entry.name.startsWith(prefix))
+            continue;
+        const suffix = entry.name.slice(prefix.length);
+        const active = /^active-([1-9][0-9]*)-([a-f0-9-]{36})$/.exec(suffix);
+        const paused = /^paused-([a-f0-9-]{36})$/.test(suffix);
+        if (!active && !paused)
+            continue;
+        const directory = join(parent, entry.name);
+        let journal;
+        try {
+            const entries = await readdir(directory, { withFileTypes: true });
+            let owned = true;
+            for (const child of entries) {
+                const details = await lstat(join(directory, child.name));
+                if (!isOwnedDownloadEntry(child.name) ||
+                    !details.isFile() ||
+                    details.nlink !== 1) {
+                    owned = false;
+                    break;
+                }
+            }
+            if (!owned)
+                continue;
+            if (active && ownerIsAlive(Number(active[1])))
+                continue;
+            if (!(await lstat(join(directory, "owner.json"))).isFile())
+                continue;
+            const owner = JSON.parse(await readFile(join(directory, "owner.json"), "utf8"));
+            if (owner.version !== 1 ||
+                owner.key !== key ||
+                !Number.isSafeInteger(owner.pid) ||
+                owner.pid < 1)
+                continue;
+            if (active) {
+                // The name prevents another caller taking a newly claimed directory
+                // before its owner record has been replaced. Unknown locks stay intact.
+                if (owner.pid !== Number(active[1]) ||
+                    !["active", "paused"].includes(owner.state) ||
+                    ownerIsAlive(owner.pid))
+                    continue;
+            }
+            else if (owner.state !== "paused")
+                continue;
+            if (!(await lstat(join(directory, "journal.json"))).isFile())
+                continue;
+            journal = JSON.parse(await readFile(join(directory, "journal.json"), "utf8"));
+            if (journal.version !== 1 ||
+                JSON.stringify(journal.descriptor) !== serialized ||
+                !Array.isArray(journal.ranges))
+                continue;
+            const starts = new Set();
+            if (journal.ranges.some((range) => {
+                const invalid = !Number.isSafeInteger(range.start) ||
+                    range.start < 0 ||
+                    range.start >= descriptor.size ||
+                    range.start % MODEL_RANGE_SIZE !== 0 ||
+                    range.end !==
+                        Math.min(range.start + MODEL_RANGE_SIZE, descriptor.size) - 1 ||
+                    !/^[a-f0-9]{64}$/.test(range.sha256 ?? "") ||
+                    starts.has(range.start);
+                starts.add(range.start);
+                return invalid;
+            }))
+                continue;
+            const part = await lstat(join(directory, "artifact.part"));
+            if (!part.isFile() || part.size !== descriptor.size)
+                continue;
+        }
+        catch {
+            // Unrecognized, incomplete, or concurrently claimed state is not ours.
+            continue;
+        }
+        const claimed = join(parent, activeName());
+        try {
+            // Each source name is unique and never recreated. Exactly one caller can
+            // move a paused/dead-owner directory into its private active namespace.
+            await rename(directory, claimed);
+        }
+        catch (error) {
+            if (error.code === "ENOENT")
+                continue;
+            throw error;
+        }
+        await writeOwner(claimed);
+        return {
+            directory: claimed,
+            part: join(claimed, "artifact.part"),
+            journal,
+        };
+    }
+    const directory = join(parent, activeName());
+    await mkdir(directory, { mode: 0o700 });
+    await writeOwner(directory);
+    const state = {
+        directory,
+        part: join(directory, "artifact.part"),
+        journal: { version: 1, descriptor: identity, ranges: [] },
+    };
+    const handle = await open(state.part, "wx", 0o600);
+    try {
+        await handle.truncate(descriptor.size);
+    }
+    finally {
+        await handle.close();
+    }
+    await saveDownloadJournal(state);
+    return state;
+}
+async function waitForTransport(operation, signal) {
+    if (signal.aborted) {
+        void operation.catch(() => { });
+        signal.throwIfAborted();
+    }
+    let aborted;
+    try {
+        return await Promise.race([
+            operation,
+            new Promise((_resolve, reject) => {
+                aborted = () => reject(signal.reason);
+                signal.addEventListener("abort", aborted, { once: true });
+                if (signal.aborted)
+                    aborted();
+            }),
+        ]);
+    }
+    finally {
+        if (aborted)
+            signal.removeEventListener("abort", aborted);
+    }
+}
+export async function fetchApprovedFile(descriptor, opts = {}) {
+    if (!/^[a-f0-9]{40}$/.test(descriptor.revision) ||
+        !/^[a-f0-9]{64}$/.test(descriptor.sha256) ||
+        !Number.isSafeInteger(descriptor.size) ||
+        descriptor.size <= 0 ||
+        descriptor.file !== descriptor.file.split(/[\\/]/).at(-1))
+        throw new Error("Invalid pinned file descriptor");
+    const destination = join(resolve(opts.directory ?? join(root, "models")), descriptor.file);
+    try {
+        const found = await hashArtifact(destination, opts.signal);
+        if (found.sha256 === descriptor.sha256 && found.size === descriptor.size)
+            return destination;
+    }
+    catch (error) {
+        if (error.code !== "ENOENT")
+            throw error;
+    }
+    await mkdir(dirname(destination), { recursive: true });
+    const part = `${destination}.${randomUUID()}.part`;
+    const controller = new AbortController();
+    const signal = opts.signal
+        ? AbortSignal.any([opts.signal, controller.signal])
+        : controller.signal;
+    const timeoutMs = opts.timeoutMs ?? 60 * 60 * 1000;
+    const idleTimeoutMs = opts.idleTimeoutMs ?? 30_000;
+    const concurrency = opts.concurrency ?? 8;
+    if (!Number.isSafeInteger(concurrency) || concurrency < 1 || concurrency > 8)
+        throw new Error("Download concurrency must be 1 through 8");
+    if (!Number.isFinite(timeoutMs) ||
+        timeoutMs < 1 ||
+        !Number.isFinite(idleTimeoutMs) ||
+        idleTimeoutMs < 1)
+        throw new Error("Download deadlines must be positive");
+    const deadline = setTimeout(() => controller.abort(new Error("Model download deadline exceeded")), timeoutMs);
+    let idle;
+    const resetIdle = () => {
+        clearTimeout(idle);
+        idle = setTimeout(() => controller.abort(new Error("Model download stalled")), idleTimeoutMs);
+    };
+    let handle;
+    let reader;
+    let resumable;
+    let discardResume = false;
+    try {
+        if (descriptor.size > 128 * 1024 * 1024) {
+            resumable = await ownRangeDownload(destination, descriptor);
+            handle = await open(resumable.part, "r+");
+            // Journal hashes are only checkpoints, not approval. Re-read every saved
+            // range after claiming it; final pinned artifact verification is mandatory.
+            const completed = new Map();
+            for (const range of resumable.journal.ranges) {
+                const hash = createHash("sha256");
+                for await (const chunk of createReadStream(resumable.part, {
+                    start: range.start,
+                    end: range.end,
+                    signal,
+                })) {
+                    signal.throwIfAborted();
+                    hash.update(chunk);
+                }
+                if (hash.digest("hex") === range.sha256)
+                    completed.set(range.start, range);
+            }
+            resumable.journal.ranges = [...completed.values()];
+            await saveDownloadJournal(resumable);
+            let nextOffset = 0;
+            let received = [...completed.values()].reduce((sum, range) => sum + range.end - range.start + 1, 0);
+            let checkpoint = Promise.resolve();
+            const active = new Map();
+            const report = () => opts.onProgress?.(received +
+                [...active.values()].reduce((sum, count) => sum + count, 0), descriptor.size, descriptor.file);
+            report();
+            const download = opts.fetch ?? globalThis.fetch;
+            const url = `https://huggingface.co/${descriptor.repository}/resolve/${descriptor.revision}/${descriptor.source_file ?? descriptor.file}`;
+            const worker = async () => {
+                while (nextOffset < descriptor.size) {
+                    const start = nextOffset;
+                    const end = Math.min(start + MODEL_RANGE_SIZE, descriptor.size) - 1;
+                    nextOffset = end + 1;
+                    if (completed.has(start))
+                        continue;
+                    for (let attempt = 0; attempt < 3; attempt++) {
+                        const rangeController = new AbortController();
+                        const rangeSignal = AbortSignal.any([
+                            signal,
+                            rangeController.signal,
+                        ]);
+                        let stalled;
+                        const reset = () => {
+                            clearTimeout(stalled);
+                            stalled = setTimeout(() => rangeController.abort(new Error("Model range download stalled")), idleTimeoutMs);
+                        };
+                        let rangeReader;
+                        let retry = false;
+                        try {
+                            signal.throwIfAborted();
+                            reset();
+                            active.set(start, 0);
+                            const requestUrl = new URL(url);
+                            if (attempt > 0)
+                                requestUrl.searchParams.set("jev_range_retry", randomUUID());
+                            const response = await waitForTransport(download(requestUrl.href, {
+                                headers: { Range: `bytes=${start}-${end}` },
+                                signal: rangeSignal,
+                            }), rangeSignal);
+                            if (response.status === 429 || response.status >= 500)
+                                throw new TypeError(`Model range transport failed: HTTP ${response.status}`);
+                            if (response.status !== 206 ||
+                                response.headers.get("content-range") !==
+                                    `bytes ${start}-${end}/${descriptor.size}` ||
+                                !response.body)
+                                throw new Error("Download server did not honor the exact approved byte range");
+                            rangeReader = response.body.getReader();
+                            const buffer = Buffer.allocUnsafe(end - start + 1);
+                            let count = 0;
+                            while (true) {
+                                rangeSignal.throwIfAborted();
+                                reset();
+                                const { done, value } = await waitForTransport(rangeReader.read(), rangeSignal);
+                                if (done)
+                                    break;
+                                if (count + value.byteLength > buffer.byteLength)
+                                    throw new Error("Model range exceeds approved size");
+                                buffer.set(value, count);
+                                count += value.byteLength;
+                                active.set(start, count);
+                                report();
+                            }
+                            if (count !== buffer.byteLength)
+                                throw new TypeError("Model range is incomplete");
+                            clearTimeout(stalled);
+                            rangeSignal.throwIfAborted();
+                            let written = 0;
+                            while (written < buffer.byteLength) {
+                                const result = await handle.write(buffer, written, buffer.byteLength - written, start + written);
+                                if (result.bytesWritten < 1)
+                                    throw new Error("Model artifact write made no progress");
+                                written += result.bytesWritten;
+                            }
+                            const range = {
+                                start,
+                                end,
+                                sha256: createHash("sha256").update(buffer).digest("hex"),
+                            };
+                            // Serialize durable journal replacement across workers. A range
+                            // becomes reusable only after its bytes have reached the file.
+                            checkpoint = checkpoint.then(async () => {
+                                await handle.sync();
+                                completed.set(start, range);
+                                resumable.journal.ranges = [...completed.values()].sort((a, b) => a.start - b.start);
+                                await saveDownloadJournal(resumable);
+                            });
+                            await checkpoint;
+                            active.delete(start);
+                            received += count;
+                            report();
+                            break;
+                        }
+                        catch (error) {
+                            active.delete(start);
+                            const code = error.code;
+                            const publicAbort = error instanceof Error && error.name === "AbortError";
+                            const transportError = !publicAbort &&
+                                (error instanceof TypeError ||
+                                    rangeController.signal.aborted ||
+                                    (typeof code === "string" && code.startsWith("E")));
+                            if (!signal.aborted && transportError && attempt < 2)
+                                retry = true;
+                            else {
+                                controller.abort(error);
+                                throw error;
+                            }
+                        }
+                        finally {
+                            clearTimeout(stalled);
+                            releaseDownloadReader(rangeReader);
+                        }
+                        if (retry)
+                            await waitForTransport(new Promise((done) => setTimeout(done, 250 * 2 ** attempt)), signal);
+                    }
+                }
+            };
+            const outcomes = await Promise.allSettled(Array.from({ length: concurrency }, () => worker()));
+            const failed = outcomes.find((outcome) => outcome.status === "rejected");
+            if (failed?.status === "rejected")
+                throw failed.reason;
+            if (received !== descriptor.size)
+                throw new Error("Model download is incomplete");
+            await handle.sync();
+            await handle.close();
+            handle = undefined;
+            const found = await hashArtifact(resumable.part, signal);
+            if (found.sha256 !== descriptor.sha256 ||
+                found.size !== descriptor.size) {
+                discardResume = true;
+                throw new Error("Model download size or checksum mismatch");
+            }
+            signal.throwIfAborted();
+            await rename(resumable.part, destination);
+            discardResume = true;
+            return destination;
+        }
+        resetIdle();
+        const response = await waitForTransport((opts.fetch ?? globalThis.fetch)(`https://huggingface.co/${descriptor.repository}/resolve/${descriptor.revision}/${descriptor.source_file ?? descriptor.file}`, { signal }), signal);
+        if (!response.ok || !response.body)
+            throw new Error(`Download failed: HTTP ${response.status}`);
+        const reported = response.headers.get("content-length");
+        if (reported && Number(reported) !== descriptor.size)
+            throw new Error("Model download reported unexpected size");
+        handle = await open(part, "wx", 0o600);
+        reader = response.body.getReader();
+        const hash = createHash("sha256");
+        let received = 0;
+        while (true) {
+            signal.throwIfAborted();
+            resetIdle();
+            const { value, done } = await waitForTransport(reader.read(), signal);
+            if (done)
+                break;
+            received += value.byteLength;
+            if (received > descriptor.size)
+                throw new Error("Model download exceeds approved size");
+            hash.update(value);
+            await handle.writeFile(value);
+            opts.onProgress?.(received, descriptor.size, descriptor.file);
+        }
+        if (received !== descriptor.size ||
+            hash.digest("hex") !== descriptor.sha256)
+            throw new Error("Model download size or checksum mismatch");
+        await handle.sync();
+        await handle.close();
+        handle = undefined;
+        signal.throwIfAborted();
+        await rename(part, destination);
+        return destination;
+    }
+    finally {
+        clearTimeout(deadline);
+        clearTimeout(idle);
+        releaseDownloadReader(reader);
+        await handle?.close().catch(() => { });
+        if (resumable) {
+            if (discardResume || resumable.journal.ranges.length === 0)
+                await removeOwnedDownload(resumable);
+            else {
+                const ownerPath = join(resumable.directory, "owner.json");
+                const owner = JSON.parse(await readFile(ownerPath, "utf8"));
+                await writeFile(ownerPath, JSON.stringify({ ...owner, state: "paused" }), {
+                    mode: 0o600,
+                });
+                const paused = resumable.directory.replace(/active-[1-9][0-9]*-[a-f0-9-]{36}$/, `paused-${randomUUID()}`);
+                await rename(resumable.directory, paused);
+            }
+        }
+        await rm(part, { force: true });
+    }
+}
+export async function fetchApprovedModel(id, opts = {}) {
+    const descriptor = await modelDescriptor(id);
+    if (descriptor.license === "gemma" && !opts.acceptGemmaTerms)
+        throw new Error("Review https://ai.google.dev/gemma/terms and explicitly accept Gemma terms before downloading.");
+    const file = await fetchApprovedFile(descriptor, opts);
+    const chat_template_file = descriptor.chat_template
+        ? await fetchApprovedFile(descriptor.chat_template, opts)
+        : undefined;
+    return {
+        ...descriptor,
+        file,
+        ...(chat_template_file ? { chat_template_file } : {}),
+    };
+}
+async function exportedRun(manifest) {
+    const run = JSON.parse(await readFile(manifest.run_manifest, "utf8"));
+    if (run.version !== 1 ||
+        run.id !== manifest.training_run ||
+        run.status !== "exported" ||
+        run.base_model !== manifest.base_model ||
+        run.base_revision !== manifest.base_revision ||
+        run.template_version !== manifest.template_version ||
+        resolve(run.directory ?? "") !== dirname(manifest.run_manifest) ||
+        run.exports?.sha256 !== manifest.sha256 ||
+        run.exports?.size !== manifest.size ||
+        resolve(run.exports?.file ?? "") !== resolve(manifest.file) ||
+        run.exports?.id !== manifest.id)
+        throw new Error("Artifact provenance does not match the completed RFDT export manifest");
+    return run;
+}
+/** Verify an export for scoped native evaluation without promoting it. */
+export async function verifyTrainedArtifactExport(manifest) {
+    if (manifest.version !== 1 ||
+        manifest.base_model !== "google/gemma-3-1b-it" ||
+        manifest.base_revision !== GEMMA_TRAINING_REVISION ||
+        !["v1", "v2"].includes(manifest.template_version) ||
+        !/^jev\/[a-zA-Z0-9._-]+$/.test(manifest.id) ||
+        typeof manifest.training_run !== "string" ||
+        !/^[a-zA-Z0-9._-]+$/.test(manifest.training_run) ||
+        !/^[a-f0-9]{64}$/.test(manifest.sha256) ||
+        !Number.isSafeInteger(manifest.size) ||
+        manifest.size <= 0 ||
+        !isAbsolute(manifest.file) ||
+        !isAbsolute(manifest.run_manifest))
+        throw new Error("Artifact approval requires pinned Google Gemma lineage, valid template, run identity, and absolute artifact/run paths");
+    await exportedRun(manifest);
+    const identity = await hashArtifact(manifest.file);
+    if (identity.sha256 !== manifest.sha256 || identity.size !== manifest.size)
+        throw new Error("Trained artifact size or checksum mismatch");
+    const handle = await open(manifest.file, "r");
+    try {
+        const magic = Buffer.alloc(4);
+        await handle.read(magic, 0, 4, 0);
+        if (magic.toString() !== "GGUF")
+            throw new Error("Approved trained artifact must be GGUF");
+    }
+    finally {
+        await handle.close();
+    }
+    return {
+        id: manifest.id,
+        revision: manifest.base_revision,
+        sha256: manifest.sha256,
+        size: manifest.size,
+        file: resolve(manifest.file),
+        base_model: manifest.base_model,
+        template_version: manifest.template_version,
+        roles: ["classifier"],
+        license: "gemma",
+        training_run: manifest.training_run,
+    };
+}
+/** Load the authored acceptance corpus independently of user training rows. */
+export async function loadRfdtQualitySuite() {
+    const text = await readFile(join(root, "fixtures", "quality.jsonl"), "utf8");
+    const digest = createHash("sha256").update(text).digest("hex");
+    if (digest !== RFDT_QUALITY_SUITE_SHA256)
+        throw new Error("Frozen RFDT quality suite checksum mismatch");
+    const { qualityDatasetDigest, validateQualityRecords } = await import("./evaluation.js");
+    const records = validateQualityRecords(text
+        .split(/\r?\n/)
+        .filter((line) => line.trim())
+        .map((line) => JSON.parse(line)));
+    if (qualityDatasetDigest(records) !== RFDT_QUALITY_SUITE_SHA256)
+        throw new Error("Frozen RFDT quality suite normalization mismatch");
+    return records;
+}
+function rfdtContext(request) {
+    if (typeof request.state === "string")
+        return canonical(request.state);
+    if (request.messages?.length === 1 && request.messages[0].role === "user")
+        return canonical(request.messages[0].content);
+    return canonical(request.state != null
+        ? { state: request.state }
+        : { messages: request.messages });
+}
+/** Reject exact known held-out groups or contexts in supplied tuning rows. */
+export async function assertRfdtQualityIsolation(rows) {
+    const suite = await loadRfdtQualitySuite();
+    const heldOut = (split) => {
+        const records = suite.filter((record) => split === "train" ? record.split !== "train" : record.split === "test");
+        return {
+            groups: new Set(records.map((record) => record.group_id)),
+            contexts: new Set(records.map((record) => rfdtContext(record.request))),
+        };
+    };
+    const reserved = {
+        train: heldOut("train"),
+        validation: heldOut("validation"),
+    };
+    for (const row of rows) {
+        if (row.split !== "train" && row.split !== "validation")
+            continue;
+        const protectedRows = reserved[row.split];
+        if (protectedRows.groups.has(row.group_id) ||
+            protectedRows.contexts.has(rfdtContext(row.request)))
+            throw new Error(`RFDT ${row.split} rows overlap a reserved quality suite group or context`);
+    }
+}
+const RFDT_NUMERIC_TOLERANCE = 1e-8;
+function sameRfdtValues(left, right) {
+    if (typeof left === "number" || typeof right === "number")
+        return (typeof left === "number" &&
+            typeof right === "number" &&
+            Number.isFinite(left) &&
+            Number.isFinite(right) &&
+            Math.abs(left - right) <= RFDT_NUMERIC_TOLERANCE);
+    if (left === null ||
+        right === null ||
+        typeof left !== "object" ||
+        typeof right !== "object")
+        return left === right;
+    if (Array.isArray(left) || Array.isArray(right))
+        return (Array.isArray(left) &&
+            Array.isArray(right) &&
+            left.length === right.length &&
+            left.every((value, index) => sameRfdtValues(value, right[index])));
+    const keys = Object.keys(left);
+    return (keys.length === Object.keys(right).length &&
+        keys.every((key) => Object.hasOwn(right, key) &&
+            sameRfdtValues(left[key], right[key])));
+}
+function rfdtProbabilities(values, length) {
+    if (!Array.isArray(values) ||
+        values.length !== length ||
+        values.some((value) => typeof value !== "number" ||
+            !Number.isFinite(value) ||
+            value < 0 ||
+            value > 1) ||
+        Math.abs(values.reduce((sum, value) => sum + value, 0) - 1) >
+            RFDT_NUMERIC_TOLERANCE)
+        throw new Error("invalid or unnormalized native answer probabilities");
+    return values;
+}
+function reconstructRfdtAnswers(request, predictions, manifest) {
+    const plan = preparePrompt({
+        ...request,
+        model: manifest.id,
+        options: {
+            ...request.options,
+            template_version: manifest.template_version,
+        },
+    }, manifest.template_version);
+    const logits = {};
+    for (const [index, branch] of plan.questions.entries()) {
+        const question = plan.request.questions[index];
+        const answer = predictions[index];
+        if (!answer || answer.type !== question.type)
+            throw new Error("incorrect native answer type");
+        let values;
+        if (question.type === "noul") {
+            values = rfdtProbabilities(answer.rating?.probabilities, 9);
+        }
+        else {
+            const probabilities = answer.probabilities;
+            if (!probabilities ||
+                typeof probabilities !== "object" ||
+                Array.isArray(probabilities) ||
+                Object.keys(probabilities).length !== branch.answer_labels.length ||
+                branch.answer_labels.some((label) => !Object.hasOwn(probabilities, label)))
+                throw new Error("native answer probability labels do not match exactly");
+            values = rfdtProbabilities(branch.answer_labels.map((label) => probabilities[label]), branch.answer_labels.length);
+        }
+        logits[branch.branch_id] = Object.fromEntries(branch.output_labels.map((label, labelIndex) => [
+            label,
+            Math.log(Math.max(values[labelIndex], Number.MIN_VALUE)),
+        ]));
+    }
+    const reconstructed = buildResponse(plan, logits, 0, true).answers;
+    for (const [index, question] of request.questions.entries())
+        if (!sameRfdtValues(predictions[index], reconstructed[question.id]))
+            throw new Error("native answer fields do not match their probabilities");
+    return reconstructed;
+}
+/** Recompute native acceptance from the fixed corpus and recorded predictions. */
+export async function verifyNativeRfdtAcceptance(manifest, splits = ["validation", "test"]) {
+    const run = await exportedRun(manifest);
+    const fail = (message) => {
+        throw new Error(`Native RFDT acceptance: ${message}`);
+    };
+    if (!run.prepared?.dataset_file ||
+        !/^[a-f0-9]{64}$/.test(run.prepared.dataset_sha256 ?? "") ||
+        !/^[a-f0-9]{64}$/.test(run.prepared.sha256 ?? ""))
+        fail("frozen dataset and prepared prompt identities are required");
+    const dataset = await readFile(run.prepared.dataset_file, "utf8");
+    const digest = (text) => createHash("sha256").update(text).digest("hex");
+    if (digest(dataset) !== run.prepared.dataset_sha256)
+        fail("frozen dataset checksum mismatch");
+    const { evaluateRecords, qualityDatasetDigest } = await import("./evaluation.js");
+    const { assignRfdtSplits, validateRfdtExample } = await import("./rfdt.js");
+    const trainingRecords = dataset
+        .split(/\r?\n/)
+        .filter((line) => line.trim())
+        .map((line) => validateRfdtExample(JSON.parse(line)));
+    const trainingSplits = assignRfdtSplits(trainingRecords);
+    if (trainingRecords.some((record) => record.split !== trainingSplits.get(record.group_id)))
+        fail("training split identities do not match frozen rows");
+    const records = await loadRfdtQualitySuite();
+    await assertRfdtQualityIsolation(trainingRecords);
+    let frozen = "";
+    for (const split of ["train", "validation", "test"]) {
+        const file = run.prepared.files?.[split];
+        if (typeof file !== "string")
+            fail(`missing frozen ${split} prompts`);
+        const text = await readFile(file, "utf8");
+        frozen += `${split}\n${text}`;
+        const branches = text
+            .split(/\r?\n/)
+            .filter((line) => line.trim())
+            .map((line) => JSON.parse(line));
+        const selected = trainingRecords.filter((record) => record.split === split);
+        if (branches.length !== run.prepared.branches?.[split] ||
+            branches.length !==
+                selected.reduce((count, record) => count + record.request.questions.length, 0) ||
+            branches.some((branch) => branch.split !== split ||
+                branch.template_version !== manifest.template_version))
+            fail(`frozen ${split} prompt coverage mismatch`);
+    }
+    if (digest(frozen) !== run.prepared.sha256)
+        fail("frozen prepared prompt checksum mismatch");
+    const binding = {
+        training_run: manifest.training_run,
+        artifact_id: manifest.id,
+        artifact_sha256: manifest.sha256,
+        artifact_size: manifest.size,
+        template_version: manifest.template_version,
+        prepared_sha256: run.prepared.sha256,
+        dataset_sha256: run.prepared.dataset_sha256,
+        quality_suite_sha256: RFDT_QUALITY_SUITE_SHA256,
+    };
+    for (const split of splits) {
+        const acceptance = run.evaluation?.[`native_${split}`];
+        if (acceptance?.artifact !== "native_gguf" ||
+            acceptance.artifact_sha256 !== manifest.sha256 ||
+            typeof acceptance.file !== "string" ||
+            !/^[a-f0-9]{64}$/.test(acceptance.sha256 ?? "") ||
+            canonical(acceptance.binding ?? null) !== canonical(binding))
+            fail(`matching native ${split} evidence is required`);
+        const text = await readFile(acceptance.file, "utf8");
+        if (digest(text) !== acceptance.sha256)
+            fail(`native ${split} report checksum mismatch`);
+        const report = JSON.parse(text);
+        const selected = records.filter((record) => record.split === split);
+        if (selected.length === 0 ||
+            report.schema_version !== 1 ||
+            report.template_version !== manifest.template_version ||
+            canonical(report.splits) !== canonical([split]) ||
+            canonical(report.rfdt ?? null) !== canonical(binding) ||
+            report.dataset_sha256 !== qualityDatasetDigest(selected) ||
+            !Array.isArray(report.results) ||
+            report.results.length !== selected.length)
+            fail(`native ${split} report identity or dataset mismatch`);
+        const predictions = selected.map((record, index) => {
+            const result = report.results[index];
+            const artifact = result?.metadata?.artifact;
+            if (result?.id !== record.id ||
+                result.group_id !== record.group_id ||
+                result.split !== split ||
+                result.regression !== (record.regression === true) ||
+                result.error !== undefined ||
+                result.model !== manifest.id ||
+                result.metadata?.backend !== "llama.cpp" ||
+                result.metadata.template_version !== manifest.template_version ||
+                result.metadata.model_revision !== manifest.base_revision ||
+                artifact?.id !== manifest.id ||
+                artifact.sha256 !== manifest.sha256 ||
+                artifact.size !== manifest.size ||
+                artifact.revision !== manifest.base_revision ||
+                artifact.base_model !== manifest.base_model ||
+                artifact.template_version !== manifest.template_version ||
+                !Array.isArray(result.answers) ||
+                result.answers.length !== record.request.questions.length ||
+                result.answers.some((answer, answerIndex) => answer?.question_id !== record.request.questions[answerIndex].id ||
+                    canonical(answer.target) !==
+                        canonical(record.targets[answer.question_id])))
+                fail(`native ${split} result coverage or artifact identity mismatch`);
+            const answers = (() => {
+                try {
+                    return reconstructRfdtAnswers(record.request, result.answers.map((answer) => answer.prediction), manifest);
+                }
+                catch (error) {
+                    return fail(`native ${split} quality gates or derived scores do not pass: ${error instanceof Error ? error.message : String(error)}`);
+                }
+            })();
+            return {
+                model: result.model,
+                answers,
+                metadata: result.metadata,
+                usage: result.usage,
+            };
+        });
+        let index = 0;
+        const recomputed = await evaluateRecords({ classify: async () => predictions[index++] }, selected, manifest.template_version, { modelId: manifest.id });
+        if (report.prompt_manifest_sha256 !== recomputed.prompt_manifest_sha256 ||
+            report.results.some((result, resultIndex) => result.logical_prompt_sha256 !==
+                recomputed.results[resultIndex].logical_prompt_sha256 ||
+                !sameRfdtValues(result.answers, recomputed.results[resultIndex].answers)) ||
+            !sameRfdtValues(report.summary, recomputed.summary) ||
+            !sameRfdtValues(acceptance.summary, recomputed.summary) ||
+            recomputed.summary.gates.passed !== true)
+            fail(`native ${split} quality gates or derived scores do not pass`);
+    }
+}
+export async function approveTrainedArtifact(manifest, opts = {}) {
+    const descriptor = await verifyTrainedArtifactExport(manifest);
+    await verifyNativeRfdtAcceptance(manifest);
+    const registryPath = resolve(opts.registryPath ?? localRegistryDefault());
+    await mkdir(dirname(registryPath), { recursive: true });
+    const lockPath = `${registryPath}.lock`;
+    // Exclusive creation coordinates independent processes as well as callers in
+    // this process. A busy or abandoned lock requires explicit recovery; never
+    // retry implicitly or take over a lock whose owner may still be writing.
+    const lock = await open(lockPath, "wx", 0o600).catch((error) => {
+        if (error.code === "EEXIST")
+            throw Object.assign(new Error(`Artifact registry is busy: ${lockPath}`), {
+                code: "ERR_ARTIFACT_REGISTRY_BUSY",
+            });
+        throw error;
+    });
+    const part = `${registryPath}.${randomUUID()}.part`;
+    try {
+        const artifacts = (await localArtifacts(registryPath)).filter((a) => a.id !== descriptor.id);
+        artifacts.push(descriptor);
+        await writeFile(part, JSON.stringify({ version: 1, artifacts }, null, 2) + "\n", { flag: "wx", mode: 0o600 });
+        await rename(part, registryPath);
+    }
+    finally {
+        try {
+            await rm(part, { force: true });
+        }
+        finally {
+            try {
+                await lock.close();
+            }
+            finally {
+                await rm(lockPath);
+            }
+        }
+    }
+    return descriptor;
+}

@@ -1,0 +1,9 @@
+MODIFIED MODEL FILE: model.gguf
+
+Gemma is provided under and subject to the Gemma Terms of Use found at ai.google.dev/gemma/terms
+
+This file is the Jev C11 step-256 trained derivative, identifier jev/c11-step-256. A trained adapter was merged into google/gemma-3-1b-it at base revision dcc83ea841ab6100d6b47a070329e1ba4cf78752 and the merged weights were exported as F16 GGUF. The export tokenizer removes the untrained, out-of-range image placeholder at token ID 262144 while preserving the model vocabulary of 262144 entries.
+
+Adapter SHA-256: 91e6d3a90369d90f34fd760c52dc27c97212087ede99aea9f8c861723bbe06b2
+
+This is a modified model derivative and does not imply Google endorsement. This prominent accompanying notice identifies modifications without changing the frozen model file's bytes. Retain it together with NOTICE.md, GemmaTerms.txt and PROHIBITED_USE_POLICY.txt when sharing the model. The model is governed by the Gemma agreement and its Section 3.2 use restrictions, including the prohibited use policy and applicable laws and regulations.

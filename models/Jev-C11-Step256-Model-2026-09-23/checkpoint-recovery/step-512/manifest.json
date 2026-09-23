@@ -1,0 +1,464 @@
+{
+  "version": 1,
+  "id": "rfdt-20260923015205-dfaf55c3",
+  "status": "exported",
+  "base_model": "google/gemma-3-1b-it",
+  "base_revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+  "template_version": "v2",
+  "created_at": "2026-09-23T01:52:08.601Z",
+  "directory": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1",
+  "source": {
+    "file": "/private/tmp/simple-jev-ts-c11-supervision-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/fit.jsonl",
+    "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+    "examples": 327
+  },
+  "prepared": {
+    "sha256": "f419fca304b97790bbd1824f5e43a172134233bf68d11a4136b58b08c8b66dce",
+    "files": {
+      "train": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/train.jsonl",
+      "validation": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/validation.jsonl",
+      "test": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/test.jsonl"
+    },
+    "branches": {
+      "train": 327,
+      "validation": 0,
+      "test": 0
+    },
+    "dataset_file": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/dataset.jsonl",
+    "dataset_sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25"
+  },
+  "hyperparameters": {
+    "seed": 42,
+    "rank": 16,
+    "scale": 2,
+    "dropout": 0,
+    "layers": 26,
+    "projections": [
+      "self_attn.q_proj",
+      "self_attn.v_proj"
+    ],
+    "batch_size": 1,
+    "accumulation": 8,
+    "learning_rate": 0.0001,
+    "max_prompt_tokens": 2048
+  },
+  "runtime": {
+    "python": "3.13",
+    "mlx": "0.32.2",
+    "mlx_lm_revision": "9d1e356e7cc6549e7d1697adabe2ea01ff8e062c",
+    "transformers": "5.11.0",
+    "converter_torch": "2.11.0"
+  },
+  "training": {
+    "ok": true,
+    "adapter_changed": true,
+    "reload_verified": true,
+    "adapter_dir": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/adapter",
+    "training_backend": "torch_cuda",
+    "qualified": false,
+    "cuda_receipt_sha256": "6cb64c496c3418f786ecaeb32719695c91b560ebc9a13c39566a7cf0fa18f748",
+    "cuda_source": {
+      "qualified": false,
+      "mode": "train",
+      "steps": 512,
+      "adapter_changed": true,
+      "adapter_sha256": "a40afbd553e096eb791834e4d09ba761afeb2f83d4d575ab0fbc85395d1ee0eb",
+      "fit_margins_sha256": "4ef3279bc46acabd90b17f8db251254dbfa2a2bddf09f05eb112798e97c61367",
+      "source": {
+        "experiment": "candidate11",
+        "mode": "train",
+        "steps": 512,
+        "campaign": {
+          "version": 1,
+          "purpose": "candidate11_fit_only_cuda_campaign",
+          "qualified": false,
+          "objective_plan_sha256": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+          "prepared_fit_sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+          "steps": 1024,
+          "checkpoints": [
+            128,
+            256,
+            512,
+            1024
+          ],
+          "precision": {
+            "base": "float32",
+            "lora": "float32",
+            "attention": "eager",
+            "tf32": false
+          },
+          "seed": 42,
+          "learning_rate": 0.0001,
+          "effective_batch": 8,
+          "validation_rows_passed_to_training": 0,
+          "test_rows_passed_to_training": 0,
+          "qualification": {
+            "minimum_accuracy": 0.9,
+            "unsafe_allows": 0,
+            "safety_regressions": 0,
+            "hard_block_regressions": 0,
+            "benign_interruptions": "at_or_below_baseline",
+            "all_eligible_calls_complete": true,
+            "warm_full_check_p95_ms": 750,
+            "ideal_warm_full_check_p95_ms": 500,
+            "precision_probability_delta_limit": 0.05,
+            "precision_decisive_margin": 0.5,
+            "precision_decisive_flips": 0,
+            "selection": [
+              "fewer_benign_interruptions",
+              "lower_warm_p95",
+              "earlier_checkpoint"
+            ],
+            "cal_before_valid": true,
+            "frozen_before_test": true
+          },
+          "memory": {
+            "budget_bytes": 8000000000,
+            "allocator_cap_bytes": 6500000000,
+            "stop_dedicated_delta_bytes": 7500000000,
+            "shared_growth_limit_bytes": 128000000
+          },
+          "default_enforcement": "off",
+          "fit_rows": 327,
+          "explicit_pairs": 86,
+          "pair_manifest_sha256": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+          "family_manifest_sha256": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+          "supplement_rows_admitted": 0,
+          "initialization": "original_google_gemma_base_fresh_lora_empty_optimizer",
+          "sampler": {
+            "implementation": "c11_fit_sampler.C11FitSampler",
+            "pair_fraction": 0.5,
+            "initial_pair_coverage": "one_shuffled_pass_over_all_explicit_pairs",
+            "pair_group_policy": "shuffled_round_robin_over_indivisible_group_ids",
+            "pair_item_policy": "shuffled_round_robin_within_group",
+            "row_label_order": [
+              "allow",
+              "confirm"
+            ],
+            "row_family_policy": "shuffled_round_robin_within_label",
+            "row_item_policy": "shuffled_round_robin",
+            "seed": 42
+          },
+          "source_sha256": {
+            "worker.py": "24d608084f09763033e8fbf9b2a5ac01c31a1e18281e1c53b5cd1d2dd5de56ff",
+            "cuda_worker.py": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+            "c11_fit_sampler.py": "846b022a3d624a8104fb9908c5f66e10eb53a9cdd2014f09b0b277e406370b03"
+          }
+        },
+        "campaign_sha256": "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd",
+        "objective": {
+          "version": 2,
+          "purpose": "candidate11_train_only",
+          "arm": "B",
+          "objective": "guardrail_train_balanced_symmetric_v1",
+          "pair_manifest_sha256": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+          "family_manifest_sha256": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+          "loss": {
+            "ce_weight": 1,
+            "anchor_weight": 1,
+            "anchor_margin": 2,
+            "pair_weight": 0.5,
+            "pair_margin": 4
+          },
+          "sampler": {
+            "implementation": "c11_fit_sampler.C11FitSampler",
+            "pair_fraction": 0.5,
+            "initial_pair_coverage": "one_shuffled_pass_over_all_explicit_pairs",
+            "pair_group_policy": "shuffled_round_robin_over_indivisible_group_ids",
+            "pair_item_policy": "shuffled_round_robin_within_group",
+            "row_label_order": [
+              "allow",
+              "confirm"
+            ],
+            "row_family_policy": "shuffled_round_robin_within_label",
+            "row_item_policy": "shuffled_round_robin",
+            "seed": 42
+          },
+          "steps": 1024,
+          "cutoff_status": "unset_requires_c9_train_cal_hard_veto_before_valid",
+          "validation_rows_passed_to_training": 0,
+          "test_rows_passed_to_training": 0
+        },
+        "source_objective_plan": {
+          "version": 2,
+          "purpose": "candidate9_train_only",
+          "arm": "B",
+          "objective": "guardrail_train_balanced_symmetric_v1",
+          "pair_manifest_sha256": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+          "family_manifest_sha256": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+          "loss": {
+            "ce_weight": 1,
+            "anchor_weight": 1,
+            "anchor_margin": 2,
+            "pair_weight": 0.5,
+            "pair_margin": 4
+          },
+          "sampler": {
+            "pair_fraction": 0.5,
+            "row_label_order": [
+              "allow",
+              "confirm"
+            ],
+            "family_policy": "round_robin_within_label_or_pair",
+            "item_policy": "shuffled_round_robin",
+            "seed": 42
+          },
+          "steps": 256,
+          "cutoff_status": "unset_requires_c9_train_cal_hard_veto_before_valid",
+          "validation_rows_passed_to_training": 0,
+          "test_rows_passed_to_training": 0
+        },
+        "sampler_source_sha256": "846b022a3d624a8104fb9908c5f66e10eb53a9cdd2014f09b0b277e406370b03",
+        "initialization": "original_google_gemma_base_fresh_lora_empty_optimizer",
+        "inputs": {
+          "train": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+          "pairs": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+          "families": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+          "plan": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+          "base": {
+            "model.safetensors": "3d4ef8d71c14db7e448a09ebe891cfb6bf32c57a9b44499ae0d1c098e48516b6",
+            "config.json": "19cb5d28c97778271ba2b3c3df47bf76bdd6706724777a2318b3522230afe91e",
+            "tokenizer.json": "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795"
+          }
+        },
+        "source_sha256": "b840cb0097d47418bb0f050572b3e1f74c335867c0ff7602f09c2933771b90c4",
+        "objective_worker_sha256": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+        "contract_sha256": "24d608084f09763033e8fbf9b2a5ac01c31a1e18281e1c53b5cd1d2dd5de56ff",
+        "budget_bytes": 8000000000,
+        "allocator_cap_bytes": 6500000000,
+        "precision": {
+          "base": "float32",
+          "lora": "float32",
+          "attention": "eager",
+          "tf32": false
+        },
+        "backend": "torch_cuda_experimental_not_qualified",
+        "campaign_steps": 1024,
+        "checkpoint_step": 512
+      },
+      "prompt_parity": {
+        "rows_checked": 327,
+        "labels_checked": 654,
+        "rendered_prompt_tokens": true,
+        "answer_label_boundaries": true,
+        "add_special_tokens": false,
+        "template_version": "v2"
+      },
+      "pre_step_placement": {
+        "parameters": 444,
+        "buffers": 5,
+        "gradients": 104
+      },
+      "post_step_placement": {
+        "parameters": 444,
+        "buffers": 5,
+        "gradients": 0,
+        "optimizer_tensors": 208
+      },
+      "fit_row_loss": 0.061290003203283906,
+      "memory": {
+        "allocated_bytes": 4066655232,
+        "reserved_bytes": 4391436288,
+        "peak_allocated_bytes": 4274064384,
+        "peak_reserved_bytes": 4391436288,
+        "cuda_free_bytes": 11533287424,
+        "cuda_total_bytes": 17175019520,
+        "cuda_free_delta_bytes": 4429185024
+      },
+      "saved_adapter_reload": {
+        "ok": true,
+        "rows": 327,
+        "max_margin_delta": 0,
+        "margin_delta_limit": 0.00001,
+        "adapter_sha256": "a40afbd553e096eb791834e4d09ba761afeb2f83d4d575ab0fbc85395d1ee0eb",
+        "fit_margins_sha256": "4ef3279bc46acabd90b17f8db251254dbfa2a2bddf09f05eb112798e97c61367",
+        "precision": {
+          "base": "float32",
+          "lora": "float32",
+          "attention": "eager",
+          "tf32": false
+        }
+      },
+      "checkpoint_step": 512,
+      "sampler_counts": {
+        "pair:salesforce_cli": 294,
+        "row:allow:data360": 114,
+        "row:confirm:data360": 114,
+        "pair:data360": 298,
+        "row:allow:soql": 114,
+        "pair:canvas": 245,
+        "row:confirm:apex": 114,
+        "pair:herdr_pane": 262,
+        "row:allow:salesforce_cli": 114,
+        "pair:shell": 336,
+        "row:confirm:canvas": 113,
+        "pair:soql": 270,
+        "row:allow:canvas": 114,
+        "pair:browser": 319,
+        "row:confirm:browser": 114,
+        "row:allow:browser": 114,
+        "row:confirm:shell": 114,
+        "row:allow:shell": 113,
+        "row:confirm:salesforce_cli": 114,
+        "row:allow:apex": 113,
+        "row:confirm:herdr_pane": 113,
+        "row:allow:agentscript": 114,
+        "row:confirm:agentscript": 114,
+        "row:allow:herdr_pane": 114,
+        "row:confirm:soql": 114,
+        "pair:agentscript": 24
+      },
+      "sampler_draws": 4096
+    },
+    "local_fit_margins_sha256": "2fc8c924765776fd525eb0f828ee57f7a2e39841ba718516740f396552373742",
+    "cross_backend_equivalence": {
+      "rows": 327,
+      "max_probability_delta": 0.000006065415022377119,
+      "max_margin_delta": 0.0001430511474609375,
+      "decisive_sign_flips": 0,
+      "max_probability_delta_limit": 0.05,
+      "decisive_margin": 0.5,
+      "ok": true
+    },
+    "cuda_campaign_sha256": "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd",
+    "checkpoint_step": 512,
+    "local_precision": {
+      "base": "float32",
+      "lora": "float32",
+      "attention": "eager",
+      "tf32": false
+    },
+    "local_architecture": {
+      "kind": "hf_fp32_embedding_scale",
+      "helper_sha256": "ce62f5b1928d981c3276776f9100f10f252f3904337774be63a74347b46a5256",
+      "embedding_scale_policy": "sqrt_hidden_size_in_fp32"
+    },
+    "fusion": {
+      "ok": true,
+      "fused": true,
+      "fusion_dtype": "float32",
+      "output_dir": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/fused",
+      "format": "safetensors",
+      "gguf_exported": false,
+      "provenance": {
+        "base_model": "google/gemma-3-1b-it",
+        "base_revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+        "lineage": "Google Gemma 3",
+        "dependencies": {
+          "python": "3.13.11",
+          "mlx": "0.32.2",
+          "mlx-lm": "0.32.0",
+          "transformers": "5.11.0",
+          "huggingface-hub": "1.32.0",
+          "mlx_lm_revision": "9d1e356e7cc6549e7d1697adabe2ea01ff8e062c"
+        }
+      },
+      "template_version": "v2",
+      "adapter_sha256": "a40afbd553e096eb791834e4d09ba761afeb2f83d4d575ab0fbc85395d1ee0eb",
+      "tokenizer_projection": {
+        "derivation": "original tokenizer with only the untrained out-of-range image placeholder removed",
+        "model_vocab_size": 262144,
+        "source_model_config_sha256": "19cb5d28c97778271ba2b3c3df47bf76bdd6706724777a2318b3522230afe91e",
+        "model_vocab_sha256": "2871235118cc9e518d6be2576f97b1503c2166564ef6a37552e471e00100a3a5",
+        "removed_special_tokens": [
+          {
+            "id": 262144,
+            "content": "<image_soft_token>",
+            "occurrences": [
+              {
+                "file": "tokenizer.json",
+                "location": "added_tokens/6414"
+              },
+              {
+                "file": "tokenizer_config.json",
+                "location": "added_tokens_decoder/262144"
+              },
+              {
+                "file": "added_tokens.json",
+                "location": "<image_soft_token>"
+              },
+              {
+                "file": "tokenizer_config.json",
+                "location": "extra_special_tokens/image_token"
+              },
+              {
+                "file": "tokenizer_config.json",
+                "location": "image_token"
+              },
+              {
+                "file": "special_tokens_map.json",
+                "location": "image_token"
+              }
+            ]
+          }
+        ],
+        "source_files": {
+          "tokenizer.json": "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795",
+          "tokenizer_config.json": "bfe25c2735e395407beb78456ea9a6984a1f00d8c16fa04a8b75f2a614cf53e1",
+          "added_tokens.json": "50b2f405ba56a26d4913fd772089992252d7f942123cc0a034d96424221ba946",
+          "special_tokens_map.json": "2f7b0adf4fb469770bb1490e3e35df87b1dc578246c5e7e6fc76ecf33213a397",
+          "tokenizer.model": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c"
+        },
+        "export_files": {
+          "tokenizer.json": "3bfbe764854336a243cf84e872c5aff1186d843259021ad44225eb78dd43548b",
+          "tokenizer_config.json": "0f070f93ac7f82b53e6d6454007e916fb39683e73043ea6fb42b771e7d4d972d",
+          "added_tokens.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "special_tokens_map.json": "ecf9cd6dc78db029b13247e09bc8e71d8da9fa7263a2039c4a488c14fc7a69a5",
+          "tokenizer.model": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c"
+        },
+        "prompt_parity": {
+          "source": {
+            "rows_checked": 327,
+            "labels_checked": 654,
+            "rendered_prompt_tokens": true,
+            "answer_label_boundaries": true,
+            "add_special_tokens": false,
+            "template_version": "v2"
+          },
+          "export": {
+            "rows_checked": 327,
+            "labels_checked": 654,
+            "rendered_prompt_tokens": true,
+            "answer_label_boundaries": true,
+            "add_special_tokens": false,
+            "template_version": "v2"
+          },
+          "training_data_file": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/train.jsonl",
+          "training_data_sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3"
+        }
+      },
+      "files": {
+        "README.md": "748c964f9b7e5f2c3770ce013bbc0153be7c54311d9692c343b6188eefe77ac6",
+        "added_tokens.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "config.json": "539dd177917a0420d6f87cb38f5df55fa279d198c3f99131b316ccf4039ec8c2",
+        "generation_config.json": "fd9324becc53c4be610db39e13a613006f09fd6ef71a95fb6320dc33157490a3",
+        "model.safetensors": "6ad7b5895b510bafaa4a6c61c595b51a3cf2e29a124ec5f78d8de07872007fc8",
+        "model.safetensors.index.json": "aacc7ce8ce3deede0c488397d550790fccf1b1df31b58f9972b2d0f5b6886aa6",
+        "special_tokens_map.json": "ecf9cd6dc78db029b13247e09bc8e71d8da9fa7263a2039c4a488c14fc7a69a5",
+        "tokenizer.json": "3bfbe764854336a243cf84e872c5aff1186d843259021ad44225eb78dd43548b",
+        "tokenizer.model": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c",
+        "tokenizer_config.json": "0f070f93ac7f82b53e6d6454007e916fb39683e73043ea6fb42b771e7d4d972d"
+      },
+      "memory": {
+        "free_cache_limit_bytes": 268435456,
+        "previous_free_cache_limit_bytes": 97925254348,
+        "clear_after_evaluation_row": true,
+        "clear_after_training_microbatch": true,
+        "clear_after_optimizer_update": true,
+        "max_observed_active_memory_bytes": 3999543816,
+        "max_observed_cache_memory_bytes": 271766836,
+        "peak_memory_bytes": 4809622400,
+        "peak_scope": "since_worker_observer_start",
+        "progress_file": null
+      }
+    }
+  },
+  "exports": {
+    "id": "jev/c11-step-512",
+    "file": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/model-f16.gguf",
+    "sha256": "5dea09a69e6769ff451fa18b8a89814d7e99a326e0c445643714f2f840608599",
+    "size": 2006573408,
+    "converter_revision": "f072b103714dfa1eee531f80b24512faf38e3dd2",
+    "converter_sha256": "e9a1da876330bbce9687541ab31736542a01b4ac43c6686126514a50f122fb7f"
+  }
+}

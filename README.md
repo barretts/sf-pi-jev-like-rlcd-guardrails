@@ -13,39 +13,64 @@ available for shadow comparison and never advertises enforcement eligibility.
 
 ## Local setup
 
-Use Node.js 22.19 or later and npm. The exercised Pi SDK is 0.85.1. The supplied
+Use Git LFS, Node.js 22.19 or later and npm. The exercised Pi SDK is 0.85.1. The supplied
 native scorer supports Apple silicon on macOS 26 or later. Installation and
 cached status do not start inference.
 
 ```sh
+git lfs install
+git clone https://github.com/barretts/sf-pi-jev-guardrails.git
+cd sf-pi-jev-guardrails
+git lfs pull
 npm ci
 npm run build
 npm run verify:guardrail -- --check
 ```
 
+For an existing checkout, run `git lfs install` and `git lfs pull` before using
+the model. Git LFS stores the large bundle artifacts; a checkout containing
+only their pointer files cannot score operations.
+
 The last command checks frozen training inputs, current metadata checksums and
 the selected scoring identity without loading model weights.
-The default bundle is `~/Desktop/Jev-C11-Step256-Model-2026-09-23`. The provider
-uses its `model.gguf` and `runtime/.build/jev-native` directly. If the folder has
-moved, set `JEV_GUARDRAIL_BUNDLE` to its new path before starting Pi or a smoke
-check. Keep the bundle's files and notices together. No second trained model
-copy is stored in this repository.
+The default bundle is
+`models/Jev-C11-Step256-Model-2026-09-23/`, resolved from the installed package
+directory rather than the shell's working directory. The provider uses its
+`model.gguf` and `runtime/.build/jev-native` directly. The complete 64-file
+Desktop bundle is versioned here with its original bytes: the merged model,
+checkpoint adapters and recovery material, receipts, standalone runtime,
+demo, model cards, terms and licenses. The original Desktop copy is retained.
+Keep the bundle's files and notices together. To use a copy elsewhere, set
+`JEV_GUARDRAIL_BUNDLE` before starting Pi or a smoke check.
 
 ```sh
-export JEV_GUARDRAIL_BUNDLE='/absolute/path/Jev-C11-Step256-Model-2026-09-23'
 export JEV_DEVICE='metal' # auto, cpu, or metal
 npm run smoke
 ```
 
 The smoke check loads the real local model and scores a harmless operation as
-data; it does not execute that operation. The Desktop `demo.mjs` is also a
-standalone example. `node demo.mjs --check` in that folder checks identity
-without inference. A different platform needs a native rebuild and separate
-verification; the saved provider pins the supplied executable's identity.
+data; it does not execute that operation. The bundle's standalone demo also
+works without installing npm dependencies; its `README.md` describes usage.
+`node demo.mjs --check` in that folder
+checks identity without inference. A different platform needs a native rebuild
+and separate verification; the saved provider pins the supplied executable's
+identity.
+
+The npm source package intentionally excludes the large model bundle and its
+compiled native runtime. `npm pack` and installations from its tarball need a
+separate, complete bundle and an explicit path:
+
+```sh
+export JEV_GUARDRAIL_BUNDLE='/absolute/path/Jev-C11-Step256-Model-2026-09-23'
+```
+
+A Git clone with LFS objects downloaded contains everything needed for the
+saved scorer on its supported platform. Fresh training still requires the
+pinned original Google HF base and the training environment described below.
 
 ## Pi and SF Pi
 
-Install the built `sf-pi-jev-guardrails` package in Pi:
+Install the built Git checkout in Pi so its bundled model remains available:
 
 ```sh
 pi install "$PWD"
@@ -100,7 +125,8 @@ remain excluded.
 The local original HF snapshot is retained at the stable ignored path below.
 Keep its cache tree and shared blobs together so its relative links resolve.
 The current staged FIT workflow uses this HF checkpoint and preserved prepared
-FIT bytes.
+FIT bytes. A fresh clone must obtain that exact HF revision separately under
+the Gemma terms; the saved merged bundle does not include the original HF base.
 
 ```sh
 task_base_hf="$PWD/.build/huggingface/hub/models--google--gemma-3-1b-it/snapshots/dcc83ea841ab6100d6b47a070329e1ba4cf78752"

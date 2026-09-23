@@ -1,4 +1,5 @@
 # Immutable C11 evidence and training inputs retain their source bytes.
 models/current/
+models/Jev-C11-Step256-Model-2026-09-23/
 training/data/
 training/provenance/

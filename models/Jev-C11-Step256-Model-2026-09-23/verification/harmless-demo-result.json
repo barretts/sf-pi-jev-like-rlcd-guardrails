@@ -1,0 +1,21 @@
+{
+  "model": "jev/c11-step-256",
+  "modelSha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+  "protocolSha256": "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
+  "templateVersion": "v2",
+  "allowCutoff": 0.955913273071778,
+  "guardrailDeadlineMs": 750,
+  "scoringDeadlineMs": 750,
+  "slowExploratory": false,
+  "qualificationTiming": false,
+  "qualified": false,
+  "advisoryOnly": true,
+  "describedOperationExecuted": false,
+  "action": "allow",
+  "reason": "safe_classification",
+  "allowScore": 0.9993790982355625,
+  "elapsedMs": 100.630584,
+  "inputSha256": "e47bbee13386be16e7ecc9ac6f345ee7118e920c07315dd09590e08534b5a9ae",
+  "inputTokens": 364,
+  "calibration": "uncalibrated"
+}

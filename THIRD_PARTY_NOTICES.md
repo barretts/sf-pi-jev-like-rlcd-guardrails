@@ -2,13 +2,16 @@
 
 [LICENSE](./LICENSE) covers this project's first-party code under Apache 2.0.
 Installed dependencies, native-runtime components and model weights keep their
-own licenses. The source package excludes local weights, the vendor checkout
-and compiled native binaries.
+own licenses. The repository includes the byte-preserved trained bundle at
+`models/Jev-C11-Step256-Model-2026-09-23/`, with its weights, compiled native
+scorer, model cards, terms and license texts. Large artifacts use Git LFS.
+The npm source package excludes this bundle, the local vendor checkout and
+compiled native binaries.
 
 | Component                                          | License                                             | Source or retained notice                                                                                                                                                                  |
 | -------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | llama.cpp and ggml                                 | MIT, with notices for incorporated components       | [Pinned revision `f072b103714dfa1eee531f80b24512faf38e3dd2`](https://github.com/ggml-org/llama.cpp/tree/f072b103714dfa1eee531f80b24512faf38e3dd2) and its `LICENSE`                        |
-| nlohmann JSON and native vendor components         | Their respective MIT, BSD and public-domain notices | Exact pinned llama.cpp `vendor/` sources; the Desktop bundle's `licenses/` directory contains the supplied binary's notices                                                                |
+| nlohmann JSON and native vendor components         | Their respective MIT, BSD and public-domain notices | Exact pinned llama.cpp `vendor/` sources; the versioned model bundle's `licenses/` directory contains the supplied binary's notices                                                        |
 | Pi SDK and its installed dependencies              | MIT and dependencies' respective licenses           | [Pi source](https://github.com/earendil-works/pi), installed package license files and dependency lock                                                                                     |
 | MLX and MLX-LM                                     | MIT                                                 | [MLX](https://github.com/ml-explore/mlx), [MLX-LM](https://github.com/ml-explore/mlx-lm); local export environment pins MLX-LM commit `9d1e356e7cc6549e7d1697adabe2ea01ff8e062c`           |
 | Transformers, Hugging Face Hub and safetensors     | Apache 2.0                                          | [Transformers](https://github.com/huggingface/transformers), [Hugging Face Hub](https://github.com/huggingface/huggingface_hub), [safetensors](https://github.com/huggingface/safetensors) |

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "id": "jev/c11-step-512",
+  "file": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/model-f16.gguf",
+  "base_model": "google/gemma-3-1b-it",
+  "base_revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+  "template_version": "v2",
+  "training_run": "rfdt-20260923015205-dfaf55c3",
+  "sha256": "5dea09a69e6769ff451fa18b8a89814d7e99a326e0c445643714f2f840608599",
+  "size": 2006573408,
+  "run_manifest": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923/.build/guardrail/candidate-11-step-512-local-v1/manifest.json"
+}

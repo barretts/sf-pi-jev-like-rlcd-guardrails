@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-09-23T04:33:56.011492+00:00",
+  "removedWorktrees": [
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923",
+      "branch": "barretts/jev-c11-score-20260923",
+      "commit": "85b12f998141081ebd9199982541a7a50520724f",
+      "allocatedBytes": 116047872
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923",
+      "branch": "barretts/jev-c11-supervision-20260923",
+      "commit": "129b563862258c0371c7b82a35f7009209b5c21d",
+      "allocatedBytes": 7316971520
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923",
+      "branch": "barretts/jev-c11-step256-f16-import-20260923",
+      "commit": "6136d18fc03465a5585144d24f465f7f3bfa504d",
+      "allocatedBytes": 6211067904
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-step512-f16-import-20260923",
+      "branch": "barretts/jev-c11-step512-f16-import-20260923",
+      "commit": "6136d18fc03465a5585144d24f465f7f3bfa504d",
+      "allocatedBytes": 6167470080
+    },
+    {
+      "path": "/private/tmp/simple-jev-ts-c11-f16-first-20260923",
+      "branch": "barretts/jev-c11-f16-first-20260923",
+      "commit": "be4c59fa4314e01d6d243a14d108e0c61160d27b",
+      "allocatedBytes": 109363200
+    }
+  ],
+  "removedStagingFolders": 2,
+  "pushedCommit": "85b12f998141081ebd9199982541a7a50520724f",
+  "mainCheckout": "/Users/bsonntag/code/simple-jev-ts",
+  "mainCheckoutStatusUnchanged": true,
+  "allOtherWorktreeRegistrationsUnchanged": true,
+  "allRemovedBranchesRetained": true,
+  "desktopModelBundle": "/Users/bsonntag/Desktop/Jev-C11-Step256-Model-2026-09-23",
+  "modelPreserved": true,
+  "allocatedBytesRemoved": 19920920576,
+  "diskAvailableBeforeBytes": 75989831680,
+  "diskAvailableAfterBytes": 95918292992,
+  "observedDiskAvailableIncreaseBytes": 19928461312,
+  "windowsAccessed": false
+}

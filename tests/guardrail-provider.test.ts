@@ -1,5 +1,5 @@
-import { homedir } from "node:os";
 import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { NativeBackend } from "../src/backend.js";
 import {
@@ -53,9 +53,11 @@ function fixture(
   return { ...h, backend, createBackend, runtime };
 }
 
-it("selects the portable current bundle, model, registry and guarded runtime limits", () => {
+it("selects the package-contained current bundle, model, registry and guarded runtime limits", () => {
   const config = guardrailConfig({});
-  const bundle = join(homedir(), "Desktop", "Jev-C11-Step256-Model-2026-09-23");
+  const bundle = fileURLToPath(
+    new URL("../models/Jev-C11-Step256-Model-2026-09-23/", import.meta.url),
+  );
   expect(config).toMatchObject({
     modelId: C11.modelId,
     modelFile: join(bundle, "model.gguf"),
@@ -68,6 +70,12 @@ it("selects the portable current bundle, model, registry and guarded runtime lim
     queueTimeoutMs: 750,
     requestTimeoutMs: 750,
     advanced: false,
+  });
+  expect(
+    guardrailConfig({ JEV_GUARDRAIL_BUNDLE: "./moved-bundle" }),
+  ).toMatchObject({
+    modelFile: join(resolve("moved-bundle"), "model.gguf"),
+    binary: join(resolve("moved-bundle"), "runtime", ".build", "jev-native"),
   });
   const overridden = guardrailConfig({
     JEV_GUARDRAIL_BUNDLE: "./moved-bundle",

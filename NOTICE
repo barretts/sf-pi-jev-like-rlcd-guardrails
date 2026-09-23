@@ -12,6 +12,9 @@ clean-room process or resolve rights beyond the first-party implementation.
 
 Google Gemma 3 and its trained derivatives are provided under and subject to
 the Gemma Terms of Use at https://ai.google.dev/gemma/terms.
-Model weights remain local and are not included in the source package.
+The repository includes the trained bundle at
+models/Jev-C11-Step256-Model-2026-09-23, with its original model cards, terms,
+prohibited-use policy and software notices. Large artifacts use Git LFS.
+The npm source package excludes that model bundle and its compiled runtime.
 
 See THIRD_PARTY_NOTICES.md for current software and model provenance.

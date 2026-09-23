@@ -47,8 +47,9 @@ The last command must print `bf363cb549c69f8566be79243b57118de933228a`.
 An arbitrary newer SF Pi checkout may have different source and patch context;
 the recorded reconstruction uses the exact baseline.
 
-Build `sf-pi-jev-guardrails` with `npm ci` and `npm run build`, then install the
-prepared SF Pi host and the package in the intended Pi profile:
+In the `sf-pi-jev-guardrails` checkout, run `git lfs install` and `git lfs pull`
+to download the bundled artifacts, then build with `npm ci` and `npm run build`.
+Install the prepared SF Pi host and this checkout in the intended Pi profile:
 
 ```sh
 pi install /path/to/fresh-sf-pi-guardrails-host
@@ -62,10 +63,14 @@ changing the host mode. The provider loads its model explicitly on warmup or
 when the host starts shadow scoring; status and provider discovery use cached
 state.
 
-The default bundle is `~/Desktop/Jev-C11-Step256-Model-2026-09-23`. Set
-`JEV_GUARDRAIL_BUNDLE` before starting Pi if it has moved. See the repository
-[setup](../../README.md) for artifact pins and retained training inputs.
-The Desktop demo scores proposed operations as data without executing them.
+The default bundle is `models/Jev-C11-Step256-Model-2026-09-23/` inside the
+installed checkout. It contains the byte-preserved Desktop folder, including
+the model and supplied Apple-silicon macOS 26+ scorer. The npm source tarball
+excludes this bundle; tarball consumers must set `JEV_GUARDRAIL_BUNDLE` to a
+separate complete copy before starting Pi. That variable also selects a moved
+bundle. See the repository [setup](../../README.md) for Git LFS instructions,
+artifact pins and retained training inputs. The bundle's standalone demo scores
+proposed operations as data without executing them.
 
 ## Current limits
 

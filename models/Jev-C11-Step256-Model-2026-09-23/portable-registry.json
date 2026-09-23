@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "artifacts": [
+    {
+      "id": "jev/c11-step-256",
+      "revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+      "sha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+      "size": 2006573408,
+      "file": "model.gguf",
+      "base_model": "google/gemma-3-1b-it",
+      "template_version": "v2",
+      "roles": [
+        "classifier"
+      ],
+      "license": "gemma",
+      "training_run": "rfdt-20260923014533-0d8e069e"
+    }
+  ]
+}
