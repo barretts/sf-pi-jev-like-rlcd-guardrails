@@ -1,0 +1,103 @@
+{
+  "accepted": false,
+  "authorExposure": "Seal records inadvertent first-180-line VALID-generator exposure; author-blind independence from VALID is not claimed. The independent rejection is based on request/group effects, not exposure alone.",
+  "caseCount": 94,
+  "criteria": "Disqualify exact original operations, materially identical request or command skeletons, or replay of the same controlled risk change. Literal IDs, group names, template names, target/resource names, and superficial flags do not create independence. Shared broad family alone is not sufficient to reject.",
+  "declaredRelatedGroupCount": 47,
+  "declaredTemplateCount": 94,
+  "frozenComparisonSources": {
+    "calibrationSha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd",
+    "consumedValidSha256": "d7d532c2712bf699133971cb82b0b0c5f21cbe5362a5edd07171b532a58f072f",
+    "fitSha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+    "rubricSha256": "cad1720e8ee31c153985ee98af010671d323917c0ef30c7ebd61c3832b318ae6"
+  },
+  "hostIdentityBoundary": {
+    "currentHostPreflightForThisCorpus": "not_run; source already fails independence",
+    "currentQualificationHostCommit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a",
+    "sealedBaselineIdentitySha256": "4c4f874ef4f19988e7a7db84055ebf28c6d25813723acf2c807934e2c8f15421",
+    "sealedDefaultPolicySha256": "e02e9c0914c1b1395adb0b341d6149b54b0b514c2b86cceab44994b5f6425347",
+    "sealedHostCommit": "4f7fae07f7c04a7ca9f4fdbabc4594a20a8f1d2a"
+  },
+  "independentGroupAndEffectReview": true,
+  "labelReviewReadiness": {
+    "admittedForIndependentScoring": false,
+    "humanLabelReview": "pending",
+    "labelAuthority": "explicit operation-policy rubric plus exact host policy and independent facts; ordinary baseline outputs are not gold",
+    "perCaseLabelsDisclosed": false,
+    "rubricBytesMatchSeal": true
+  },
+  "labelsFromOperationPolicyRubric": true,
+  "manifestSha256": "fc0a1a71113a55dbec1e57cebebee93bb8f4d8a84d1fd8eb801bbad4503b640c",
+  "mechanicalAudit": {
+    "calibration": {
+      "effectSignaturePairs": 2,
+      "exactOperationPairs": 0,
+      "groupPairs": 0,
+      "idPairs": 0,
+      "nearCandidates": 10,
+      "normalizedOperationPairs": 0,
+      "templatePairs": 0
+    },
+    "consumedValid": {
+      "effectSignaturePairs": 19,
+      "exactOperationPairs": 0,
+      "groupPairs": 0,
+      "idPairs": 0,
+      "nearCandidates": 78,
+      "normalizedOperationPairs": 0,
+      "templatePairs": 0
+    },
+    "fit": {
+      "effectSignaturePairs": 6,
+      "exactOperationPairs": 0,
+      "groupPairs": 0,
+      "idPairs": 0,
+      "nearCandidates": 48,
+      "normalizedOperationPairs": 0,
+      "templatePairs": 0
+    },
+    "implementationSha256": "27115bdaf14f24cb10d956a01904678dd63a5d1fbc66cfbce693acafd4605b59",
+    "proofLimit": "Mechanical effect and lexical matches require independent adjudication and include false positives. The rejection rests on the representative manual witnesses below."
+  },
+  "minimumAffectedTestCases": 6,
+  "minimumDisqualifiedCompleteGroups": 3,
+  "modelCalls": 0,
+  "nextAction": "Reject the whole 94-case source as an independent TEST; author a fresh corpus before any model result, independently audit group and effect independence, and create a new seal. Do not cherry-pick a residual subset or choose replacements using model outputs.",
+  "operationsExecuted": 0,
+  "originalTestModified": false,
+  "overlapFree": false,
+  "preflightSha256": "951b9c3d64145b2a69ec2c089fd789870501e0b239876dcb7a03ba3ffba70fb6",
+  "proofLimits": [
+    "This is a dataset independence rejection, not a model score or safety qualification.",
+    "No TEST case bodies, per-case labels, or original group names are in this receipt.",
+    "Machine-authored labels still require the documented human review; current host routing is separate from semantic gold."
+  ],
+  "purpose": "candidate11_independent_test_admission",
+  "representativeRejectionWitnesses": [
+    {
+      "basis": "same_controlled_change_and_materially_identical_command_skeleton",
+      "comparisonSourceGroupSha256": "35382f2d24b5f902f110472343bf9e8840ef7f9c1f99d001e29f74de61ef7daf",
+      "comparisonSplit": "cal",
+      "testGroupSha256": "a4b5beec662132a749c1395e04f1c40a1427525bf88954aa1abb7a753018b5d4"
+    },
+    {
+      "basis": "same_controlled_change_and_materially_identical_command_skeleton",
+      "comparisonSourceGroupSha256": "c5a928cc4f10a7ff80f88f585f5f80793b8e5aba48978de21d53613848c2edf3",
+      "comparisonSplit": "fit",
+      "testGroupSha256": "2d164710ab17d660096b2e8281b0c2785013f83d91e69f262c9870296c9dfe31"
+    },
+    {
+      "basis": "same_controlled_change_and_materially_identical_cross_tool_command_skeleton",
+      "comparisonSourceGroupSha256": "a033622bfec55420089550688b4bcaf764ba73c2555e22c12ee9567a9ea3a2cf",
+      "comparisonSplit": "valid",
+      "testGroupSha256": "24d708ea66c15314664c5db6a027a9db20b145854e3e87bf3ea468cf27185c24"
+    }
+  ],
+  "reviewCompleteness": "rejection_witnesses_sufficient_for_non_admission; remaining near candidates not exhaustively adjudicated",
+  "reviewerDistinctFromAuthor": true,
+  "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+  "sourceSha256": "8c213e77ce3cc92b90133230dedbd0254c287a3256fe914b408a557859e960f1",
+  "status": "rejected_cross_split_replay",
+  "trainingCalls": 0,
+  "version": 1
+}

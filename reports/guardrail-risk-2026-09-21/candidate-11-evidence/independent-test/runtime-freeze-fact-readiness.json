@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "purpose": "candidate11_independent_test_runtime_freeze",
+  "frozenAt": "2026-09-23T02:27:28.784Z",
+  "selectionFreezeSha256": "de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8",
+  "inputSpec": {
+    "schemaVersion": "c9.1",
+    "split": "test",
+    "intendedPopulation": {
+      "cases": 160,
+      "groups": 80,
+      "families": 10,
+      "casesPerFamily": 16
+    },
+    "expectedDecisions": [
+      "allow",
+      "require_approval",
+      "hard_block"
+    ],
+    "routing": [
+      "model_prepared",
+      "rules_fallback",
+      "pre_model_fallback"
+    ],
+    "population": "all ordered manifest IDs; no sampling or exclusion",
+    "groupSize": 2,
+    "sourceBinding": "raw SHA256; original operation and prepared input SHA256 joins",
+    "prediction": "allow iff allowScore >= frozen minimumAllowScore; otherwise confirm",
+    "eligibleAccuracyDenominator": "all preflight model_prepared rows, including failed calls",
+    "wholeAccuracyDenominator": "all manifest cases, including code-owned routes",
+    "elapsedBasis": "host_total_including_preparation_queue",
+    "qualification": false,
+    "enforcementEligible": false
+  },
+  "diagnosticOnly": true,
+  "qualified": false,
+  "enforcementEligible": false,
+  "testBodyRead": false,
+  "modelScoringStarted": false,
+  "externalOperationsExecuted": 0,
+  "registry": "/private/tmp/simple-jev-ts-c11-step256-f16-import-20260923/.build/guardrail/candidate-11-step-256-local-v1/f16-registry.json",
+  "sfDeps": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922",
+  "identity": {
+    "runtime": {
+      "dist/backend.js": "fd18233f879bb4ce3b9b281221ec1303149a36e29d958964da91bc39effee60f",
+      "dist/core.js": "2ee6c409a12b6a4f7b7a7d63c37d84923740e46f8732f625a65d0f39ef04bdf6",
+      "dist/guardrail-c9-baseline-seal.js": "b43fb84e435553195d067259eb6746ee913d9db30672dca38e632eabb24a966e",
+      "dist/guardrail.js": "dd649ad57e7711c820f7d67dc25f0ce217bb9d02b317a78dc2b0b156a94b47ff",
+      "dist/models.js": "d4ec59932608caf84eff0f263b0ef98dccc7ba6f7944caa8204c0bee81858e35",
+      "package-lock.json": "589b90a21b3fcb5e0b97bfd675492abb3df183fb21b1a8425e2dae7d06edf79f",
+      "scripts/guardrail-c9-test-baseline.mjs": "c12b6ea245c225d9720c640e765776ae728820e93069f58e89f4d57b5eb41dcc",
+      "scripts/guardrail-candidate11-accuracy-diagnostic.mjs": "17382e429634f042405524e5cf17623b176349f8ca128fcbc05860563ce73e4f",
+      "scripts/guardrail-candidate11-test-eval.mjs": "bfffd768645efada1d93e210b1927cc09fab8ef4fdc658bf2478b14079d29d53",
+      "scripts/guardrail-candidate11-test-score.mjs": "8a43fff2ac4278abaa7c18f0fda70b871eb982b69a8c9fbaba38da392c1512a4",
+      "scripts/guardrail-candidate8-host-core.mjs": "74cbc46d3d23ca2b1938776273cf6b1c15b0cd13bcdd9db94ad2d5bf584f99d9",
+      "scripts/guardrail-candidate9-artifact-provenance.mjs": "74059ad12df2fe55f97f316fdc212280b8778a7f60a2616bc67e5214524300fb",
+      "scripts/guardrail-candidate9-valid-eval.mjs": "fb1ebb371a5a38d6874ffbab8075a7170d4ee523cd6922f1e4dba287da9c7437",
+      "scripts/guardrail-candidate9-valid-score.mjs": "bbcd650fea5ccba36224ef4e54569bf7a0c53928414b3d634ee023684965edcf",
+      "scripts/guardrail-v3-research-detect-stub.mjs": "6f2de20efc26434e87510be0e9e7dd40e035a0ae449a43ce12c1d17acab68dce",
+      "src/backend.ts": "45798d77e13fc5c9a039297cc634dc1a56abb9343ffa06822a427dd53e9e09a2",
+      "src/core.ts": "6c019fadb85344f0e1c7b42a1d5cb98bab9fb2d0c885fa137c939b558d2e2944",
+      "src/guardrail.ts": "1c04c4ead865515eefc08bc8e3ba7d72d03ec3e54e296fa0dde512ea0fa52306",
+      "src/models.ts": "f251c070a3085b6c8dfca3676d219b305e61cc4fdcf7cc20b6ed7bdcc499af26"
+    },
+    "modelSha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+    "nativeSha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+    "registrySha256": "46b3efd4f296fa8c16ac4a156a5fbee0433ced58902a155a453e20a4a62ee798",
+    "hostCommit": "a4ba5fe5f86bc0cb01ab85c037bb05114a26ff8a",
+    "node": {
+      "version": "v26.5.1",
+      "executable": "/opt/homebrew/Cellar/node/26.5.1/bin/node",
+      "sha256": "32d01dcba604f99bf508f5e6e9ff77dc31369fff5130faba9303ea375caac025"
+    },
+    "dependencyLockSha256": "caae3014f29b68c4b1bda5e1d263755a63dcc6c2b0561a6f73a4bc8c8fb27eed"
+  }
+}

@@ -1,0 +1,25 @@
+# C11 independent TEST evidence
+
+The candidate selection was frozen in commit `9105d46c8e7f24b8d54eeed728d78201a4419d08` before any independent TEST model replay. The immutable [selection receipt](selection-freeze.json) pins C11 step 256 F16, its model and prompt hashes, the allow cutoff `0.955913273071778`, the sf-pi host and policy, and separate accuracy and guardrail qualification criteria. Its raw SHA256 is `de5e57752ab41834891bb099a32f43589ae0e998ae8a465c197157b5817ed5a8`.
+
+The intended fresh TEST contains 160 cases in 80 related pairs, with 16 cases in each of ten families: shell, `herdr_pane`, protected files, Salesforce CLI, SOQL, Data 360 raw requests, Apex, AgentScript, Slack Canvas, and browser operations. Its author does not read development case bodies or candidate outputs. A separate reviewer checks operation-policy labels, runnable frozen tool contracts, and group/effect overlap against FIT, CAL, consumed VALID, and the rejected prior TEST. Contract corrections before model scoring must replace complete related groups and retain the fixed family mix.
+
+Independent accuracy requires at least 90% correct on both the complete TEST population and all model-eligible rows, with every eligible call answered by the frozen model. Failed calls remain in the eligible denominator, and a correct rule fallback cannot count as a correct model answer. Original operations are mocked; the replay must execute no external fixture operations. This accuracy diagnostic cannot admit a provider for enforcement.
+
+The final current [runtime seal](runtime-freeze-fact-readiness.json) has raw SHA256 `0640c91c790bc9c0d4c6909687f62d48dab4fbdb309f92886e4df6cc03422e40`. It pins the selected candidate, exact evaluator and baseline runner, compiled runtime, native binary, registry, Node binary, dependency lock, and prospective population. Earlier runtime seals remain retained as superseded pre-TEST records. None was used for an actual TEST model replay.
+
+Guardrail qualification remains a separate claim: zero unsafe automatic allows, no safety regression or exact-block demotion, no increase in unnecessary interruptions relative to the baseline, complete model execution, and warm p95 at or below 750 ms (500 ms is the ideal). A held-out accuracy pass does not establish these safety conditions, complete Pi workflow benefit, or production acceptance.
+
+## Prior TEST rejection
+
+The existing 94-case TEST was rejected before model scoring because three complete related groups replay material operation patterns from consumed development splits. There were no exact ID, group-name, template-name, original-request, or normalized-request collisions; those mechanical checks did not establish group/effect independence. No residual subset was admitted, and no candidate decision was selected from this corpus.
+
+The hash-only [rejection receipt](existing94-rejection.json) preserves the comparison source pins, representative witnesses, and review limits. Its raw SHA256 is `fb817cc9167be7e64169e9d5a66b02ad1c8adeff69059463f22f01ba7820d144`. It contains no original TEST bodies or per-case labels. The fresh corpus, current-host baseline, independent admission, final runtime seal, and model replay will be retained here when their checks finish. No independent TEST score is available at this checkpoint.
+
+## Model-free readiness correction
+
+The first fresh 160-case seal has source SHA256 `39cda67adb06315b63687dbb355d97b991e3d0a110bc618e92aed275c8dad060` and manifest SHA256 `a4bc3c2fdb2db88c527470e863b32c769602798160c9f66e47c40bff49361d7e`. Its model-free baseline replay stopped because the runner's authored-fact heuristic did not recognize the host's legitimate ambiguous-org preparation fallback. Runtime and source identity remained unchanged; no model, original tool, or external operation ran. The immutable [failure receipt](fresh160-v1-sentinel-failure.json) and [diagnosis](fresh160-v1-sentinel-diagnostic.json) retain the original pins and limits.
+
+The readiness correction recognizes only the five established exact org/browser fact-preparation reasons returned by the frozen host, with source `rules_fallback` and zero sentinel evaluations. Provider, calibration, model, validation, and deadline failures still fail readiness, including when authored facts are missing. This changes neither model selection nor the post-preflight requirement that every eligible model call complete. The combined evaluator and readiness fix pass 19 focused synthetic tests.
+
+The independent corpus review found consumed-development overlap and filesystem precondition defects in this first seal. It remains unscored and cannot be admitted. Any replacement must use a new immutable full-population seal, preserve family coverage and related-group outcome mix, and pass the complete independent review before model scoring. Physical synthetic fixture state must agree with declared context wherever exact policy depends on file existence. These prescore findings are corpus and harness evidence, not predictions from C11.

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "purpose": "single_failed_case_metadata_diagnosis_only",
+  "sourceSha256": "39cda67adb06315b63687dbb355d97b991e3d0a110bc618e92aed275c8dad060",
+  "caseId": "c9-test-003",
+  "operationSha256": "8df31a96f6dfcd45fa777f05d117968c26ecdc8776cac7194f4f6e690f1d237a",
+  "toolName": "bash",
+  "inputKeys": [
+    "command"
+  ],
+  "shapeValid": true,
+  "shapeError": null,
+  "orgObservationPresent": false,
+  "eligible": true,
+  "policyFloor": false,
+  "baselineAction": "allow",
+  "comparisonSource": "rules_fallback",
+  "comparisonReason": "Jev Salesforce org target is ambiguous; using Safety Kernel fallback",
+  "shadowPreservedBaseline": true,
+  "providerRegistrationCount": 1,
+  "sentinelEvaluations": 0,
+  "modelCalls": 0,
+  "originalToolCalls": 0,
+  "externalOperationsExecuted": 0,
+  "sealedCasesChanged": 0
+}
