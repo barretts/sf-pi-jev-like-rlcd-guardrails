@@ -173,23 +173,38 @@ function configuredPolicy(row, readBundledConfig) {
   };
 }
 
-function missingFactFallback(row) {
-  const tool = row.operation.tool;
-  const operation = row.operation.input;
-  const observations = row.fixture?.observations;
-  const shellSf =
-    ["bash", "herdr_pane"].includes(tool) &&
-    /\b(?:sf|sfdx)\s/.test(operation.command ?? "");
-  const nativeOrg =
-    ["sf_apex", "agentscript_lifecycle", "sf_soql"].includes(tool) ||
-    tool.startsWith("data360_");
-  return (
-    ((shellSf || nativeOrg) && !observations?.org) ||
-    (tool === "sf_browser_click" &&
-      (!observations?.browserRef ||
-        observations.browserRef.status !== "fresh" ||
-        !observations?.browserPage))
-  );
+// Exact pre-model fact reasons from the frozen host contract, also checked by
+// verifyCandidate9NonModelRoutes. Authored fixture gaps cannot exempt failures.
+const factPreparationFallbacks = new Set([
+  "Jev Salesforce org target is ambiguous; using Safety Kernel fallback",
+  "Jev org lookup failed; using Safety Kernel fallback",
+  "Jev Salesforce org identity unverified; using Safety Kernel fallback",
+  "Browser reference evidence unavailable before model check",
+  "Jev browser click lacks matching recent reference and page observations; using Safety Kernel fallback",
+]);
+
+export function classifyC9BaselineRouting(
+  row,
+  { sentinelCalls, eligible, policyFloor, comparison },
+) {
+  const routing = sentinelCalls
+    ? "model_prepared"
+    : comparison?.source === "exact_policy"
+      ? "exact_policy"
+      : comparison?.source === "rules_fallback" &&
+          factPreparationFallbacks.has(comparison.reason)
+        ? "pre_model_fallback"
+        : "rules_fallback";
+  if (
+    !sentinelCalls &&
+    eligible &&
+    !policyFloor &&
+    routing === "rules_fallback"
+  )
+    throw new Error(
+      `C9 eligible request did not reach model-free sentinel: ${row.id}`,
+    );
+  return routing;
 }
 
 async function runtimeIdentity(sfPi, sfDeps) {
@@ -436,17 +451,12 @@ async function main() {
           );
       }
       const comparison = evaluated.comparison;
-      const routing = calls.length
-        ? "model_prepared"
-        : comparison?.source === "exact_policy"
-          ? "exact_policy"
-          : missingFactFallback(row)
-            ? "pre_model_fallback"
-            : "rules_fallback";
-      if (!calls.length && eligible && !floor && routing === "rules_fallback")
-        throw new Error(
-          `C9 eligible request did not reach model-free sentinel: ${row.id}`,
-        );
+      const routing = classifyC9BaselineRouting(row, {
+        sentinelCalls: calls.length,
+        eligible,
+        policyFloor: floor,
+        comparison,
+      });
       rows.push({
         id: row.id,
         groupId: row.group_id,
