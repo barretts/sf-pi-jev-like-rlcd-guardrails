@@ -373,6 +373,30 @@ export async function runC11IndependentTest(values) {
         modelId: selection.model.id,
       }),
     });
+    const rawReplay = Buffer.from(
+      `${JSON.stringify(
+        {
+          version: 1,
+          purpose: "candidate11_independent_test_unvalidated_replay",
+          diagnosticOnly: true,
+          qualified: false,
+          enforcementEligible: false,
+          source: {
+            ...pins,
+            admissionSha256: sha256(admissionRaw),
+            runtimeFreezeSha256: sha256(runtimeRaw),
+            ...providerPins,
+          },
+          replay,
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    await writeFile(resolve(values.output, "raw-replay.json"), rawReplay, {
+      flag: "wx",
+      mode: 0o600,
+    });
     const summary = scoreC11IndependentTest(
       replay.records,
       preflight,
