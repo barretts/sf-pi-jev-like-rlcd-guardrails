@@ -1,0 +1,13 @@
+{
+  "artifact_kind": "post-seal-orchestration-exposure-receipt",
+  "sealed_source_sha256": "79e041057394b2a0a3bcc5f75334efc01e063efdffce30e40e832371fb9820fc",
+  "sealed_manifest_sha256": "de166f4848df8f26ff0cef11673ef42ea128e1c775df7258baaba02114881319",
+  "observer": "/root/fresh_test_author",
+  "surface": "Unsolicited parent orchestration message received after v2 seal execution completed",
+  "scope": "Prior candidate diagnostic aggregate percentages and unsafe count; no request body, per-case prediction, or independent TEST output",
+  "reported_message_purpose": "Parent answered user training-status question and requested seal metadata",
+  "use": "No repair, selection, threshold, rubric, source, fixture or seal changes followed; all corev2 bytes retained unchanged",
+  "stored_metric_values": false,
+  "candidate_or_test_prediction_reports_read": false,
+  "windows_host_accesses": 0
+}
