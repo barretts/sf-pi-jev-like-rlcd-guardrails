@@ -118,7 +118,7 @@ function installOrg(row, cwd, clear, restore) {
   );
 }
 
-function installBrowser(row, sessionId, browser) {
+export function installBrowser(row, sessionId, browser) {
   const ref = row.fixture?.observations?.browserRef;
   const page = row.fixture?.observations?.browserPage;
   if (!page) return;
@@ -138,7 +138,7 @@ function installBrowser(row, sessionId, browser) {
     throw new Error(`Browser observation changed: ${row.id}`);
   if (ref?.status === "stale")
     browser.markLatestBrowserSnapshotStale(sessionId, "fixture-stale-ref");
-  if (ref?.status === "fresh") {
+  if (ref?.status === "fresh" && row.operation.tool === "sf_browser_click") {
     const lookup = browser.findLatestBrowserSnapshotRefLookup(
       sessionId,
       row.operation.input.ref,
@@ -181,6 +181,7 @@ const factPreparationFallbacks = new Set([
   "Jev Salesforce org identity unverified; using Safety Kernel fallback",
   "Browser reference evidence unavailable before model check",
   "Jev browser click lacks matching recent reference and page observations; using Safety Kernel fallback",
+  "Jev browser press lacks live page and focus evidence; using Safety Kernel fallback",
 ]);
 
 export function classifyC9BaselineRouting(

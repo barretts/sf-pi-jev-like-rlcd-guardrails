@@ -16,12 +16,15 @@ const ready = Object.freeze({
   eligible: true,
   policyFloor: false,
 });
+const browserPressFallback =
+  "Jev browser press lacks live page and focus evidence; using Safety Kernel fallback";
 const facts = [
   "Jev Salesforce org target is ambiguous; using Safety Kernel fallback",
   "Jev org lookup failed; using Safety Kernel fallback",
   "Jev Salesforce org identity unverified; using Safety Kernel fallback",
   "Browser reference evidence unavailable before model check",
   "Jev browser click lacks matching recent reference and page observations; using Safety Kernel fallback",
+  browserPressFallback,
 ];
 
 test("exact host fact-preparation fallbacks preserve source, reason, and case", () => {
@@ -79,6 +82,8 @@ test("provider, model, validation, and deadline failures stay failing with missi
     "Invalid, incomplete or late Jev risk prediction",
     "Browser reference or page observation changed during risk evaluation",
     `${facts[0]}: provider error`,
+    `${browserPressFallback}: provider error`,
+    "Jev browser press lacks live page and focus evidence",
   ];
   for (const reason of failures)
     assert.throws(
@@ -97,19 +102,16 @@ test("provider, model, validation, and deadline failures stay failing with missi
 });
 
 test("fact exemptions require rules_fallback and zero sentinel calls", () => {
-  for (const source of ["jev", undefined, "unknown"])
-    assert.throws(
-      () =>
-        classifyC9BaselineRouting(row, {
-          ...ready,
-          comparison: { source, reason: facts[0] },
-        }),
-      /eligible request did not reach model-free sentinel/,
-    );
-  for (const reason of [
-    facts[0],
-    "Jev risk decision exceeded the 750 ms deadline",
-  ])
+  for (const reason of [facts[0], browserPressFallback]) {
+    for (const source of ["jev", undefined, "unknown"])
+      assert.throws(
+        () =>
+          classifyC9BaselineRouting(row, {
+            ...ready,
+            comparison: { source, reason },
+          }),
+        /eligible request did not reach model-free sentinel/,
+      );
     assert.equal(
       classifyC9BaselineRouting(row, {
         ...ready,
@@ -118,6 +120,18 @@ test("fact exemptions require rules_fallback and zero sentinel calls", () => {
       }),
       "model_prepared",
     );
+  }
+  assert.equal(
+    classifyC9BaselineRouting(row, {
+      ...ready,
+      sentinelCalls: 1,
+      comparison: {
+        source: "rules_fallback",
+        reason: "Jev risk decision exceeded the 750 ms deadline",
+      },
+    }),
+    "model_prepared",
+  );
 });
 
 test("exact policies, policy floors, and ineligible operations preserve their routes", () => {
