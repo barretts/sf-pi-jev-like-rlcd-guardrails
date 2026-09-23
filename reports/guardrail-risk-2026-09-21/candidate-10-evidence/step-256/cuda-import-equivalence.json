@@ -1,9 +1,0 @@
-{
-  "rows": 327,
-  "max_probability_delta": 5.863234908143333e-06,
-  "max_margin_delta": 9.250640869140625e-05,
-  "decisive_sign_flips": 0,
-  "max_probability_delta_limit": 0.05,
-  "decisive_margin": 0.5,
-  "ok": true
-}

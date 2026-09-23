@@ -1,9 +1,0 @@
-{
-  "schemaVersion": 1,
-  "name": "evidence.tar.gz",
-  "bytes": 153135,
-  "sha256": "04f7a982bcd1a116413f11f87b7a2d294149791147a0a91a5a890dcd975fa544",
-  "sourceMembersVerified": 16,
-  "rawPromptsExcluded": true,
-  "interpretation": "2 of4 completed workflows; all4 literal answers correct; sf-slack session_start errors in second/fourth SDKsessions. No429. Livecompression validates but integrationfails; fullperformancecomparisonsnull. Capturedprovidercontexts remainlocal."
-}

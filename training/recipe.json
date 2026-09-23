@@ -1,0 +1,74 @@
+{
+  "version": 2,
+  "purpose": "c11_fit_only_cuda_training",
+  "qualified": false,
+  "objective_plan_sha256": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+  "prepared_fit_sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+  "steps": 1024,
+  "checkpoints": [
+    128,
+    256,
+    512,
+    1024
+  ],
+  "precision": {
+    "base": "float32",
+    "lora": "float32",
+    "attention": "eager",
+    "tf32": false
+  },
+  "seed": 42,
+  "learning_rate": 0.0001,
+  "effective_batch": 8,
+  "validation_rows_passed_to_training": 0,
+  "test_rows_passed_to_training": 0,
+  "memory": {
+    "budget_bytes": 8000000000,
+    "allocator_cap_bytes": 6500000000,
+    "stop_dedicated_delta_bytes": 7500000000,
+    "shared_growth_limit_bytes": 128000000,
+    "stop_total_dedicated_bytes": 16000000000
+  },
+  "default_enforcement": "off",
+  "fit_rows": 327,
+  "explicit_pairs": 86,
+  "pair_manifest_sha256": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+  "family_manifest_sha256": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+  "supplement_rows_admitted": 0,
+  "initialization": "original_google_gemma_base_fresh_lora_empty_optimizer",
+  "sampler": {
+    "implementation": "sampler.FitSampler",
+    "pair_fraction": 0.5,
+    "initial_pair_coverage": "one_shuffled_pass_over_all_explicit_pairs",
+    "pair_group_policy": "shuffled_round_robin_over_indivisible_group_ids",
+    "pair_item_policy": "shuffled_round_robin_within_group",
+    "row_label_order": [
+      "allow",
+      "confirm"
+    ],
+    "row_family_policy": "shuffled_round_robin_within_label",
+    "row_item_policy": "shuffled_round_robin",
+    "seed": 42
+  },
+  "source_sha256": {
+    "campaign.py": "47d641e163c08c6c558770e53aa77ad4333be8828bc199467604997de3a3254f",
+    "cuda_train.py": "27cac9af2b351a709a474d108cf943af00145bdac587e761c37c0a4f6d079ede",
+    "contract.py": "c5cf9b0aaa2b2428bd32f9d656e2fff73a557bcb6ef4bac895c4def750a25626",
+    "sampler.py": "e8e58f7a877240d060678214967b13c8fff88757597209998ffb9b189e076865",
+    "gemma_fp32.py": "ce62f5b1928d981c3276776f9100f10f252f3904337774be63a74347b46a5256",
+    "launch.py": "87389a0ca7a85df56a73c49d705bb7a47ffa48468133304e0d869feb9bec5e27",
+    "memory_monitor.py": "bcd779e6d57e8e0d9913be693dc284a4bfae36da28ae861ecc98508f5558690a"
+  },
+  "precision_verification": {
+    "probability_delta_limit": 0.05,
+    "decisive_margin": 0.5,
+    "decisive_flips": 0
+  },
+  "runtime": {
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "transformers": "5.11.0",
+    "safetensors": "0.8.0"
+  },
+  "runtime_profile_basis": "last_documented_windows_wsl_host_2026-09-22_not_recorded_by_historical_c11"
+}

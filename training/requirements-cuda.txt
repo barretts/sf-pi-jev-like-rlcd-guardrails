@@ -1,0 +1,7 @@
+# Last documented Windows/WSL host profile (2026-09-22); not verified against
+# current C11 run receipts, which do not record dependency versions.
+# Training uses original pinned Google Gemma, never a quantized base.
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.10.0+cu128
+transformers==5.11.0
+safetensors==0.8.0

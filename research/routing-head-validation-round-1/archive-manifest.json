@@ -1,9 +1,0 @@
-{
-  "schemaVersion": 1,
-  "name": "evidence.tar.gz",
-  "bytes": 170561,
-  "sha256": "3967ea87c0da6eb35462b4134b68a53f16c6ddb8fce11422917ef37083be3882",
-  "sourceMembersVerified": 16,
-  "externalPythonLauncherPinnedButNotArchived": true,
-  "interpretation": "All180production-completenessfallbacks; zero model requests; usefulness fails; head quality untested"
-}

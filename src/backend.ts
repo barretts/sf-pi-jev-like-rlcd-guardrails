@@ -37,9 +37,9 @@ export function configFromEnv(env: NodeJS.ProcessEnv = process.env): Config {
   const device = env.JEV_DEVICE ?? "auto";
   if (!["auto", "cpu", "metal"].includes(device))
     throw new Error("JEV_DEVICE must be auto, cpu, or metal");
-  const templateVersion = env.JEV_TEMPLATE_VERSION ?? "v1";
-  if (templateVersion !== "v1" && templateVersion !== "v2")
-    throw new Error("JEV_TEMPLATE_VERSION must be v1 or v2");
+  const templateVersion = env.JEV_TEMPLATE_VERSION ?? "v2";
+  if (templateVersion !== "v2")
+    throw new Error("JEV_TEMPLATE_VERSION must be v2");
   return {
     modelFile: env.JEV_MODEL_FILE,
     modelId: env.JEV_MODEL_ID ?? "google/gemma-3-1b-it",
@@ -120,10 +120,7 @@ function configuration(config: Config) {
     throw new Error("Native binary must be a nonempty path");
   if (!["auto", "cpu", "metal"].includes(config.device))
     throw new Error("Unsupported device");
-  if (
-    config.templateVersion !== undefined &&
-    !["v1", "v2"].includes(config.templateVersion)
-  )
+  if (config.templateVersion !== undefined && config.templateVersion !== "v2")
     throw new Error("Unsupported template version");
   for (const [key, maximum] of [
     ["maxModelLen", 32768],

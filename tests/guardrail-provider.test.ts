@@ -1,534 +1,283 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { createHash } from "node:crypto";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import {
-  NativeBackend,
-  configFromEnv,
-  type InferenceAdapter,
-} from "../src/backend.js";
-import { createEventBus } from "@earendil-works/pi-coding-agent";
-import type { Plan } from "../src/core.js";
+import { homedir } from "node:os";
+import { join, resolve } from "node:path";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { NativeBackend } from "../src/backend.js";
 import {
   guardrailConfig,
   registerGuardrailProvider,
 } from "../src/guardrail-extension.js";
+import { GUARDRAIL_PROVIDER_EVENT } from "../src/guardrail.js";
 import {
-  GUARDRAIL_PROTOCOL_SHA256,
-  GUARDRAIL_PROVIDER_EVENT,
-} from "../src/guardrail.js";
-import { selectC8Calibration } from "../src/guardrail-calibration.js";
+  C11,
+  C11_SCORING_PROTOCOL_SHA256,
+} from "../src/guardrail-selection.js";
 import { hashArtifact, verifyArtifact } from "../src/models.js";
-import { registerExtension } from "../src/extension.js";
+import {
+  c11Artifact,
+  deferred,
+  harness,
+  safeInput,
+  worker,
+} from "./guardrail-fixture.js";
 
-vi.mock("../src/models.js", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("../src/models.js")>()),
+vi.mock("../src/models.js", async (original) => ({
+  ...(await original<typeof import("../src/models.js")>()),
   verifyArtifact: vi.fn(),
   hashArtifact: vi.fn(),
 }));
-
-const input = {
-  version: 2 as const,
-  toolName: "bash",
-  input: { command: "git status" },
-  facts: {},
-};
 const verified = vi.mocked(verifyArtifact);
 const hashed = vi.mocked(hashArtifact);
-function artifact(sha256 = "a".repeat(64)) {
-  return { id: "google/gemma-3-1b-it", sha256 } as Awaited<
-    ReturnType<typeof verifyArtifact>
-  >;
-}
-function backend(): InferenceAdapter {
-  return {
-    warmup: vi.fn(async () => {}),
-    compile: vi.fn(async (plan: Plan) => plan),
-    evaluate: vi.fn(async (compiled) => ({
-      logits: Object.fromEntries(
-        (compiled as Plan).questions.map((branch) => [
-          branch.branch_id,
-          Object.fromEntries(
-            branch.output_labels.map((label, index) => [
-              label,
-              index === 0 ? 10 : 0,
-            ]),
-          ),
-        ]),
-      ),
-      input_tokens: 100,
-      metrics: {},
-    })),
-    dispose: vi.fn(async () => {}),
-  };
-}
-function harness() {
-  const commands = new Map<string, any>();
-  const events = new Map<string, any>();
-  const hooks = new Map<string, any>();
-  return {
-    commands,
-    events,
-    hooks,
-    pi: {
-      events: {
-        on: (name: string, handler: unknown) => events.set(name, handler),
-      },
-      registerCommand: (name: string, command: unknown) =>
-        commands.set(name, command),
-      on: (name: string, handler: unknown) => hooks.set(name, handler),
-    } as any,
-  };
-}
-function deferred<T>() {
-  let resolve!: (value: T) => void;
-  let reject!: (error: Error) => void;
-  const promise = new Promise<T>((yes, no) => {
-    resolve = yes;
-    reject = no;
-  });
-  return { promise, resolve, reject };
-}
-
+const cleanup: Array<() => Promise<void>> = [];
 beforeEach(() => {
-  verified.mockReset();
-  verified.mockResolvedValue(artifact());
+  verified.mockReset().mockResolvedValue(c11Artifact());
+  hashed
+    .mockReset()
+    .mockResolvedValue({ sha256: C11.nativeBinarySha256, size: 128 });
 });
-afterEach(() => {
+afterEach(async () => {
+  for (const dispose of cleanup.splice(0)) await dispose();
   vi.useRealTimers();
 });
+function fixture(
+  options: Parameters<typeof registerGuardrailProvider>[1] = {},
+) {
+  const h = harness();
+  const backend = worker();
+  const createBackend = vi.fn(() => backend);
+  const runtime = registerGuardrailProvider(h.pi, {
+    env: {},
+    createBackend,
+    ...options,
+  });
+  cleanup.push(runtime.dispose);
+  return { ...h, backend, createBackend, runtime };
+}
 
-describe("guardrail worker ownership", () => {
-  it("the real /jev disable command disposes the risk worker and re-enable stays lazy", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "jev-risk-disable-"));
-    const commands = new Map<string, any>();
-    const hooks = new Map<string, any[]>();
-    const tools: any[] = [];
-    const pi: any = {
-      events: createEventBus(),
-      registerCommand: (name: string, command: any) =>
-        commands.set(name, command),
-      registerTool: (tool: any) => tools.push(tool),
-      on: (name: string, handler: any) =>
-        hooks.set(name, [...(hooks.get(name) ?? []), handler]),
-      getActiveTools: () => ["read", "jev_classify"],
-      getAllTools: () => [
-        {
-          name: "read",
-          sourceInfo: { source: "builtin", path: "<builtin:read>" },
-        },
-      ],
-      setActiveTools: vi.fn(),
-      appendEntry: vi.fn(),
-      registerEntryRenderer: vi.fn(),
-      sendMessage: vi.fn(),
+it("selects the portable current bundle, model, registry and guarded runtime limits", () => {
+  const config = guardrailConfig({});
+  const bundle = join(homedir(), "Desktop", "Jev-C11-Step256-Model-2026-09-23");
+  expect(config).toMatchObject({
+    modelId: C11.modelId,
+    modelFile: join(bundle, "model.gguf"),
+    binary: join(bundle, "runtime", ".build", "jev-native"),
+    templateVersion: "v2",
+    maxModelLen: 2048,
+    maxBatchSize: 32,
+    maxBatchTokens: 2048,
+    maxRequestBranches: 1,
+    queueTimeoutMs: 750,
+    requestTimeoutMs: 750,
+    advanced: false,
+  });
+  const overridden = guardrailConfig({
+    JEV_GUARDRAIL_BUNDLE: "./moved-bundle",
+    JEV_GUARDRAIL_MODEL_FILE: "/copied/current.gguf",
+    JEV_GUARDRAIL_ARTIFACT_REGISTRY: "/copied/registry.json",
+    JEV_DEVICE: "cpu",
+    JEV_GUARDRAIL_MODEL_ID: "obsolete",
+    JEV_GUARDRAIL_C9_CALIBRATION: "/obsolete/receipt.json",
+  });
+  expect(overridden).toMatchObject({
+    modelFile: "/copied/current.gguf",
+    artifactRegistryPath: "/copied/registry.json",
+    device: "cpu",
+    modelId: C11.modelId,
+    binary: join(resolve("moved-bundle"), "runtime", ".build", "jev-native"),
+  });
+});
+
+it("discovery and status stay lazy and expose the shadow-only current selection", async () => {
+  const h = fixture();
+  const request = { version: 1, providers: [] as any[] };
+  h.pi.events.emit(GUARDRAIL_PROVIDER_EVENT, request);
+  await h.commands.get("jev-risk").handler("status", h.context);
+  expect(request.providers).toEqual([h.runtime.provider]);
+  expect(h.runtime.provider).toMatchObject({
+    version: 2,
+    id: "jev",
+    qualified: false,
+    modelSha256: null,
+    minimumAllowScore: C11.minimumAllowScore,
+    protocolSha256: C11_SCORING_PROTOCOL_SHA256,
+    calibrationSha256: C11.calibrationSha256,
+    calibrationPolicySha256: C11.policySha256,
+    calibrationBaselineSha256: C11.hostBaselineSha256,
+  });
+  expect(Reflect.set(h.runtime.provider, "qualified", true)).toBe(false);
+  expect(Reflect.set(h.runtime.provider, "minimumAllowScore", 0.5)).toBe(false);
+  expect(verified).not.toHaveBeenCalled();
+  expect(hashed).not.toHaveBeenCalled();
+  expect(h.createBackend).not.toHaveBeenCalled();
+  expect(h.pi.registerTool).not.toHaveBeenCalled();
+  expect(h.context.ui.confirm).not.toHaveBeenCalled();
+});
+
+it("uses the exact C11 cutoff with allow, abstain and confirm outcomes without qualification", async () => {
+  let score = 0.98;
+  const backend = worker(
+    async () => {},
+    () => score,
+  );
+  const h = fixture({ createBackend: () => backend });
+  await h.runtime.warmup();
+  for (const [nextScore, action] of [
+    [0.98, "allow"],
+    [0.8, "abstain"],
+    [0.2, "confirm"],
+  ] as const) {
+    score = nextScore;
+    const prediction = await h.runtime.provider.evaluate(safeInput);
+    expect(prediction.action).toBe(action);
+    expect(prediction.calibration).toBe("uncalibrated");
+  }
+  expect(h.runtime.provider.modelSha256).toBe(C11.modelSha256);
+  expect(h.runtime.provider.qualified).toBe(false);
+  expect(h.runtime.provider.qualificationSha256).toBeUndefined();
+  expect(h.runtime.status().state).toBe("ready");
+});
+
+it.each([
+  "id",
+  "sha256",
+  "size",
+  "base_model",
+  "revision",
+  "template_version",
+  "training_run",
+] as const)(
+  "rejects a changed C11 artifact %s before creating a worker",
+  async (field) => {
+    const changed = {
+      ...c11Artifact(),
+      [field]: field === "size" ? 1 : "changed",
     };
-    const context: any = {
-      cwd: join(directory, "project"),
-      hasUI: false,
-      ui: { notify: vi.fn(), setStatus: vi.fn(), setWidget: vi.fn() },
-      sessionManager: {
-        getSessionId: () => "stub-session",
-        getBranch: () => [],
-        getEntries: () => [],
-      },
-    };
-    const general = vi.fn(backend);
-    const workers: InferenceAdapter[] = [];
-    const controller = registerExtension(pi, configFromEnv(), undefined, {
-      cwd: context.cwd,
-      agentDir: join(directory, "agent"),
-      createBackend: general,
-      guardrailRisk: {
-        env: {},
-        createBackend: () => {
-          const worker = backend();
-          workers.push(worker);
-          return worker;
-        },
-      },
-    });
-    try {
-      await controller.guardrailRisk.warmup();
-      expect(general).not.toHaveBeenCalled();
-      await commands.get("jev").handler("disable project", context);
-      expect(workers[0].dispose).toHaveBeenCalledOnce();
-      expect(controller.guardrailRisk.status().state).toBe("disabled");
-      await commands.get("jev").handler("enable project", context);
-      expect(workers).toHaveLength(1);
-      expect(controller.guardrailRisk.status().state).toBe("cold");
-      await controller.guardrailRisk.warmup();
-      expect(workers).toHaveLength(2);
-      for (const shutdown of hooks.get("session_shutdown") ?? [])
-        await shutdown({}, context);
-      expect(workers[1].dispose).toHaveBeenCalledOnce();
-      expect(general).not.toHaveBeenCalled();
-    } finally {
-      await controller.guardrailRisk.dispose();
-      await rm(directory, { recursive: true, force: true });
-    }
-  });
-  it("keeps risk configuration separate and status/discovery never loads weights", async () => {
-    const h = harness();
-    const createBackend = vi.fn(backend);
-    const extension = registerGuardrailProvider(h.pi, {
-      env: {},
-      createBackend,
-    });
-    expect(
-      guardrailConfig({
-        JEV_MODEL_ID: "general-only",
-        JEV_MODEL_FILE: "/general/model.gguf",
-      }).modelId,
-    ).toBe("google/gemma-3-1b-it");
-    const providers = { version: 1, providers: [] };
-    h.events.get(GUARDRAIL_PROVIDER_EVENT)(providers);
-    await h.commands
-      .get("jev-risk")
-      .handler("status", { ui: { notify: vi.fn() } });
-    expect(extension.status()).toMatchObject({
-      state: "cold",
-      qualified: false,
-      modelSha256: null,
-    });
-    expect(providers.providers).toHaveLength(1);
-    expect(verified).not.toHaveBeenCalled();
-    expect(createBackend).not.toHaveBeenCalled();
-  });
+    verified.mockResolvedValue(changed);
+    const h = fixture();
+    await expect(h.runtime.warmup()).rejects.toThrow("pinned C11");
+    expect(h.createBackend).not.toHaveBeenCalled();
+    expect(h.runtime.provider.modelSha256).toBeNull();
+  },
+);
 
-  it("loads a pinned TRAIN-selected C8 threshold for shadow scoring without qualification", async () => {
-    const directory = await mkdtemp(join(tmpdir(), "jev-c8-provider-"));
-    const receiptPath = join(directory, "train-cutoff.json");
-    const pin = (value: string) => value.repeat(64);
-    hashed.mockResolvedValue({ sha256: pin("b"), size: 123 });
-    const receipt = selectC8Calibration({
-      version: 1,
-      purpose: "candidate8_train_calibration_only",
-      modelSha256: pin("a"),
-      nativeBinarySha256: pin("b"),
-      promptProtocolSha256: GUARDRAIL_PROTOCOL_SHA256,
-      baselineSha256: pin("c"),
-      policySha256: pin("d"),
-      baselineReceiptSha256: pin("e"),
-      admissionSha256: pin("f"),
-      fitSha256: pin("1"),
-      calibrationCorpusSha256: pin("2"),
-      fitGroups: ["fit"],
-      cases: [
-        { id: "safe", groupId: "cal", expected: "allow" },
-        { id: "risk", groupId: "cal", expected: "confirm" },
-      ],
-      records: [
-        {
-          id: "safe",
-          groupId: "cal",
-          expected: "allow",
-          baseline: "allow",
-          gate: "prepared",
-          modelAnswered: true,
-          allowScore: 0.99,
-          inputSha256: pin("3"),
-          elapsedMs: 20,
-        },
-        {
-          id: "risk",
-          groupId: "cal",
-          expected: "confirm",
-          baseline: "allow",
-          gate: "prepared",
-          modelAnswered: true,
-          allowScore: 0.8,
-          inputSha256: pin("4"),
-          elapsedMs: 21,
-        },
-      ],
-    });
-    const bytes = JSON.stringify(receipt);
-    await writeFile(receiptPath, bytes);
-    const extension = registerGuardrailProvider(harness().pi, {
-      env: {
-        JEV_GUARDRAIL_CALIBRATION: receiptPath,
-        JEV_GUARDRAIL_CALIBRATION_SHA256: createHash("sha256")
-          .update(bytes)
-          .digest("hex"),
-      },
-      createBackend: backend,
-    });
-    try {
-      await extension.warmup();
-      expect(extension.provider).toMatchObject({
-        version: 2,
-        qualified: false,
-        minimumAllowScore: receipt.minimumAllowScore,
-        protocolSha256: receipt.scoringProtocolSha256,
-      });
-      expect((await extension.provider.evaluate(input)).action).toBe("allow");
-      expect(extension.status().calibration).toBe(
-        "train_selected_cutoff_unqualified",
-      );
-    } finally {
-      await extension.dispose();
-      await rm(directory, { recursive: true, force: true });
-    }
-  });
+it("rejects an alternate native binary and a binary changed during warmup", async () => {
+  const h = fixture();
+  hashed.mockResolvedValue({ sha256: "a".repeat(64), size: 128 });
+  await expect(h.runtime.warmup()).rejects.toThrow("native binary");
+  expect(h.createBackend).not.toHaveBeenCalled();
+  hashed
+    .mockReset()
+    .mockResolvedValueOnce({ sha256: C11.nativeBinarySha256, size: 128 })
+    .mockResolvedValueOnce({ sha256: C11.nativeBinarySha256, size: 129 });
+  await expect(h.runtime.warmup()).rejects.toThrow("changed during warmup");
+  expect(h.backend.dispose).toHaveBeenCalledOnce();
+  expect(h.runtime.provider.modelSha256).toBeNull();
+});
 
-  it("releases its own warm worker on disable and creates a fresh one after re-enable", async () => {
-    const h = harness();
-    let enabled = true;
-    const workers: InferenceAdapter[] = [];
-    const extension = registerGuardrailProvider(h.pi, {
-      env: {},
-      enabled: () => enabled,
-      createBackend: () => {
-        const worker = backend();
-        workers.push(worker);
-        return worker;
-      },
-    });
-    await extension.warmup();
-    expect((await extension.provider.evaluate(input)).action).toBe("allow");
-    enabled = false;
-    await extension.reset();
-    expect(workers[0].dispose).toHaveBeenCalledOnce();
-    expect(extension.status()).toMatchObject({
-      state: "disabled",
-      modelSha256: null,
-      qualified: false,
-    });
-    await expect(extension.provider.evaluate(input)).rejects.toThrow(
-      "disabled",
-    );
-    enabled = true;
-    expect(extension.status().state).toBe("cold");
-    await extension.warmup();
-    expect(workers).toHaveLength(2);
-    expect(workers[1]).not.toBe(workers[0]);
-    await h.hooks.get("session_shutdown")();
-    expect(workers[1].dispose).toHaveBeenCalledOnce();
-    await expect(extension.warmup()).rejects.toThrow("disabled");
-  });
+it("rejects incomplete input before any artifact or worker initialization", async () => {
+  const h = fixture();
+  await expect(
+    h.runtime.provider.evaluate({ ...safeInput, input: {} }),
+  ).rejects.toThrow();
+  expect(verified).not.toHaveBeenCalled();
+  expect(h.createBackend).not.toHaveBeenCalled();
+});
 
-  it("disposes during stalled initialization and a retired warmup cannot overwrite a replacement", async () => {
-    const h = harness();
-    const pending = deferred<void>();
-    const first = backend();
-    first.warmup = vi.fn(() => pending.promise);
-    const second = backend();
-    const extension = registerGuardrailProvider(h.pi, {
-      env: {},
-      createBackend: vi
-        .fn()
-        .mockReturnValueOnce(first)
-        .mockReturnValueOnce(second),
-    });
-    const oldWarmup = extension.warmup();
-    const observedOld = expect(oldWarmup).rejects.toThrow("retired");
-    await vi.waitFor(() => expect(first.warmup).toHaveBeenCalled());
-    await extension.reset();
-    expect(first.dispose).toHaveBeenCalledOnce();
-    await observedOld;
-    verified.mockResolvedValue(artifact("b".repeat(64)));
-    await extension.warmup();
-    pending.resolve();
-    await Promise.resolve();
-    expect(extension.provider.modelSha256).toBe("b".repeat(64));
-    expect((await extension.provider.evaluate(input)).action).toBe("allow");
-    await extension.dispose();
-  });
+it("caller cancellation stops waiting without producing a prediction, while shared warmup completes", async () => {
+  const init = deferred();
+  const backend = worker(() => init.promise);
+  const h = fixture({ createBackend: () => backend });
+  const controller = new AbortController();
+  const scoring = h.runtime.provider.evaluate(safeInput, controller.signal);
+  await vi.waitFor(() => expect(backend.warmup).toHaveBeenCalledOnce());
+  controller.abort(new Error("cancelled fixture"));
+  await expect(scoring).rejects.toThrow("cancelled fixture");
+  expect(backend.evaluate).not.toHaveBeenCalled();
+  expect(h.runtime.status().state).toBe("warming");
+  init.resolve();
+  await h.runtime.warmup();
+  expect((await h.runtime.provider.evaluate(safeInput)).action).toBe("allow");
+});
 
-  it("cancels a caller waiting for shared initialization without producing a prediction", async () => {
-    const h = harness();
-    const pending = deferred<void>();
-    const worker = backend();
-    worker.warmup = vi.fn(() => pending.promise);
-    const extension = registerGuardrailProvider(h.pi, {
-      env: {},
-      createBackend: () => worker,
-    });
-    const controller = new AbortController();
-    const result = extension.provider.evaluate(input, controller.signal);
-    const observed = expect(result).rejects.toThrow("caller cancelled");
-    await vi.waitFor(() => expect(worker.warmup).toHaveBeenCalled());
-    controller.abort(new Error("caller cancelled"));
-    await observed;
-    expect(worker.compile).not.toHaveBeenCalled();
-    await extension.dispose();
-    expect(worker.dispose).toHaveBeenCalledOnce();
-    pending.reject(new Error("late initialization failure"));
-    await Promise.resolve();
-  });
-  it("a reset cancels an initializing evaluation before a replacement worker accepts fresh requests", async () => {
-    const h = harness();
-    const pending = deferred<void>();
-    const first = backend();
-    first.warmup = vi.fn(() => pending.promise);
-    const second = backend();
-    const extension = registerGuardrailProvider(h.pi, {
-      env: {},
-      createBackend: vi
-        .fn()
-        .mockReturnValueOnce(first)
-        .mockReturnValueOnce(second),
-    });
-    const operation = extension.provider.evaluate(input);
-    const observed = expect(operation).rejects.toThrow("retired");
-    await vi.waitFor(() => expect(first.warmup).toHaveBeenCalled());
-    await extension.reset();
-    await extension.warmup();
-    await observed;
-    expect(first.compile).not.toHaveBeenCalled();
-    expect(second.compile).not.toHaveBeenCalled();
-    pending.resolve();
-    expect((await extension.provider.evaluate(input)).action).toBe("allow");
-    expect(second.compile).toHaveBeenCalledOnce();
-    await extension.dispose();
-  });
+it("reset interrupts an uncooperative warmup and a retired worker cannot overwrite its replacement", async () => {
+  const init = deferred();
+  const oldWorker = worker(() => init.promise);
+  const nextWorker = worker();
+  const createBackend = vi
+    .fn()
+    .mockReturnValueOnce(oldWorker)
+    .mockReturnValueOnce(nextWorker);
+  const h = fixture({ createBackend });
+  const warming = h.runtime.warmup();
+  await vi.waitFor(() => expect(oldWorker.warmup).toHaveBeenCalledOnce());
+  await h.runtime.reset();
+  await expect(warming).rejects.toThrow("retired");
+  await h.runtime.warmup();
+  init.resolve();
+  await Promise.resolve();
+  expect(oldWorker.dispose).toHaveBeenCalledOnce();
+  expect(h.runtime.status().state).toBe("ready");
+  expect(nextWorker.dispose).not.toHaveBeenCalled();
+});
 
-  it("bounds cold initialization to the check deadline while keeping explicit warmup usable", async () => {
-    const h = harness();
-    const pending = deferred<void>();
-    const worker = backend();
-    worker.warmup = vi.fn(() => pending.promise);
-    const extension = registerGuardrailProvider(h.pi, {
-      env: {},
-      createBackend: () => worker,
-    });
-    const result = extension.provider.evaluate(input);
-    await expect(result).rejects.toThrow();
-    expect(worker.compile).not.toHaveBeenCalled();
-    pending.resolve();
-    await extension.warmup();
-    expect((await extension.provider.evaluate(input)).action).toBe("allow");
-    await extension.dispose();
-  });
+it("disable hides the provider and disposal rejects later calls", async () => {
+  let enabled = true;
+  const h = fixture({ enabled: () => enabled });
+  await h.runtime.warmup();
+  enabled = false;
+  await h.runtime.reset();
+  const request = { version: 1, providers: [] as any[] };
+  h.pi.events.emit(GUARDRAIL_PROVIDER_EVENT, request);
+  expect(request.providers).toHaveLength(0);
+  expect(h.runtime.status().state).toBe("disabled");
+  await expect(h.runtime.provider.evaluate(safeInput)).rejects.toThrow(
+    "disabled",
+  );
+  enabled = true;
+  await h.runtime.warmup();
+  await h.runtime.dispose();
+  expect(h.runtime.status().state).toBe("disposed");
+  await expect(h.runtime.warmup()).rejects.toThrow("disabled");
+});
 
-  it("recovers after a failed initialization and rejects malformed worker scoring", async () => {
-    const h = harness();
-    const worker = backend();
-    vi.mocked(worker.warmup).mockRejectedValueOnce(
-      new Error("worker unavailable"),
-    );
-    const extension = registerGuardrailProvider(h.pi, {
-      env: {},
-      createBackend: () => worker,
-    });
-    await expect(extension.warmup()).rejects.toThrow("worker unavailable");
-    expect(extension.provider.qualified).toBe(false);
-    await extension.warmup();
-    expect((await extension.provider.evaluate(input)).action).toBe("allow");
-    vi.mocked(worker.evaluate).mockResolvedValueOnce({
-      logits: {},
-      input_tokens: 100,
-      metrics: {},
-    });
-    await expect(extension.provider.evaluate(input)).rejects.toThrow(
-      "Missing or unexpected branch logits",
-    );
-    expect((await extension.provider.evaluate(input)).action).toBe("allow");
-    await extension.dispose();
+it("invalidates a native worker whose generation or loaded model changes", async () => {
+  const native = new NativeBackend(guardrailConfig({}));
+  let generation = 1;
+  let modelSha = C11.modelSha256;
+  Object.defineProperty(native, "isReady", { get: () => true });
+  Object.defineProperty(native, "status", {
+    get: () => ({ generation, artifact: { sha256: modelSha } }),
   });
+  const fake = worker();
+  vi.spyOn(native, "warmup").mockImplementation(async () => {});
+  vi.spyOn(native, "compile").mockImplementation(fake.compile);
+  vi.spyOn(native, "evaluate").mockImplementation(async (compiled, signal) => {
+    const result = await fake.evaluate(compiled, signal);
+    generation++;
+    modelSha = "a".repeat(64);
+    return result;
+  });
+  vi.spyOn(native, "dispose").mockImplementation(async () => {});
+  const h = fixture({ createBackend: () => native });
+  await h.runtime.warmup();
+  await expect(h.runtime.provider.evaluate(safeInput)).rejects.toThrow(
+    "identity changed",
+  );
+  expect(h.runtime.provider.modelSha256).toBeNull();
+  expect(native.dispose).toHaveBeenCalledOnce();
+});
 
-  it("discards a recovered native worker if its loaded artifact changed", async () => {
-    const h = harness();
-    let loadedSha256 = "a".repeat(64);
-    let worker!: NativeBackend;
-    const extension = registerGuardrailProvider(h.pi, {
-      env: {},
-      createBackend: (config) => {
-        worker = new NativeBackend(config);
-        const initial = worker.status;
-        const stub = backend();
-        vi.spyOn(worker, "isReady", "get").mockReturnValue(true);
-        vi.spyOn(worker, "warmup").mockImplementation(stub.warmup);
-        vi.spyOn(worker, "compile").mockImplementation(stub.compile);
-        vi.spyOn(worker, "evaluate").mockImplementation(stub.evaluate);
-        vi.spyOn(worker, "dispose");
-        vi.spyOn(worker, "status", "get").mockImplementation(() => ({
-          ...initial,
-          state: "ready",
-          generation: 1,
-          artifact: {
-            id: config.modelId,
-            revision: "fixture",
-            sha256: loadedSha256,
-            size: 1,
-            base_model: "google/gemma-3-1b-it",
-            template_version: "v2",
-          },
-        }));
-        return worker;
-      },
-    });
-    await extension.warmup();
-    expect((await extension.provider.evaluate(input)).action).toBe("allow");
-    loadedSha256 = "b".repeat(64);
-    await expect(extension.provider.evaluate(input)).rejects.toThrow(
-      "changed during worker recovery",
-    );
-    expect(extension.provider.modelSha256).toBeNull();
-    expect(extension.provider.qualified).toBe(false);
-    expect(worker.dispose).toHaveBeenCalledOnce();
-    await extension.dispose();
+it("records hostile initialization errors without invoking a message getter", async () => {
+  let calls = 0;
+  const error = new Error();
+  Object.defineProperty(error, "message", {
+    get() {
+      calls++;
+      return "hostile";
+    },
   });
-
-  it("rejects incomplete input before starting initialization", async () => {
-    const h = harness();
-    const createBackend = vi.fn(backend);
-    const extension = registerGuardrailProvider(h.pi, {
-      env: {},
-      createBackend,
-    });
-    await expect(
-      extension.provider.evaluate({ ...input, toolName: "sf_apex" }),
-    ).rejects.toThrow("incomplete");
-    expect(verified).not.toHaveBeenCalled();
-    expect(createBackend).not.toHaveBeenCalled();
-  });
-  it("records hostile initialization errors without invoking a message getter", async () => {
-    const h = harness();
-    const getter = vi.fn(() => {
-      throw new Error("message getter must not execute");
-    });
-    const hostile = Object.defineProperty(new Error(), "message", {
-      get: getter,
-    });
-    verified.mockRejectedValue(hostile);
-    const extension = registerGuardrailProvider(h.pi, {
-      env: {},
-      createBackend: vi.fn(backend),
-    });
-    await expect(extension.warmup()).rejects.toBe(hostile);
-    expect(extension.status().lastError).toBe(
-      "Guardrail initialization failed",
-    );
-    const notify = vi.fn();
-    await h.commands.get("jev-risk").handler("warmup", { ui: { notify } });
-    expect(notify).toHaveBeenCalledWith("Jev guardrail warmup failed", "error");
-    expect(getter).not.toHaveBeenCalled();
-    await extension.dispose();
-  });
-
-  it("records hostile disposal errors without throwing from its cleanup observer", async () => {
-    const h = harness();
-    const worker = backend();
-    const getter = vi.fn(() => {
-      throw new Error("message getter must not execute");
-    });
-    const hostile = Object.defineProperty(new Error(), "message", {
-      get: getter,
-    });
-    vi.mocked(worker.dispose).mockRejectedValue(hostile);
-    const extension = registerGuardrailProvider(h.pi, {
-      env: {},
-      createBackend: () => worker,
-    });
-    await extension.warmup();
-    await expect(extension.reset()).rejects.toBe(hostile);
-    expect(extension.status().lastError).toBe(
-      "Guardrail worker disposal failed",
-    );
-    expect(getter).not.toHaveBeenCalled();
-    await expect(extension.dispose()).rejects.toBe(hostile);
-  });
+  verified.mockRejectedValue(error);
+  const h = fixture();
+  await expect(h.runtime.warmup()).rejects.toBe(error);
+  expect(h.runtime.status().lastError).toBe("Guardrail initialization failed");
+  expect(calls).toBe(0);
 });

@@ -1,42 +1,35 @@
-# Third-party software and models
+# Third-party software and model notices
 
-The Apache 2.0 license in LICENSE covers this project's first-party code.
-Installed dependencies, native-runtime components, models, and templates
-retain their own licenses. This source package does not redistribute weights,
-the native vendor checkout, or built native executables.
+[LICENSE](./LICENSE) covers this project's first-party code under Apache 2.0.
+Installed dependencies, native-runtime components and model weights keep their
+own licenses. The source package excludes local weights, the vendor checkout
+and compiled native binaries.
 
-| Component                                        | License            | Source                                                                                      |
-| ------------------------------------------------ | ------------------ | ------------------------------------------------------------------------------------------- |
-| llama.cpp and ggml                               | MIT                | https://github.com/ggml-org/llama.cpp/blob/f072b103714dfa1eee531f80b24512faf38e3dd2/LICENSE |
-| nlohmann JSON                                    | MIT                | https://github.com/nlohmann/json/blob/develop/LICENSE.MIT                                   |
-| Fastify, Swagger and Swagger UI plugins          | MIT                | Installed package LICENSE files                                                             |
-| TypeBox                                          | MIT                | Installed package license file                                                              |
-| pi SDK, agent core and TUI                       | MIT                | https://github.com/earendil-works/pi                                                        |
-| MLX and MLX-LM                                   | MIT                | https://github.com/ml-explore/mlx and https://github.com/ml-explore/mlx-lm                  |
-| Transformers                                     | Apache 2.0         | https://github.com/huggingface/transformers                                                 |
-| PyTorch, used for GGUF conversion                | BSD-style          | https://github.com/pytorch/pytorch/blob/main/LICENSE                                        |
-| Google Gemma 3 1B/4B and trained derivatives     | Gemma Terms of Use | https://ai.google.dev/gemma/terms                                                           |
-| Google Gemma 4 QAT weights and official template | Apache 2.0         | Pinned Google model repositories in models/registry.json                                    |
+| Component                                          | License                                             | Source or retained notice                                                                                                                                                                  |
+| -------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| llama.cpp and ggml                                 | MIT, with notices for incorporated components       | [Pinned revision `f072b103714dfa1eee531f80b24512faf38e3dd2`](https://github.com/ggml-org/llama.cpp/tree/f072b103714dfa1eee531f80b24512faf38e3dd2) and its `LICENSE`                        |
+| nlohmann JSON and native vendor components         | Their respective MIT, BSD and public-domain notices | Exact pinned llama.cpp `vendor/` sources; the Desktop bundle's `licenses/` directory contains the supplied binary's notices                                                                |
+| Pi SDK and its installed dependencies              | MIT and dependencies' respective licenses           | [Pi source](https://github.com/earendil-works/pi), installed package license files and dependency lock                                                                                     |
+| MLX and MLX-LM                                     | MIT                                                 | [MLX](https://github.com/ml-explore/mlx), [MLX-LM](https://github.com/ml-explore/mlx-lm); local export environment pins MLX-LM commit `9d1e356e7cc6549e7d1697adabe2ea01ff8e062c`           |
+| Transformers, Hugging Face Hub and safetensors     | Apache 2.0                                          | [Transformers](https://github.com/huggingface/transformers), [Hugging Face Hub](https://github.com/huggingface/huggingface_hub), [safetensors](https://github.com/huggingface/safetensors) |
+| PyTorch, used by CUDA training and GGUF conversion | BSD-style, with incorporated component notices      | [PyTorch](https://github.com/pytorch/pytorch) and installed package notices                                                                                                                |
+| Google Gemma 3 1B Instruct and C11 derivatives     | Gemma Terms of Use                                  | [Gemma terms](https://ai.google.dev/gemma/terms), bundle `GemmaTerms.txt`, `PROHIBITED_USE_POLICY.txt` and model notices                                                                   |
 
-Native builds fetch the exact llama.cpp revision. Dependency installation
-preserves the dependencies' license files. If redistributing a built executable
-or dependencies, preserve all relevant notices from the exact build inputs;
-this inventory does not replace their license texts.
+The optional Pi peer supplies the extension host API. Guardrail inference uses
+Node built-ins and the separate native executable; local training/export uses
+the pinned Python environment. Installing dependencies preserves their license
+files. This inventory does not replace those license texts or the additional
+notices incorporated in a built executable.
 
-Gemma 3 terms and access requirements also apply to exported RFDT artifacts.
-Artifacts stay local by default and are excluded from Git and npm packaging.
-Training/export manifests identify modifications, base lineage and checksums;
-the code license does not relicense model weights.
+Native builds fetch the exact llama.cpp revision above. When sharing a native
+binary, preserve the relevant notices from that build's inputs. The supplied
+Apple-silicon binary's bundle carries llama.cpp/ggml, CPU/Metal, nlohmann JSON,
+cpp-httplib, rotate-bits, xxHash, SHA-1/SHA-256, subprocess and related notices.
 
-The optional Gemma 3 4B Instruct classifier candidate uses the F16 GGUF
-conversion published by ggml-org, pinned to revision
-`d0976223747697cb51e056d85c532013931fe52e` in the model registry. Its
-[publisher model card](https://huggingface.co/ggml-org/gemma-3-4b-it-GGUF/blob/d0976223747697cb51e056d85c532013931fe52e/README.md)
-identifies [Google Gemma 3 4B Instruct](https://huggingface.co/google/gemma-3-4b-it)
-as the base model and carries the Gemma license. The classifier uses text
-inference; the separate image projection artifact is not downloaded.
-Downloading requires explicit acceptance of the external Gemma Terms of Use.
-The public GGUF endpoint does not grant or automatically accept access to
-Google's separately gated training checkpoint. Gemma 3 1B remains the default;
-this registry entry permits an explicit candidate selection and does not
-establish validation, test, or promotion results.
+The original training checkpoint is `google/gemma-3-1b-it` at revision
+`dcc83ea841ab6100d6b47a070329e1ba4cf78752`. C11 `jev/c11-step-256` is a fully
+merged, locally trained derivative; its model card records the changes, base
+lineage, checksum and qualification limits.
+Gemma terms and access requirements also apply to exported C11 artifacts.
+The code license does not relicense weights. Keep the model card, terms,
+prohibited-use policy and third-party notices with any shared model bundle.

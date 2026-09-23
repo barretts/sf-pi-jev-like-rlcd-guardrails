@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "rows": 327,
+  "max_margin_delta": 0.0,
+  "margin_delta_limit": 1e-05,
+  "adapter_sha256": "91e6d3a90369d90f34fd760c52dc27c97212087ede99aea9f8c861723bbe06b2",
+  "fit_margins_sha256": "641d293d3c12a3d64458b032936961d010da792d35f688c3df4ce4952e778278",
+  "precision": {
+    "base": "float32",
+    "lora": "float32",
+    "attention": "eager",
+    "tf32": false
+  }
+}

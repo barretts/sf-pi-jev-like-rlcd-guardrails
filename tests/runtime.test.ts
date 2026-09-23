@@ -329,7 +329,7 @@ it("enforces the active classification deadline through native cancellation", as
   const result = await classifier.classify(input);
   expect(result.answers.color).toMatchObject({ type: "choice", choice: "red" });
   expect(result.metadata).toMatchObject({
-    template_version: "v1",
+    template_version: "v2",
     model_revision: "fixture-google-gemma-revision",
     device: "cpu",
     native_build: { commit: "fixture-native-commit" },

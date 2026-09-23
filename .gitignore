@@ -4,9 +4,7 @@ dist/
 .build/
 models/*.gguf
 models/*.part
-.build-log
-.pi-test/
-.jev/
-models/*.jinja
 __pycache__/
 *.py[cod]
+.DS_Store
+*.tgz

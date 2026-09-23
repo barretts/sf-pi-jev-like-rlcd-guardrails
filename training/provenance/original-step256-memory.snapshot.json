@@ -1,0 +1,10 @@
+{
+  "checkpoint_receipt_sha256": "a4c587f3ff0625bca1604f7e955bb05171455bde25995b10cf36e96e321ad7dd",
+  "checkpoint_step": 256,
+  "worker_pid": 23424,
+  "worker_sha256": "b840cb0097d47418bb0f050572b3e1f74c335867c0ff7602f09c2933771b90c4",
+  "monitor_sha256": "3b532d0f0053157cfb31b6b4b108b63a2a54a6d724dcf95a236c5c04b5b518d5",
+  "journal_sha256": "58a83df2fa9e5950fe607e7d64bb18a58f915e0059e267e30ea3984aeb06d420",
+  "snapshot_time_unix": 1790125115.4290166,
+  "producer_sha256": "5abc631c362c8c9f67efca80ba693da0c73b8187856cc30f59d198397deaa841"
+}

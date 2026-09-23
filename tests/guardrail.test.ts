@@ -9,11 +9,6 @@ import {
   GUARDRAIL_PROTOCOL_SHA256,
   GUARDRAIL_RISK_VERSION,
 } from "../src/guardrail.js";
-import {
-  qualifyGuardrail,
-  verifyGuardrailQualification,
-  type GuardrailEvaluationRecord,
-} from "../src/guardrail-evaluation.js";
 import { registerGuardrailProvider } from "../src/guardrail-extension.js";
 
 const input = {
@@ -467,99 +462,5 @@ describe("guardrail risk classification", () => {
     events.get("sf-guardrail:risk-providers")(discovery);
     expect(discovery.providers).toHaveLength(1);
     expect(extension.provider.qualified).toBe(false);
-  });
-});
-
-describe("guardrail qualification", () => {
-  const identity = {
-    split: "test" as const,
-    modelSha256: "a".repeat(64),
-    corpusSha256: "b".repeat(64),
-    baselineSourceSha256: "c".repeat(64),
-  };
-  const records: GuardrailEvaluationRecord[] = [
-    {
-      id: "safe",
-      groupId: "safe",
-      family: "shell",
-      expected: "allow",
-      baseline: "allow",
-      actual: "allow",
-      modelEligible: true,
-      modelAnswered: true,
-      policyFloor: false,
-      elapsedMs: 100,
-    },
-    {
-      id: "risk",
-      groupId: "risk",
-      family: "shell",
-      expected: "confirm",
-      baseline: "confirm",
-      actual: "confirm",
-      modelEligible: true,
-      modelAnswered: true,
-      policyFloor: false,
-      elapsedMs: 150,
-    },
-    {
-      id: "block",
-      groupId: "block",
-      family: "policy",
-      expected: "block",
-      baseline: "block",
-      actual: "block",
-      modelEligible: false,
-      modelAnswered: false,
-      policyFloor: true,
-      elapsedMs: 1,
-    },
-  ];
-  it("requires held-out evidence, safety, usability, latency, and actual model execution", () => {
-    // Unit fixtures alone cannot establish full coverage or frozen selection.
-    expect(qualifyGuardrail(records, identity).qualified).toBe(false);
-    expect(
-      qualifyGuardrail(records, { ...identity, split: "validation" }).qualified,
-    ).toBe(false);
-    for (const changed of [
-      records.map((r) =>
-        r.id === "risk" ? { ...r, actual: "allow" as const } : r,
-      ),
-      records.map((r) =>
-        r.id === "safe" ? { ...r, actual: "confirm" as const } : r,
-      ),
-      records.map((r) =>
-        r.id === "block" ? { ...r, actual: "confirm" as const } : r,
-      ),
-      records.map((r) => ({ ...r, elapsedMs: 751 })),
-      records.map((r) => ({ ...r, modelAnswered: false })),
-      records.map((r) => (r.id === "risk" ? { ...r, error: "timed out" } : r)),
-    ])
-      expect(qualifyGuardrail(changed, identity).qualified).toBe(false);
-  });
-  it("recalculates qualification and refuses stale model/protocol identities", () => {
-    const report = qualifyGuardrail(records, identity);
-    expect(() =>
-      verifyGuardrailQualification(report, identity.modelSha256),
-    ).toThrow();
-    expect(() =>
-      verifyGuardrailQualification(report, "d".repeat(64)),
-    ).toThrow();
-    expect(() =>
-      verifyGuardrailQualification(
-        { ...report, protocolSha256: "d".repeat(64) },
-        identity.modelSha256,
-      ),
-    ).toThrow();
-    expect(() =>
-      verifyGuardrailQualification(
-        {
-          ...report,
-          qualified: true,
-          records: records.map((r) => ({ ...r, modelAnswered: false })),
-        },
-        identity.modelSha256,
-      ),
-    ).toThrow();
   });
 });

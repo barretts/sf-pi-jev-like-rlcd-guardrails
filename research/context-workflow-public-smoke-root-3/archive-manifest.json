@@ -1,9 +1,0 @@
-{
-  "schemaVersion": 1,
-  "name": "evidence.tar.gz",
-  "bytes": 156534,
-  "sha256": "f85b9271ff1192cbc02fd2929a1cc9512cf242eb5067f7f271618490ea971bd2",
-  "sourceMembersVerified": 16,
-  "sfFactories": 0,
-  "scope": "Generated synthetic traces and public Pi SDK instructions only"
-}

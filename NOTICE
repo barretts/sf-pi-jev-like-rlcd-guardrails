@@ -1,19 +1,17 @@
-Simple Jev for TypeScript and pi
+Simple Jev C11 guardrail provider
 Copyright 2026 Barrett Sonntag
 
 First-party code is licensed under the Apache License, Version 2.0.
 Third-party software and model weights retain their respective licenses.
 
-This is an independent rewrite with source inspection permitted. Its v1
-compatibility target is the public Simple Jev classifier contract at commit
-0dd5396ffce671ab7c4bfc031506d8e558cf8d23. V1 prompt fragments intentionally
-preserve that contract. No upstream Python implementation or browser assets
-are distributed by this package. This does not claim a separated clean-room
-process or resolve rights beyond the first-party implementation.
+This is an independent TypeScript implementation developed with documentation
+and source inspection permitted. Its history includes compatibility work for
+the public Simple Jev classifier contract at commit
+0dd5396ffce671ab7c4bfc031506d8e558cf8d23. This does not claim a separated
+clean-room process or resolve rights beyond the first-party implementation.
 
-Google Gemma 3 and its derivatives are provided under and subject to the
-Gemma Terms of Use at https://ai.google.dev/gemma/terms.
-Google Gemma 4 is separately licensed under Apache 2.0.
-Model weights are downloaded explicitly and are not included in this package.
+Google Gemma 3 and its trained derivatives are provided under and subject to
+the Gemma Terms of Use at https://ai.google.dev/gemma/terms.
+Model weights remain local and are not included in the source package.
 
-See THIRD_PARTY_NOTICES.md for software and model provenance.
+See THIRD_PARTY_NOTICES.md for current software and model provenance.

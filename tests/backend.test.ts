@@ -36,3 +36,16 @@ it("validates device selection and diagnostic gating", () => {
     configFromEnv({ ENABLE_OPEN_JEV_ADVANCED_METRICS: "false" }).advanced,
   ).toBe(false);
 });
+it("defaults to the current v2 template and rejects v1 before starting a worker", () => {
+  expect(configFromEnv({}).templateVersion).toBe("v2");
+  expect(() => configFromEnv({ JEV_TEMPLATE_VERSION: "v1" })).toThrow(
+    "JEV_TEMPLATE_VERSION must be v2",
+  );
+  expect(
+    () =>
+      new NativeBackend({
+        ...configFromEnv({}),
+        templateVersion: "v1" as any,
+      }),
+  ).toThrow("Unsupported template version");
+});

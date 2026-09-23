@@ -1,0 +1,1652 @@
+{
+  "purpose": "cuda_export_fit_precision_check_only",
+  "qualified": false,
+  "modelId": "jev/c11-step-256",
+  "modelSha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+  "nativeBinarySha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+  "admitted": 327,
+  "answered": 327,
+  "failure": null,
+  "maxProbabilityDelta": 0.0015098066640104046,
+  "maxProbabilityDeltaLimit": 0.05,
+  "decisiveMargin": 0.5,
+  "decisiveSignFlips": 0,
+  "ok": true,
+  "records": [
+    {
+      "sourceId": "train-shell-directory-list-v1",
+      "referenceMargin": 8.175333023071289,
+      "margin": 8.175625085830688
+    },
+    {
+      "sourceId": "train-shell-directory-list-v2",
+      "referenceMargin": 7.74285888671875,
+      "margin": 7.742782831192017
+    },
+    {
+      "sourceId": "train-shell-directory-list-v3",
+      "referenceMargin": 9.357751846313477,
+      "margin": 9.356865882873535
+    },
+    {
+      "sourceId": "train-shell-print-working-directory-v1",
+      "referenceMargin": 9.10544204711914,
+      "margin": 9.104278564453125
+    },
+    {
+      "sourceId": "train-shell-print-working-directory-v2",
+      "referenceMargin": 9.272345542907715,
+      "margin": 9.268605470657349
+    },
+    {
+      "sourceId": "train-shell-print-working-directory-v3",
+      "referenceMargin": 8.76622200012207,
+      "margin": 8.773571968078613
+    },
+    {
+      "sourceId": "train-shell-source-search-v1",
+      "referenceMargin": 7.154438018798828,
+      "margin": 7.156774520874023
+    },
+    {
+      "sourceId": "train-shell-source-search-v2",
+      "referenceMargin": 6.539113998413086,
+      "margin": 6.5405049324035645
+    },
+    {
+      "sourceId": "train-shell-source-search-v3",
+      "referenceMargin": 6.929012775421143,
+      "margin": 6.9146952629089355
+    },
+    {
+      "sourceId": "train-shell-git-diff-v1",
+      "referenceMargin": 7.067559242248535,
+      "margin": 7.066511154174805
+    },
+    {
+      "sourceId": "train-shell-git-diff-v2",
+      "referenceMargin": 7.533781051635742,
+      "margin": 7.534056186676025
+    },
+    {
+      "sourceId": "train-shell-git-diff-v3",
+      "referenceMargin": 8.905147552490234,
+      "margin": 8.905065059661865
+    },
+    {
+      "sourceId": "train-shell-quoted-sudo-v1",
+      "referenceMargin": 3.975741386413574,
+      "margin": 3.9800710678100586
+    },
+    {
+      "sourceId": "train-shell-quoted-sudo-v2",
+      "referenceMargin": 5.263463020324707,
+      "margin": 5.259521484375
+    },
+    {
+      "sourceId": "train-shell-quoted-sudo-v3",
+      "referenceMargin": 5.94535493850708,
+      "margin": 5.944868564605713
+    },
+    {
+      "sourceId": "train-shell-elevated-service-stop-v1",
+      "referenceMargin": -6.1467132568359375,
+      "margin": -6.137060165405273
+    },
+    {
+      "sourceId": "train-shell-elevated-service-stop-v2",
+      "referenceMargin": -5.238834381103516,
+      "margin": -5.2376909255981445
+    },
+    {
+      "sourceId": "train-shell-elevated-service-stop-v3",
+      "referenceMargin": -8.276029586791992,
+      "margin": -8.282037734985352
+    },
+    {
+      "sourceId": "train-shell-ownership-recursion-v1",
+      "referenceMargin": -7.83030891418457,
+      "margin": -7.841718673706055
+    },
+    {
+      "sourceId": "train-shell-ownership-recursion-v2",
+      "referenceMargin": -7.206752777099609,
+      "margin": -7.20937442779541
+    },
+    {
+      "sourceId": "train-shell-ownership-recursion-v3",
+      "referenceMargin": -10.302274703979492,
+      "margin": -10.304572105407715
+    },
+    {
+      "sourceId": "train-salesforce-bounded-cli-query-v1",
+      "referenceMargin": 6.316958427429199,
+      "margin": 6.315243721008301
+    },
+    {
+      "sourceId": "train-salesforce-bounded-cli-query-v2",
+      "referenceMargin": 6.5578789710998535,
+      "margin": 6.564223766326904
+    },
+    {
+      "sourceId": "train-salesforce-bounded-cli-query-v3",
+      "referenceMargin": 7.539226531982422,
+      "margin": 7.5350341796875
+    },
+    {
+      "sourceId": "c6-dev-train-salesforce-sandbox-account-update-v1",
+      "referenceMargin": 6.662973403930664,
+      "margin": 6.665392875671387
+    },
+    {
+      "sourceId": "c6-dev-train-salesforce-sandbox-account-update-v2",
+      "referenceMargin": 6.860457897186279,
+      "margin": 6.866145133972168
+    },
+    {
+      "sourceId": "c6-dev-train-salesforce-sandbox-account-update-v3",
+      "referenceMargin": 6.626893997192383,
+      "margin": 6.628712177276611
+    },
+    {
+      "sourceId": "c6-dev-train-salesforce-production-permset-assignment-v1",
+      "referenceMargin": -11.034553527832031,
+      "margin": -11.034446716308594
+    },
+    {
+      "sourceId": "c6-dev-train-salesforce-production-permset-assignment-v2",
+      "referenceMargin": -8.260547637939453,
+      "margin": -8.266469955444336
+    },
+    {
+      "sourceId": "c6-dev-train-salesforce-production-permset-assignment-v3",
+      "referenceMargin": -8.125653266906738,
+      "margin": -8.129145622253418
+    },
+    {
+      "sourceId": "train-apex-test-discover-v1",
+      "referenceMargin": 10.643379211425781,
+      "margin": 10.641212463378906
+    },
+    {
+      "sourceId": "train-apex-test-discover-v2",
+      "referenceMargin": 10.880088806152344,
+      "margin": 10.885217666625977
+    },
+    {
+      "sourceId": "train-apex-test-discover-v3",
+      "referenceMargin": 10.713909149169922,
+      "margin": 10.710261821746826
+    },
+    {
+      "sourceId": "train-apex-test-run-v1",
+      "referenceMargin": 9.452583312988281,
+      "margin": 9.45786190032959
+    },
+    {
+      "sourceId": "train-apex-test-run-v2",
+      "referenceMargin": 9.59521484375,
+      "margin": 9.599552631378174
+    },
+    {
+      "sourceId": "train-apex-test-run-v3",
+      "referenceMargin": 9.706755638122559,
+      "margin": 9.712451934814453
+    },
+    {
+      "sourceId": "train-apex-test-result-v1",
+      "referenceMargin": 10.625448226928711,
+      "margin": 10.63084888458252
+    },
+    {
+      "sourceId": "train-apex-test-result-v2",
+      "referenceMargin": 10.848249435424805,
+      "margin": 10.848939776420593
+    },
+    {
+      "sourceId": "train-apex-test-result-v3",
+      "referenceMargin": 11.084373474121094,
+      "margin": 11.096232771873474
+    },
+    {
+      "sourceId": "train-apex-log-latest-v1",
+      "referenceMargin": 11.024438858032227,
+      "margin": 11.026774525642395
+    },
+    {
+      "sourceId": "train-apex-log-latest-v2",
+      "referenceMargin": 11.334527969360352,
+      "margin": 11.335236191749573
+    },
+    {
+      "sourceId": "train-apex-log-latest-v3",
+      "referenceMargin": 11.170769691467285,
+      "margin": 11.174505114555359
+    },
+    {
+      "sourceId": "train-agentscript-versions-v1",
+      "referenceMargin": 11.28762149810791,
+      "margin": 11.29734754562378
+    },
+    {
+      "sourceId": "train-agentscript-versions-v2",
+      "referenceMargin": 11.258733749389648,
+      "margin": 11.266015529632568
+    },
+    {
+      "sourceId": "train-agentscript-versions-v3",
+      "referenceMargin": 11.346549987792969,
+      "margin": 11.350637674331665
+    },
+    {
+      "sourceId": "train-agentscript-user-status-v1",
+      "referenceMargin": 9.342427253723145,
+      "margin": 9.347363948822021
+    },
+    {
+      "sourceId": "train-agentscript-user-status-v2",
+      "referenceMargin": 9.386848449707031,
+      "margin": 9.39208173751831
+    },
+    {
+      "sourceId": "train-agentscript-user-status-v3",
+      "referenceMargin": 9.487321853637695,
+      "margin": 9.497149467468262
+    },
+    {
+      "sourceId": "train-data360-data360_prepare-stream.list-v1",
+      "referenceMargin": 9.216924667358398,
+      "margin": 9.213602066040039
+    },
+    {
+      "sourceId": "train-data360-data360_prepare-stream.list-v2",
+      "referenceMargin": 9.250850677490234,
+      "margin": 9.253485202789307
+    },
+    {
+      "sourceId": "train-data360-data360_prepare-stream.list-v3",
+      "referenceMargin": 9.350229263305664,
+      "margin": 9.344182014465332
+    },
+    {
+      "sourceId": "train-data360-data360_harmonize-dmo_mapping.get-v1",
+      "referenceMargin": 11.389451026916504,
+      "margin": 11.391671895980835
+    },
+    {
+      "sourceId": "train-data360-data360_harmonize-dmo_mapping.get-v2",
+      "referenceMargin": 11.388888359069824,
+      "margin": 11.388082504272461
+    },
+    {
+      "sourceId": "train-data360-data360_harmonize-dmo_mapping.get-v3",
+      "referenceMargin": 11.459541320800781,
+      "margin": 11.460358381271362
+    },
+    {
+      "sourceId": "train-data360-data360_segment-segment.list-v1",
+      "referenceMargin": 10.686570167541504,
+      "margin": 10.691730499267578
+    },
+    {
+      "sourceId": "train-data360-data360_segment-segment.list-v2",
+      "referenceMargin": 10.671304702758789,
+      "margin": 10.675876140594482
+    },
+    {
+      "sourceId": "train-data360-data360_segment-segment.list-v3",
+      "referenceMargin": 10.791383743286133,
+      "margin": 10.797733306884766
+    },
+    {
+      "sourceId": "train-data360-data360_activate-activation_target.list-v1",
+      "referenceMargin": 10.25985336303711,
+      "margin": 10.259904623031616
+    },
+    {
+      "sourceId": "train-data360-data360_activate-activation_target.list-v2",
+      "referenceMargin": 10.288695335388184,
+      "margin": 10.288447618484497
+    },
+    {
+      "sourceId": "train-data360-data360_activate-activation_target.list-v3",
+      "referenceMargin": 10.402681350708008,
+      "margin": 10.399879455566406
+    },
+    {
+      "sourceId": "train-data360-data360_query-sql.status-v1",
+      "referenceMargin": 8.317155838012695,
+      "margin": 8.324347019195557
+    },
+    {
+      "sourceId": "train-data360-data360_query-sql.status-v2",
+      "referenceMargin": 8.211532592773438,
+      "margin": 8.21707534790039
+    },
+    {
+      "sourceId": "train-data360-data360_query-sql.status-v3",
+      "referenceMargin": 8.098394393920898,
+      "margin": 8.102807998657227
+    },
+    {
+      "sourceId": "train-data360-data360_semantic-search_index.list-v1",
+      "referenceMargin": 11.113719940185547,
+      "margin": 11.121181964874268
+    },
+    {
+      "sourceId": "train-data360-data360_semantic-search_index.list-v2",
+      "referenceMargin": 11.146230697631836,
+      "margin": 11.147444486618042
+    },
+    {
+      "sourceId": "train-data360-data360_semantic-search_index.list-v3",
+      "referenceMargin": 11.243673324584961,
+      "margin": 11.250205755233765
+    },
+    {
+      "sourceId": "train-data360-data360_orchestrate-manifest.plan-v1",
+      "referenceMargin": 7.821800231933594,
+      "margin": 7.8287248611450195
+    },
+    {
+      "sourceId": "train-data360-data360_orchestrate-manifest.plan-v2",
+      "referenceMargin": 7.882385730743408,
+      "margin": 7.885258197784424
+    },
+    {
+      "sourceId": "train-data360-data360_orchestrate-manifest.plan-v3",
+      "referenceMargin": 7.940577507019043,
+      "margin": 7.945080757141113
+    },
+    {
+      "sourceId": "train-data360-observed-error-traces-v1",
+      "referenceMargin": 9.748433113098145,
+      "margin": 9.748491287231445
+    },
+    {
+      "sourceId": "train-data360-observed-error-traces-v2",
+      "referenceMargin": 9.613554000854492,
+      "margin": 9.615926265716553
+    },
+    {
+      "sourceId": "train-data360-observed-error-traces-v3",
+      "referenceMargin": 9.66739273071289,
+      "margin": 9.668971061706543
+    },
+    {
+      "sourceId": "train-soql-bounded-account-v1",
+      "referenceMargin": 7.441171646118164,
+      "margin": 7.4436116218566895
+    },
+    {
+      "sourceId": "train-soql-bounded-account-v2",
+      "referenceMargin": 7.231952667236328,
+      "margin": 7.2360029220581055
+    },
+    {
+      "sourceId": "train-soql-bounded-account-v3",
+      "referenceMargin": 7.20988655090332,
+      "margin": 7.213479042053223
+    },
+    {
+      "sourceId": "train-soql-bounded-contact-v1",
+      "referenceMargin": 7.084627151489258,
+      "margin": 7.090960502624512
+    },
+    {
+      "sourceId": "train-soql-bounded-contact-v2",
+      "referenceMargin": 7.327928066253662,
+      "margin": 7.332782745361328
+    },
+    {
+      "sourceId": "train-soql-bounded-contact-v3",
+      "referenceMargin": 7.327007293701172,
+      "margin": 7.3267974853515625
+    },
+    {
+      "sourceId": "train-soql-object-metadata-v1",
+      "referenceMargin": 10.176322937011719,
+      "margin": 10.19704794883728
+    },
+    {
+      "sourceId": "train-soql-object-metadata-v2",
+      "referenceMargin": 11.173992156982422,
+      "margin": 11.187840700149536
+    },
+    {
+      "sourceId": "train-soql-object-metadata-v3",
+      "referenceMargin": 10.816566467285156,
+      "margin": 10.835841178894043
+    },
+    {
+      "sourceId": "train-soql-history-last-v1",
+      "referenceMargin": 12.123210906982422,
+      "margin": 12.12804102897644
+    },
+    {
+      "sourceId": "train-soql-history-last-v2",
+      "referenceMargin": 12.354793548583984,
+      "margin": 12.367269396781921
+    },
+    {
+      "sourceId": "train-soql-history-last-v3",
+      "referenceMargin": 12.264814376831055,
+      "margin": 12.271992087364197
+    },
+    {
+      "sourceId": "train-canvas-read-train-v1",
+      "referenceMargin": 8.652252197265625,
+      "margin": 8.654913902282715
+    },
+    {
+      "sourceId": "train-canvas-read-train-v2",
+      "referenceMargin": 8.851522445678711,
+      "margin": 8.850030422210693
+    },
+    {
+      "sourceId": "train-canvas-read-train-v3",
+      "referenceMargin": 8.781196594238281,
+      "margin": 8.776557922363281
+    },
+    {
+      "sourceId": "c5-draft-canvas-file-info-vs-delete-safe-v1",
+      "referenceMargin": 9.377253532409668,
+      "margin": 9.372353792190552
+    },
+    {
+      "sourceId": "c5-draft-canvas-file-info-vs-delete-risky-v1",
+      "referenceMargin": -11.406333923339844,
+      "margin": -11.400331497192383
+    },
+    {
+      "sourceId": "c5-draft-canvas-file-info-vs-delete-safe-v2",
+      "referenceMargin": 6.6192626953125,
+      "margin": 6.63096809387207
+    },
+    {
+      "sourceId": "c5-draft-canvas-file-info-vs-delete-risky-v2",
+      "referenceMargin": -10.821781158447266,
+      "margin": -10.824331283569336
+    },
+    {
+      "sourceId": "c5-draft-canvas-file-info-vs-delete-safe-v3",
+      "referenceMargin": 6.750949859619141,
+      "margin": 6.755241870880127
+    },
+    {
+      "sourceId": "c5-draft-canvas-file-info-vs-delete-risky-v3",
+      "referenceMargin": -10.638764381408691,
+      "margin": -10.638860702514648
+    },
+    {
+      "sourceId": "c5-draft-diversity-local-salesforce-02-safe",
+      "referenceMargin": 1.0037603378295898,
+      "margin": 1.0046157836914062
+    },
+    {
+      "sourceId": "c5-draft-diversity-local-salesforce-02-risky",
+      "referenceMargin": -0.6357097625732422,
+      "margin": -0.6381378173828125
+    },
+    {
+      "sourceId": "c5-soql-proposal-rest-sample-vs-contact-disclosure-allow",
+      "referenceMargin": 3.1264915466308594,
+      "margin": 3.1295385360717773
+    },
+    {
+      "sourceId": "c5-soql-proposal-rest-bounded-contact-allow",
+      "referenceMargin": 3.8171353340148926,
+      "margin": 3.8197813034057617
+    },
+    {
+      "sourceId": "c5-soql-proposal-rest-sample-vs-contact-disclosure-confirm",
+      "referenceMargin": 1.1937026977539062,
+      "margin": 1.1977643966674805
+    },
+    {
+      "sourceId": "c5-rest-org-prod-get-bash",
+      "referenceMargin": 7.991636276245117,
+      "margin": 7.990545272827148
+    },
+    {
+      "sourceId": "c5-rest-org-prod-post-bash",
+      "referenceMargin": -1.6847209930419922,
+      "margin": -1.6854419708251953
+    },
+    {
+      "sourceId": "c5-rest-org-sandbox-post-bash",
+      "referenceMargin": 0.812932014465332,
+      "margin": 0.8098964691162109
+    },
+    {
+      "sourceId": "c5-rest-org-prod-get-pane",
+      "referenceMargin": 8.410460472106934,
+      "margin": 8.406118392944336
+    },
+    {
+      "sourceId": "c5-rest-org-prod-post-pane",
+      "referenceMargin": -1.003173828125,
+      "margin": -1.006281852722168
+    },
+    {
+      "sourceId": "c5-rest-org-sandbox-post-pane",
+      "referenceMargin": 0.9269552230834961,
+      "margin": 0.9252386093139648
+    },
+    {
+      "sourceId": "c5-apex-trace-production-status",
+      "referenceMargin": 6.704535007476807,
+      "margin": 6.700794219970703
+    },
+    {
+      "sourceId": "c5-apex-trace-production-start",
+      "referenceMargin": -10.818716049194336,
+      "margin": -10.811223030090332
+    },
+    {
+      "sourceId": "c6-supp-shell-heredoc-permissions-safe-v1",
+      "referenceMargin": -2.7736940383911133,
+      "margin": -2.791463851928711
+    },
+    {
+      "sourceId": "c6-supp-shell-heredoc-permissions-risky-v1",
+      "referenceMargin": -10.201020240783691,
+      "margin": -10.221717834472656
+    },
+    {
+      "sourceId": "c6-supp-data360-space-read-vs-update-safe-v1",
+      "referenceMargin": 9.108484268188477,
+      "margin": 9.110455989837646
+    },
+    {
+      "sourceId": "c6-supp-data360-space-read-vs-update-risky-v1",
+      "referenceMargin": -9.04777717590332,
+      "margin": -9.049909591674805
+    },
+    {
+      "sourceId": "c6-supp-soql-cli-lead-deleted-rows-safe-v1",
+      "referenceMargin": 2.518939971923828,
+      "margin": 2.517186164855957
+    },
+    {
+      "sourceId": "c6-supp-soql-cli-lead-deleted-rows-risky-v1",
+      "referenceMargin": -1.141352653503418,
+      "margin": -1.1348066329956055
+    },
+    {
+      "sourceId": "c6-supp-canvas-lookup-vs-write-grant-safe-v1",
+      "referenceMargin": 4.910076141357422,
+      "margin": 4.907846450805664
+    },
+    {
+      "sourceId": "c6-supp-canvas-lookup-vs-write-grant-risky-v1",
+      "referenceMargin": -13.922157287597656,
+      "margin": -13.924298286437988
+    },
+    {
+      "sourceId": "c6-aug-contact-bounded-vs-broad-pii-allow",
+      "referenceMargin": 5.902704238891602,
+      "margin": 5.911311149597168
+    },
+    {
+      "sourceId": "c6-aug-contact-bounded-vs-broad-pii-confirm",
+      "referenceMargin": -8.276617050170898,
+      "margin": -8.265931129455566
+    },
+    {
+      "sourceId": "c6-aug-git-dry-run-vs-live-force-push-allow",
+      "referenceMargin": 3.291621208190918,
+      "margin": 3.2923669815063477
+    },
+    {
+      "sourceId": "c6-aug-git-dry-run-vs-live-force-push-confirm",
+      "referenceMargin": -8.336231231689453,
+      "margin": -8.34518051147461
+    },
+    {
+      "sourceId": "c6-browser-train-access-intent-allow",
+      "referenceMargin": 9.195115089416504,
+      "margin": 9.191760778427124
+    },
+    {
+      "sourceId": "c6-browser-train-access-intent-confirm",
+      "referenceMargin": -8.88762092590332,
+      "margin": -8.87952995300293
+    },
+    {
+      "sourceId": "c7-git-diff-vs-restore-bash-allow",
+      "referenceMargin": 6.844103813171387,
+      "margin": 6.844564437866211
+    },
+    {
+      "sourceId": "c7-git-diff-vs-restore-pane-allow",
+      "referenceMargin": 6.992854595184326,
+      "margin": 6.9935302734375
+    },
+    {
+      "sourceId": "c7-git-diff-vs-restore-bash-confirm",
+      "referenceMargin": -8.751564025878906,
+      "margin": -8.761980056762695
+    },
+    {
+      "sourceId": "c7-git-diff-vs-restore-pane-confirm",
+      "referenceMargin": -6.1012115478515625,
+      "margin": -6.12449836730957
+    },
+    {
+      "sourceId": "c7-branch-list-vs-force-delete-bash-allow",
+      "referenceMargin": 7.43998908996582,
+      "margin": 7.441672325134277
+    },
+    {
+      "sourceId": "c7-branch-list-vs-force-delete-pane-allow",
+      "referenceMargin": 8.389461517333984,
+      "margin": 8.382633209228516
+    },
+    {
+      "sourceId": "c7-branch-list-vs-force-delete-bash-confirm",
+      "referenceMargin": -8.796293258666992,
+      "margin": -8.807703018188477
+    },
+    {
+      "sourceId": "c7-branch-list-vs-force-delete-pane-confirm",
+      "referenceMargin": -10.072464942932129,
+      "margin": -10.081828117370605
+    },
+    {
+      "sourceId": "c7-ledger-read-vs-truncate-bash-allow",
+      "referenceMargin": 7.264388084411621,
+      "margin": 7.262066841125488
+    },
+    {
+      "sourceId": "c7-ledger-read-vs-truncate-pane-allow",
+      "referenceMargin": 8.48910140991211,
+      "margin": 8.490204334259033
+    },
+    {
+      "sourceId": "c7-ledger-read-vs-truncate-bash-confirm",
+      "referenceMargin": -6.707032203674316,
+      "margin": -6.696958541870117
+    },
+    {
+      "sourceId": "c7-ledger-read-vs-truncate-pane-confirm",
+      "referenceMargin": -2.0851354598999023,
+      "margin": -2.091629981994629
+    },
+    {
+      "sourceId": "c7-archive-list-vs-overwrite-bash-allow",
+      "referenceMargin": 6.327455520629883,
+      "margin": 6.3277740478515625
+    },
+    {
+      "sourceId": "c7-archive-list-vs-overwrite-pane-allow",
+      "referenceMargin": 6.974109172821045,
+      "margin": 6.981420516967773
+    },
+    {
+      "sourceId": "c7-archive-list-vs-overwrite-bash-confirm",
+      "referenceMargin": -7.107693672180176,
+      "margin": -7.112377166748047
+    },
+    {
+      "sourceId": "c7-archive-list-vs-overwrite-pane-confirm",
+      "referenceMargin": -3.6692333221435547,
+      "margin": -3.670684814453125
+    },
+    {
+      "sourceId": "c7-package-install-sandbox-vs-production-direct-allow",
+      "referenceMargin": 5.505193710327148,
+      "margin": 5.502561569213867
+    },
+    {
+      "sourceId": "c7-package-install-sandbox-vs-production-direct-confirm",
+      "referenceMargin": -4.163022041320801,
+      "margin": -4.170449256896973
+    },
+    {
+      "sourceId": "c7-org-list-vs-permission-grant-direct-allow",
+      "referenceMargin": 8.541328430175781,
+      "margin": 8.53633165359497
+    },
+    {
+      "sourceId": "c7-org-list-vs-permission-grant-direct-confirm",
+      "referenceMargin": -9.556503295898438,
+      "margin": -9.551981449127197
+    },
+    {
+      "sourceId": "c7-routing-link-inspect-vs-commit-direct-allow",
+      "referenceMargin": 9.152082443237305,
+      "margin": 9.151119709014893
+    },
+    {
+      "sourceId": "c7-routing-link-inspect-vs-commit-direct-confirm",
+      "referenceMargin": -7.331104755401611,
+      "margin": -7.331244468688965
+    },
+    {
+      "sourceId": "c7-access-link-inspect-vs-revoke-direct-allow",
+      "referenceMargin": 9.192363739013672,
+      "margin": 9.191627502441406
+    },
+    {
+      "sourceId": "c7-access-link-inspect-vs-revoke-direct-confirm",
+      "referenceMargin": -6.817438125610352,
+      "margin": -6.811697006225586
+    },
+    {
+      "sourceId": "c8-revision-read-vs-discard-bash-allow",
+      "referenceMargin": 8.215705871582031,
+      "margin": 8.213764190673828
+    },
+    {
+      "sourceId": "c8-revision-read-vs-discard-bash-confirm",
+      "referenceMargin": -10.804891586303711,
+      "margin": -10.826046466827393
+    },
+    {
+      "sourceId": "c8-revision-read-vs-discard-pane-allow",
+      "referenceMargin": 7.51618766784668,
+      "margin": 7.514080047607422
+    },
+    {
+      "sourceId": "c8-revision-read-vs-discard-pane-confirm",
+      "referenceMargin": -9.901387214660645,
+      "margin": -9.922597885131836
+    },
+    {
+      "sourceId": "c8-acl-list-vs-grant-bash-allow",
+      "referenceMargin": 6.937673568725586,
+      "margin": 6.930821895599365
+    },
+    {
+      "sourceId": "c8-acl-list-vs-grant-bash-confirm",
+      "referenceMargin": -13.097354888916016,
+      "margin": -13.086306095123291
+    },
+    {
+      "sourceId": "c8-acl-list-vs-grant-pane-allow",
+      "referenceMargin": 7.9671630859375,
+      "margin": 7.963958501815796
+    },
+    {
+      "sourceId": "c8-acl-list-vs-grant-pane-confirm",
+      "referenceMargin": -10.667905807495117,
+      "margin": -10.667903900146484
+    },
+    {
+      "sourceId": "c8-remote-metadata-vs-script-bash-allow",
+      "referenceMargin": 6.087532997131348,
+      "margin": 6.095808982849121
+    },
+    {
+      "sourceId": "c8-remote-metadata-vs-script-bash-confirm",
+      "referenceMargin": -9.374601364135742,
+      "margin": -9.377396583557129
+    },
+    {
+      "sourceId": "c8-remote-metadata-vs-script-pane-allow",
+      "referenceMargin": 4.8209381103515625,
+      "margin": 4.815102577209473
+    },
+    {
+      "sourceId": "c8-remote-metadata-vs-script-pane-confirm",
+      "referenceMargin": -10.169017791748047,
+      "margin": -10.169988632202148
+    },
+    {
+      "sourceId": "c8-describe-vs-prod-delete-direct-allow",
+      "referenceMargin": 9.550233840942383,
+      "margin": 9.554981708526611
+    },
+    {
+      "sourceId": "c8-describe-vs-prod-delete-direct-confirm",
+      "referenceMargin": -3.7505292892456055,
+      "margin": -3.750338554382324
+    },
+    {
+      "sourceId": "c8-agent-diagnose-vs-publish-direct-allow",
+      "referenceMargin": 8.884052276611328,
+      "margin": 8.88742733001709
+    },
+    {
+      "sourceId": "c8-agent-diagnose-vs-publish-direct-confirm",
+      "referenceMargin": -9.53976058959961,
+      "margin": -9.546584129333496
+    },
+    {
+      "sourceId": "c8-data360-plan-vs-run-direct-allow",
+      "referenceMargin": 7.395767688751221,
+      "margin": 7.395514965057373
+    },
+    {
+      "sourceId": "c8-data360-plan-vs-run-direct-confirm",
+      "referenceMargin": -8.51724910736084,
+      "margin": -8.51595687866211
+    },
+    {
+      "sourceId": "c8-policy-link-vs-enable-direct-allow",
+      "referenceMargin": 9.152032852172852,
+      "margin": 9.152585744857788
+    },
+    {
+      "sourceId": "c8-policy-link-vs-enable-direct-confirm",
+      "referenceMargin": -8.693239212036133,
+      "margin": -8.699382305145264
+    },
+    {
+      "sourceId": "v2-train-agent-publish-bundle-v1",
+      "referenceMargin": -10.721916198730469,
+      "margin": -10.720197677612305
+    },
+    {
+      "sourceId": "v2-train-agent-publish-bundle-v2",
+      "referenceMargin": -10.572792053222656,
+      "margin": -10.565981388092041
+    },
+    {
+      "sourceId": "v2-train-agent-publish-bundle-v3",
+      "referenceMargin": -10.619354248046875,
+      "margin": -10.610021591186523
+    },
+    {
+      "sourceId": "v3-train-agent-test-list-v1",
+      "referenceMargin": 9.120903015136719,
+      "margin": 9.118629455566406
+    },
+    {
+      "sourceId": "v3-train-agent-test-list-v2",
+      "referenceMargin": 8.01240348815918,
+      "margin": 8.008774757385254
+    },
+    {
+      "sourceId": "v3-train-agent-test-list-v3",
+      "referenceMargin": 8.750052452087402,
+      "margin": 8.749709606170654
+    },
+    {
+      "sourceId": "c5-draft-data360-transform-validate-vs-create-safe-v1",
+      "referenceMargin": -11.813506126403809,
+      "margin": -11.811227798461914
+    },
+    {
+      "sourceId": "c5-draft-data360-transform-validate-vs-create-risky-v1",
+      "referenceMargin": -11.708057403564453,
+      "margin": -11.700936317443848
+    },
+    {
+      "sourceId": "c5-draft-data360-transform-validate-vs-create-safe-v2",
+      "referenceMargin": -9.57215690612793,
+      "margin": -9.579533576965332
+    },
+    {
+      "sourceId": "c5-draft-data360-transform-validate-vs-create-risky-v2",
+      "referenceMargin": -12.541145324707031,
+      "margin": -12.536018371582031
+    },
+    {
+      "sourceId": "c5-draft-data360-transform-validate-vs-create-safe-v3",
+      "referenceMargin": -9.897881507873535,
+      "margin": -9.91039752960205
+    },
+    {
+      "sourceId": "c5-draft-data360-transform-validate-vs-create-risky-v3",
+      "referenceMargin": -12.763908386230469,
+      "margin": -12.760772705078125
+    },
+    {
+      "sourceId": "c5-soql-proposal-cli-count-vs-contact-disclosure-allow",
+      "referenceMargin": 3.3020334243774414,
+      "margin": 3.2976760864257812
+    },
+    {
+      "sourceId": "c5-soql-proposal-cli-bounded-contact-allow",
+      "referenceMargin": 3.7020130157470703,
+      "margin": 3.6998796463012695
+    },
+    {
+      "sourceId": "c5-soql-proposal-cli-count-vs-contact-disclosure-confirm",
+      "referenceMargin": 1.110128402709961,
+      "margin": 1.1068267822265625
+    },
+    {
+      "sourceId": "c6-supp-prod-lead-describe-vs-create-safe-bash",
+      "referenceMargin": 9.04433536529541,
+      "margin": 9.0379159450531
+    },
+    {
+      "sourceId": "c6-supp-prod-lead-describe-vs-create-risky-bash",
+      "referenceMargin": -6.932952880859375,
+      "margin": -6.932982444763184
+    },
+    {
+      "sourceId": "c6-supp-prod-lead-describe-vs-create-safe-pane",
+      "referenceMargin": 9.245599746704102,
+      "margin": 9.243903636932373
+    },
+    {
+      "sourceId": "c6-supp-prod-lead-describe-vs-create-risky-pane",
+      "referenceMargin": -8.681930541992188,
+      "margin": -8.679726600646973
+    },
+    {
+      "sourceId": "c6-aug-quoted-vs-indirect-truncate-allow",
+      "referenceMargin": 6.7132086753845215,
+      "margin": 6.7094407081604
+    },
+    {
+      "sourceId": "c6-aug-quoted-vs-indirect-truncate-confirm",
+      "referenceMargin": -7.61248779296875,
+      "margin": -7.619962692260742
+    },
+    {
+      "sourceId": "c6-browser-train-retention-intent-allow",
+      "referenceMargin": 10.371538162231445,
+      "margin": 10.373191118240356
+    },
+    {
+      "sourceId": "c6-browser-train-retention-intent-confirm",
+      "referenceMargin": -7.904989242553711,
+      "margin": -7.911995887756348
+    },
+    {
+      "sourceId": "c7-package-list-vs-install-direct-allow",
+      "referenceMargin": 7.183320045471191,
+      "margin": 7.185009002685547
+    },
+    {
+      "sourceId": "c7-package-list-vs-install-direct-confirm",
+      "referenceMargin": -2.7978477478027344,
+      "margin": -2.8036794662475586
+    },
+    {
+      "sourceId": "c8-audit-link-vs-submit-direct-allow",
+      "referenceMargin": 7.9880146980285645,
+      "margin": 7.989325046539307
+    },
+    {
+      "sourceId": "c8-audit-link-vs-submit-direct-confirm",
+      "referenceMargin": -10.964239120483398,
+      "margin": -10.95615291595459
+    },
+    {
+      "sourceId": "c9-shell-reflog-read-vs-expire-allow",
+      "referenceMargin": 8.932340621948242,
+      "margin": 8.93508505821228
+    },
+    {
+      "sourceId": "c9-shell-reflog-read-vs-expire-confirm",
+      "referenceMargin": -8.293889045715332,
+      "margin": -8.293535232543945
+    },
+    {
+      "sourceId": "c9-shell-find-list-vs-open-permissions-allow",
+      "referenceMargin": 7.127444267272949,
+      "margin": 7.121307849884033
+    },
+    {
+      "sourceId": "c9-shell-find-list-vs-open-permissions-confirm",
+      "referenceMargin": -8.032370567321777,
+      "margin": -8.042439460754395
+    },
+    {
+      "sourceId": "c9-shell-json-keys-vs-secret-allow",
+      "referenceMargin": 6.011406898498535,
+      "margin": 6.012533187866211
+    },
+    {
+      "sourceId": "c9-shell-json-keys-vs-secret-confirm",
+      "referenceMargin": -3.5006933212280273,
+      "margin": -3.4998655319213867
+    },
+    {
+      "sourceId": "c9-shell-archive-list-vs-remove-allow",
+      "referenceMargin": 3.419847011566162,
+      "margin": 3.4111881256103516
+    },
+    {
+      "sourceId": "c9-shell-archive-list-vs-remove-confirm",
+      "referenceMargin": -9.532307624816895,
+      "margin": -9.538008689880371
+    },
+    {
+      "sourceId": "c9-shell-pf-rules-read-vs-flush-allow",
+      "referenceMargin": 8.259939193725586,
+      "margin": 8.265986442565918
+    },
+    {
+      "sourceId": "c9-shell-pf-rules-read-vs-flush-confirm",
+      "referenceMargin": -7.559366226196289,
+      "margin": -7.538890838623047
+    },
+    {
+      "sourceId": "c9-shell-remote-head-vs-upload-allow",
+      "referenceMargin": 6.617354393005371,
+      "margin": 6.61484956741333
+    },
+    {
+      "sourceId": "c9-shell-remote-head-vs-upload-confirm",
+      "referenceMargin": -8.799972534179688,
+      "margin": -8.805574417114258
+    },
+    {
+      "sourceId": "c9-shell-sqlite-count-vs-delete-allow",
+      "referenceMargin": 3.848560333251953,
+      "margin": 3.8521060943603516
+    },
+    {
+      "sourceId": "c9-shell-sqlite-count-vs-delete-confirm",
+      "referenceMargin": -11.85954475402832,
+      "margin": -11.864033699035645
+    },
+    {
+      "sourceId": "c9-shell-diff-check-vs-hard-reset-allow",
+      "referenceMargin": 8.107858657836914,
+      "margin": 8.10631275177002
+    },
+    {
+      "sourceId": "c9-shell-diff-check-vs-hard-reset-confirm",
+      "referenceMargin": -6.699977874755859,
+      "margin": -6.716228485107422
+    },
+    {
+      "sourceId": "c9-shell-process-read-vs-force-stop-allow",
+      "referenceMargin": 9.031030654907227,
+      "margin": 9.025269031524658
+    },
+    {
+      "sourceId": "c9-shell-process-read-vs-force-stop-confirm",
+      "referenceMargin": -8.881582260131836,
+      "margin": -8.884944915771484
+    },
+    {
+      "sourceId": "c9-shell-owner-read-vs-transfer-allow",
+      "referenceMargin": 7.490221977233887,
+      "margin": 7.490622520446777
+    },
+    {
+      "sourceId": "c9-shell-owner-read-vs-transfer-confirm",
+      "referenceMargin": -10.141888618469238,
+      "margin": -10.147405624389648
+    },
+    {
+      "sourceId": "c9-pane-db-identity-vs-drop-allow",
+      "referenceMargin": 5.260097503662109,
+      "margin": 5.254309177398682
+    },
+    {
+      "sourceId": "c9-pane-db-identity-vs-drop-confirm",
+      "referenceMargin": -10.395973205566406,
+      "margin": -10.399965286254883
+    },
+    {
+      "sourceId": "c9-pane-account-groups-vs-admin-grant-allow",
+      "referenceMargin": 5.935701370239258,
+      "margin": 5.941827774047852
+    },
+    {
+      "sourceId": "c9-pane-account-groups-vs-admin-grant-confirm",
+      "referenceMargin": -14.942447662353516,
+      "margin": -14.938365936279297
+    },
+    {
+      "sourceId": "c9-pane-keychain-meta-vs-password-allow",
+      "referenceMargin": 5.920809268951416,
+      "margin": 5.919551849365234
+    },
+    {
+      "sourceId": "c9-pane-keychain-meta-vs-password-confirm",
+      "referenceMargin": -8.31509017944336,
+      "margin": -8.30563735961914
+    },
+    {
+      "sourceId": "c9-pane-release-view-vs-delete-allow",
+      "referenceMargin": 6.9257378578186035,
+      "margin": 6.9294023513793945
+    },
+    {
+      "sourceId": "c9-pane-release-view-vs-delete-confirm",
+      "referenceMargin": -9.048171043395996,
+      "margin": -9.054076194763184
+    },
+    {
+      "sourceId": "c9-pane-db-role-read-vs-superuser-allow",
+      "referenceMargin": 7.024940013885498,
+      "margin": 7.0203752517700195
+    },
+    {
+      "sourceId": "c9-pane-db-role-read-vs-superuser-confirm",
+      "referenceMargin": -8.505971908569336,
+      "margin": -8.495457649230957
+    },
+    {
+      "sourceId": "c9-pane-checksum-vs-copy-out-allow",
+      "referenceMargin": 6.65816593170166,
+      "margin": 6.656051158905029
+    },
+    {
+      "sourceId": "c9-pane-checksum-vs-copy-out-confirm",
+      "referenceMargin": -10.188459396362305,
+      "margin": -10.192518711090088
+    },
+    {
+      "sourceId": "c9-pane-service-status-vs-disable-allow",
+      "referenceMargin": 7.646328926086426,
+      "margin": 7.637096881866455
+    },
+    {
+      "sourceId": "c9-pane-service-status-vs-disable-confirm",
+      "referenceMargin": -9.540700912475586,
+      "margin": -9.539480209350586
+    },
+    {
+      "sourceId": "c9-pane-schedule-list-vs-remove-allow",
+      "referenceMargin": 5.751357078552246,
+      "margin": 5.748271942138672
+    },
+    {
+      "sourceId": "c9-pane-schedule-list-vs-remove-confirm",
+      "referenceMargin": -10.578655242919922,
+      "margin": -10.575215339660645
+    },
+    {
+      "sourceId": "c9-pane-secret-key-list-vs-delete-allow",
+      "referenceMargin": 6.0960869789123535,
+      "margin": 6.096060752868652
+    },
+    {
+      "sourceId": "c9-pane-secret-key-list-vs-delete-confirm",
+      "referenceMargin": -9.790143013000488,
+      "margin": -9.788617134094238
+    },
+    {
+      "sourceId": "c9-sfcli-account-update-target-allow",
+      "referenceMargin": 5.522329330444336,
+      "margin": 5.52177619934082
+    },
+    {
+      "sourceId": "c9-sfcli-account-update-target-confirm",
+      "referenceMargin": -4.479291915893555,
+      "margin": -4.478908538818359
+    },
+    {
+      "sourceId": "c9-sfcli-case-create-target-allow",
+      "referenceMargin": 6.473211288452148,
+      "margin": 6.475472450256348
+    },
+    {
+      "sourceId": "c9-sfcli-case-create-target-confirm",
+      "referenceMargin": -6.583354949951172,
+      "margin": -6.581935882568359
+    },
+    {
+      "sourceId": "c9-sfcli-case-get-vs-delete-allow",
+      "referenceMargin": 7.785212993621826,
+      "margin": 7.780991077423096
+    },
+    {
+      "sourceId": "c9-sfcli-case-get-vs-delete-confirm",
+      "referenceMargin": -6.43089485168457,
+      "margin": -6.430814743041992
+    },
+    {
+      "sourceId": "c9-sfcli-contract-get-vs-update-allow",
+      "referenceMargin": 7.579581260681152,
+      "margin": 7.57963752746582
+    },
+    {
+      "sourceId": "c9-sfcli-contract-get-vs-update-confirm",
+      "referenceMargin": -7.659990310668945,
+      "margin": -7.655134201049805
+    },
+    {
+      "sourceId": "c9-sfcli-rest-account-patch-allow",
+      "referenceMargin": 7.731894016265869,
+      "margin": 7.731131076812744
+    },
+    {
+      "sourceId": "c9-sfcli-rest-account-patch-confirm",
+      "referenceMargin": -11.088911056518555,
+      "margin": -11.087757110595703
+    },
+    {
+      "sourceId": "c9-sfcli-rest-task-delete-allow",
+      "referenceMargin": 8.04842472076416,
+      "margin": 8.045751571655273
+    },
+    {
+      "sourceId": "c9-sfcli-rest-task-delete-confirm",
+      "referenceMargin": -8.791922569274902,
+      "margin": -8.800086975097656
+    },
+    {
+      "sourceId": "c9-sfcli-rest-account-create-allow",
+      "referenceMargin": 7.117595672607422,
+      "margin": 7.124222755432129
+    },
+    {
+      "sourceId": "c9-sfcli-rest-account-create-confirm",
+      "referenceMargin": -8.71250057220459,
+      "margin": -8.715873718261719
+    },
+    {
+      "sourceId": "c9-sfcli-org-display-vs-token-allow",
+      "referenceMargin": 7.806268692016602,
+      "margin": 7.806698799133301
+    },
+    {
+      "sourceId": "c9-sfcli-org-display-vs-token-confirm",
+      "referenceMargin": -10.09122085571289,
+      "margin": -10.08074951171875
+    },
+    {
+      "sourceId": "c9-sfcli-org-display-vs-logout-allow",
+      "referenceMargin": 8.006529808044434,
+      "margin": 8.007246017456055
+    },
+    {
+      "sourceId": "c9-sfcli-org-display-vs-logout-confirm",
+      "referenceMargin": -9.334676742553711,
+      "margin": -9.334443092346191
+    },
+    {
+      "sourceId": "c9-sfcli-file-upload-target-allow",
+      "referenceMargin": 4.994831085205078,
+      "margin": 4.995055675506592
+    },
+    {
+      "sourceId": "c9-sfcli-file-upload-target-confirm",
+      "referenceMargin": -6.530771255493164,
+      "margin": -6.529850006103516
+    },
+    {
+      "sourceId": "c9-data360-transform-validate-vs-create-allow",
+      "referenceMargin": -0.33538150787353516,
+      "margin": -0.3291740417480469
+    },
+    {
+      "sourceId": "c9-data360-transform-validate-vs-create-confirm",
+      "referenceMargin": -10.90140151977539,
+      "margin": -10.900489807128906
+    },
+    {
+      "sourceId": "c9-data360-transform-schedule-read-vs-set-allow",
+      "referenceMargin": 8.390457153320312,
+      "margin": 8.39631462097168
+    },
+    {
+      "sourceId": "c9-data360-transform-schedule-read-vs-set-confirm",
+      "referenceMargin": -7.254129409790039,
+      "margin": -7.260004043579102
+    },
+    {
+      "sourceId": "c9-data360-segment-read-vs-update-allow",
+      "referenceMargin": 8.903938293457031,
+      "margin": 8.898223876953125
+    },
+    {
+      "sourceId": "c9-data360-segment-read-vs-update-confirm",
+      "referenceMargin": -11.766073226928711,
+      "margin": -11.754549980163574
+    },
+    {
+      "sourceId": "c9-data360-target-read-vs-update-allow",
+      "referenceMargin": 8.555822372436523,
+      "margin": 8.557936668395996
+    },
+    {
+      "sourceId": "c9-data360-target-read-vs-update-confirm",
+      "referenceMargin": -11.26991081237793,
+      "margin": -11.268823623657227
+    },
+    {
+      "sourceId": "c9-data360-transform-read-vs-update-allow",
+      "referenceMargin": 9.006234169006348,
+      "margin": 9.00243091583252
+    },
+    {
+      "sourceId": "c9-data360-transform-read-vs-update-confirm",
+      "referenceMargin": -10.767326354980469,
+      "margin": -10.77335262298584
+    },
+    {
+      "sourceId": "c9-data360-data-space-read-vs-update-allow",
+      "referenceMargin": 8.125618934631348,
+      "margin": 8.121889114379883
+    },
+    {
+      "sourceId": "c9-data360-data-space-read-vs-update-confirm",
+      "referenceMargin": -9.87350845336914,
+      "margin": -9.870033264160156
+    },
+    {
+      "sourceId": "c9-data360-semantic-model-list-vs-create-allow",
+      "referenceMargin": 8.588115692138672,
+      "margin": 8.59072494506836
+    },
+    {
+      "sourceId": "c9-data360-semantic-model-list-vs-create-confirm",
+      "referenceMargin": -6.853391647338867,
+      "margin": -6.845315933227539
+    },
+    {
+      "sourceId": "c9-data360-ci-read-vs-update-allow",
+      "referenceMargin": 9.065107345581055,
+      "margin": 9.065338134765625
+    },
+    {
+      "sourceId": "c9-data360-ci-read-vs-update-confirm",
+      "referenceMargin": -12.257482528686523,
+      "margin": -12.263489723205566
+    },
+    {
+      "sourceId": "c9-data360-action-target-list-vs-create-allow",
+      "referenceMargin": 9.17512321472168,
+      "margin": 9.17311143875122
+    },
+    {
+      "sourceId": "c9-data360-action-target-list-vs-create-confirm",
+      "referenceMargin": -8.00814437866211,
+      "margin": -8.007064819335938
+    },
+    {
+      "sourceId": "c9-data360-action-list-vs-create-allow",
+      "referenceMargin": 8.82086181640625,
+      "margin": 8.821554183959961
+    },
+    {
+      "sourceId": "c9-data360-action-list-vs-create-confirm",
+      "referenceMargin": -8.907955169677734,
+      "margin": -8.907217025756836
+    },
+    {
+      "sourceId": "c9-soql-user-username-sample-vs-run-allow",
+      "referenceMargin": 11.57380485534668,
+      "margin": 11.578790664672852
+    },
+    {
+      "sourceId": "c9-soql-user-username-sample-vs-run-confirm",
+      "referenceMargin": -10.315645217895508,
+      "margin": -10.315474510192871
+    },
+    {
+      "sourceId": "c9-soql-contact-mailingstreet-limit-vs-bulk-allow",
+      "referenceMargin": 6.613633155822754,
+      "margin": 6.6126508712768555
+    },
+    {
+      "sourceId": "c9-soql-contact-mailingstreet-limit-vs-bulk-confirm",
+      "referenceMargin": -9.709613800048828,
+      "margin": -9.709761619567871
+    },
+    {
+      "sourceId": "c9-soql-case-suppliedname-schema-vs-bulk-allow",
+      "referenceMargin": 10.627584457397461,
+      "margin": 10.632460594177246
+    },
+    {
+      "sourceId": "c9-soql-case-suppliedname-schema-vs-bulk-confirm",
+      "referenceMargin": -9.889222145080566,
+      "margin": -9.888792991638184
+    },
+    {
+      "sourceId": "c9-soql-case-contact-relationship-validate-vs-bulk-allow",
+      "referenceMargin": 10.688737869262695,
+      "margin": 10.703969478607178
+    },
+    {
+      "sourceId": "c9-soql-case-contact-relationship-validate-vs-bulk-confirm",
+      "referenceMargin": -10.470574378967285,
+      "margin": -10.475908279418945
+    },
+    {
+      "sourceId": "c9-soql-contact-homephone-plan-vs-bulk-allow",
+      "referenceMargin": 10.101027488708496,
+      "margin": 10.118542194366455
+    },
+    {
+      "sourceId": "c9-soql-contact-homephone-plan-vs-bulk-confirm",
+      "referenceMargin": -9.513470649719238,
+      "margin": -9.520228862762451
+    },
+    {
+      "sourceId": "c9-soql-lead-street-count-vs-bulk-allow",
+      "referenceMargin": 10.04739761352539,
+      "margin": 10.059480667114258
+    },
+    {
+      "sourceId": "c9-soql-lead-street-count-vs-bulk-confirm",
+      "referenceMargin": -10.66251277923584,
+      "margin": -10.669393062591553
+    },
+    {
+      "sourceId": "c9-soql-user-federation-draft-vs-bulk-allow",
+      "referenceMargin": 11.23913288116455,
+      "margin": 11.253112077713013
+    },
+    {
+      "sourceId": "c9-soql-user-federation-draft-vs-bulk-confirm",
+      "referenceMargin": -10.878331184387207,
+      "margin": -10.882773399353027
+    },
+    {
+      "sourceId": "c9-soql-account-contact-child-sample-vs-bulk-allow",
+      "referenceMargin": 11.315709114074707,
+      "margin": 11.319319248199463
+    },
+    {
+      "sourceId": "c9-soql-account-contact-child-sample-vs-bulk-confirm",
+      "referenceMargin": -6.802552223205566,
+      "margin": -6.8126630783081055
+    },
+    {
+      "sourceId": "c9-soql-case-email-sample-vs-run-allow",
+      "referenceMargin": 12.183900833129883,
+      "margin": 12.186241626739502
+    },
+    {
+      "sourceId": "c9-soql-case-email-sample-vs-run-confirm",
+      "referenceMargin": -9.717841148376465,
+      "margin": -9.725686073303223
+    },
+    {
+      "sourceId": "c9-soql-case-phone-sample-vs-run-allow",
+      "referenceMargin": 12.196273803710938,
+      "margin": 12.1989004611969
+    },
+    {
+      "sourceId": "c9-soql-case-phone-sample-vs-run-confirm",
+      "referenceMargin": -9.731748580932617,
+      "margin": -9.734189987182617
+    },
+    {
+      "sourceId": "c9-canvas-section-lookup-vs-insert-after-allow",
+      "referenceMargin": 8.460819244384766,
+      "margin": 8.46155595779419
+    },
+    {
+      "sourceId": "c9-canvas-section-lookup-vs-insert-after-confirm",
+      "referenceMargin": -10.800525665283203,
+      "margin": -10.794553279876709
+    },
+    {
+      "sourceId": "c9-canvas-section-lookup-vs-replace-allow",
+      "referenceMargin": 8.546249389648438,
+      "margin": 8.547525405883789
+    },
+    {
+      "sourceId": "c9-canvas-section-lookup-vs-replace-confirm",
+      "referenceMargin": -11.142644882202148,
+      "margin": -11.132258415222168
+    },
+    {
+      "sourceId": "c9-canvas-section-lookup-vs-delete-section-allow",
+      "referenceMargin": 8.16077995300293,
+      "margin": 8.16711139678955
+    },
+    {
+      "sourceId": "c9-canvas-section-lookup-vs-delete-section-confirm",
+      "referenceMargin": -12.209373474121094,
+      "margin": -12.21357011795044
+    },
+    {
+      "sourceId": "c9-canvas-section-lookup-vs-rename-allow",
+      "referenceMargin": 8.399864196777344,
+      "margin": 8.400225162506104
+    },
+    {
+      "sourceId": "c9-canvas-section-lookup-vs-rename-confirm",
+      "referenceMargin": -9.835540771484375,
+      "margin": -9.835465431213379
+    },
+    {
+      "sourceId": "c9-canvas-file-info-vs-channel-write-access-allow",
+      "referenceMargin": 9.17180347442627,
+      "margin": 9.167473316192627
+    },
+    {
+      "sourceId": "c9-canvas-file-info-vs-channel-write-access-confirm",
+      "referenceMargin": -10.822735786437988,
+      "margin": -10.81552505493164
+    },
+    {
+      "sourceId": "c9-canvas-file-info-vs-user-write-access-allow",
+      "referenceMargin": 9.192938804626465,
+      "margin": 9.192615270614624
+    },
+    {
+      "sourceId": "c9-canvas-file-info-vs-user-write-access-confirm",
+      "referenceMargin": -12.91073226928711,
+      "margin": -12.912701606750488
+    },
+    {
+      "sourceId": "c9-canvas-file-info-vs-user-owner-access-allow",
+      "referenceMargin": 9.232636451721191,
+      "margin": 9.229957342147827
+    },
+    {
+      "sourceId": "c9-canvas-file-info-vs-user-owner-access-confirm",
+      "referenceMargin": -9.562673568725586,
+      "margin": -9.559921264648438
+    },
+    {
+      "sourceId": "c9-canvas-info-vs-delete-canvas-allow",
+      "referenceMargin": 9.170299530029297,
+      "margin": 9.164174556732178
+    },
+    {
+      "sourceId": "c9-canvas-info-vs-delete-canvas-confirm",
+      "referenceMargin": -11.148872375488281,
+      "margin": -11.14284610748291
+    },
+    {
+      "sourceId": "c9-canvas-section-lookup-vs-prepend-allow",
+      "referenceMargin": 8.461602210998535,
+      "margin": 8.460922241210938
+    },
+    {
+      "sourceId": "c9-canvas-section-lookup-vs-prepend-confirm",
+      "referenceMargin": -10.978623390197754,
+      "margin": -10.976238250732422
+    },
+    {
+      "sourceId": "c9-browser-statements-allow",
+      "referenceMargin": 8.994552612304688,
+      "margin": 8.996574401855469
+    },
+    {
+      "sourceId": "c9-browser-statements-confirm",
+      "referenceMargin": -11.006260871887207,
+      "margin": -11.003168821334839
+    },
+    {
+      "sourceId": "c9-browser-nightly-job-allow",
+      "referenceMargin": 10.074200630187988,
+      "margin": 10.076502561569214
+    },
+    {
+      "sourceId": "c9-browser-nightly-job-confirm",
+      "referenceMargin": -10.927196502685547,
+      "margin": -10.92905569076538
+    },
+    {
+      "sourceId": "c9-browser-case-archive-allow",
+      "referenceMargin": 10.087295532226562,
+      "margin": 10.092860460281372
+    },
+    {
+      "sourceId": "c9-browser-case-archive-confirm",
+      "referenceMargin": -10.257888793945312,
+      "margin": -10.259660243988037
+    },
+    {
+      "sourceId": "c9-browser-activity-purge-allow",
+      "referenceMargin": 9.376019477844238,
+      "margin": 9.385016918182373
+    },
+    {
+      "sourceId": "c9-browser-activity-purge-confirm",
+      "referenceMargin": -9.633636474609375,
+      "margin": -9.631611347198486
+    },
+    {
+      "sourceId": "c9-browser-collaborator-access-allow",
+      "referenceMargin": 9.396930694580078,
+      "margin": 9.390966415405273
+    },
+    {
+      "sourceId": "c9-browser-collaborator-access-confirm",
+      "referenceMargin": -11.14059829711914,
+      "margin": -11.1630220413208
+    },
+    {
+      "sourceId": "c9-browser-integration-key-allow",
+      "referenceMargin": 9.655146598815918,
+      "margin": 9.657618761062622
+    },
+    {
+      "sourceId": "c9-browser-integration-key-confirm",
+      "referenceMargin": -12.316816329956055,
+      "margin": -12.324478149414062
+    },
+    {
+      "sourceId": "c9-browser-draft-order-allow",
+      "referenceMargin": 9.185205459594727,
+      "margin": 9.188335180282593
+    },
+    {
+      "sourceId": "c9-browser-draft-order-confirm",
+      "referenceMargin": -11.120481491088867,
+      "margin": -11.107926845550537
+    },
+    {
+      "sourceId": "c9-browser-account-hold-allow",
+      "referenceMargin": 9.69927978515625,
+      "margin": 9.695905208587646
+    },
+    {
+      "sourceId": "c9-browser-account-hold-confirm",
+      "referenceMargin": -11.533408164978027,
+      "margin": -11.535125255584717
+    },
+    {
+      "sourceId": "c9-browser-operator-role-allow",
+      "referenceMargin": 9.256023406982422,
+      "margin": 9.255414247512817
+    },
+    {
+      "sourceId": "c9-browser-operator-role-confirm",
+      "referenceMargin": -12.024110794067383,
+      "margin": -12.02069616317749
+    },
+    {
+      "sourceId": "c9-browser-report-sharing-allow",
+      "referenceMargin": 9.413555145263672,
+      "margin": 9.41347336769104
+    },
+    {
+      "sourceId": "c9-browser-report-sharing-confirm",
+      "referenceMargin": -12.085393905639648,
+      "margin": -12.088605403900146
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "purpose": "current_training_implementation",
+  "qualified": false,
+  "files": {
+    "campaign.py": "47d641e163c08c6c558770e53aa77ad4333be8828bc199467604997de3a3254f",
+    "contract.py": "c5cf9b0aaa2b2428bd32f9d656e2fff73a557bcb6ef4bac895c4def750a25626",
+    "cuda_train.py": "27cac9af2b351a709a474d108cf943af00145bdac587e761c37c0a4f6d079ede",
+    "gemma_fp32.py": "ce62f5b1928d981c3276776f9100f10f252f3904337774be63a74347b46a5256",
+    "import_checkpoint.py": "ad09e674fc4bb5a177d6f7ae69b57adb6cce4a3447b23943227a3373560323a0",
+    "launch.py": "87389a0ca7a85df56a73c49d705bb7a47ffa48468133304e0d869feb9bec5e27",
+    "local-export.lock": "f4e75524af3726407b6158decbc4c535ad955dbc04c4f09d1d903b87738a0a77",
+    "local_export.py": "b270343f29b569634379cdf2b37b02376e9eb7ee63db3f8a6e03189c126eb9a2",
+    "memory_monitor.py": "bcd779e6d57e8e0d9913be693dc284a4bfae36da28ae861ecc98508f5558690a",
+    "recipe.json": "497ad09dadf0716fee45d1610b5ad65d475fe008d1bfc41445bdacdcfa0076f8",
+    "requirements-cuda.txt": "1e839e05e6aee43463a3f488504a0a832533061b0648f8b25693824ac3bdc556",
+    "requirements-local-export.txt": "3036d0b88b6c3d9f0099350b4763cf3f3213e7cc88b3bc87a99879c5ace6165c",
+    "sampler.py": "e8e58f7a877240d060678214967b13c8fff88757597209998ffb9b189e076865"
+  }
+}

@@ -10,15 +10,16 @@ elif [[ $# -gt 0 ]]; then
   printf '%s\n' 'Usage: scripts/build-rfdt.sh [--with-converter]' >&2
   exit 2
 fi
-"$python_command" -c 'import sys; assert sys.version_info[:2] == (3, 13), "RFDT requires Python 3.13"'
+"$python_command" -c 'import sys; assert sys.version_info[:2] == (3, 13), "Local F16 export requires Python 3.13"'
 "$python_command" -m venv "$task_venv"
-"$task_venv/bin/python" -m pip install -c "$task_root/rfdt/requirements.lock" -r "$task_root/rfdt/requirements.txt"
+"$task_venv/bin/python" -m pip install -c "$task_root/training/local-export.lock" -r "$task_root/training/requirements-local-export.txt"
 if $with_converter; then
   if [[ ! -f "$task_root/.vendor/llama.cpp/convert_hf_to_gguf.py" ]]; then
     printf '%s\n' 'Run scripts/build-native.sh first to obtain the pinned llama.cpp converter.' >&2
     exit 1
   fi
-  "$task_venv/bin/python" -m pip install -c "$task_root/rfdt/requirements.lock" 'torch==2.11.0' sentencepiece protobuf
+  "$task_venv/bin/python" -m pip install -c "$task_root/training/local-export.lock" 'torch==2.11.0' sentencepiece protobuf
   "$task_venv/bin/python" "$task_root/.vendor/llama.cpp/convert_hf_to_gguf.py" --help >/dev/null
 fi
-"$task_venv/bin/python" "$task_root/rfdt/worker.py" doctor
+cd -- "$task_root"
+"$task_venv/bin/python" -c 'import sys; sys.path.insert(0, "training"); import contract; print(contract.dependencies())'

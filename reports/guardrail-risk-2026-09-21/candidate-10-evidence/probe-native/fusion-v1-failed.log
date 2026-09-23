@@ -1,4 +1,0 @@
-{"event": "worker_start", "elapsed_seconds": 1.6166013665497303e-05, "phase": "startup", "free_cache_limit_bytes": 268435456, "active_memory_bytes": 0, "cache_memory_bytes": 0, "peak_memory_bytes": 0}
-{"event": "phase_begin", "elapsed_seconds": 6.6910981250111945, "phase": "fusion", "active_memory_bytes": 8, "cache_memory_bytes": 0, "peak_memory_bytes": 8}
-{"event": "worker_error", "elapsed_seconds": 43.49537054100074, "phase": "fusion", "error_type": "RuntimeError", "active_memory_bytes": 3999543816, "cache_memory_bytes": 271766836, "peak_memory_bytes": 4809622400}
-{"ok": false, "command": "fuse", "error": "[write] Unable to write 1207959552 bytes to file.", "error_type": "RuntimeError"}

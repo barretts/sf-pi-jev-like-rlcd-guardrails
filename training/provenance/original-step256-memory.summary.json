@@ -1,0 +1,13 @@
+{
+  "worker_pid": 23424,
+  "reason": "checkpoint_snapshot",
+  "samples": 284,
+  "sampling_interval_seconds": 2.0,
+  "peak_dedicated_delta_bytes": 4554637312,
+  "peak_shared_delta_bytes": 80936960,
+  "peak_total_dedicated_bytes": 4991426560,
+  "hard_budget_bytes": 8000000000,
+  "stop_dedicated_delta_bytes": 7500000000,
+  "shared_growth_limit_bytes": 128000000,
+  "stop_total_dedicated_bytes": 16000000000
+}

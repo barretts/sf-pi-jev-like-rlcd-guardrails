@@ -22,6 +22,12 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run build
-      - run: node scripts/compatibility-check.mjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: npm run test:training
+      - run: npm run verify:guardrail
+      - run: npm run eval:guardrail
+      - run: npm run test:sf-pi
       - run: npm run format:check
       - run: npm run test:package

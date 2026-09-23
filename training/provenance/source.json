@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "sourceCommit": "85b12f998141081ebd9199982541a7a50520724f",
+  "modelId": "jev/c11-step-256",
+  "modelSha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+  "qualified": false,
+  "enforcementEligible": false,
+  "guardrailMode": "off",
+  "originalCampaign": {
+    "version": 1,
+    "purpose": "candidate11_fit_only_cuda_campaign",
+    "qualified": false,
+    "objective_plan_sha256": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+    "prepared_fit_sha256": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3",
+    "steps": 1024,
+    "checkpoints": [
+      128,
+      256,
+      512,
+      1024
+    ],
+    "precision": {
+      "base": "float32",
+      "lora": "float32",
+      "attention": "eager",
+      "tf32": false
+    },
+    "seed": 42,
+    "learning_rate": 0.0001,
+    "effective_batch": 8,
+    "validation_rows_passed_to_training": 0,
+    "test_rows_passed_to_training": 0,
+    "qualification": {
+      "minimum_accuracy": 0.9,
+      "unsafe_allows": 0,
+      "safety_regressions": 0,
+      "hard_block_regressions": 0,
+      "benign_interruptions": "at_or_below_baseline",
+      "all_eligible_calls_complete": true,
+      "warm_full_check_p95_ms": 750,
+      "ideal_warm_full_check_p95_ms": 500,
+      "precision_probability_delta_limit": 0.05,
+      "precision_decisive_margin": 0.5,
+      "precision_decisive_flips": 0,
+      "selection": [
+        "fewer_benign_interruptions",
+        "lower_warm_p95",
+        "earlier_checkpoint"
+      ],
+      "cal_before_valid": true,
+      "frozen_before_test": true
+    },
+    "memory": {
+      "budget_bytes": 8000000000,
+      "allocator_cap_bytes": 6500000000,
+      "stop_dedicated_delta_bytes": 7500000000,
+      "shared_growth_limit_bytes": 128000000
+    },
+    "default_enforcement": "off",
+    "fit_rows": 327,
+    "explicit_pairs": 86,
+    "pair_manifest_sha256": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+    "family_manifest_sha256": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+    "supplement_rows_admitted": 0,
+    "initialization": "original_google_gemma_base_fresh_lora_empty_optimizer",
+    "sampler": {
+      "implementation": "c11_fit_sampler.C11FitSampler",
+      "pair_fraction": 0.5,
+      "initial_pair_coverage": "one_shuffled_pass_over_all_explicit_pairs",
+      "pair_group_policy": "shuffled_round_robin_over_indivisible_group_ids",
+      "pair_item_policy": "shuffled_round_robin_within_group",
+      "row_label_order": [
+        "allow",
+        "confirm"
+      ],
+      "row_family_policy": "shuffled_round_robin_within_label",
+      "row_item_policy": "shuffled_round_robin",
+      "seed": 42
+    },
+    "source_sha256": {
+      "worker.py": "24d608084f09763033e8fbf9b2a5ac01c31a1e18281e1c53b5cd1d2dd5de56ff",
+      "cuda_worker.py": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+      "c11_fit_sampler.py": "846b022a3d624a8104fb9908c5f66e10eb53a9cdd2014f09b0b277e406370b03"
+    }
+  },
+  "originalCampaignSha256": "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd",
+  "originalSourceSha256": {
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/c11_cuda_campaign.py": "b840cb0097d47418bb0f050572b3e1f74c335867c0ff7602f09c2933771b90c4",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/c11_fit_sampler.py": "846b022a3d624a8104fb9908c5f66e10eb53a9cdd2014f09b0b277e406370b03",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/c11_fit_sampler_diagnostic.py": "fbb32e800af0ac35b9766acab8492fbf2f259b2fbb0deb3752ffdb58bddeec10",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/cuda_cal_diagnostic.py": "4dadff0e3f51eeb38d6ffc5c8068f25e457a260f8e8e2a6a18897eeec89e2bae",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/cuda_campaign.py": "b31c4a7df756fef322644923370a9f12d7ee9ee5b9bec98c5d72896925ddf09f",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/cuda_campaign_launch.py": "5abc631c362c8c9f67efca80ba693da0c73b8187856cc30f59d198397deaa841",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/cuda_import.py": "4dcc19d891c435fbd4abcd09b2a5243eb31110895e710a8286ac18f4ee56f466",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/cuda_launch.py": "c8855260cf92fed15387bd300d0d73732e08e3e66ee2ff58b052fec1d0b9d2ea",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/cuda_memory_monitor.py": "3b532d0f0053157cfb31b6b4b108b63a2a54a6d724dcf95a236c5c04b5b518d5",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/cuda_precision_diagnostic.py": "d92644c6362bde7896dc5b78810290a2a8bcd37e347ccffbb06cba7240b0ea55",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/cuda_reload.py": "ba045b84eede0aa1aa2b126c873ab28ea3f48cd8d64c13d3ff25cfe9893f0490",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/cuda_worker.py": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/gemma3_fp32.py": "ce62f5b1928d981c3276776f9100f10f252f3904337774be63a74347b46a5256",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/gemma3_fp32_fit_diagnostic.py": "01cd9ee24f9f1ca329988c6b45f6c05ee5dd25bf8fdb9f52aebbd868b235ce10",
+    "/Users/bsonntag/code/simple-jev-ts/rfdt/worker.py": "24d608084f09763033e8fbf9b2a5ac01c31a1e18281e1c53b5cd1d2dd5de56ff"
+  },
+  "immutableInputs": {
+    "families.json": "51062c174bfa28d798ca9eb338441e3d03ed73685b1f4ec707af20c41d8dcf13",
+    "fit.jsonl": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25",
+    "objective.json": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+    "pairs.json": "343ed1062e590fca8938099dc058074bea3f9f74d6118efc9df5b9ead35a4773",
+    "prepared-fit.jsonl": "8c6d83095fa9a4215e060f54b24c2116deb2c7355377f56d800de8540b0ab8e3"
+  },
+  "limitations": {
+    "diagnosticModelEligibleCorrect": 105,
+    "diagnosticModelEligibleCases": 116,
+    "diagnosticOverallCorrect": 149,
+    "diagnosticOverallCases": 160,
+    "unsafeAutomaticAllows": 5,
+    "unnecessaryConfirmations": 6,
+    "independentTestScore": null,
+    "scoresCalibrated": false
+  },
+  "refactoring": "Original source fingerprints describe the historical producer. New training implementations issue fresh fingerprints; original receipts are unchanged evidence, never admission for refactored code."
+}

@@ -11,39 +11,9 @@
       "sha256": "05bd381a5f45611ce53f4fdcc6641cf6cec68c3091d74e8a32ea591f062d3fc5",
       "size": 2006573568,
       "license": "gemma",
-      "roles": ["classifier"]
-    },
-    {
-      "id": "google/gemma-3-4b-it",
-      "base_model": "google/gemma-3-4b-it",
-      "publisher": "Google DeepMind",
-      "repository": "ggml-org/gemma-3-4b-it-GGUF",
-      "revision": "d0976223747697cb51e056d85c532013931fe52e",
-      "file": "gemma-3-4b-it-f16.gguf",
-      "sha256": "29f4b518b636635613894282bda2a01bad964c8d474c4147343057b7ac442d50",
-      "size": 7767474336,
-      "license": "gemma",
-      "roles": ["classifier"]
-    },
-    {
-      "id": "google/gemma-4-31B-it-qat-q4_0",
-      "base_model": "google/gemma-4-31B-it-qat",
-      "publisher": "Google DeepMind",
-      "repository": "google/gemma-4-31B-it-qat-q4_0-gguf",
-      "revision": "59dde24573e7e61570dba08b18a2e1fe246955ed",
-      "file": "gemma-4-31B_q4_0-it.gguf",
-      "sha256": "179cfb99212709597eae5929112cfca677e1bbf566178b479ae1da0c4772874b",
-      "size": 17651001568,
-      "license": "apache-2.0",
-      "roles": ["agent", "teacher"],
-      "chat_template": {
-        "repository": "google/gemma-4-31B-it",
-        "revision": "842da3794eaa0b77d5f08bae87a17459d91ff475",
-        "source_file": "chat_template.jinja",
-        "file": "gemma-4-31B-it.chat_template.jinja",
-        "size": 18683,
-        "sha256": "ae53464bf3be25802b3a5b37def7fd89667067d7577049b3b2d74c4d8de4c6d4"
-      }
+      "roles": [
+        "classifier"
+      ]
     }
   ]
 }

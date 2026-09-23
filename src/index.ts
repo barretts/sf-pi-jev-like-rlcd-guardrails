@@ -1,50 +1,14 @@
-export * from "./core.js";
-export * from "./backend.js";
-export * from "./http-input.js";
-export * from "./models.js";
-export * from "./evaluation.js";
-export * from "./rfdt.js";
-export * from "./agent-server.js";
-export * from "./bench.js";
-export * from "./recipes.js";
-export * from "./tool-result.js";
-export * from "./loaded-requests.js";
-export * from "./context-compression.js";
-export * from "./context-compact.js";
-export * from "./context-projection.js";
-export * from "./context-originals.js";
-export * from "./context-projection-extension.js";
-export { registerExtension } from "./extension.js";
-export * from "./gateway.js";
-export {
-  evaluateRoutingEligibility,
-  MINIMUM_FAST_CONFIDENCE,
-} from "./routing-guards.js";
-export type {
-  RoutingEligibilityInput,
-  RoutingPreviousExchange,
-  RoutingEligibility as RoutingGuardEligibility,
-} from "./routing-guards.js";
-export {
-  fitRoutingHead,
-  scoreRoutingHead,
-  validateRoutingHeadArtifact,
-  ROUTING_HEAD_LIMITS,
-} from "./routing-head.js";
-export type {
-  RoutingLabel as RoutingHeadLabel,
-  RoutingTrainingRow,
-  RoutingHeadOptions,
-  RoutingHeadArtifact,
-  RoutingHeadScore,
-} from "./routing-head.js";
-export * from "./routing-evaluation.js";
-export * from "./context-extension.js";
-export * from "./context-manager.js";
-export * from "./routing-extension.js";
-export * from "./routing-runtime.js";
-export * from "./routing-completeness.js";
-export * from "./workflow-classifier.js";
+export { canonical, preparePrompt } from "./core.js";
+export type { Json, Request, ClassifierResponse, Plan } from "./core.js";
+export { Classifier, NativeBackend } from "./backend.js";
+export type { Config, InferenceAdapter } from "./backend.js";
 export * from "./guardrail.js";
-export * from "./guardrail-evaluation.js";
+export * from "./guardrail-selection.js";
 export * from "./guardrail-extension.js";
+export { registerExtension } from "./extension.js";
+export {
+  CURRENT_ARTIFACT_REGISTRY,
+  hashArtifact,
+  verifyArtifact,
+} from "./models.js";
+export type { ApprovedArtifact, ModelRole } from "./models.js";

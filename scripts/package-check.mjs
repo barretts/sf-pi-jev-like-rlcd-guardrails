@@ -1,271 +1,138 @@
 import assert from "node:assert/strict";
-import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { execFileSync } from "node:child_process";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { runSmoke } from "./sf-pi-smoke.mjs";
 
-const manifest = JSON.parse(readFileSync("package.json", "utf8"));
-const lock = JSON.parse(readFileSync("package-lock.json", "utf8"));
+const manifest = JSON.parse(await readFile("package.json", "utf8"));
 const [pack] = JSON.parse(
-  execFileSync("npm", ["pack", "--dry-run", "--json"], { encoding: "utf8" }),
+  execFileSync("npm", ["pack", "--dry-run", "--ignore-scripts", "--json"], {
+    encoding: "utf8",
+  }),
 );
 const paths = pack.files.map((file) => file.path);
-// The installed CUDA importer resolves these relative to its own package root.
-const currentGuardrailPatch =
-  "integrations/sf-pi-guardrail/candidate10-sf-pi-from-4f901db9.patch";
-const cudaRuntimeFiles = [
-  "rfdt/cuda_worker.py",
-  "rfdt/cuda_import.py",
-  "rfdt/gemma3_fp32.py",
-  "rfdt/cuda_campaign.py",
-  "rfdt/cuda_campaign_launch.py",
-  "rfdt/cuda_memory_monitor.py",
-  "rfdt/cuda_launch.py",
-  "rfdt/cuda_reload.py",
-  "rfdt/cuda_precision_diagnostic.py",
-  "rfdt/cuda_cal_diagnostic.py",
-  "fixtures/guardrail/candidate10/cuda-campaign.json",
-  "fixtures/guardrail/candidate9/objective-plan-B.json",
-];
+const roots = new Set([
+  "dist",
+  "native",
+  "training",
+  "scripts",
+  "models",
+  "integrations",
+  "README.md",
+  "LICENSE",
+  "NOTICE",
+  "THIRD_PARTY_NOTICES.md",
+  "package.json",
+  "docs",
+]);
+for (const path of paths) {
+  assert.ok(roots.has(path.split("/")[0]), `Unexpected package file: ${path}`);
+  assert.ok(
+    !/(?:^|\/)(?:node_modules|\.build|\.vendor|__pycache__)(?:\/|$)|\.(?:gguf|safetensors|pyc|part|log|bin|dylib|so|exe)$/i.test(
+      path,
+    ),
+    `Local artifact in package: ${path}`,
+  );
+  assert.ok(
+    !/(?:^|\/)(?:research|reports|routing|fixtures|sf-pi-manager)(?:\/|$)|(?:^|\/)guardrail-candidate\d|(?:^|\/)dist\/(?:cli|server|context-|routing-|manager|automation|web|agent-server)/.test(
+      path,
+    ),
+    `Removed feature in package: ${path}`,
+  );
+}
 for (const required of [
-  ...cudaRuntimeFiles,
-  "dist/index.js",
-  "dist/index.d.ts",
-  "dist/extension.js",
-  "dist/extension.d.ts",
-  "dist/cli.js",
-  "dist/cli.d.ts",
-  "dist/server.js",
-  "dist/server.d.ts",
+  ...Object.values(manifest.exports).map((path) => path.replace(/^\.\//, "")),
+  manifest.types.replace(/^\.\//, ""),
+  ...manifest.pi.extensions.map((path) => path.replace(/^\.\//, "")),
   "dist/guardrail.js",
-  "dist/guardrail.d.ts",
-  "dist/guardrail-extension.js",
-  "dist/guardrail-extension.d.ts",
-  "dist/guardrail-evaluation.js",
-  "dist/guardrail-evaluation.d.ts",
-  "rfdt/worker.py",
-  "rfdt/requirements.txt",
-  "rfdt/requirements.lock",
-  "fixtures/quality.jsonl",
+  "dist/guardrail-selection.js",
+  "dist/rfdt.js",
+  "models/current/selection-freeze.json",
+  "models/current/cal-only-accuracy.json",
+  "models/current/registry.json",
   "models/registry.json",
   "native/main.cpp",
   "native/CMakeLists.txt",
   "scripts/build-native.sh",
-  "scripts/build-agent-server.sh",
-  "scripts/build-rfdt.sh",
-  "scripts/guardrail-train.mjs",
-  "scripts/guardrail-eval.mjs",
-  "scripts/guardrail-corpus.mjs",
-  "fixtures/guardrail/corpus.json",
-  "fixtures/guardrail/RUBRIC.md",
-  "integrations/sf-pi-manager/README.md",
-  "integrations/sf-pi-guardrail/README.md",
-  "README.md",
-  "GUARDRAIL.md",
-  "LICENSE",
-  "NOTICE",
-  "THIRD_PARTY_NOTICES.md",
+  "scripts/train-guardrail.mjs",
+  "scripts/export-guardrail.mjs",
+  "scripts/verify-guardrail.mjs",
+  "training/data/prepared-fit.jsonl",
+  "integrations/sf-pi-guardrail/current-sf-pi.patch",
+  "docs/blog-background.md",
 ])
   assert.ok(paths.includes(required), `Package missing ${required}`);
-for (const declared of [
-  manifest.exports["."],
-  manifest.types,
-  ...Object.values(manifest.bin),
-  ...manifest.pi.extensions,
-])
-  assert.ok(
-    paths.includes(declared.replace(/^\.\//, "")),
-    `Package missing declared entrypoint ${declared}`,
-  );
-assert.ok(
-  paths.some((path) =>
-    /^integrations\/sf-pi-manager\/[^/]+\.patch$/.test(path),
-  ),
-  "Package missing the SF Pi manager integration patch",
-);
-assert.ok(
-  paths.some((path) =>
-    /^integrations\/sf-pi-guardrail\/[^/]+\.patch$/.test(path),
-  ),
-  "Package missing the SF Guardrail integration patch",
-);
-assert.ok(
-  paths.includes(currentGuardrailPatch),
-  "Package missing the current baseline-bound SF Guardrail integration patch",
-);
-assert.ok(
-  !paths.some((path) =>
-    /^integrations\/sf-pi-guardrail\/candidate[5-9]-.*\.patch$/.test(path),
-  ),
-  "Package contains superseded candidate integration patches",
-);
-assert.ok(
-  !paths.some((path) =>
-    /(?:^|\/)(?:node_modules|\.build|\.vendor|\.jev|\.venv|venv|__pycache__)(?:\/|$)|\.(?:gguf|safetensors|pyc|part|jinja|bin|pt|pth|ckpt|onnx|npz|npy|dylib|so|dll|exe|o|a|log)$/i.test(
-      path,
-    ),
-  ),
-  "Package contains local data, weights, templates, logs, or binary artifacts",
-);
-assert.ok(
-  !paths.some((path) =>
-    /(?:^|\/)(?:prompt[-_]?logs?|traces?|captures?|private)(?:\/|$)/i.test(
-      path,
-    ),
-  ),
-  "Package contains private prompts, traces, or capture data",
-);
-assert.ok(
-  pack.unpackedSize < 10 * 1024 * 1024,
-  "Source package exceeds 10 MiB",
-);
+assert.equal(manifest.bin, undefined, "Obsolete CLI entrypoints remain");
+assert.equal(Object.keys(manifest.dependencies ?? {}).length, 0);
+assert.ok(pack.unpackedSize < 6 * 1024 * 1024, "Source package exceeds 6 MiB");
 
-let consumer;
+let installed = false;
 if (process.argv.includes("--install")) {
-  const base = resolve(".build/package-consumer");
-  mkdirSync(base, { recursive: true });
-  const directory = mkdtempSync(join(base, "run-"));
-  const [archive] = JSON.parse(
-    execFileSync("npm", ["pack", "--json", "--pack-destination", directory], {
-      encoding: "utf8",
-    }),
-  );
-  writeFileSync(
-    join(directory, "package.json"),
-    JSON.stringify(
-      {
+  const directory = await mkdtemp(join(tmpdir(), "jev-guardrail-consumer-"));
+  try {
+    const [archive] = JSON.parse(
+      execFileSync(
+        "npm",
+        ["pack", "--ignore-scripts", "--json", "--pack-destination", directory],
+        { encoding: "utf8" },
+      ),
+    );
+    await writeFile(
+      join(directory, "package.json"),
+      JSON.stringify({
         private: true,
         type: "module",
-        dependencies: {
-          [manifest.name]: `file:./${archive.filename}`,
-          "@earendil-works/pi-coding-agent":
-            manifest.devDependencies["@earendil-works/pi-coding-agent"],
-          "@earendil-works/pi-tui":
-            manifest.devDependencies["@earendil-works/pi-tui"],
-        },
-        devDependencies: {
-          "@types/node": lock.packages["node_modules/@types/node"].version,
-          typescript: lock.packages["node_modules/typescript"].version,
-        },
-      },
-      null,
-      2,
-    ) + "\n",
-  );
-  execFileSync(
-    "npm",
-    ["install", "--ignore-scripts", "--no-audit", "--no-fund"],
-    { cwd: directory, encoding: "utf8", timeout: 300_000 },
-  );
-  execFileSync("npm", ["ls", "--all", "--json"], {
-    cwd: directory,
-    encoding: "utf8",
-    maxBuffer: 16 * 1024 * 1024,
-  });
-  for (const file of [...cudaRuntimeFiles, currentGuardrailPatch]) {
-    assert.deepEqual(
-      readFileSync(join(directory, "node_modules", manifest.name, file)),
-      readFileSync(file),
-      `Installed runtime or integration file differs from source: ${file}`,
+        dependencies: { [manifest.name]: `file:./${archive.filename}` },
+      }),
     );
-  }
-  const environment = Object.fromEntries(
-    Object.entries(process.env).filter(([key]) => !key.startsWith("JEV_")),
-  );
-  const run = (args) =>
-    spawnSync(process.execPath, args, {
-      cwd: directory,
-      env: environment,
-      encoding: "utf8",
-      timeout: 30_000,
+    execFileSync(
+      "npm",
+      ["install", "--ignore-scripts", "--omit=peer", "--no-audit", "--no-fund"],
+      {
+        cwd: directory,
+        encoding: "utf8",
+        timeout: 60_000,
+      },
+    );
+    execFileSync(
+      process.execPath,
+      [
+        "--input-type=module",
+        "-e",
+        `
+      import assert from 'node:assert/strict';
+      const api = await import(${JSON.stringify(manifest.name)});
+      const extension = await import(${JSON.stringify(manifest.name + "/extension")});
+      assert.equal(typeof api.classifyGuardrailRisk, 'function');
+      assert.equal(typeof api.registerGuardrailProvider, 'function');
+      assert.equal(typeof extension.default, 'function');
+      assert.equal(api.registerAutomation, undefined);
+      assert.equal(api.createServer, undefined);
+      assert.equal(api.fitRoutingHead, undefined);
+    `,
+      ],
+      { cwd: directory, encoding: "utf8", timeout: 30_000 },
+    );
+    const discovery = await runSmoke({
+      packageRoot: join(directory, "node_modules", manifest.name),
     });
-  writeFileSync(
-    join(directory, "import-check.mjs"),
-    `import assert from "node:assert/strict";
-import { Classifier, NativeBackend, configFromEnv, preparePrompt, registerExtension, registerTaskContextCompression, planToolContext, createContextOriginals } from ${JSON.stringify(manifest.name)};
-import extension from ${JSON.stringify(`./node_modules/${manifest.name}/dist/extension.js`)};
-assert.equal(typeof Classifier, "function");
-assert.equal(typeof NativeBackend, "function");
-assert.equal(typeof preparePrompt, "function");
-assert.equal(configFromEnv({}).modelFile, undefined);
-assert.equal(typeof extension, "function");
-assert.equal(typeof registerExtension, "function");
-assert.equal(typeof registerTaskContextCompression, "function");
-assert.equal(typeof planToolContext, "function");
-assert.equal(typeof createContextOriginals, "function");
-console.log("Installed library and Pi extension imports passed");
-`,
-  );
-  const imported = run(["import-check.mjs"]);
-  assert.equal(imported.status, 0, imported.stderr || String(imported.error));
-  writeFileSync(
-    join(directory, "types-check.ts"),
-    `import { Classifier, NativeBackend, configFromEnv, preparePrompt, type Config, type TemplateVersion } from ${JSON.stringify(manifest.name)};
-const config: Config = configFromEnv({});
-const template: TemplateVersion = "v2";
-const backend: NativeBackend = new NativeBackend({ ...config, templateVersion: template });
-const classifier: Classifier = new Classifier(config);
-void [backend, classifier, preparePrompt];
-`,
-  );
-  const types = run([
-    "node_modules/typescript/bin/tsc",
-    "--noEmit",
-    "--strict",
-    "--skipLibCheck",
-    "--module",
-    "NodeNext",
-    "--moduleResolution",
-    "NodeNext",
-    "--target",
-    "ES2023",
-    "--types",
-    "node",
-    "types-check.ts",
-  ]);
-  assert.equal(
-    types.status,
-    0,
-    types.stdout || types.stderr || String(types.error),
-  );
-  const help = run(["node_modules/.bin/jev", "--help"]);
-  assert.equal(help.status, 0, help.stderr || String(help.error));
-  assert.match(help.stdout, /Jev local classifier and training workflow/);
-  const serverHelp = run(["node_modules/.bin/jev-server", "--help"]);
-  assert.equal(
-    serverHelp.status,
-    0,
-    serverHelp.stderr || String(serverHelp.error),
-  );
-  assert.match(serverHelp.stdout, /jev-server --model-file/);
-  const doctor = run(["node_modules/.bin/jev", "doctor"]);
-  assert.equal(doctor.status, 1, doctor.stderr || String(doctor.error));
-  assert.match(
-    doctor.stderr,
-    /Set JEV_MODEL_FILE to an approved Gemma classifier GGUF/,
-  );
-  assert.doesNotMatch(doctor.stderr, /\n\s+at /);
-  consumer = {
-    directory,
-    install_scripts: false,
-    library_import: true,
-    extension_import: true,
-    types_consumer: true,
-    cuda_runtime_files: cudaRuntimeFiles.length,
-    cuda_campaign_and_objective: "installed byte identity verified",
-    guardrail_integration_patch: currentGuardrailPatch,
-    cli_help: true,
-    server_help: true,
-    absent_model_doctor: "actionable error, exit 1",
-  };
+    assert.equal(discovery.passed, true);
+    assert.equal(discovery.nativeInference, false);
+    assert.equal(discovery.packageDiscoveryOff.modelSha256, null);
+    installed = true;
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 }
 console.log(
   JSON.stringify(
     {
-      package_files: paths.length,
-      bytes: pack.size,
-      unpacked_bytes: pack.unpackedSize,
-      weights_included: false,
-      consumer,
+      package: manifest.name,
+      files: paths.length,
+      unpackedBytes: pack.unpackedSize,
+      installedConsumerPassed: installed,
+      weightsIncluded: false,
     },
     null,
     2,

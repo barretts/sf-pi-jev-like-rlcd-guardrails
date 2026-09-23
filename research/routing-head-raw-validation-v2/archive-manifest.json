@@ -1,9 +1,0 @@
-{
-  "schemaVersion": 1,
-  "name": "evidence.tar.gz",
-  "bytes": 115104,
-  "sha256": "3150cde5ba3d57b9a042657d7a7cd463e19b4044131c1d4575a397c35ff91725",
-  "sourceMembersVerified": 7,
-  "externalPythonLauncherPinnedButNotArchived": true,
-  "interpretation": "LAB forced encoder diagnostic only. Three identical descriptive passes: easyFast19/20, hardFast17/20, unknownFast18/20. Head fails declared safety and warm100ms target; always productionQualified:false. No downstream generation or classifier promotion."
-}

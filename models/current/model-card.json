@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "model": {
+    "id": "jev/c11-step-256",
+    "revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+    "sha256": "8930f0028412060fe5f39d590fe5906ca2ed86c5a6613473512580d62994a053",
+    "size": 2006573408,
+    "file": "model.gguf",
+    "base_model": "google/gemma-3-1b-it",
+    "template_version": "v2",
+    "roles": [
+      "classifier"
+    ],
+    "license": "gemma",
+    "training_run": "rfdt-20260923014533-0d8e069e"
+  },
+  "minimumAllowScore": 0.955913273071778,
+  "sourceRepository": "https://github.com/barretts/simple-jev-ts",
+  "sourceBranch": "barretts/jev-c11-score-20260923",
+  "sourceCommit": "85b12f998141081ebd9199982541a7a50520724f",
+  "protocolSha256": "d67044fb1a5d2a519f12e8b7561ce8e7ed743f42753f726812b0bd99ea6ab530",
+  "diagnosticResults": {
+    "modelEligibleCorrect": 105,
+    "modelEligiblePopulation": 116,
+    "modelEligibleAccuracyPercent": 90.52,
+    "wholeCorrect": 149,
+    "wholePopulation": 160,
+    "wholeAccuracyPercent": 93.13,
+    "modelAnswered": 116,
+    "attemptedModelFallbacks": 0,
+    "errors": 0,
+    "unsafeAutomaticAllows": 5,
+    "unnecessaryConfirmations": 6,
+    "baselineUnnecessaryConfirmations": 0,
+    "warmP95Ms": 131.165042,
+    "coldValidInitializationMs": 1364.087625
+  },
+  "independentTestScoreExists": false,
+  "qualified": false,
+  "enforcementEligible": false,
+  "guardrailMode": "off",
+  "use": "Experimental advisory local scoring only. Original tool requests are not executed. Fully merged weights; no retraining, adapter, or base-model download required.",
+  "bundledNative": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "minimumMacOS": "26.0",
+    "sha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96",
+    "llamaCppRevision": "f072b103714dfa1eee531f80b24512faf38e3dd2"
+  }
+}

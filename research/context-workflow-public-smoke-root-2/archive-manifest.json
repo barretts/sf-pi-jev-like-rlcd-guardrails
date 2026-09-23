@@ -1,7 +1,0 @@
-{
-  "schemaVersion": 1,
-  "name": "evidence.tar.gz",
-  "bytes": 159713,
-  "sha256": "bf53206159f688fd20432d2aa26ea96ba1e25ba7a53b3a39f2e1e973bf8eb41d",
-  "scope": "Complete literal synthetic trace/results and exact 16 executed source files, including installed SDK files; no SF extensions or personal history"
-}
