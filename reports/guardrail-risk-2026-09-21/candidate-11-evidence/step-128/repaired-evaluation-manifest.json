@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "purpose": "candidate11_native_evaluation",
+  "checkpoint": 128,
+  "format": "f16",
+  "modelId": "jev/guardrail-candidate11-step128-f16",
+  "sfPi": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922",
+  "sfDeps": "/private/tmp/sf-pi-guardrail-c10-qualification-20260922",
+  "files": {
+    "campaign": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/fixtures/guardrail/candidate11/cuda-campaign-327-fit.json",
+      "sha256": "366f88e048acc672fa85b46b5b4bfe82582b374e14df93eaef5f334517149ebd"
+    },
+    "admission": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/admission.json",
+      "sha256": "ce145449b951d67996a6d6d4348725e0513afd5db8910f479060216ece098131"
+    },
+    "fit": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/fit.jsonl",
+      "sha256": "8071644e852b1399732e0b5d47f52989239dbf79f38bdcac535167675182ae25"
+    },
+    "cal": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-9-evidence/train/calibration.jsonl",
+      "sha256": "84dfedfb0a1aea2b5e39fd33bd40a913edf96daf89129accdc59e622ce7d57bd"
+    },
+    "baseline": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-10-evidence/baseline/calibration-baseline.json",
+      "sha256": "a4d80d4a24a2e0fa047cf3224a3f670c555512556a5fa21f7fd32a8e6bb75b09"
+    },
+    "baselineFreeze": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-10-evidence/baseline/manifest.json",
+      "sha256": "2f0d16ebcf65e1504b5b740215e59f31aa2e45cd45fc8a21212c86c184e2209f"
+    },
+    "runManifest": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/manifest.json",
+      "sha256": "69fd4f648761b8fcd3a1671125a5092c1d7698a8cffd6ec2463802c5287af6ff"
+    },
+    "importReport": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/cuda-import-report.json",
+      "sha256": "c4be399d4eed961096e9757c046e3ec28e3d3217de30d29bc0abcc4adc622c45"
+    },
+    "localPrecision": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/cuda-import-equivalence.json",
+      "sha256": "1d0c9de37d8283662b6f7737000878872deb17e610025f77f0be79fd07c6e0c3"
+    },
+    "precisionF16": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/precision-f16.json",
+      "sha256": "9b63189b37290bc1abec8249c157160bf1c96723c79281d844206fd3c6460673"
+    },
+    "model": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/model-f16.gguf",
+      "sha256": "22f89041387bf0cb08c8b4c18a9711f1d8cac9e3bd996d40c49e96856313e668"
+    },
+    "registry": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/f16-registry.json",
+      "sha256": "3c0e0afa24257a27cfc6ba03d22b5d1c9d523b1a0422084522e5f747b230d0c5"
+    },
+    "artifact": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/artifact.json",
+      "sha256": "961ee7217d9e643c342045432a01d074e08c8895f01b9c0d0d0e216d640919b3"
+    },
+    "nativeBinary": {
+      "path": "/private/tmp/simple-jev-ts-c9-cuda-port-20260922/.build/jev-native",
+      "sha256": "7fafa2a0eb864489aeca740767fd3c7a8fda46f8c61e6ce1af9a5e71d9846b96"
+    },
+    "modelF16": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/model-f16.gguf",
+      "sha256": "22f89041387bf0cb08c8b4c18a9711f1d8cac9e3bd996d40c49e96856313e668"
+    },
+    "localFitMargins": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/local-fit-margins.jsonl",
+      "sha256": "0d87c1d4cfc8f61900a3f3f2494b070851f3c5f04ada84c9bc372e5ee3de4272"
+    },
+    "sourceFitMargins": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/fit-margins.jsonl",
+      "sha256": "95f955b86abd9edf448ace401c7eb2dfd953d428b4e459b58f2f999ac0a64705"
+    },
+    "sourceReceipt": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/run/receipt.json",
+      "sha256": "cc940401b3bb58478c1f63c88a85dec65e6c2c1a4d96afab7c714e304c1095ec"
+    },
+    "adapter": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-local-v1/adapter/adapters.safetensors",
+      "sha256": "76af168f7e02eb1b2adf3e29d2dab5a57af3445fbd7d3cbaa740a5c5e483abe8"
+    },
+    "sourceLaunch": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/launch.json",
+      "sha256": "2d7a423a7c1a6dd07ce13df1989d47287bc219243847ce89417e79ef129367cc"
+    },
+    "sourceSnapshot": {
+      "path": "/private/tmp/simple-jev-ts-c11-supervision-20260923/.build/guardrail/candidate-11-step-128-source-v1/memory.snapshot.json",
+      "sha256": "327883805692a1c1b9ef323dcbdc5231afa762e77e44477882555e7c9a03f09c"
+    }
+  },
+  "runtime": {
+    "rfdt/worker.py": "24d608084f09763033e8fbf9b2a5ac01c31a1e18281e1c53b5cd1d2dd5de56ff",
+    "rfdt/cuda_import.py": "4dcc19d891c435fbd4abcd09b2a5243eb31110895e710a8286ac18f4ee56f466",
+    "rfdt/gemma3_fp32.py": "ce62f5b1928d981c3276776f9100f10f252f3904337774be63a74347b46a5256",
+    "dist/backend.js": "fd18233f879bb4ce3b9b281221ec1303149a36e29d958964da91bc39effee60f",
+    "dist/core.js": "2ee6c409a12b6a4f7b7a7d63c37d84923740e46f8732f625a65d0f39ef04bdf6",
+    "dist/guardrail.js": "dd649ad57e7711c820f7d67dc25f0ce217bb9d02b317a78dc2b0b156a94b47ff",
+    "dist/models.js": "d4ec59932608caf84eff0f263b0ef98dccc7ba6f7944caa8204c0bee81858e35",
+    "scripts/guardrail-candidate10-evaluate.mjs": "91cb8ad4359e06a5814eff4a09fda589cc12edb8125f90f5b847721c84d3287e",
+    "scripts/guardrail-candidate9-cal-score.mjs": "f9a3760ac487d3f836195ab05ed3cfa1d7576271555d9c3ad03afe77efe2ab2f",
+    "scripts/guardrail-candidate9-cal-cli.mjs": "cd738c42247a20d4977fbe0e9f30a34afd769c6b0d6af31925e2dc17e43cb3e4",
+    "scripts/guardrail-candidate8-host-core.mjs": "74cbc46d3d23ca2b1938776273cf6b1c15b0cd13bcdd9db94ad2d5bf584f99d9",
+    "scripts/guardrail-candidate9-valid-eval.mjs": "fb1ebb371a5a38d6874ffbab8075a7170d4ee523cd6922f1e4dba287da9c7437",
+    "scripts/guardrail-candidate9-valid-score.mjs": "bbcd650fea5ccba36224ef4e54569bf7a0c53928414b3d634ee023684965edcf",
+    "scripts/guardrail-candidate9-artifact-provenance.mjs": "74059ad12df2fe55f97f316fdc212280b8778a7f60a2616bc67e5214524300fb",
+    "scripts/guardrail-v3-research-detect-stub.mjs": "6f2de20efc26434e87510be0e9e7dd40e035a0ae449a43ce12c1d17acab68dce",
+    "rfdt/c11_cuda_campaign.py": "b840cb0097d47418bb0f050572b3e1f74c335867c0ff7602f09c2933771b90c4",
+    "rfdt/c11_fit_sampler.py": "846b022a3d624a8104fb9908c5f66e10eb53a9cdd2014f09b0b277e406370b03",
+    "rfdt/cuda_worker.py": "1c499d8368f2e5d4e997218920b362a8e6a64b14b417400d631adf8223d6eac1",
+    "rfdt/cuda_memory_monitor.py": "3b532d0f0053157cfb31b6b4b108b63a2a54a6d724dcf95a236c5c04b5b518d5",
+    "rfdt/cuda_campaign_launch.py": "5abc631c362c8c9f67efca80ba693da0c73b8187856cc30f59d198397deaa841",
+    "fixtures/guardrail/candidate9/objective-plan-B.json": "a1fbaaa262fa2d103c8ac9771ba1d9db774e7a90be5336cec3665f6b22dd3da9",
+    "scripts/guardrail-candidate10-manifest.mjs": "4d7888be610c9ca82c34f0f6f647072bc6c9bc3ba8031571d601f5d079b52779",
+    "scripts/guardrail-candidate10-q8.mjs": "f513bd2ccf01e4f104dbbd7bcdbf6e6543140b90be05923194e7a5aa2495eb2c",
+    "scripts/guardrail-candidate11-manifest.mjs": "192131dbf09d097300d8530a049fd93ca6ce7dbf980eae61e0777938efa0e42a",
+    "scripts/guardrail-candidate11-evaluate.mjs": "41afea4050554d927fa20ef2aead8fb2eee1db63c1d76e5f9fee19aefc372615",
+    "scripts/guardrail-candidate11-diagnostic-valid.mjs": "9ecde437ee7e6540c14436511109be4b8e7f2d3e45ae503b4bb7b6f88720dc2b",
+    "scripts/guardrail-candidate11-q8.mjs": "ce46db20c90f1781d642f97a83bb35e7a00c65eed8d5791eca0fa1f154a48d1e",
+    "scripts/guardrail-cuda-export-check.mjs": "6d56fad88bb42160f2d71ffb34cc266c75001273076e6f2ae61ebb5a10f913d5",
+    "scripts/guardrail-candidate9-quantizer-libraries.mjs": "d6811382780da4ec7c8881a5e9ed14f9fa3516e610c22b065853252f35b6d17f"
+  },
+  "valid": {
+    "source": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/blind-c9-20260922/valid.json",
+      "sha256": "d7d532c2712bf699133971cb82b0b0c5f21cbe5362a5edd07171b532a58f072f"
+    },
+    "manifest": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/blind-c9-20260922/manifest.json",
+      "sha256": "b878ada2dde3d6b594b275f69e0dc372586bd8ba370c1ba03d33b0199ea502cc"
+    },
+    "preflight": {
+      "path": "/private/tmp/simple-jev-ts-c11-score-20260923/reports/guardrail-risk-2026-09-21/candidate-10-evidence/baseline/valid-preflight.json",
+      "sha256": "5bf72039c1a2881f9bc1fc9a801e5dff734aa38fffc95d8045d5f14405c24784"
+    }
+  }
+}
