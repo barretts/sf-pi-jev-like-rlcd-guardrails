@@ -568,3 +568,35 @@ test("runner rejects admission before attempting nonexistent TEST body access", 
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+test("valid ineligible code-owned route preserves baseline without a comparison", () => {
+  const f = fixture();
+  const row = f.records[3];
+  row.source = "rules_fallback";
+  row.policyFloor = false;
+  delete row.comparison;
+  f.preflight.status[3].host_reason = "rules_fallback";
+  const result = scoreC11IndependentTest(
+    f.records,
+    f.preflight,
+    { cases: 4, groups: 2, eligible: 2 },
+    f.pins,
+    f.selection,
+  );
+  assert.equal(result.metrics.wholeCorrect, 4);
+  assert.equal(result.metrics.modelEligible, 2);
+  assert.equal(result.metrics.modelCalls, 2);
+  assert.equal(result.independentAccuracyTargetPassed, true);
+  row.actual = "confirm";
+  assert.throws(
+    () =>
+      scoreC11IndependentTest(
+        f.records,
+        f.preflight,
+        { cases: 4, groups: 2, eligible: 2 },
+        f.pins,
+        f.selection,
+      ),
+    /code-owned TEST route changed/,
+  );
+});

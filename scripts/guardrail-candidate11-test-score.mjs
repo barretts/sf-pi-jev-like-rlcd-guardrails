@@ -328,7 +328,7 @@ export function scoreC11IndependentTest(
         fail(`code-owned TEST route changed: ${row.id}`);
       if (
         blind.host_reason !== undefined &&
-        (row.comparison?.reason !== blind.host_reason ||
+        ((row.comparison?.reason ?? row.source) !== blind.host_reason ||
           row.source !==
             (blind.host_reason === "exact_policy_constraint"
               ? "exact_policy"
